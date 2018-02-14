@@ -4,17 +4,23 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
+import { AccordionComponent } from './accordion/accordion.component';
+
+import { DataService } from "./data.service";
+import { HttpModule } from '@angular/http';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AccordionComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpModule
   ],
-  providers: [],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
