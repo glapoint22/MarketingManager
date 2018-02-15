@@ -4,16 +4,18 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { AccordionComponent } from './accordion/accordion.component';
 
 import { DataService } from "./data.service";
 import { HttpModule } from '@angular/http';
+import { ExpandableGridComponent } from './expandable-grid/expandable-grid.component';
+import { ShopGridComponent } from './shop-grid/shop-grid.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccordionComponent
+    ExpandableGridComponent,
+    ShopGridComponent
   ],
   imports: [
     BrowserModule,

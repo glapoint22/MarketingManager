@@ -1,4 +1,4 @@
-.content{
+.max-height{
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s;
@@ -6,32 +6,14 @@
 input{
     display: none;
 }
-input:checked ~ .content {
-    max-height: 20px;
+input:checked ~ .max-height {
+    max-height: 22px;
 }
-input:checked ~ .content2 {
+input:checked ~ .max-height-expanded {
     max-height: 2000px;
 }
 input:checked + label::after {
     transform: translate(-1px, 1px) rotate(90deg);
-  }
-.header{
-    width: 1000px;
-    height: 20px;
-    background: #525252;
-    line-height: 20px;
-    padding-left: 10px;
-    color: white;
-    font-size: 14px;
-}
-.arrow-container{
-    width: 20px;
-    height: 20px;
-    background: #383838;
-    border: 1px solid #5e5e5e;
-    display:inline-block;
-    vertical-align: top;
-    cursor: pointer;
 }
 .row{
     width: 1000px;
@@ -39,21 +21,55 @@ input:checked + label::after {
     border: 1px solid #343434;
     display:inline-block;
     vertical-align: top;
-    margin-left: -4px;
     line-height: 20px;
-    padding-left: 10px;
+    padding-left: 5px;
     color: #aaaaaa;
     font-size: 14px;
 }
-#row-container:nth-child(even){
+#tier1:nth-child(even){
     .row{
         background: #282828;
     }
 }
-#row-container:nth-child(odd){
+#tier1:nth-child(odd){
     .row{
         background: #2d2d2d;
     }
+}
+#tier2:nth-child(even){
+    .row{
+        background: #282828;
+    }
+}
+#tier2:nth-child(odd){
+    .row{
+        background: #2d2d2d;
+    }
+}
+#tier3:nth-child(even){
+    .row{
+        background: #282828;
+    }
+}
+#tier3:nth-child(odd){
+    .row{
+        background: #2d2d2d;
+    }
+}
+#tier1,#tier2,#tier3{
+    .row:hover{
+        background: #505050;
+        color: white;
+    }
+}
+label{
+    width: 20px;
+    height: 20px;
+    background: #383838;
+    border: 1px solid #5e5e5e;
+    display:inline-block;
+    vertical-align: top;
+    cursor: pointer;
 }
 label::after {
     content: "";
@@ -67,4 +83,4 @@ label::after {
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
     border-left: 6px solid #aeaeae;
-  }
+}

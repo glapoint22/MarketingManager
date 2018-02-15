@@ -1,0 +1,15 @@
+<div id="tier1" *ngFor="let tier1 of items; let i = index">
+    <input [id]="'tier1Checkbox' + i" type="checkbox">
+    <label [for]="'tier1Checkbox' + i"></label><div class="row">{{tier1.name}}</div>
+    
+
+    <div id="tier2" class="max-height" *ngFor="let tier2 of tier1.niches; let j = index" [ngClass]="{'max-height-expanded' : checkbox.checked}">
+        <input [id]="'tier2Checkbox_' + i + '_' + j" #checkbox (click)="''" type="checkbox">
+        <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 21px"></label><div class="row">{{tier2.name}}</div>
+        
+
+        <div id="tier3" class="max-height" *ngFor="let tier3 of tier2.products">
+            <div class="row" style="margin-left: 42px">{{tier3.name}}</div>
+        </div>
+    </div>
+</div>
