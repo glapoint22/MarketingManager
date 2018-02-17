@@ -9,13 +9,17 @@ import { DataService } from "./data.service";
 import { HttpModule } from '@angular/http';
 import { ExpandableGridComponent } from './expandable-grid/expandable-grid.component';
 import { ShopGridComponent } from './shop-grid/shop-grid.component';
+import { ResizableDirective } from './resizable.directive';
+import { ShopComponent } from './shop/shop.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ExpandableGridComponent,
-    ShopGridComponent
+    ShopGridComponent,
+    ResizableDirective,
+    ShopComponent
   ],
   imports: [
     BrowserModule,

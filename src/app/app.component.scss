@@ -1,0 +1,12 @@
+.menu{
+    height: 100%;
+    width: 50px;
+    background: #333333;
+    float: left; border: 1px solid #404040;
+    box-sizing:border-box;
+}
+.content-container{
+    width: auto;
+    height: 100%;
+    overflow:hidden;
+}

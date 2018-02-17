@@ -13,7 +13,11 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
+    this.tier2 = 'niches';
+    this.tier3 = 'products';
     super.ngOnInit();
   }
+
+
 
 }
