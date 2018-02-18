@@ -1,5 +1,9 @@
-<div class="menu"></div>
-<div class="content-container">
-    <shop></shop>
+<div class="menu">
+    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" default="true"></menu-button>
+    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event"></menu-button>
+    <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event"></menu-button>
+    <menu-button buttonId="social" (onButtonClick)="activeScreen = $event"></menu-button>
 </div>
-<!-- <router-outlet></router-outlet> -->
+<div class="content-container">
+    <shop *ngIf="activeScreen == 'shop'"></shop>
+</div>

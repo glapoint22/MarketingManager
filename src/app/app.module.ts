@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 
@@ -11,6 +10,7 @@ import { ExpandableGridComponent } from './expandable-grid/expandable-grid.compo
 import { ShopGridComponent } from './shop-grid/shop-grid.component';
 import { ResizableDirective } from './resizable.directive';
 import { ShopComponent } from './shop/shop.component';
+import { MenuButtonComponent } from './menu-button/menu-button.component';
 
 
 @NgModule({
@@ -19,11 +19,11 @@ import { ShopComponent } from './shop/shop.component';
     ExpandableGridComponent,
     ShopGridComponent,
     ResizableDirective,
-    ShopComponent
+    ShopComponent,
+    MenuButtonComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     HttpModule
   ],
   providers: [DataService],

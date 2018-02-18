@@ -1,0 +1,41 @@
+input{
+    display: none;
+}
+label{
+    background: #424141;;
+    width: 46px;
+    height: 46px;
+    display: block;
+    text-align: center;
+    line-height: 46px;
+    color: #676767;
+    cursor: pointer;
+    border: 1px solid #585858;
+    box-sizing: border-box;
+    margin: auto;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-family: 'FontAwesome';
+}
+input:checked ~ label{
+    background: #545454;
+    color: #c5c5c5;
+    border: 1px solid #c5c5c5;
+}
+.shop::after{
+    content: "\f07a";
+    font-size: 30px;
+}
+.email::after{
+    content: "\f0e0";
+    font-size: 25px;
+}
+.leads::after{
+    content: "\f076";
+    font-size: 28px;
+
+}
+.social::after{
+    content: "\f0c0";
+    font-size: 28px;
+}

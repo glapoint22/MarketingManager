@@ -6,41 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  // categories;
+  public activeScreen: string;
+
   constructor(){
-    // this.categories = [
-    //   {
-    //     name: 'Category1',
-    //     niches: [
-    //       {name: 'niche1'},
-    //       {name: 'niche2'}
-    //     ]
-    //   },
-
-
-    //   {
-    //     name: 'Category2',
-    //     niches: [
-    //       {
-    //         name: 'niche1',
-    //         products: [{
-    //           name: 'product1'
-    //         }]
-    //       },
-    //       {name: 'niche2'}
-    //     ]
-    //   },
-    //   {
-    //     name: 'Category3',
-    //     niches: [
-    //       {name: 'niche1'},
-    //       {name: 'niche2'}
-    //     ]
-    //   }
-
-
-
-
-    // ]
   }
 }
