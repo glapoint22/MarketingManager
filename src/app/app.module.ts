@@ -11,6 +11,9 @@ import { ShopGridComponent } from './shop-grid/shop-grid.component';
 import { ResizableDirective } from './resizable.directive';
 import { ShopComponent } from './shop/shop.component';
 import { MenuButtonComponent } from './menu-button/menu-button.component';
+import { EmailComponent } from './email/email.component';
+import { LeadsComponent } from './leads/leads.component';
+import { SocialComponent } from './social/social.component';
 
 
 @NgModule({
@@ -20,7 +23,10 @@ import { MenuButtonComponent } from './menu-button/menu-button.component';
     ShopGridComponent,
     ResizableDirective,
     ShopComponent,
-    MenuButtonComponent
+    MenuButtonComponent,
+    EmailComponent,
+    LeadsComponent,
+    SocialComponent
   ],
   imports: [
     BrowserModule,

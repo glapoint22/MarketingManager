@@ -1,2 +1,4 @@
 <input [id]="buttonId" type="radio" name="menu-button" (change)="onChange()" [checked]="default">
-<label [for]="buttonId" [ngClass]="{'shop' : buttonId == 'shop', 'email' : buttonId == 'email', 'leads' : buttonId == 'leads', 'social' : buttonId == 'social'}"></label>
+<label [for]="buttonId">
+    <i [class]="'fas fa-lg ' + icon"></i>
+</label>

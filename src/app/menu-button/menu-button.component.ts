@@ -8,6 +8,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class MenuButtonComponent implements OnInit {
   @Input() buttonId: string;
   @Input() default: boolean;
+  @Input() icon: string;
   @Output() onButtonClick = new EventEmitter<string>();
 
   constructor() { }
@@ -21,5 +22,4 @@ export class MenuButtonComponent implements OnInit {
   onChange(){
     this.onButtonClick.emit(this.buttonId);
   }
-
 }

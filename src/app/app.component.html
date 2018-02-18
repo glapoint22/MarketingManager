@@ -1,9 +1,12 @@
 <div class="menu">
-    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" default="true"></menu-button>
-    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event"></menu-button>
-    <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event"></menu-button>
-    <menu-button buttonId="social" (onButtonClick)="activeScreen = $event"></menu-button>
+    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
+    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
+    <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
+    <menu-button buttonId="social" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
 </div>
 <div class="content-container">
     <shop *ngIf="activeScreen == 'shop'"></shop>
+    <email *ngIf="activeScreen == 'email'"></email>
+    <leads *ngIf="activeScreen == 'leads'"></leads>
+    <social *ngIf="activeScreen == 'social'"></social>
 </div>

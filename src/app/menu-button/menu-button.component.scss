@@ -16,26 +16,18 @@ label{
     margin-top: 2px;
     margin-bottom: 2px;
     font-family: 'FontAwesome';
+    font-size: 16px;
+    transition: all 0.2s;
 }
 input:checked ~ label{
     background: #545454;
     color: #c5c5c5;
     border: 1px solid #c5c5c5;
+    font-size: 20px;
 }
-.shop::after{
-    content: "\f07a";
-    font-size: 30px;
-}
-.email::after{
-    content: "\f0e0";
-    font-size: 25px;
-}
-.leads::after{
-    content: "\f076";
-    font-size: 28px;
-
-}
-.social::after{
-    content: "\f0c0";
-    font-size: 28px;
+input:not(:checked) ~ label:hover{
+    background: #424141;
+    color: #868686;
+    border: 1px solid #838282;
+    font-size: 20px;
 }
