@@ -10,6 +10,13 @@ import { HostListener } from '@angular/core';
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
   public gridHeight: number;
+  public searchOptions: Array<string> = [
+    'All',
+    'Category',
+    'Niches',
+    'Products'
+  ];
+  public selectedSearchOption: string = this.searchOptions[0];
 
   constructor(dataService: DataService) {super(dataService) }
 
@@ -28,6 +35,10 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.setHeight();
+  }
+
+  onSearchChange(searchValue : string ){
+    console.log(searchValue);
   }
 
 }

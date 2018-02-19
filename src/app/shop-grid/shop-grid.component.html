@@ -1,57 +1,38 @@
 <div *ngIf="items">
-    <div style="width: 100%;height: 66px;background: #313030;border: 1px solid #272727;box-sizing: border-box;">
-            <select name="categories" style="height: 32px;
-            border: 1px solid #6d6d6d;
-            background: #5a5a5a;
-            cursor: pointer;
-            border-radius: 100px 0 0 100px;
-            padding-left: 5px;
-            color: #ececec;
-            outline:none;">
-                    <option >Hello</option>
-                </select><input #search type="text" placeholder="Search" style="display: inline-block; width: 1385px; height: 29px; background: #3a3a3a; border: 1px solid #4f4f4f; outline:none; color: #d7d7d7; font-size: 14px; padding-left: 5px;"><button type="submit" style="font-size: 16px;
-                background: #4e4e4e;
-                width: 50px;
-                border-radius: 0 100px 100px 0;
-                margin-left: -1px;
-                border: 1px solid #6d6d6d;
-                height: 32px;
-                color: #ececec;">
-                        <i class="fas fa-search"></i>
-                    </button>
-                
+    <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
+        <option [innerHtml]="selectedSearchOption"></option>
+    </select>
+    <div class="search-container">
+        <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions">
+            <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
+        </select>
+        <i class="fas fa-search fa-sm"></i>
+        <input type="text" class="search" (input)="onSearchChange($event.target.value)">
+        <i class="fas fa-times-circle fa-sm"></i>
     </div>
 
 
-    <div style="
-    width: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-    " [style.height.px]="gridHeight">
+    <div class="grid" [style.height.px]="gridHeight">
+        <div class="header">Categories</div>
+        <div id="tier1" *ngFor="let tier1 of items; let i = index" style="position:relative">
+            <input #tier1Checkbox [id]="'tier1Checkbox' + i" type="checkbox" (change)="onTier1CheckboxChange(i, tier1Checkbox)">
+            <label [for]="'tier1Checkbox' + i"></label>
+            <div class="row" style="position:absolute">{{tier1.name}}</div>
 
 
-    <div class="header">Categories</div>
-    <div id="tier1" *ngFor="let tier1 of items; let i = index" style="position:relative">
-        <input #tier1Checkbox [id]="'tier1Checkbox' + i" type="checkbox" (change)="onTier1CheckboxChange(i, tier1Checkbox)">
-        <label [for]="'tier1Checkbox' + i"></label>
-        <div class="row" style="position:absolute">{{tier1.name}}</div>
+            <div class="header max-height" style="margin-left: 21px">Niches</div>
+            <div id="tier2" class="max-height" *ngFor="let tier2 of tier1.niches; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked}"
+                (transitionend)="tier2TransitionEnd(i, tier1Checkbox)">
+                <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="onTier2CheckboxChange(i, j, tier2Checkbox)" type="checkbox">
+                <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 21px"></label>
+                <div class="row" style="position:absolute">{{tier2.name}}</div>
 
 
-        <div class="header max-height" style="margin-left: 21px">Niches</div>
-        <div id="tier2" class="max-height" *ngFor="let tier2 of tier1.niches; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked}"
-            (transitionend)="tier2TransitionEnd(i, tier1Checkbox)">
-            <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="onTier2CheckboxChange(i, j, tier2Checkbox)" type="checkbox">
-            <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 21px"></label>
-            <div class="row" style="position:absolute">{{tier2.name}}</div>
-
-
-            <div class="header max-height" style="margin-left: 42px">Products</div>
-            <div id="tier3" class="max-height" *ngFor="let tier3 of tier2.products" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
-                <div class="row" style="margin-left: 42px">{{tier3.name}}</div>
+                <div class="header max-height" style="margin-left: 42px">Products</div>
+                <div id="tier3" class="max-height" *ngFor="let tier3 of tier2.products" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
+                    <div class="row" style="margin-left: 42px">{{tier3.name}}</div>
+                </div>
             </div>
         </div>
     </div>
-
-</div>
-
 </div>
