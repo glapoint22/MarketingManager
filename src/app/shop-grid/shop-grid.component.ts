@@ -10,20 +10,11 @@ import { HostListener } from '@angular/core';
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
   public gridHeight: number;
-  public searchOptions: Array<string> = [
-    'All',
-    'Category',
-    'Niches',
-    'Products'
-  ];
-  public selectedSearchOption: string = this.searchOptions[0];
 
   constructor(dataService: DataService) {super(dataService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
-    this.tier2 = 'niches';
-    this.tier3 = 'products';
     super.ngOnInit();
     this.setHeight();
   }

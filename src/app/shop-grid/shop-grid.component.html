@@ -7,8 +7,11 @@
             <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
         </select>
         <i class="fas fa-search fa-sm"></i>
-        <input type="text" class="search" (input)="onSearchChange($event.target.value)">
-        <i class="fas fa-times-circle fa-sm"></i>
+        <input #search type="text" class="search" (input)="onSearchChange($event.target.value)">
+        <div (click)="clearText(search)">
+            <i class="fas fa-times-circle fa-sm"></i>
+        </div>
+        
     </div>
 
 

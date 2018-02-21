@@ -9,9 +9,12 @@ import { DataService } from "../data.service";
 export class ExpandableGridComponent implements OnInit {
   public items: Array<any>;
   public apiUrl: string;
-  public tier1: string;
-  public tier2: string;
-  public tier3: string;
+  public searchOptions: Array<string> = [
+    'Category',
+    'Niche',
+    'Product'
+  ];
+  public selectedSearchOption: string = this.searchOptions[0];
 
   private niches: Array<any>;
   private products: Array<any>;
@@ -32,7 +35,7 @@ export class ExpandableGridComponent implements OnInit {
             id: x.id,
             name: x.name
           }));
-        this.items = this.allCategories.slice();
+        this.items = this.allCategories.map(x => Object.assign({}, x));
 
         //Niches
         this.allNiches = response
@@ -43,7 +46,7 @@ export class ExpandableGridComponent implements OnInit {
               name: y.name
             })));
         this.allNiches = [].concat.apply([], this.allNiches);
-        this.niches = this.allNiches.slice();
+        this.niches = this.allNiches.map(x => Object.assign({}, x));
 
 
         //Products
@@ -58,7 +61,7 @@ export class ExpandableGridComponent implements OnInit {
               }))));
 
         this.allProducts = [].concat.apply([], this.allProducts.concat.apply([], this.allProducts));
-        this.products = this.allProducts.slice();
+        this.products = this.allProducts.map(x => Object.assign({}, x));
 
       }, error => {
         // Error
@@ -69,7 +72,7 @@ export class ExpandableGridComponent implements OnInit {
     if (checkbox.checked) {
       checkbox.checked = false;
 
-      this.items[index][this.tier2] = this.niches.filter(x => x.categoryId == this.items[index].id);
+      this.items[index].niches = this.niches.filter(x => x.categoryId == this.items[index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -77,8 +80,8 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier2TransitionEnd(index: number, checkbox) {
-    if (!checkbox.checked && this.items[index][this.tier2]) {
-      delete this.items[index][this.tier2];
+    if (!checkbox.checked && this.items[index].niches) {
+      delete this.items[index].niches;
     }
   }
 
@@ -86,7 +89,7 @@ export class ExpandableGridComponent implements OnInit {
     if (checkbox.checked) {
       checkbox.checked = false;
 
-      this.items[tier1Index][this.tier2][tier2Index][this.tier3] = this.products.filter(x => x.nicheId == this.items[tier1Index][this.tier2][tier2Index].id);
+      this.items[tier1Index].niches[tier2Index].products = this.products.filter(x => x.nicheId == this.items[tier1Index].niches[tier2Index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -94,19 +97,51 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier3TransitionEnd(tier1Index: number, tier2Index: number, checkbox) {
-    if (!checkbox.checked && this.items[tier1Index][this.tier2][tier2Index][this.tier3]) {
-      delete this.items[tier1Index][this.tier2][tier2Index][this.tier3];
+    if (!checkbox.checked && this.items[tier1Index].niches[tier2Index].products) {
+      delete this.items[tier1Index].niches[tier2Index].products;
     }
   }
 
   onSearchChange(searchValue: string) {
-    this.products = this.allProducts.filter(x => x.name.toLowerCase().includes(searchValue)).slice();
-    let nicheIds = this.products.map(x => x.nicheId).filter((v, i, a) => a.indexOf(v) === i);
-    this.niches = this.allNiches.filter(x => nicheIds.some(a => x.id === a)).slice();
-    let categoryIds = this.niches.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
-    this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).slice();
+    let searchArray = searchValue.toLowerCase().split(' ');
+
+    switch (this.selectedSearchOption) {
+      case 'Category':
+        this.searchCategories(searchArray);
+        break;
+      case 'Niche':
+        this.searchNiches(searchArray);
+        break;
+      case 'Product':
+        this.searchProducts(searchArray);
+    }
   }
 
 
+  searchCategories(searchArray: Array<string>) {
+    this.products = this.allProducts.map(x => Object.assign({}, x));
+    this.niches = this.allNiches.map(x => Object.assign({}, x));
+    this.items = this.allCategories.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+  }
+
+  searchNiches(searchArray: Array<string>) {
+    this.products = this.allProducts.map(x => Object.assign({}, x));
+    this.niches = this.allNiches.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+    let categoryIds = this.niches.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
+    this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+  }
+
+  searchProducts(searchArray: Array<string>) {
+    this.products = this.allProducts.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+    let nicheIds = this.products.map(x => x.nicheId).filter((v, i, a) => a.indexOf(v) === i);
+    this.niches = this.allNiches.filter(x => nicheIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+    let categoryIds = this.niches.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
+    this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+  }
+
+  clearText(search){
+    search.value = '';
+    this.onSearchChange('');
+  }
 
 }
