@@ -37,8 +37,6 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.setHeight();
   }
 
-  onSearchChange(searchValue : string ){
-    console.log(searchValue);
-  }
+  
 
 }
