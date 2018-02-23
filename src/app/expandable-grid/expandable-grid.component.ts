@@ -22,6 +22,7 @@ export class ExpandableGridComponent implements OnInit {
   private allCategories: Array<any>;
   private allNiches: Array<any>;
   private allProducts: Array<any>;
+  private currentSelected: any;
 
   constructor(public dataService: DataService) { }
 
@@ -33,7 +34,9 @@ export class ExpandableGridComponent implements OnInit {
         this.allCategories = response
           .map(x => ({
             id: x.id,
-            name: x.name
+            name: x.name,
+            checked: false,
+            selected: false
           }));
         this.items = this.allCategories.map(x => Object.assign({}, x));
 
@@ -43,7 +46,8 @@ export class ExpandableGridComponent implements OnInit {
             .map(y => ({
               categoryId: x.id,
               id: y.id,
-              name: y.name
+              name: y.name,
+              selected: false
             })));
         this.allNiches = [].concat.apply([], this.allNiches);
         this.niches = this.allNiches.map(x => Object.assign({}, x));
@@ -57,7 +61,8 @@ export class ExpandableGridComponent implements OnInit {
                 nicheId: y.id,
                 id: z.id,
                 name: z.name,
-                hopLink: z.hopLink
+                hopLink: z.hopLink,
+                selected: false
               }))));
 
         this.allProducts = [].concat.apply([], this.allProducts.concat.apply([], this.allProducts));
@@ -144,4 +149,19 @@ export class ExpandableGridComponent implements OnInit {
     this.onSearchChange('');
   }
 
+  collapse(){
+    this.items.forEach(x => x.checked = false);
+  }
+
+  select(item){
+    item.selected = !item.selected;
+
+    if(this.currentSelected !== item){
+      if(this.currentSelected !== undefined){
+        this.currentSelected.selected = false;
+      }
+      
+      this.currentSelected = item;
+    }
+  }
 }
