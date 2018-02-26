@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { DataService } from "../data.service";
 
 @Component({
@@ -22,7 +22,7 @@ export class ExpandableGridComponent implements OnInit {
   private allCategories: Array<any>;
   private allNiches: Array<any>;
   private allProducts: Array<any>;
-  private currentSelected: any;
+  public currentSelected: any;
 
   constructor(public dataService: DataService) { }
 
@@ -36,7 +36,10 @@ export class ExpandableGridComponent implements OnInit {
             id: x.id,
             name: x.name,
             checked: false,
-            selected: false
+            selected: false,
+            type: 'category',
+            categoryIndex: null,
+            renaming: false
           }));
         this.items = this.allCategories.map(x => Object.assign({}, x));
 
@@ -47,7 +50,11 @@ export class ExpandableGridComponent implements OnInit {
               categoryId: x.id,
               id: y.id,
               name: y.name,
-              selected: false
+              selected: false,
+              type: 'niche',
+              categoryIndex: null,
+              nicheIndex: null,
+              renaming: false
             })));
         this.allNiches = [].concat.apply([], this.allNiches);
         this.niches = this.allNiches.map(x => Object.assign({}, x));
@@ -62,7 +69,12 @@ export class ExpandableGridComponent implements OnInit {
                 id: z.id,
                 name: z.name,
                 hopLink: z.hopLink,
-                selected: false
+                selected: false,
+                type: 'product',
+                categoryIndex: null,
+                nicheIndex: null,
+                productIndex: null,
+                renaming: false
               }))));
 
         this.allProducts = [].concat.apply([], this.allProducts.concat.apply([], this.allProducts));
@@ -144,24 +156,84 @@ export class ExpandableGridComponent implements OnInit {
     this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
   }
 
-  clearText(search){
+  clearText(search) {
     search.value = '';
     this.onSearchChange('');
   }
 
-  collapse(){
+  collapse() {
     this.items.forEach(x => x.checked = false);
+    if (this.currentSelected && this.currentSelected.selected && this.currentSelected.type !== 'category') {
+      this.currentSelected.selected = false;
+    }
   }
 
-  select(item){
-    item.selected = !item.selected;
+  selectItem(item, categoryIndex, nicheIndex, productIndex) {
+    if (this.currentSelected !== item) {
+      item.selected = true;
 
-    if(this.currentSelected !== item){
-      if(this.currentSelected !== undefined){
-        this.currentSelected.selected = false;
+      switch (item.type) {
+        case 'category':
+          item.categoryIndex = categoryIndex;
+          break;
+        case 'niche':
+          item.categoryIndex = categoryIndex;
+          item.nicheIndex = nicheIndex;
+          break;
+        case 'product':
+          item.categoryIndex = categoryIndex;
+          item.nicheIndex = nicheIndex;
+          item.productIndex = productIndex;
       }
-      
+
+
+      if (this.currentSelected) {
+        this.currentSelected.selected = false;
+        this.currentSelected.renaming = false;
+      }
       this.currentSelected = item;
     }
+  }
+
+  deleteItem() {
+    if (this.currentSelected && this.currentSelected.selected) {
+      this.currentSelected.selected = false;
+
+      switch (this.currentSelected.type) {
+        case 'category':
+          this.items.splice(this.currentSelected.categoryIndex, 1);
+          break;
+        case 'niche':
+          this.items[this.currentSelected.categoryIndex].niches.splice(this.currentSelected.nicheIndex, 1);
+          break;
+        case 'product':
+          this.items[this.currentSelected.categoryIndex].niches[this.currentSelected.nicheIndex].products.splice(this.currentSelected.productIndex, 1);
+      }
+    }
+  }
+
+  setFocus(item) {
+    item.renaming = true;
+    window.setTimeout(() => {
+      document.getElementById('rename').focus();
+    }, 1);
+    
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.keyCode === 27) {
+      this.currentSelected.selected = false;
+      this.currentSelected.renaming = false;
+    }
+
+    if (event.keyCode === 13) {
+      this.currentSelected.renaming = false;
+    }
+  }
+
+  renameItem(value: string){
+    this.currentSelected.renaming = false;
+    this.currentSelected.name = value;
   }
 }

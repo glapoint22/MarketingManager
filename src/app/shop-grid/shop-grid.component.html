@@ -1,7 +1,10 @@
 <div *ngIf="items">
+    <!-- Temp Select -->
     <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
         <option [innerHtml]="selectedSearchOption"></option>
     </select>
+
+    <!-- Search -->
     <div class="search-container">
         <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions">
             <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
@@ -11,43 +14,81 @@
         <div (click)="clearText(search)">
             <i class="fas fa-times-circle fa-sm"></i>
         </div>
-
     </div>
 
-
+    <!-- Grid -->
     <div *ngIf="items.length > 0" class="grid" [style.height.px]="gridHeight">
+        <!-- Header -->
         <div class="header">
             Categories
-            <div class="header-icon" title="Collapse All" (click)="collapse()">
-                <i class="fas fa-minus-square"></i>
-            </div>
 
-            <div class="header-icon" title="Delete Category">
+            <!-- Header Icons -->
+            <div (click)="deleteItem()" class="header-icon" title="Delete Category" [ngClass]="{'icon-disabled': !currentSelected || currentSelected.type != 'category' || (currentSelected && !currentSelected.selected)}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 
             <div class="header-icon" title="New Category">
                 <i class="fas fa-file-alt"></i>
             </div>
-            
+
+            <div class="header-icon" title="Collapse All" (click)="collapse()">
+                <i class="fas fa-minus-square"></i>
+            </div>
         </div>
-        <div id="tier1" *ngFor="let tier1 of items; let i = index" style="position:relative">
+
+
+        <div id="tier1" *ngFor="let tier1 of items; let i = index" style="position: relative">
             <input #tier1Checkbox [id]="'tier1Checkbox' + i" type="checkbox" (change)="onTier1CheckboxChange(i, tier1Checkbox)" [(ngModel)]="tier1.checked">
             <label [for]="'tier1Checkbox' + i"></label>
-            <div class="row" style="position:absolute" [ngClass]="{'selected': tier1.selected}" (click)="select(tier1)">{{tier1.name}}</div>
+            <div (dblclick)="setFocus(tier1)" class="row" style="position: absolute; width: 98.58064516129032%" [ngClass]="{'selected': tier1.selected}" (click)="selectItem(tier1, i)">
+                <div *ngIf="!tier1.renaming">{{tier1.name}}</div>
+                <input #rename (change)="renameItem(rename.value)" id="rename" onfocus="this.select()" *ngIf="tier1.renaming" type="text" class="rename" [value]="tier1.name">
+            </div>
+
+            
+
+            <div class="header max-height" style="margin-left: 22px">
+                Niches
+
+                <!-- Header Icons -->
+                <div (click)="deleteItem()" class="header-icon" title="Delete Niche" [ngClass]="{'icon-disabled': !currentSelected || currentSelected.type != 'niche' || currentSelected.categoryIndex != i || (currentSelected && !currentSelected.selected)}">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+
+                <div class="header-icon" title="New Niche">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </div>
 
 
-            <div class="header max-height" style="margin-left: 21px">Niches</div>
+
             <div id="tier2" class="max-height" *ngFor="let tier2 of tier1.niches; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked}"
                 (transitionend)="tier2TransitionEnd(i, tier1Checkbox)">
                 <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="onTier2CheckboxChange(i, j, tier2Checkbox)" type="checkbox">
-                <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 21px"></label>
-                <div class="row" style="position:absolute" [ngClass]="{'selected': tier2.selected}" (click)="select(tier2)">{{tier2.name}}</div>
+                <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 22px"></label>
+                <div (dblclick)="setFocus(tier2)" class="row" style="position: absolute; width: 97.16129032258065%" [ngClass]="{'selected': tier2.selected}" (click)="selectItem(tier2, i, j)">
+                    <div *ngIf="!tier2.renaming">{{tier2.name}}</div>
+                    <input #rename (change)="renameItem(rename.value)" id="rename" onfocus="this.select()" *ngIf="tier2.renaming" type="text" class="rename" [value]="tier2.name">
+                </div>
 
 
-                <div class="header max-height" style="margin-left: 42px">Products</div>
-                <div id="tier3" class="max-height" *ngFor="let tier3 of tier2.products" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
-                    <div class="row" style="margin-left: 42px" [ngClass]="{'selected': tier3.selected}" (click)="select(tier3)">{{tier3.name}}</div>
+                <div class="header max-height" style="margin-left: 44px">
+                    Products
+
+                    <!-- Header Icons -->
+                    <div (click)="deleteItem()" class="header-icon" title="Delete Product" [ngClass]="{'icon-disabled': !currentSelected || currentSelected.type != 'product' || currentSelected.nicheIndex != j || (currentSelected && !currentSelected.selected)}">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+
+                    <div class="header-icon" title="New Product">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </div>
+                <div id="tier3" class="max-height" *ngFor="let tier3 of tier2.products; let k = index" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
+                    <div (dblclick)="setFocus(tier3)" class="row" style="margin-left: 44px; width: 97.16129032258065%" [ngClass]="{'selected': tier3.selected}" (click)="selectItem(tier3, i, j, k)">
+                        <div *ngIf="!tier3.renaming">{{tier3.name}}</div>
+                        <input #rename (change)="renameItem(rename.value)" id="rename" onfocus="this.select()" *ngIf="tier3.renaming" type="text" class="rename" [value]="tier3.name">
+                    </div>
                 </div>
             </div>
         </div>
