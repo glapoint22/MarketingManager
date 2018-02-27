@@ -37,9 +37,9 @@ export class ExpandableGridComponent implements OnInit {
             name: x.name,
             checked: false,
             selected: false,
-            type: 'category',
+            type: 'Category',
             categoryIndex: null,
-            renaming: false
+            isSettingName: false
           }));
         this.items = this.allCategories.map(x => Object.assign({}, x));
 
@@ -51,10 +51,10 @@ export class ExpandableGridComponent implements OnInit {
               id: y.id,
               name: y.name,
               selected: false,
-              type: 'niche',
+              type: 'Niche',
               categoryIndex: null,
               nicheIndex: null,
-              renaming: false
+              isSettingName: false
             })));
         this.allNiches = [].concat.apply([], this.allNiches);
         this.niches = this.allNiches.map(x => Object.assign({}, x));
@@ -70,11 +70,11 @@ export class ExpandableGridComponent implements OnInit {
                 name: z.name,
                 hopLink: z.hopLink,
                 selected: false,
-                type: 'product',
+                type: 'Product',
                 categoryIndex: null,
                 nicheIndex: null,
                 productIndex: null,
-                renaming: false
+                isSettingName: false
               }))));
 
         this.allProducts = [].concat.apply([], this.allProducts.concat.apply([], this.allProducts));
@@ -163,7 +163,7 @@ export class ExpandableGridComponent implements OnInit {
 
   collapse() {
     this.items.forEach(x => x.checked = false);
-    if (this.currentSelected && this.currentSelected.selected && this.currentSelected.type !== 'category') {
+    if (this.currentSelected && this.currentSelected.selected && this.currentSelected.type !== 'Category') {
       this.currentSelected.selected = false;
     }
   }
@@ -173,14 +173,14 @@ export class ExpandableGridComponent implements OnInit {
       item.selected = true;
 
       switch (item.type) {
-        case 'category':
+        case 'Category':
           item.categoryIndex = categoryIndex;
           break;
-        case 'niche':
+        case 'Niche':
           item.categoryIndex = categoryIndex;
           item.nicheIndex = nicheIndex;
           break;
-        case 'product':
+        case 'Product':
           item.categoryIndex = categoryIndex;
           item.nicheIndex = nicheIndex;
           item.productIndex = productIndex;
@@ -189,9 +189,47 @@ export class ExpandableGridComponent implements OnInit {
 
       if (this.currentSelected) {
         this.currentSelected.selected = false;
-        this.currentSelected.renaming = false;
+        this.currentSelected.isSettingName = false;
       }
       this.currentSelected = item;
+    }
+  }
+
+  addItem(itemType: string, categoryIndex, categoryId, nicheIndex, nicheId) {
+    let newItem = {
+      selected: true,
+      type: itemType,
+      name: 'New ' + itemType
+    };
+    if (this.currentSelected) {
+      this.currentSelected.selected = false;
+      this.currentSelected.isSettingName = false;
+    }
+
+    this.currentSelected = newItem;
+    this.highlightName(newItem);
+
+
+
+    switch (itemType) {
+      case 'Category':
+        this.items.unshift(newItem);
+        this.allCategories.unshift(newItem);
+        break;
+      case 'Niche':
+        newItem['categoryId'] = categoryId;
+        newItem['categoryIndex'] = categoryIndex;
+        this.items[categoryIndex].niches.unshift(newItem);
+        this.allNiches.unshift(newItem);
+        this.niches.unshift(newItem);
+        break;
+      case 'Product':
+        newItem['nicheId'] = nicheId;
+        newItem['categoryIndex'] = categoryIndex;
+        newItem['nicheIndex'] = nicheIndex;
+        this.items[categoryIndex].niches[nicheIndex].products.unshift(newItem);
+        this.allProducts.unshift(newItem);
+        this.products.unshift(newItem);
     }
   }
 
@@ -200,40 +238,55 @@ export class ExpandableGridComponent implements OnInit {
       this.currentSelected.selected = false;
 
       switch (this.currentSelected.type) {
-        case 'category':
+        case 'Category':
           this.items.splice(this.currentSelected.categoryIndex, 1);
+          this.allCategories.splice(this.allCategories.findIndex(x => x.id === this.currentSelected.id), 1);
           break;
-        case 'niche':
+        case 'Niche':
           this.items[this.currentSelected.categoryIndex].niches.splice(this.currentSelected.nicheIndex, 1);
+          this.allNiches.splice(this.allNiches.findIndex(x => x.id === this.currentSelected.id), 1);
           break;
-        case 'product':
+        case 'Product':
           this.items[this.currentSelected.categoryIndex].niches[this.currentSelected.nicheIndex].products.splice(this.currentSelected.productIndex, 1);
+          this.allProducts.splice(this.allProducts.findIndex(x => x.id === this.currentSelected.id), 1);
       }
     }
   }
 
-  setFocus(item) {
-    item.renaming = true;
+  setItemName(newName: string) {
+    this.currentSelected.isSettingName = false;
+    this.currentSelected.name = newName;
+
+    switch (this.currentSelected.type) {
+      case 'Category':
+        this.allCategories[this.allCategories.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+        break;
+      case 'Niche':
+        this.allNiches[this.allNiches.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+        break;
+      case 'Product':
+        this.allProducts[this.allProducts.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+    }
+  }
+
+  highlightName(item) {
+    item.isSettingName = true;
     window.setTimeout(() => {
-      document.getElementById('rename').focus();
+      document.getElementById('name').focus();
     }, 1);
-    
+
   }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.keyCode === 27) {
       this.currentSelected.selected = false;
-      this.currentSelected.renaming = false;
+      this.currentSelected.isSettingName = false;
+      delete this.currentSelected;
     }
 
     if (event.keyCode === 13) {
-      this.currentSelected.renaming = false;
+      this.currentSelected.isSettingName = false;
     }
-  }
-
-  renameItem(value: string){
-    this.currentSelected.renaming = false;
-    this.currentSelected.name = value;
   }
 }

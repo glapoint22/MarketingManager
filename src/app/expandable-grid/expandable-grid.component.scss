@@ -172,15 +172,18 @@ select{
 .icon-disabled:hover{
     color: #6f6f6f;
 }
-input::selection{
-    background: red;
+.input-name::selection{
+    background: #00df00;
 }
-.rename{
+.input-name{
+    height: 18px;
     display: block;
     margin-left: -4px;
     background: #004d70;
     border: none;
     outline: none;
     color: white;
-    padding-left: 5px;
+    padding-left: 4px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
 }
