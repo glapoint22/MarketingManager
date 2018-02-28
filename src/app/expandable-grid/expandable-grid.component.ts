@@ -7,61 +7,91 @@ import { DataService } from "../data.service";
   styleUrls: ['./expandable-grid.component.scss']
 })
 export class ExpandableGridComponent implements OnInit {
-  public items: Array<any>;
+
+  public tiers:  Array<Tier> = [];
+  public searchOptions: Array<string> = [];
+  public selectedSearchOption: string;
+
+  //Public
+  public tier1Items: Array<any>;
   public apiUrl: string;
-  public searchOptions: Array<string> = [
-    'Category',
-    'Niche',
-    'Product'
-  ];
-  public selectedSearchOption: string = this.searchOptions[0];
+  
+  
+  public currentItem: any;
 
-  private niches: Array<any>;
-  private products: Array<any>;
-
-  private allCategories: Array<any>;
-  private allNiches: Array<any>;
-  private allProducts: Array<any>;
-  public currentSelected: any;
+  //Private
+  private allTier1Items: Array<any>;
+  private allTier2Items: Array<any>;
+  private tier2Items: Array<any>;
+  private allTier3Items: Array<any>;
+  private tier3Items: Array<any>;
 
   constructor(public dataService: DataService) { }
 
-  ngOnInit() {
-    this.dataService.get(this.apiUrl)
-      .subscribe((response: any) => {
+  setTiers(data: any){}
 
-        //Categories
-        this.allCategories = response
+  ngOnInit() {
+    
+    this.dataService.get(this.apiUrl)
+      .subscribe((data: any) => {
+        this.setTiers(data);
+
+        this.tiers.forEach(x => this.searchOptions.push(x.name));
+        this.selectedSearchOption = this.searchOptions[0];
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        let response = data;
+        //Tier1 Items
+        this.allTier1Items = response
           .map(x => ({
             id: x.id,
             name: x.name,
-            checked: false,
-            selected: false,
+            isExpanded: false,
+            isSelected: false,
             type: 'Category',
             categoryIndex: null,
             isSettingName: false
           }));
-        this.items = this.allCategories.map(x => Object.assign({}, x));
+        this.tier1Items = this.allTier1Items.map(x => Object.assign({}, x));
 
-        //Niches
-        this.allNiches = response
+        //Tier2 Items
+        this.allTier2Items = response
           .map(x => x.niches
             .map(y => ({
               categoryId: x.id,
               id: y.id,
               name: y.name,
-              selected: false,
+              isSelected: false,
               type: 'Niche',
               categoryIndex: null,
               nicheIndex: null,
               isSettingName: false
             })));
-        this.allNiches = [].concat.apply([], this.allNiches);
-        this.niches = this.allNiches.map(x => Object.assign({}, x));
+        this.allTier2Items = [].concat.apply([], this.allTier2Items);
+        this.tier2Items = this.allTier2Items.map(x => Object.assign({}, x));
 
-
-        //Products
-        this.allProducts = response
+        //Tier3 Items
+        this.allTier3Items = response
           .map(x => x.niches
             .map(y => y.products
               .map(z => ({
@@ -69,7 +99,7 @@ export class ExpandableGridComponent implements OnInit {
                 id: z.id,
                 name: z.name,
                 hopLink: z.hopLink,
-                selected: false,
+                isSelected: false,
                 type: 'Product',
                 categoryIndex: null,
                 nicheIndex: null,
@@ -77,8 +107,8 @@ export class ExpandableGridComponent implements OnInit {
                 isSettingName: false
               }))));
 
-        this.allProducts = [].concat.apply([], this.allProducts.concat.apply([], this.allProducts));
-        this.products = this.allProducts.map(x => Object.assign({}, x));
+        this.allTier3Items = [].concat.apply([], this.allTier3Items.concat.apply([], this.allTier3Items));
+        this.tier3Items = this.allTier3Items.map(x => Object.assign({}, x));
 
       }, error => {
         // Error
@@ -89,7 +119,8 @@ export class ExpandableGridComponent implements OnInit {
     if (checkbox.checked) {
       checkbox.checked = false;
 
-      this.items[index].niches = this.niches.filter(x => x.categoryId == this.items[index].id);
+      // this.tier1Items[index].niches = this.tier2Items.filter(x => x.categoryId == this.tier1Items[index].id);
+      this.tiers[0].filteredItems[index].tier2Items = this.tiers[1].filteredItems.filter(x => x.tier1Id == this.tiers[0].filteredItems[index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -97,8 +128,8 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier2TransitionEnd(index: number, checkbox) {
-    if (!checkbox.checked && this.items[index].niches) {
-      delete this.items[index].niches;
+    if (!checkbox.checked && this.tiers[0].filteredItems[index].tier2Items) {
+      delete this.tiers[0].filteredItems[index].tier2Items;
     }
   }
 
@@ -106,7 +137,7 @@ export class ExpandableGridComponent implements OnInit {
     if (checkbox.checked) {
       checkbox.checked = false;
 
-      this.items[tier1Index].niches[tier2Index].products = this.products.filter(x => x.nicheId == this.items[tier1Index].niches[tier2Index].id);
+      this.tier1Items[tier1Index].niches[tier2Index].products = this.tier3Items.filter(x => x.nicheId == this.tier1Items[tier1Index].niches[tier2Index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -114,8 +145,8 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier3TransitionEnd(tier1Index: number, tier2Index: number, checkbox) {
-    if (!checkbox.checked && this.items[tier1Index].niches[tier2Index].products) {
-      delete this.items[tier1Index].niches[tier2Index].products;
+    if (!checkbox.checked && this.tier1Items[tier1Index].niches[tier2Index].products) {
+      delete this.tier1Items[tier1Index].niches[tier2Index].products;
     }
   }
 
@@ -136,24 +167,24 @@ export class ExpandableGridComponent implements OnInit {
 
 
   searchCategories(searchArray: Array<string>) {
-    this.products = this.allProducts.map(x => Object.assign({}, x));
-    this.niches = this.allNiches.map(x => Object.assign({}, x));
-    this.items = this.allCategories.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+    this.tier3Items = this.allTier3Items.map(x => Object.assign({}, x));
+    this.tier2Items = this.allTier2Items.map(x => Object.assign({}, x));
+    this.tier1Items = this.allTier1Items.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
   }
 
   searchNiches(searchArray: Array<string>) {
-    this.products = this.allProducts.map(x => Object.assign({}, x));
-    this.niches = this.allNiches.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
-    let categoryIds = this.niches.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
-    this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+    this.tier3Items = this.allTier3Items.map(x => Object.assign({}, x));
+    this.tier2Items = this.allTier2Items.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+    let categoryIds = this.tier2Items.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
+    this.tier1Items = this.allTier1Items.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
   }
 
   searchProducts(searchArray: Array<string>) {
-    this.products = this.allProducts.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
-    let nicheIds = this.products.map(x => x.nicheId).filter((v, i, a) => a.indexOf(v) === i);
-    this.niches = this.allNiches.filter(x => nicheIds.some(a => x.id === a)).map(x => Object.assign({}, x));
-    let categoryIds = this.niches.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
-    this.items = this.allCategories.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+    this.tier3Items = this.allTier3Items.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+    let nicheIds = this.tier3Items.map(x => x.nicheId).filter((v, i, a) => a.indexOf(v) === i);
+    this.tier2Items = this.allTier2Items.filter(x => nicheIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+    let categoryIds = this.tier2Items.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
+    this.tier1Items = this.allTier1Items.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
   }
 
   clearText(search) {
@@ -162,15 +193,15 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   collapse() {
-    this.items.forEach(x => x.checked = false);
-    if (this.currentSelected && this.currentSelected.selected && this.currentSelected.type !== 'Category') {
-      this.currentSelected.selected = false;
+    this.tier1Items.forEach(x => x.isExpanded = false);
+    if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Category') {
+      this.currentItem.isSelected = false;
     }
   }
 
   selectItem(item, categoryIndex, nicheIndex, productIndex) {
-    if (this.currentSelected !== item) {
-      item.selected = true;
+    if (this.currentItem !== item) {
+      item.isSelected = true;
 
       switch (item.type) {
         case 'Category':
@@ -187,85 +218,85 @@ export class ExpandableGridComponent implements OnInit {
       }
 
 
-      if (this.currentSelected) {
-        this.currentSelected.selected = false;
-        this.currentSelected.isSettingName = false;
+      if (this.currentItem) {
+        this.currentItem.isSelected = false;
+        this.currentItem.isSettingName = false;
       }
-      this.currentSelected = item;
+      this.currentItem = item;
     }
   }
 
   addItem(itemType: string, categoryIndex, categoryId, nicheIndex, nicheId) {
     let newItem = {
-      selected: true,
+      isSelected: true,
       type: itemType,
       name: 'New ' + itemType
     };
-    if (this.currentSelected) {
-      this.currentSelected.selected = false;
-      this.currentSelected.isSettingName = false;
+    if (this.currentItem) {
+      this.currentItem.isSelected = false;
+      this.currentItem.isSettingName = false;
     }
 
-    this.currentSelected = newItem;
+    this.currentItem = newItem;
     this.highlightName(newItem);
 
 
 
     switch (itemType) {
       case 'Category':
-        this.items.unshift(newItem);
-        this.allCategories.unshift(newItem);
+        this.tier1Items.unshift(newItem);
+        this.allTier1Items.unshift(newItem);
         break;
       case 'Niche':
         newItem['categoryId'] = categoryId;
         newItem['categoryIndex'] = categoryIndex;
-        this.items[categoryIndex].niches.unshift(newItem);
-        this.allNiches.unshift(newItem);
-        this.niches.unshift(newItem);
+        this.tier1Items[categoryIndex].niches.unshift(newItem);
+        this.allTier2Items.unshift(newItem);
+        this.tier2Items.unshift(newItem);
         break;
       case 'Product':
         newItem['nicheId'] = nicheId;
         newItem['categoryIndex'] = categoryIndex;
         newItem['nicheIndex'] = nicheIndex;
-        this.items[categoryIndex].niches[nicheIndex].products.unshift(newItem);
-        this.allProducts.unshift(newItem);
-        this.products.unshift(newItem);
+        this.tier1Items[categoryIndex].niches[nicheIndex].products.unshift(newItem);
+        this.allTier3Items.unshift(newItem);
+        this.tier3Items.unshift(newItem);
     }
   }
 
   deleteItem() {
-    if (this.currentSelected && this.currentSelected.selected) {
-      this.currentSelected.selected = false;
+    if (this.currentItem && this.currentItem.isSelected) {
+      this.currentItem.isSelected = false;
 
-      switch (this.currentSelected.type) {
+      switch (this.currentItem.type) {
         case 'Category':
-          this.items.splice(this.currentSelected.categoryIndex, 1);
-          this.allCategories.splice(this.allCategories.findIndex(x => x.id === this.currentSelected.id), 1);
+          this.tier1Items.splice(this.currentItem.categoryIndex, 1);
+          this.allTier1Items.splice(this.allTier1Items.findIndex(x => x.id === this.currentItem.id), 1);
           break;
         case 'Niche':
-          this.items[this.currentSelected.categoryIndex].niches.splice(this.currentSelected.nicheIndex, 1);
-          this.allNiches.splice(this.allNiches.findIndex(x => x.id === this.currentSelected.id), 1);
+          this.tier1Items[this.currentItem.categoryIndex].niches.splice(this.currentItem.nicheIndex, 1);
+          this.allTier2Items.splice(this.allTier2Items.findIndex(x => x.id === this.currentItem.id), 1);
           break;
         case 'Product':
-          this.items[this.currentSelected.categoryIndex].niches[this.currentSelected.nicheIndex].products.splice(this.currentSelected.productIndex, 1);
-          this.allProducts.splice(this.allProducts.findIndex(x => x.id === this.currentSelected.id), 1);
+          this.tier1Items[this.currentItem.categoryIndex].niches[this.currentItem.nicheIndex].products.splice(this.currentItem.productIndex, 1);
+          this.allTier3Items.splice(this.allTier3Items.findIndex(x => x.id === this.currentItem.id), 1);
       }
     }
   }
 
   setItemName(newName: string) {
-    this.currentSelected.isSettingName = false;
-    this.currentSelected.name = newName;
+    this.currentItem.isSettingName = false;
+    this.currentItem.name = newName;
 
-    switch (this.currentSelected.type) {
+    switch (this.currentItem.type) {
       case 'Category':
-        this.allCategories[this.allCategories.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+        this.allTier1Items[this.allTier1Items.findIndex(x => x.id === this.currentItem.id)].name = newName;
         break;
       case 'Niche':
-        this.allNiches[this.allNiches.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+        this.allTier2Items[this.allTier2Items.findIndex(x => x.id === this.currentItem.id)].name = newName;
         break;
       case 'Product':
-        this.allProducts[this.allProducts.findIndex(x => x.id === this.currentSelected.id)].name = newName;
+        this.allTier3Items[this.allTier3Items.findIndex(x => x.id === this.currentItem.id)].name = newName;
     }
   }
 
@@ -280,13 +311,20 @@ export class ExpandableGridComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.keyCode === 27) {
-      this.currentSelected.selected = false;
-      this.currentSelected.isSettingName = false;
-      delete this.currentSelected;
+      this.currentItem.isSelected = false;
+      this.currentItem.isSettingName = false;
+      delete this.currentItem;
     }
 
     if (event.keyCode === 13) {
-      this.currentSelected.isSettingName = false;
+      this.currentItem.isSettingName = false;
     }
   }
+}
+
+export type Tier = {
+  name: string,
+  header: string,
+  allItems: Array<any>,
+  filteredItems: Array<any>
 }
