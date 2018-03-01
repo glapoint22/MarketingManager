@@ -8,15 +8,15 @@ import { DataService } from "../data.service";
 })
 export class ExpandableGridComponent implements OnInit {
 
-  public tiers:  Array<Tier> = [];
+  public tiers: Array<Tier> = [];
   public searchOptions: Array<string> = [];
   public selectedSearchOption: string;
 
   //Public
   public tier1Items: Array<any>;
   public apiUrl: string;
-  
-  
+
+
   public currentItem: any;
 
   //Private
@@ -28,38 +28,38 @@ export class ExpandableGridComponent implements OnInit {
 
   constructor(public dataService: DataService) { }
 
-  setTiers(data: any){}
+  setTiers(data: any) { }
 
   ngOnInit() {
-    
+
     this.dataService.get(this.apiUrl)
       .subscribe((data: any) => {
         this.setTiers(data);
 
         this.tiers.forEach(x => this.searchOptions.push(x.name));
         this.selectedSearchOption = this.searchOptions[0];
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         let response = data;
         //Tier1 Items
         this.allTier1Items = response
@@ -115,12 +115,12 @@ export class ExpandableGridComponent implements OnInit {
       });
   }
 
-  onTier1CheckboxChange(index: number, checkbox) {
+  expandTier1(index: number, checkbox) {
     if (checkbox.checked) {
       checkbox.checked = false;
 
       // this.tier1Items[index].niches = this.tier2Items.filter(x => x.categoryId == this.tier1Items[index].id);
-      this.tiers[0].filteredItems[index].tier2Items = this.tiers[1].filteredItems.filter(x => x.tier1Id == this.tiers[0].filteredItems[index].id);
+      this.tiers[0].items[index].tier2Items = this.tiers[1].items.filter(x => x.tier1Id == this.tiers[0].items[index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -128,16 +128,21 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier2TransitionEnd(index: number, checkbox) {
-    if (!checkbox.checked && this.tiers[0].filteredItems[index].tier2Items) {
-      delete this.tiers[0].filteredItems[index].tier2Items;
+    if (!checkbox.checked && this.tiers[0].items[index].tier2Items) {
+      delete this.tiers[0].items[index].tier2Items;
+      if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Tier1') {
+        this.currentItem.isSelected = false;
+        delete this.currentItem;
+      }
     }
   }
 
-  onTier2CheckboxChange(tier1Index: number, tier2Index: number, checkbox) {
+  expandTier2(tier1Index: number, tier2Index: number, checkbox) {
     if (checkbox.checked) {
       checkbox.checked = false;
 
-      this.tier1Items[tier1Index].niches[tier2Index].products = this.tier3Items.filter(x => x.nicheId == this.tier1Items[tier1Index].niches[tier2Index].id);
+      // this.tier1Items[tier1Index].niches[tier2Index].products = this.tier3Items.filter(x => x.nicheId == this.tier1Items[tier1Index].niches[tier2Index].id);
+      this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items = this.tiers[2].items.filter(x => x.tier2Id == this.tiers[0].items[tier1Index].tier2Items[tier2Index].id);
       window.setTimeout(() => {
         checkbox.checked = true;
       }, 1);
@@ -145,76 +150,108 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   tier3TransitionEnd(tier1Index: number, tier2Index: number, checkbox) {
-    if (!checkbox.checked && this.tier1Items[tier1Index].niches[tier2Index].products) {
-      delete this.tier1Items[tier1Index].niches[tier2Index].products;
+    if (!checkbox.checked && this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items) {
+      delete this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items;
+      if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Tier1') {
+        this.currentItem.isSelected = false;
+        delete this.currentItem;
+      }
     }
   }
 
   onSearchChange(searchValue: string) {
     let searchArray = searchValue.toLowerCase().split(' ');
+    let tierIndex = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
 
-    switch (this.selectedSearchOption) {
-      case 'Category':
-        this.searchCategories(searchArray);
+    switch (tierIndex) {
+      case 0:
+        this.searchTier1(searchArray);
         break;
-      case 'Niche':
-        this.searchNiches(searchArray);
+      case 1:
+        this.searchTier2(searchArray);
         break;
-      case 'Product':
-        this.searchProducts(searchArray);
+      case 2:
+        this.searchTier3(searchArray);
     }
   }
 
 
-  searchCategories(searchArray: Array<string>) {
-    this.tier3Items = this.allTier3Items.map(x => Object.assign({}, x));
-    this.tier2Items = this.allTier2Items.map(x => Object.assign({}, x));
-    this.tier1Items = this.allTier1Items.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+  searchTier1(searchArray: Array<string>) {
+    //Assign all other tiers with all items
+    for (let i = this.tiers.length - 1; i > 0; i--){
+      this.tiers[i].items = this.tiers[i].allItems.map(x => Object.assign({}, x));
+    }
+
+    //Filter the tier1 items based on the search words
+    this.tiers[0].items = this.tiers[0].allItems.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
   }
 
-  searchNiches(searchArray: Array<string>) {
-    this.tier3Items = this.allTier3Items.map(x => Object.assign({}, x));
-    this.tier2Items = this.allTier2Items.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
-    let categoryIds = this.tier2Items.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
-    this.tier1Items = this.allTier1Items.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+  searchTier2(searchArray: Array<string>) {
+    //If there is a tier3, assign its items with all items
+    if(this.tiers[2]){
+      this.tiers[2].items = this.tiers[2].allItems.map(x => Object.assign({}, x));
+    }
+    
+    //Filter the tier2 items based on the search words
+    this.tiers[1].items = this.tiers[1].allItems.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+
+    //Get the distinct tier1 ids that are associated with the filterd tier2 items
+    let tier1Ids = this.tiers[1].items.map(x => x.tier1Id).filter((v, i, a) => a.indexOf(v) === i);
+
+    //Filter the tier1 items based on ther tier1 ids
+    this.tiers[0].items = this.tiers[0].allItems.filter(x => tier1Ids.some(a => x.id === a)).map(x => Object.assign({}, x));
   }
 
-  searchProducts(searchArray: Array<string>) {
-    this.tier3Items = this.allTier3Items.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
-    let nicheIds = this.tier3Items.map(x => x.nicheId).filter((v, i, a) => a.indexOf(v) === i);
-    this.tier2Items = this.allTier2Items.filter(x => nicheIds.some(a => x.id === a)).map(x => Object.assign({}, x));
-    let categoryIds = this.tier2Items.map(x => x.categoryId).filter((v, i, a) => a.indexOf(v) === i);
-    this.tier1Items = this.allTier1Items.filter(x => categoryIds.some(a => x.id === a)).map(x => Object.assign({}, x));
+  searchTier3(searchArray: Array<string>) {
+    //Filter the tier3 items based on the search words
+    this.tiers[2].items = this.tiers[2].allItems.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+
+    //Get the distinct tier2 ids that are associated with the filterd tier3 items
+    let tier2Ids = this.tiers[2].items.map(x => x.tier2Id).filter((v, i, a) => a.indexOf(v) === i);
+
+    //Filter the tier2 items based on ther tier2 ids
+    this.tiers[1].items = this.tiers[1].allItems.filter(x => tier2Ids.some(a => x.id === a)).map(x => Object.assign({}, x));
+
+    //Get the distinct tier1 ids that are associated with the filterd tier2 items
+    let tier1Ids = this.tiers[1].items.map(x => x.tier1Id).filter((v, i, a) => a.indexOf(v) === i);
+
+    //Filter the tier1 items based on ther tier1 ids
+    this.tiers[0].items = this.tiers[0].allItems.filter(x => tier1Ids.some(a => x.id === a)).map(x => Object.assign({}, x));
   }
 
-  clearText(search) {
-    search.value = '';
+  clearSearchText(inputField) {
+    //Set the input field's value to an empty string
+    inputField.value = '';
+
+    //Call onSearchChange to get items back
     this.onSearchChange('');
   }
 
   collapse() {
-    this.tier1Items.forEach(x => x.isExpanded = false);
-    if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Category') {
+    this.tiers[0].items.forEach(x => x.isExpanded = false);
+    if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Tier1') {
       this.currentItem.isSelected = false;
+      delete this.currentItem;
     }
   }
 
-  selectItem(item, categoryIndex, nicheIndex, productIndex) {
+  selectItem(item, tier1Index, tier2Index, tier3Index) {
     if (this.currentItem !== item) {
       item.isSelected = true;
 
+      //Assign the indexs
       switch (item.type) {
-        case 'Category':
-          item.categoryIndex = categoryIndex;
+        case 'Tier1':
+          item.tier1Index = tier1Index;
           break;
-        case 'Niche':
-          item.categoryIndex = categoryIndex;
-          item.nicheIndex = nicheIndex;
+        case 'Tier2':
+          item.tier1Index = tier1Index;
+          item.tier2Index = tier2Index;
           break;
-        case 'Product':
-          item.categoryIndex = categoryIndex;
-          item.nicheIndex = nicheIndex;
-          item.productIndex = productIndex;
+        case 'Tier3':
+          item.tier1Index = tier1Index;
+          item.tier2Index = tier2Index;
+          item.tier3Index = tier3Index;
       }
 
 
@@ -326,5 +363,5 @@ export type Tier = {
   name: string,
   header: string,
   allItems: Array<any>,
-  filteredItems: Array<any>
+  items: Array<any>
 }

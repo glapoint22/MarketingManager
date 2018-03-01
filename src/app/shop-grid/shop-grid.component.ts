@@ -15,12 +15,6 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
-
-    // this.searchOptions = [
-    //   'Category',
-    //   'Niche',
-    //   'Product'
-    // ];
     super.ngOnInit();
     this.setHeight();
   }
@@ -39,13 +33,13 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
         tier1Index: null,
         isSettingName: false
       }));
-    let filteredItems = allItems.map(x => Object.assign({}, x));
+    let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
       name: 'Category',
       header: 'Categories',
       allItems: allItems,
-      filteredItems: filteredItems
+      items: items
     }
 
     //Tier2
@@ -62,13 +56,13 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           isSettingName: false
         })));
     allItems = [].concat.apply([], allItems);
-    filteredItems = allItems.map(x => Object.assign({}, x));
+    items = allItems.map(x => Object.assign({}, x));
 
     tier2 = {
       name: 'Niche',
       header: 'Niches',
       allItems: allItems,
-      filteredItems: filteredItems
+      items: items
     }
 
     //Tier3
@@ -89,13 +83,13 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           }))));
 
     allItems = [].concat.apply([], allItems.concat.apply([], allItems));
-    filteredItems = allItems.map(x => Object.assign({}, x));
+    items = allItems.map(x => Object.assign({}, x));
 
     tier3 = {
       name: 'Product',
       header: 'Products',
       allItems: allItems,
-      filteredItems: filteredItems
+      items: items
     }
 
     //Set the tiers array
