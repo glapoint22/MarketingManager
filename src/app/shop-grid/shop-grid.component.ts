@@ -5,7 +5,7 @@ import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'shop-grid',
-  templateUrl: './shop-grid.component.html',
+  templateUrl: '../expandable-grid/expandable-grid.component.html',
   styleUrls: ['../expandable-grid/expandable-grid.component.scss', './shop-grid.component.scss']
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
@@ -104,7 +104,4 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   onResize(event) {
     this.setHeight();
   }
-
-
-
 }
