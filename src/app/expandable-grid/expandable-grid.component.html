@@ -17,17 +17,17 @@
     </div>
 
     <!-- Grid -->
-    <div class="grid" [style.height.px]="gridHeight" *ngIf="tiers[0].items.length > 0">
+    <div class="grid" [style.height.px]="gridHeight" *ngIf="itemResults; else noSearchResults">
         <!-- .....................................................Tier 1...................................................... -->
         <!-- Tier1 Header -->
         <div class="header">
             {{tiers[0].header}}
 
             <!-- Tier1 Header Icons -->
-            <div class="header-icon" title="Collapse All" (click)="collapse()">
+            <div *ngIf="tiers[1]" class="header-icon" [title]="'Collapse ' +  tiers[0].header" (click)="collapseTier('Tier1')" [ngClass]="{'icon-disabled': !isCollapsed('Tier1')}">
                 <i class="fas fa-minus-square"></i>
             </div>
-            <div (click)="deleteItem()" class="header-icon" [title]="'Delete ' +  tiers[0].name" [ngClass]="{'icon-disabled': !currentItem || currentItem.type != 'Tier1' || (currentItem && !currentItem.isSelected)}">
+            <div (click)="deleteItem(search.value)" class="header-icon" [title]="'Delete ' +  tiers[0].name" [ngClass]="{'icon-disabled': !currentItem || currentItem.type != 'Tier1' || (currentItem && !currentItem.isSelected)}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 
@@ -37,13 +37,13 @@
         </div>
 
         <!-- Tier1 Items -->
-        <div id="tier1" *ngFor="let tier1Item of tiers[0].items; let i = index" style="position: relative">
+        <div id="tier1" *ngFor="let tier1Item of tiers[0].items; let i = index" style="position: relative" [ngClass]="{'static-height': !tiers[1]}">
             <input #tier1Checkbox [id]="'tier1Checkbox' + i" type="checkbox" (change)="expandTier1(i, tier1Checkbox)" [(ngModel)]="tier1Item.isExpanded">
-            <label [for]="'tier1Checkbox' + i"></label>
-            <div (dblclick)="highlightName(tier1Item)" class="row" style="position: absolute; width: 98.58064516129032%" [ngClass]="{'selected': tier1Item.isSelected}"
+            <label *ngIf="tiers[1]" [for]="'tier1Checkbox' + i"></label>
+            <div (dblclick)="highlightName(tier1Item)" class="row" style="position: absolute" [ngClass]="{'selected': tier1Item.isSelected}"
                 (click)="selectItem(tier1Item, i)">
                 <div *ngIf="!tier1Item.isSettingName">{{tier1Item.name}}</div>
-                <input #name (change)="setItemName(name.value)" id="name" onfocus="this.select()" *ngIf="tier1Item.isSettingName" type="text"
+                <input #name (change)="setItemName(name.value)" id="name" (blur)="tier1Item.isSettingName = false" onfocus="this.select()" *ngIf="tier1Item.isSettingName" type="text"
                     class="input-name" [value]="tier1Item.name">
             </div>
 
@@ -56,6 +56,9 @@
                     {{tiers[1].header}}
 
                     <!-- Tier2 Header Icons -->
+                    <div *ngIf="tiers[2]" class="header-icon" [title]="'Collapse ' +  tiers[1].header" (click)="collapseTier('Tier2', i)" [ngClass]="{'icon-disabled': !isCollapsed('Tier2', i)}">
+                        <i class="fas fa-minus-square"></i>
+                    </div>
                     <div (click)="deleteItem()" class="header-icon" [title]="'Delete ' +  tiers[1].name" [ngClass]="{'icon-disabled': !currentItem || currentItem.type != 'Tier2' || currentItem.tier1Index != i || (currentItem && !currentItem.isSelected)}">
                         <i class="fas fa-trash-alt"></i>
                     </div>
@@ -66,14 +69,15 @@
                 </div>
 
                 <!-- Tier2 Items -->
-                <div id="tier2" class="max-height" *ngFor="let tier2Item of tier1Item.tier2Items; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked}"
+                <div id="tier2" class="max-height" *ngFor="let tier2Item of tier1Item.tier2Items; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked, 'static-height margin': !tiers[2]}"
                     (transitionend)="tier2TransitionEnd(i, tier1Checkbox)">
-                    <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="expandTier2(i, j, tier2Checkbox)" type="checkbox">
-                    <label [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 22px"></label>
-                    <div (dblclick)="highlightName(tier2Item)" class="row" style="position: absolute; width: 97.16129032258065%" [ngClass]="{'selected': tier2Item.isSelected}"
+                    <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="expandTier2(i, j, tier2Checkbox)" type="checkbox" [(ngModel)]="tier2Item.isExpanded">
+                    <label *ngIf="tiers[2]" [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 22px"></label>
+                    
+                    <div (dblclick)="highlightName(tier2Item)" class="row" style="position: absolute" [ngClass]="{'selected': tier2Item.isSelected}"
                         (click)="selectItem(tier2Item, i, j)">
                         <div *ngIf="!tier2Item.isSettingName">{{tier2Item.name}}</div>
-                        <input #name (change)="setItemName(name.value)" id="name" onfocus="this.select()" *ngIf="tier2Item.isSettingName" type="text"
+                        <input #name (change)="setItemName(name.value)" id="name" (blur)="tier2Item.isSettingName = false" onfocus="this.select()" *ngIf="tier2Item.isSettingName" type="text"
                             class="input-name" [value]="tier2Item.name">
                     </div>
 
@@ -92,11 +96,13 @@
                                 <i class="fas fa-file-alt"></i>
                             </div>
                         </div>
+
+                        <!-- Tier3 Items -->
                         <div id="tier3" class="max-height" *ngFor="let tier3Item of tier2Item.tier3Items; let k = index" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
-                            <div (dblclick)="highlightName(tier3Item)" class="row" style="margin-left: 44px; width: 97.16129032258065%" [ngClass]="{'selected': tier3Item.isSelected}"
+                            <div (dblclick)="highlightName(tier3Item)" class="row" style="margin-left: 44px;" [ngClass]="{'selected': tier3Item.isSelected}"
                                 (click)="selectItem(tier3Item, i, j, k)">
                                 <div *ngIf="!tier3Item.isSettingName">{{tier3Item.name}}</div>
-                                <input #name (change)="setItemName(name.value)" id="name" onfocus="this.select()" *ngIf="tier3Item.isSettingName" type="text"
+                                <input #name (change)="setItemName(name.value)" id="name" (blur)="tier3Item.isSettingName = false" onfocus="this.select()" *ngIf="tier3Item.isSettingName" type="text"
                                     class="input-name" [value]="tier3Item.name">
                             </div>
                         </div>
@@ -105,9 +111,9 @@
             </ng-template>
         </div>
     </div>
-    <div *ngIf="tiers[0].items.length == 0">
+    <ng-template #noSearchResults>
         <div class="no-results" [style.lineHeight.px]="gridHeight">
             No results found
         </div>
-    </div>
+    </ng-template>
 </div>

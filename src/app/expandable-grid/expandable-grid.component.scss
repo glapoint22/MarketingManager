@@ -34,6 +34,7 @@ input:checked + label::after {
     white-space: nowrap;
     box-sizing: border-box;
     user-select: none;
+    width: stretch;
 }
 #tier1:nth-child(even){
     .row{
@@ -194,4 +195,10 @@ select{
     padding-left: 4px;
     font-family: 'Times New Roman', Times, serif;
     font-size: 14px;
+}
+.static-height{
+    height: 22px;
+}
+.margin{
+    margin-left: 22px;
 }

@@ -13,19 +13,22 @@ export class ExpandableGridComponent implements OnInit {
   public selectedSearchOption: string;
   public apiUrl: string;
   public currentItem: any;
+  public itemResults: boolean = true;
+  public gridHeight: number;
 
   constructor(public dataService: DataService) { }
 
-  setTiers(data: any) { }
+  setTiers(data: Array<any>) { }
 
   ngOnInit() {
-
     this.dataService.get(this.apiUrl)
       .subscribe((data: any) => {
         this.setTiers(data);
 
         this.tiers.forEach(x => this.searchOptions.push(x.name));
         this.selectedSearchOption = this.searchOptions[0];
+
+        this.setHeight();
       }, error => {
         // Error
       });
@@ -44,6 +47,7 @@ export class ExpandableGridComponent implements OnInit {
 
   tier2TransitionEnd(index: number, checkbox) {
     if (!checkbox.checked && this.tiers[0].items[index].tier2Items) {
+      this.tiers[0].items[index].tier2Items.forEach(x => x.isExpanded = false);
       delete this.tiers[0].items[index].tier2Items;
       if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Tier1') {
         this.currentItem.isSelected = false;
@@ -86,6 +90,12 @@ export class ExpandableGridComponent implements OnInit {
         break;
       case 2:
         this.searchTier3(searchArray);
+    }
+
+    if (this.tiers[0].items.length === 0 && searchValue != '') {
+      this.itemResults = false;
+    } else {
+      this.itemResults = true;;
     }
   }
 
@@ -141,8 +151,17 @@ export class ExpandableGridComponent implements OnInit {
     this.onSearchChange('');
   }
 
-  collapse() {
-    this.tiers[0].items.forEach(x => x.isExpanded = false);
+  collapseTier(tier: string, index: number) {
+    switch (tier) {
+      case 'Tier1':
+        this.tiers[0].items.forEach(x => x.isExpanded = false);
+        break;
+      case 'Tier2':
+        this.tiers[0].items[index].tier2Items.forEach(x => x.isExpanded = false);
+        break;
+    }
+
+
     if (this.currentItem && this.currentItem.isSelected && this.currentItem.type !== 'Tier1') {
       this.currentItem.isSelected = false;
       delete this.currentItem;
@@ -170,9 +189,9 @@ export class ExpandableGridComponent implements OnInit {
 
       //If there is a current item
       if (this.currentItem) {
-        //Set that the current item is not selected and we're not setting its name
+        //Set that the current item is not selected
         this.currentItem.isSelected = false;
-        this.currentItem.isSettingName = false;
+        // this.currentItem.isSettingName = false;
       }
       //Set this item as the current item
       this.currentItem = item;
@@ -211,10 +230,10 @@ export class ExpandableGridComponent implements OnInit {
         this.tiers[2].items.unshift(newItem);
     }
 
-    //If there is a current item, set not selected and not setting name
+    //If there is a current item, set not selected
     if (this.currentItem) {
       this.currentItem.isSelected = false;
-      this.currentItem.isSettingName = false;
+      // this.currentItem.isSettingName = false;
     }
 
     //Set the new item as the current item and highlight the name
@@ -222,7 +241,7 @@ export class ExpandableGridComponent implements OnInit {
     this.highlightName(newItem);
   }
 
-  deleteItem() {
+  deleteItem(searchText: string) {
     if (this.currentItem && this.currentItem.isSelected) {
       this.currentItem.isSelected = false;
 
@@ -239,23 +258,30 @@ export class ExpandableGridComponent implements OnInit {
           this.tiers[0].items[this.currentItem.tier1Index].tier2Items[this.currentItem.tier2Index].tier3Items.splice(this.currentItem.tier3Index, 1);
           this.tiers[2].allItems.splice(this.tiers[2].allItems.findIndex(x => x.id === this.currentItem.id), 1);
       }
+
+      //In case the deleted item is part of a search, call onSearchChange
+      if (searchText) this.onSearchChange(searchText);
+
     }
   }
 
   setItemName(newName: string) {
-    this.currentItem.isSettingName = false;
-    this.currentItem.name = newName;
+    newName = newName.trim();
+    if (newName.match(/\S/) && this.currentItem) {
+      this.currentItem.name = newName;
 
-    switch (this.currentItem.type) {
-      case 'Tier1':
-        this.tiers[0].allItems[this.tiers[0].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
-        break;
-      case 'Tier2':
-        this.tiers[1].allItems[this.tiers[1].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
-        break;
-      case 'Tier3':
-        this.tiers[2].allItems[this.tiers[2].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
+      switch (this.currentItem.type) {
+        case 'Tier1':
+          this.tiers[0].allItems[this.tiers[0].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
+          break;
+        case 'Tier2':
+          this.tiers[1].allItems[this.tiers[1].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
+          break;
+        case 'Tier3':
+          this.tiers[2].allItems[this.tiers[2].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
+      }
     }
+
   }
 
   highlightName(item) {
@@ -266,17 +292,46 @@ export class ExpandableGridComponent implements OnInit {
 
   }
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.keyCode === 27) {
-      this.currentItem.isSelected = false;
-      this.currentItem.isSettingName = false;
-      delete this.currentItem;
+  isCollapsed(tier: string, index: number) {
+    let result: boolean;
+
+    switch (tier) {
+      case 'Tier1':
+        result = this.tiers[0].items.some(x => x.isExpanded);
+        break;
+      case 'Tier2':
+        result = this.tiers[0].items[index].tier2Items.some(x => x.isExpanded);
+        break;
     }
 
+    return result;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.keyCode === 27) {
+      if (this.currentItem) {
+        this.currentItem.isSelected = false;
+        this.currentItem.isSettingName = false;
+        delete this.currentItem;
+      }
+
+    }
+
+    //Enter
     if (event.keyCode === 13) {
       this.currentItem.isSettingName = false;
     }
+  }
+
+  setHeight() {
+    this.gridHeight = window.innerHeight - 66;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.setHeight();
   }
 }
 
@@ -284,5 +339,5 @@ export type Tier = {
   name: string,
   header: string,
   allItems: Array<any>,
-  items: Array<any>
+  items: Array<any>,
 }

@@ -9,17 +9,15 @@ import { HostListener } from '@angular/core';
   styleUrls: ['../expandable-grid/expandable-grid.component.scss', './shop-grid.component.scss']
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
-  public gridHeight: number;
 
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
     super.ngOnInit();
-    this.setHeight();
   }
 
-  setTiers(data) {
+  setTiers(data: Array<any>) {
     let tier1: Tier, tier2: Tier, tier3: Tier;
 
     //Tier1
@@ -39,7 +37,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       name: 'Category',
       header: 'Categories',
       allItems: allItems,
-      items: items
+      items: items,
     }
 
     //Tier2
@@ -49,6 +47,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           tier1Id: x.id,
           id: y.id,
           name: y.name,
+          isExpanded: false,
           isSelected: false,
           type: 'Tier2',
           tier1Index: null,
@@ -62,7 +61,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       name: 'Niche',
       header: 'Niches',
       allItems: allItems,
-      items: items
+      items: items,
     }
 
     //Tier3
@@ -89,19 +88,10 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       name: 'Product',
       header: 'Products',
       allItems: allItems,
-      items: items
+      items: items,
     }
 
     //Set the tiers array
     this.tiers.push(tier1, tier2, tier3);
-  }
-
-  setHeight() {
-    this.gridHeight = window.innerHeight - 66;
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.setHeight();
   }
 }
