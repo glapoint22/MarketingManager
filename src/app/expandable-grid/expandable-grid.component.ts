@@ -15,6 +15,7 @@ export class ExpandableGridComponent implements OnInit {
   public currentItem: any;
   public itemResults: boolean = true;
   public gridHeight: number;
+  public isEditable: boolean;
 
   constructor(public dataService: DataService) { }
 
@@ -285,10 +286,13 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   highlightName(item) {
-    item.isSettingName = true;
-    window.setTimeout(() => {
-      document.getElementById('name').focus();
-    }, 1);
+    if (this.isEditable) {
+      item.isSettingName = true;
+      window.setTimeout(() => {
+        document.getElementById('name').focus();
+      }, 1);
+    }
+
 
   }
 

@@ -2,5 +2,15 @@
   <div resizable class="divider"></div>
 </div>
 <div class="grid-container">
-  <shop-grid></shop-grid>
+  <shop-grid #shopGrid>
+
+    <!-- Tier1 Row Content -->
+    <ng-template #tier1RowContent>
+      <div class="visible-container" #visible (click)="shopGrid.onVisibleClick(visible); shopGrid.stopPropagation($event)" (dblclick)="shopGrid.stopPropagation($event)">
+        <i class="fas fa-eye"></i>
+      </div>
+    </ng-template>
+
+
+  </shop-grid>
 </div>
