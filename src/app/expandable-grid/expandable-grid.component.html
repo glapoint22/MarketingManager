@@ -88,7 +88,8 @@
                     <div *ngIf="tier2Item.tier3Items;then tier3Content"></div>
                     <ng-template #tier3Content>
                         <div class="header max-height" style="margin-left: 44px">
-                            {{tiers[2].header}}
+                            <!-- {{tiers[2].header}} -->
+                            
 
                             <!-- Tier3 Header Icons -->
                             <div *ngIf="isEditable" (click)="deleteItem()" class="header-icon" [title]="'Delete ' +  tiers[2].name" [ngClass]="{'icon-disabled': !currentItem || currentItem.type != 'Tier3' || currentItem.tier2Index != j || (currentItem && !currentItem.isSelected)}">
@@ -98,15 +99,30 @@
                             <div *ngIf="isEditable" class="header-icon" [title]="'Create New ' +  tiers[2].name" (click)="addItem('Tier3', i, tier1Item.id, j, tier2Item.id)">
                                 <i class="fas fa-file-alt"></i>
                             </div>
+                            <table style="table-layout: fixed;
+                            width: 1500px;border-spacing: 20px 0; position:relative; bottom: 20px">
+                                <tr>
+                                    <td align="left" *ngFor="let field of tiers[2].items[0].fields" >{{field.name}}</td>
+                                </tr>
+                            </table>
                         </div>
 
                         <!-- Tier3 Items -->
                         <div id="tier3" class="max-height" *ngFor="let tier3Item of tier2Item.tier3Items; let k = index" (transitionend)="tier3TransitionEnd(i, j, tier2Checkbox)">
                             <div (dblclick)="highlightName(tier3Item)" class="row" style="margin-left: 44px;" [ngClass]="{'selected': tier3Item.isSelected}"
                                 (click)="selectItem(tier3Item, i, j, k)">
-                                <div *ngIf="!tier3Item.isSettingName">{{tier3Item.name}}</div>
+                                <!-- <div *ngIf="!tier3Item.isSettingName">{{tier3Item.name}}</div>
                                 <input #name (change)="setItemName(name.value)" id="name" (blur)="tier3Item.isSettingName = false" onfocus="this.select()"
-                                    *ngIf="tier3Item.isSettingName" type="text" class="input-name" [value]="tier3Item.name">
+                                    *ngIf="tier3Item.isSettingName" type="text" class="input-name" [value]="tier3Item.name"> -->
+                                
+                                    <table style="table-layout: fixed;
+                                    width: 1500px;border-spacing: 20px 0;">
+                                            
+                                            <tr>
+                                                <td align="left" *ngFor="let field of tier3Item.fields" style="overflow:hidden;">{{field.value}}</td>
+                                            </tr>
+                                        </table>
+                                
                             </div>
                         </div>
                     </ng-template>

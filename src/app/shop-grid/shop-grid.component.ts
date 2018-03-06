@@ -85,14 +85,32 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           .map(z => ({
             tier2Id: y.id,
             id: z.id,
-            name: z.name,
-            hopLink: z.hopLink,
+            // name: z.name,
+            // hopLink: z.hopLink,
             isSelected: false,
             type: 'Tier3',
             tier1Index: null,
             tier2Index: null,
             tier3Index: null,
-            isSettingName: false
+            isSettingName: false,
+            fields: [
+              {
+                name: 'Products',
+                value: z.name
+              },
+              {
+                name: 'HopLink',
+                value: z.hopLink
+              },
+              {
+                name: 'Description',
+                value: z.description
+              },
+              {
+                name: 'Price',
+                value: z.price
+              }
+            ]
           }))));
 
     allItems = [].concat.apply([], allItems.concat.apply([], allItems));
