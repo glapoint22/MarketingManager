@@ -15,9 +15,9 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   constructor(dataService: DataService) { super(dataService) }
 
 
-  ngAfterContentChecked(){
-    if(!this.isTier1RowContentChecked){
-      if(this.tier1RowContent._projectedViews){
+  ngAfterContentChecked() {
+    if (!this.isTier1RowContentChecked) {
+      if (this.tier1RowContent._projectedViews) {
         this.isTier1RowContentChecked = true;
         this.tiers[0].items.forEach((v, i) => this.setVisible(v.isVisible, this.tier1RowContent._projectedViews[i].nodes[1].renderElement));
       }
@@ -37,21 +37,28 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     let allItems = data
       .map(x => ({
         id: x.id,
-        name: x.name,
+        // name: x.name,
         isExpanded: false,
         isSelected: false,
         type: 'Tier1',
         tier1Index: null,
-        isSettingName: false,
-        isVisible: true
+        data: [
+          {
+            value: x.name,
+            isEditing: false
+          }
+        ]
+        // isSettingName: false,
+        // isVisible: true
       }));
     let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
       name: 'Category',
-      header: 'Categories',
+      // header: 'Categories',
       allItems: allItems,
       items: items,
+      fields: ['Category']
     }
 
     //Tier2
@@ -60,22 +67,29 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
         .map(y => ({
           tier1Id: x.id,
           id: y.id,
-          name: y.name,
+          // name: y.name,
           isExpanded: false,
           isSelected: false,
           type: 'Tier2',
           tier1Index: null,
           tier2Index: null,
-          isSettingName: false
+          data: [
+            {
+              value: y.name,
+              isEditing: false
+            }
+          ]
+          // isSettingName: false
         })));
     allItems = [].concat.apply([], allItems);
     items = allItems.map(x => Object.assign({}, x));
 
     tier2 = {
       name: 'Niche',
-      header: 'Niches',
+      // header: 'Niches',
       allItems: allItems,
       items: items,
+      fields: ['Niche']
     }
 
     //Tier3
@@ -85,30 +99,27 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           .map(z => ({
             tier2Id: y.id,
             id: z.id,
-            // name: z.name,
-            // hopLink: z.hopLink,
             isSelected: false,
             type: 'Tier3',
             tier1Index: null,
             tier2Index: null,
             tier3Index: null,
-            isSettingName: false,
-            fields: [
+            data: [
               {
-                name: 'Products',
-                value: z.name
+                value: z.name,
+                isEditing: false
               },
               {
-                name: 'HopLink',
-                value: z.hopLink
+                value: z.hopLink,
+                isEditing: false
               },
               {
-                name: 'Description',
-                value: z.description
+                value: z.description,
+                isEditing: false
               },
               {
-                name: 'Price',
-                value: z.price
+                value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' }),
+                isEditing: false
               }
             ]
           }))));
@@ -118,9 +129,14 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
     tier3 = {
       name: 'Product',
-      header: 'Products',
       allItems: allItems,
       items: items,
+      fields: [
+        'Title',
+        'HopLink',
+        'Description',
+        'Price'
+      ]
     }
 
     //Set the tiers array
@@ -134,7 +150,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.setVisible(category.isVisible, element);
   }
 
-  setVisible(isVisible, element){
+  setVisible(isVisible, element) {
     if (isVisible) {
       element.style.setProperty('color', '#aaaaaa');
     } else {

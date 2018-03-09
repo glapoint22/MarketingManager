@@ -2,9 +2,10 @@
     height: 20px;
     background: #525252;
     line-height: 20px;
-    padding-left: 10px;
+    // padding-left: 10px;
     color: white;
     font-size: 14px;
+    // border: 1px solid #343434;
 }
 .max-height{
     max-height: 0;
@@ -28,13 +29,14 @@ input:checked + label::after {
     display:inline-block;
     vertical-align: top;
     line-height: 20px;
-    padding-left: 5px;
+    // padding-left: 5px;
     color: #aaaaaa;
     font-size: 14px;
     white-space: nowrap;
     box-sizing: border-box;
     user-select: none;
     width: stretch;
+    height: 22px;
 }
 #tier1:nth-child(even){
     .row{
@@ -202,4 +204,14 @@ select{
 }
 .margin{
     margin-left: 22px;
+}
+table{
+    table-layout: fixed;
+    width: 100%;
+    border-spacing: 20px 0;
+    position:relative;
+}
+td{
+    position: relative;
+    left: -12px;
 }
