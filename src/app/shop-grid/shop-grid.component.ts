@@ -9,20 +9,12 @@ import { HostListener } from '@angular/core';
   styleUrls: ['../expandable-grid/expandable-grid.component.scss', './shop-grid.component.scss']
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
-  @ContentChild('tier1RowContent', { read: TemplateRef }) tier1RowContent: any;
-  private isTier1RowContentChecked: boolean;
+  @ContentChild('tier3RowContent', { read: TemplateRef }) tier3RowContent: any;
+  public currentFilter;
+  public filterData;
+  private isFilterClicked: boolean;
 
   constructor(dataService: DataService) { super(dataService) }
-
-
-  ngAfterContentChecked() {
-    if (!this.isTier1RowContentChecked) {
-      if (this.tier1RowContent._projectedViews) {
-        this.isTier1RowContentChecked = true;
-        this.tiers[0].items.forEach((v, i) => this.setVisible(v.isVisible, this.tier1RowContent._projectedViews[i].nodes[1].renderElement));
-      }
-    }
-  }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
@@ -37,7 +29,6 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     let allItems = data
       .map(x => ({
         id: x.id,
-        // name: x.name,
         isExpanded: false,
         isSelected: false,
         type: 'Tier1',
@@ -48,14 +39,11 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
             isEditing: false
           }
         ]
-        // isSettingName: false,
-        // isVisible: true
       }));
     let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
       name: 'Category',
-      // header: 'Categories',
       allItems: allItems,
       items: items,
       fields: ['Category']
@@ -67,7 +55,6 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
         .map(y => ({
           tier1Id: x.id,
           id: y.id,
-          // name: y.name,
           isExpanded: false,
           isSelected: false,
           type: 'Tier2',
@@ -79,14 +66,12 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
               isEditing: false
             }
           ]
-          // isSettingName: false
         })));
     allItems = [].concat.apply([], allItems);
     items = allItems.map(x => Object.assign({}, x));
 
     tier2 = {
       name: 'Niche',
-      // header: 'Niches',
       allItems: allItems,
       items: items,
       fields: ['Niche']
@@ -132,7 +117,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       allItems: allItems,
       items: items,
       fields: [
-        'Title',
+        'Product',
         'HopLink',
         'Description',
         'Price'
@@ -143,23 +128,31 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.tiers.push(tier1, tier2, tier3);
   }
 
-  onVisibleClick(element) {
-    let index = this.tier1RowContent._projectedViews.findIndex(x => x.nodes[1].renderElement == element);
-    let category = this.tiers[0].items[index];
-    category.isVisible = !category.isVisible;
-    this.setVisible(category.isVisible, element);
+  onFilterClick(filter){
+    this.isFilterClicked = true;
+    
+
+    if(this.currentFilter != filter){
+      if(this.currentFilter)this.currentFilter.style.setProperty('display', 'none');
+      this.currentFilter = filter;
+      filter.style.setProperty('display', 'block');
+    }else{
+      filter.style.setProperty('display', 'none');
+      delete this.currentFilter;
+    }
+
+    
+
   }
 
-  setVisible(isVisible, element) {
-    if (isVisible) {
-      element.style.setProperty('color', '#aaaaaa');
-    } else {
-      element.style.setProperty('color', '#3c3c3c');
+  selectItem(item, tier1Index, tier2Index, tier3Index){
+    if(this.isFilterClicked){
+      this.isFilterClicked = false;
+      this.filterData = item;
+    }else{
+      super.selectItem(item, tier1Index, tier2Index, tier3Index);
     }
   }
-
-  stopPropagation(event): void {
-    event.stopPropagation();
-  }
+  
 
 }

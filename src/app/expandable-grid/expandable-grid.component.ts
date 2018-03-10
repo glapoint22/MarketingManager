@@ -16,6 +16,7 @@ export class ExpandableGridComponent implements OnInit {
   public itemResults: boolean = true;
   public gridHeight: number;
   public isEditable: boolean;
+  public isMouseDown: boolean;
 
   constructor(public dataService: DataService) { }
 
@@ -79,7 +80,7 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   onSearchChange(searchValue: string) {
-    let searchArray = searchValue.toLowerCase().split(' ');
+    let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
     let tierIndex = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
 
     switch (tierIndex) {
@@ -108,7 +109,7 @@ export class ExpandableGridComponent implements OnInit {
     }
 
     //Filter the tier1 items based on the search words
-    this.tiers[0].items = this.tiers[0].allItems.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+    this.tiers[0].items = this.tiers[0].allItems.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y)))).map(x => Object.assign({}, x));
   }
 
   searchTier2(searchArray: Array<string>) {
@@ -118,7 +119,7 @@ export class ExpandableGridComponent implements OnInit {
     }
 
     //Filter the tier2 items based on the search words
-    this.tiers[1].items = this.tiers[1].allItems.filter(x => searchArray.every(y => x.name.toLowerCase().includes(y))).map(x => Object.assign({}, x));
+    this.tiers[1].items = this.tiers[1].allItems.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y)))).map(x => Object.assign({}, x));
 
     //Get the distinct tier1 ids that are associated with the filterd tier2 items
     let tier1Ids = this.tiers[1].items.map(x => x.tier1Id).filter((v, i, a) => a.indexOf(v) === i);
@@ -129,7 +130,7 @@ export class ExpandableGridComponent implements OnInit {
 
   searchTier3(searchArray: Array<string>) {
     //Filter the tier3 items based on the search words
-    this.tiers[2].items = this.tiers[2].allItems.filter(x => searchArray.every(a => x.name.toLowerCase().includes(a))).map(x => Object.assign({}, x));
+    this.tiers[2].items = this.tiers[2].allItems.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y)))).map(x => Object.assign({}, x));
 
     //Get the distinct tier2 ids that are associated with the filterd tier3 items
     let tier2Ids = this.tiers[2].items.map(x => x.tier2Id).filter((v, i, a) => a.indexOf(v) === i);
@@ -192,7 +193,6 @@ export class ExpandableGridComponent implements OnInit {
       if (this.currentItem) {
         //Set that the current item is not selected
         this.currentItem.isSelected = false;
-        // this.currentItem.isSettingName = false;
       }
       //Set this item as the current item
       this.currentItem = item;
@@ -238,12 +238,10 @@ export class ExpandableGridComponent implements OnInit {
     //If there is a current item, set not selected
     if (this.currentItem) {
       this.currentItem.isSelected = false;
-      // this.currentItem.isSettingName = false;
     }
 
-    //Set the new item as the current item and highlight the name
+    //Set the new item as the current item
     this.currentItem = newItem;
-    // this.highlightName(newItem);
   }
 
   deleteItem(searchText: string) {
@@ -270,22 +268,10 @@ export class ExpandableGridComponent implements OnInit {
     }
   }
 
-  setItemName(newName: string, dataIndex) {
+  setItemName(newName: string) {
     newName = newName.trim();
     if (newName.match(/\S/) && this.currentItem) {
-      // this.currentItem.name = newName;
-      this.currentItem.currentField.name = newName;
-
-      // switch (this.currentItem.type) {
-      //   case 'Tier1':
-      //     this.tiers[0].allItems[this.tiers[0].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
-      //     break;
-      //   case 'Tier2':
-      //     this.tiers[1].allItems[this.tiers[1].allItems.findIndex(x => x.id === this.currentItem.id)].name = newName;
-      //     break;
-      //   case 'Tier3':
-      //     this.tiers[2].allItems[this.tiers[2].allItems.findIndex(x => x.id === this.currentItem.id)].data[dataIndex].name = newName;
-      // }
+      this.currentItem.currentField.value = newName;
     }
 
   }
@@ -323,7 +309,6 @@ export class ExpandableGridComponent implements OnInit {
     if (event.keyCode === 27) {
       if (this.currentItem) {
         this.currentItem.isSelected = false;
-        // this.currentItem.isSettingName = false;
         if(this.currentItem.currentField)this.currentItem.currentField.isEditing = false;
         delete this.currentItem;
       }
@@ -332,7 +317,6 @@ export class ExpandableGridComponent implements OnInit {
 
     //Enter
     if (event.keyCode === 13) {
-      // this.currentItem.isSettingName = false;
       if(this.currentItem && this.currentItem.currentField){
         this.currentItem.currentField.isEditing = false;
       }
@@ -347,11 +331,20 @@ export class ExpandableGridComponent implements OnInit {
   onResize(event) {
     this.setHeight();
   }
+
+  @HostListener('document:mousedown', ['$event'])
+  onMouseDown(event) {
+    this.isMouseDown = true;
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseUp(event) {
+    this.isMouseDown = false;
+  }
 }
 
 export type Tier = {
   name: string,
-  // header: string,
   allItems: Array<any>,
   items: Array<any>,
   fields: Array<any>

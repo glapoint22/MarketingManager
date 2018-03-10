@@ -70,8 +70,10 @@ input:checked + label::after {
 }
 #tier1,#tier2,#tier3{
     .row:hover{
-        background: #224552;
-        color: white;
+        &.hightlight-row{
+            background: #224552;
+            color: white;
+        }
     }
 }
 label{
@@ -164,25 +166,27 @@ select{
     position: relative;
     float: right;
     top: 1px;
-    color: #a5a5a5;
-    cursor: pointer;
     margin-right: 15px;
     z-index: 10;
 }
-.header-icon:hover{
+.icon:hover{
     color: #dbdbdb;
 }
-.selected{
-    background: #006492 !important;
-    color: white;
-    border: 1px solid #028cce;
-    box-sizing: border-box;
+.icon{
+    color: #a5a5a5;
+    cursor: pointer;
 }
 .icon-disabled{
     color: #6f6f6f;
 }
 .icon-disabled:hover{
     color: #6f6f6f;
+}
+.selected{
+    background: #006492 !important;
+    color: white;
+    border: 1px solid #028cce;
+    box-sizing: border-box;
 }
 .input-name::selection{
     background: #00df00;
