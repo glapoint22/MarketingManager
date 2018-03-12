@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from "../data.service";
 
 @Component({
   selector: 'shop',
@@ -6,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./shop.component.scss', '../expandable-grid/expandable-grid.component.scss', '../shop-grid/shop-grid.component.scss']
 })
 export class ShopComponent implements OnInit {
-  
-  constructor() { }
+  public filters;
+
+  constructor(public dataService: DataService) { }
 
   ngOnInit() {
+    this.dataService.get('api/Filters')
+      .subscribe((data: any) => {
+        this.filters = data
+      }, error => {
+        // Error
+      });
   }
-
 }

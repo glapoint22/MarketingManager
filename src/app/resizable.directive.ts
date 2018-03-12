@@ -1,11 +1,12 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import { Directive, ElementRef, HostListener, Output, EventEmitter } from '@angular/core';
 
 @Directive({
   selector: '[resizable]'
 })
 export class ResizableDirective {
-  private isMousedown: boolean;
+  public isMousedown: boolean;
   private currentX: number;
+  @Output() onMouse = new EventEmitter<boolean>();
 
   constructor(private el: ElementRef) {
   
@@ -28,6 +29,7 @@ export class ResizableDirective {
       this.isMousedown = true;
       this.currentX = event.clientX;
       event.preventDefault();
+      this.onMouse.emit(true);
     }
     
 
@@ -38,7 +40,7 @@ export class ResizableDirective {
     
     this.isMousedown = false;
     this.el.nativeElement.ownerDocument.body.style.cursor = 'default';
-    
+    this.onMouse.emit(false);
     
   }
 

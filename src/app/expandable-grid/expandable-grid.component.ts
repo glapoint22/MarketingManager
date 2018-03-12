@@ -16,14 +16,14 @@ export class ExpandableGridComponent implements OnInit {
   public itemResults: boolean = true;
   public gridHeight: number;
   public isEditable: boolean;
-  public isMouseDown: boolean;
+  public isHighlightRow: boolean = true;
 
   constructor(public dataService: DataService) { }
 
   setTiers(data: Array<any>) { }
 
   ngOnInit() {
-    this.dataService.get(this.apiUrl)
+    this.dataService.get(this.apiUrl, [{key: 'includeProducts', value: true}])
       .subscribe((data: any) => {
         this.setTiers(data);
 
@@ -146,11 +146,14 @@ export class ExpandableGridComponent implements OnInit {
   }
 
   clearSearchText(inputField) {
+    let value = inputField.value;
+
     //Set the input field's value to an empty string
     inputField.value = '';
 
     //Call onSearchChange to get items back
-    this.onSearchChange('');
+    if(value.length > 0)this.onSearchChange('');
+    
   }
 
   collapseTier(tier: string, index: number) {
@@ -204,32 +207,29 @@ export class ExpandableGridComponent implements OnInit {
     let newItem = {
       isSelected: true,
       type: itemType,
-      data: []
+      data: [],
     };
 
     //Add the new item to the tier
     switch (itemType) {
       case 'Tier1':
-        newItem['name'] = 'New ' + this.tiers[0].name;
         this.tiers[0].items.unshift(newItem);
         this.tiers[0].allItems.unshift(newItem);
+        this.tiers[0].fields.forEach((x) => newItem.data.push({value: x.defaultValue, isEditing: false}));
         break;
       case 'Tier2':
-        newItem['name'] = 'New ' + this.tiers[1].name;
         newItem['tier1Id'] = tier1Id;
         newItem['tier1Index'] = tier1Index;
+        this.tiers[1].fields.forEach((x) => newItem.data.push({value: x.defaultValue, isEditing: false}));
         this.tiers[0].items[tier1Index].tier2Items.unshift(newItem);
         this.tiers[1].allItems.unshift(newItem);
         this.tiers[1].items.unshift(newItem);
         break;
       case 'Tier3':
-        newItem['name'] = 'New ' + this.tiers[2].name;
         newItem['tier2Id'] = tier2Id;
         newItem['tier1Index'] = tier1Index;
         newItem['tier2Index'] = tier2Index;
-        
-        this.tiers[2].fields.forEach(x => newItem.data.push({name: 'New ' + x, isEditing: false}));
-
+        this.tiers[2].fields.forEach((x) => newItem.data.push({value: x.defaultValue, isEditing: false}));
         this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items.unshift(newItem);
         this.tiers[2].allItems.unshift(newItem);
         this.tiers[2].items.unshift(newItem);
@@ -330,16 +330,6 @@ export class ExpandableGridComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.setHeight();
-  }
-
-  @HostListener('document:mousedown', ['$event'])
-  onMouseDown(event) {
-    this.isMouseDown = true;
-  }
-
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp(event) {
-    this.isMouseDown = false;
   }
 }
 

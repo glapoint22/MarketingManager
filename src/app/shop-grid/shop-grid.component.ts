@@ -1,7 +1,6 @@
 import { Component, OnInit, ContentChild, TemplateRef } from '@angular/core';
 import { ExpandableGridComponent, Tier } from "../expandable-grid/expandable-grid.component";
 import { DataService } from "../data.service";
-import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'shop-grid',
@@ -10,8 +9,9 @@ import { HostListener } from '@angular/core';
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
   @ContentChild('tier3RowContent', { read: TemplateRef }) tier3RowContent: any;
-  public currentFilter;
-  public filterData;
+  public filterData: Array<number>;
+  private currentFilter;
+  private currentIcon;
   private isFilterClicked: boolean;
 
   constructor(dataService: DataService) { super(dataService) }
@@ -46,7 +46,12 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       name: 'Category',
       allItems: allItems,
       items: items,
-      fields: ['Category']
+      fields: [
+        {
+          name: 'Category',
+          defaultValue: 'My Category'
+        }
+      ]
     }
 
     //Tier2
@@ -74,7 +79,12 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       name: 'Niche',
       allItems: allItems,
       items: items,
-      fields: ['Niche']
+      fields: [
+        {
+          name: 'Niche',
+          defaultValue: 'My Niche'
+        }
+      ]
     }
 
     //Tier3
@@ -106,7 +116,8 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
                 value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' }),
                 isEditing: false
               }
-            ]
+            ],
+            filters: z.filters
           }))));
 
     allItems = [].concat.apply([], allItems.concat.apply([], allItems));
@@ -117,10 +128,22 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       allItems: allItems,
       items: items,
       fields: [
-        'Product',
-        'HopLink',
-        'Description',
-        'Price'
+        {
+          name: 'Product',
+          defaultValue: 'My Product'
+        },
+        {
+          name: 'HopLink',
+          defaultValue: 'HopLink URL'
+        },
+        {
+          name: 'Description',
+          defaultValue: 'Product Description'
+        },
+        {
+          name: 'Price',
+          defaultValue: '$0.00'
+        }
       ]
     }
 
@@ -128,31 +151,85 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.tiers.push(tier1, tier2, tier3);
   }
 
-  onFilterClick(filter){
+  onFilterClick(filter, icon) {
+    //Flag that a filter has been clicked
     this.isFilterClicked = true;
-    
 
-    if(this.currentFilter != filter){
-      if(this.currentFilter)this.currentFilter.style.setProperty('display', 'none');
+
+    if (this.currentFilter != filter) {
+      if (this.currentFilter) {
+        //Reset the current filter
+        this.resetFilter();
+      }
+      //Display the filter
       this.currentFilter = filter;
+      this.currentIcon = icon;
       filter.style.setProperty('display', 'block');
-    }else{
-      filter.style.setProperty('display', 'none');
-      delete this.currentFilter;
+      icon.style.setProperty('color', '#ffffff');
+    } else {
+      this.resetFilter();
     }
-
-    
-
   }
 
-  selectItem(item, tier1Index, tier2Index, tier3Index){
-    if(this.isFilterClicked){
+  selectItem(item, tier1Index, tier2Index, tier3Index) {
+    //If a filter was clicked assign the data
+    if (this.isFilterClicked) {
       this.isFilterClicked = false;
-      this.filterData = item;
+      this.filterData = item.filters;
+    } else {
+      //If the item that was clicked is not the current item, reset the filter
+      if (item !== this.currentItem) {
+        if (this.currentFilter) {
+          this.resetFilter();
+        }
+      }
+    }
+    super.selectItem(item, tier1Index, tier2Index, tier3Index);
+  }
+
+  resetFilter(){
+    //Reset the filter to default values
+    this.currentFilter.style.setProperty('display', 'none');
+    this.currentIcon.style.setProperty('color', '');
+    delete this.currentFilter;
+  }
+
+  stopPropagation(event): void {
+    event.stopPropagation();
+  }
+
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.keyCode === 27) {
+      if (this.currentFilter) {
+        this.resetFilter();
+      }
+    }
+    super.handleKeyboardEvent(event);
+  }
+
+  getChecked(optionId):boolean{
+    //Return if checkbox is checked
+    return this.filterData.some(x => x == optionId);
+  }
+
+  setChecked(optionId){
+    let index  = this.filterData.findIndex(x => x == optionId);
+
+    //Set the checkbox to be checked or unchecked
+    if(index > -1){
+      this.filterData.splice(index, 1);
     }else{
-      super.selectItem(item, tier1Index, tier2Index, tier3Index);
+      this.filterData.push(optionId);
     }
   }
-  
 
+  addItem(itemType: string, tier1Index, tier1Id, tier2Index, tier2Id){
+    super.addItem(itemType, tier1Index, tier1Id, tier2Index, tier2Id);
+
+    //Only add the filters array if the item is tier 3
+    if(itemType === 'Tier3'){
+      this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items[0]['filters'] = [];
+    }
+  }
 }
