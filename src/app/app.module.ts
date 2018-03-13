@@ -14,6 +14,8 @@ import { MenuButtonComponent } from './menu-button/menu-button.component';
 import { EmailComponent } from './email/email.component';
 import { LeadsComponent } from './leads/leads.component';
 import { SocialComponent } from './social/social.component';
+import { FilterGridComponent } from './filter-grid/filter-grid.component';
+import { EditorComponent } from './editor/editor.component';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { SocialComponent } from './social/social.component';
     MenuButtonComponent,
     EmailComponent,
     LeadsComponent,
-    SocialComponent
+    SocialComponent,
+    FilterGridComponent,
+    EditorComponent
   ],
   imports: [
     BrowserModule,

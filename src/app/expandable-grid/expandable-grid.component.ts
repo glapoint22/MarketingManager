@@ -21,6 +21,7 @@ export class ExpandableGridComponent implements OnInit {
   constructor(public dataService: DataService) { }
 
   setTiers(data: Array<any>) { }
+  setGridHeight() {}
 
   ngOnInit() {
     this.dataService.get(this.apiUrl, [{key: 'includeProducts', value: true}])
@@ -30,7 +31,7 @@ export class ExpandableGridComponent implements OnInit {
         this.tiers.forEach(x => this.searchOptions.push(x.name));
         this.selectedSearchOption = this.searchOptions[0];
 
-        this.setHeight();
+        this.setGridHeight();
       }, error => {
         // Error
       });
@@ -323,13 +324,9 @@ export class ExpandableGridComponent implements OnInit {
     }
   }
 
-  setHeight() {
-    this.gridHeight = window.innerHeight - 66;
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    this.setHeight();
+    this.setGridHeight();
   }
 }
 

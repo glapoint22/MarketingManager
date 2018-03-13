@@ -1,0 +1,11 @@
+<input [id]="name + ' Checkbox'" type="checkbox" (change)="isChecked = !isChecked">
+<div class="editor">
+  <div class="title-bar">
+    <input type="checkbox" [checked]="isChecked">
+    <label [for]="name + ' Checkbox'" type="checkbox"></label>
+    <div class="title">{{name}}</div>
+  </div>
+  <div class="editor-content">
+    <!-- <filter-grid #filterGrid></filter-grid> -->
+  </div>
+</div>

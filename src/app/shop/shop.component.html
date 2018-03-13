@@ -1,5 +1,15 @@
 <div class="editor-container">
   <div (onMouse)="shopGrid.isHighlightRow = !$event" resizable class="divider"></div>
+  
+  <!-- <div style="background: red; width: auto; height: 350px;overflow: hidden;min-height: 22px;">
+    <div style="background: blue; width: 100%;height: 22px;text-align: center;color: white; line-height: 22px; white-space: nowrap;">Filter Editor</div>
+    <div style="height: 328px; background: green">
+      <filter-grid #filterGrid></filter-grid>
+    </div>
+  </div> -->
+
+  <editor></editor>
+
 </div>
 <div class="grid-container">
   <shop-grid #shopGrid>

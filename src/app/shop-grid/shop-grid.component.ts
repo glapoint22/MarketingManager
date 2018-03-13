@@ -21,7 +21,10 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.isEditable = true;
     super.ngOnInit();
   }
-
+  setGridHeight() {
+    this.gridHeight = window.innerHeight - 66;
+  }
+  
   setTiers(data: Array<any>) {
     let tier1: Tier, tier2: Tier, tier3: Tier;
 

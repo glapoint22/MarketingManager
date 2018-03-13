@@ -43,8 +43,8 @@
 
         <!-- Tier1 Items -->
         <div id="tier1" *ngFor="let tier1Item of tiers[0].items; let i = index" style="position: relative" [ngClass]="{'static-height': !tiers[1]}">
-            <input #tier1Checkbox [id]="'tier1Checkbox' + i" type="checkbox" (change)="expandTier1(i, tier1Checkbox)" [(ngModel)]="tier1Item.isExpanded">
-            <label *ngIf="tiers[1]" [for]="'tier1Checkbox' + i"></label>
+            <input #tier1Checkbox [id]="tiers[0].name + ' tier1Checkbox' + i" type="checkbox" (change)="expandTier1(i, tier1Checkbox)" [(ngModel)]="tier1Item.isExpanded">
+            <label *ngIf="tiers[1]" [for]="tiers[0].name + ' tier1Checkbox' + i"></label>
             <div class="row" style="position: absolute" [ngClass]="{'selected': tier1Item.isSelected, 'hightlight-row': isHighlightRow}" (click)="selectItem(tier1Item, i)">
 
                 <!-- Data -->
@@ -90,8 +90,8 @@
                 <!-- Tier2 Items -->
                 <div id="tier2" class="max-height" *ngFor="let tier2Item of tier1Item.tier2Items; let j = index" [ngClass]="{'max-height-expanded' : tier2Checkbox.checked, 'static-height margin': !tiers[2]}"
                     (transitionend)="tier2TransitionEnd(i, tier1Checkbox)">
-                    <input #tier2Checkbox [id]="'tier2Checkbox_' + i + '_' + j" (change)="expandTier2(i, j, tier2Checkbox)" type="checkbox" [(ngModel)]="tier2Item.isExpanded">
-                    <label *ngIf="tiers[2]" [for]="'tier2Checkbox_' + i + '_' + j" style="margin-left: 22px"></label>
+                    <input #tier2Checkbox [id]="tiers[1].name + ' tier2Checkbox_' + i + '_' + j" (change)="expandTier2(i, j, tier2Checkbox)" type="checkbox" [(ngModel)]="tier2Item.isExpanded">
+                    <label *ngIf="tiers[2]" [for]="tiers[1].name + ' tier2Checkbox_' + i + '_' + j" style="margin-left: 22px"></label>
 
                     <div class="row" style="position: absolute" [ngClass]="{'selected': tier2Item.isSelected, 'hightlight-row': isHighlightRow}" (click)="selectItem(tier2Item, i, j)">
 
