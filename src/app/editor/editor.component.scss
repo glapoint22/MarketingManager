@@ -5,9 +5,11 @@
     min-height: 22px;
     margin-bottom: 1px;
     transition: height 0.5s;
+    border: 1px solid #444444;
+    box-sizing: border-box;
 }
 input:checked ~ label::after {
-    transform: translate(1px, 0px) rotate(-90deg);
+    transform: translate(1px, -1px) rotate(-90deg);
 }
 input:checked ~ .editor {
     height: 0;
@@ -22,20 +24,18 @@ input:checked ~ .editor {
 }
 .title{
     text-align: center;
-    margin-top: -21px;
+    margin-top: -22px;
 }
 .editor-content{
     height: 328px;
     background: #0c0c0c;
-    border: 1px solid #403f3f;
-    box-sizing: border-box;
 }
 label{
     width: 20px;
     height: 20px;
     cursor: pointer;
     position: relative;
-    top: 0px;
+    top: -2px;
     left: 3px;
     display: inline-block;
     text-align: center;

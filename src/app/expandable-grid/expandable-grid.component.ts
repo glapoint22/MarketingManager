@@ -214,11 +214,13 @@ export class ExpandableGridComponent implements OnInit {
     //Add the new item to the tier
     switch (itemType) {
       case 'Tier1':
+        newItem['id'] = this.createId(this.tiers[0].allItems);
         this.tiers[0].items.unshift(newItem);
         this.tiers[0].allItems.unshift(newItem);
         this.tiers[0].fields.forEach((x) => newItem.data.push({value: x.defaultValue, isEditing: false}));
         break;
       case 'Tier2':
+        newItem['id'] = this.createId(this.tiers[1].allItems);
         newItem['tier1Id'] = tier1Id;
         newItem['tier1Index'] = tier1Index;
         this.tiers[1].fields.forEach((x) => newItem.data.push({value: x.defaultValue, isEditing: false}));
@@ -227,6 +229,7 @@ export class ExpandableGridComponent implements OnInit {
         this.tiers[1].items.unshift(newItem);
         break;
       case 'Tier3':
+        newItem['id'] = this.createId(this.tiers[2].allItems);
         newItem['tier2Id'] = tier2Id;
         newItem['tier1Index'] = tier1Index;
         newItem['tier2Index'] = tier2Index;
@@ -243,6 +246,10 @@ export class ExpandableGridComponent implements OnInit {
 
     //Set the new item as the current item
     this.currentItem = newItem;
+  }
+
+  createId(items){
+    return Math.max(-1, Math.max.apply(null, items.map(x => x.id))) + 1;
   }
 
   deleteItem(searchText: string) {

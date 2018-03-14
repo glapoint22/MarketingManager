@@ -10,6 +10,7 @@ import { DataService } from "../data.service";
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
   @ContentChild('tier3RowContent', { read: TemplateRef }) tier3RowContent: any;
   public filterData: Array<number>;
+  public filters;
   private currentFilter;
   private currentIcon;
   private isFilterClicked: boolean;
@@ -24,7 +25,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   setGridHeight() {
     this.gridHeight = window.innerHeight - 66;
   }
-  
+
   setTiers(data: Array<any>) {
     let tier1: Tier, tier2: Tier, tier3: Tier;
 
@@ -154,12 +155,25 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     this.tiers.push(tier1, tier2, tier3);
   }
 
-  onFilterClick(filter, icon) {
+  onFilterClick(filter, icon, filters, filterOptions) {
     //Flag that a filter has been clicked
     this.isFilterClicked = true;
 
 
     if (this.currentFilter != filter) {
+      //Set the filters
+      this.filters = filters
+        .map(x => ({
+          id: x.id,
+          name: x.data[0].value,
+          options: filterOptions
+            .filter(y => y.tier1Id == x.id)
+            .map(z => ({
+              id: z.id,
+              name: z.data[0].value
+            }))
+        }));
+
       if (this.currentFilter) {
         //Reset the current filter
         this.resetFilter();
@@ -190,7 +204,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     super.selectItem(item, tier1Index, tier2Index, tier3Index);
   }
 
-  resetFilter(){
+  resetFilter() {
     //Reset the filter to default values
     this.currentFilter.style.setProperty('display', 'none');
     this.currentIcon.style.setProperty('color', '');
@@ -211,28 +225,19 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     super.handleKeyboardEvent(event);
   }
 
-  getChecked(optionId):boolean{
+  getChecked(optionId): boolean {
     //Return if checkbox is checked
     return this.filterData.some(x => x == optionId);
   }
 
-  setChecked(optionId){
-    let index  = this.filterData.findIndex(x => x == optionId);
+  setChecked(optionId) {
+    let index = this.filterData.findIndex(x => x == optionId);
 
     //Set the checkbox to be checked or unchecked
-    if(index > -1){
+    if (index > -1) {
       this.filterData.splice(index, 1);
-    }else{
+    } else {
       this.filterData.push(optionId);
-    }
-  }
-
-  addItem(itemType: string, tier1Index, tier1Id, tier2Index, tier2Id){
-    super.addItem(itemType, tier1Index, tier1Id, tier2Index, tier2Id);
-
-    //Only add the filters array if the item is tier 3
-    if(itemType === 'Tier3'){
-      this.tiers[0].items[tier1Index].tier2Items[tier2Index].tier3Items[0]['filters'] = [];
     }
   }
 }

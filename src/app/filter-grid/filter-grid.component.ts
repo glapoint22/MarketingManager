@@ -24,7 +24,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
     //Tier1
     let allItems = data
       .map(x => ({
-        id: x.filterId,
+        id: x.id,
         isExpanded: false,
         isSelected: false,
         type: 'Tier1',
@@ -54,7 +54,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
     allItems = data
       .map(x => x.options
         .map(y => ({
-          tier1Id: x.filterId,
+          tier1Id: x.id,
           id: y.id,
           isExpanded: false,
           isSelected: false,
@@ -85,5 +85,4 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
     //Set the tiers array
     this.tiers.push(tier1, tier2);
   }
-
 }
