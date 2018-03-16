@@ -7,6 +7,7 @@
     transition: height 0.5s;
     border: 1px solid #444444;
     box-sizing: border-box;
+    position: relative;
 }
 input:checked ~ label::after {
     transform: translate(1px, -1px) rotate(-90deg);

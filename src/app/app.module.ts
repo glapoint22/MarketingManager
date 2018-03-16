@@ -16,7 +16,9 @@ import { LeadsComponent } from './leads/leads.component';
 import { SocialComponent } from './social/social.component';
 import { FilterGridComponent } from './filter-grid/filter-grid.component';
 import { EditorComponent } from './editor/editor.component';
-
+import { FeaturedGridComponent } from './featured-grid/featured-grid.component';
+import { FeaturedPipe } from './featured.pipe';
+import { TierComponent } from './tier/tier.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,10 @@ import { EditorComponent } from './editor/editor.component';
     LeadsComponent,
     SocialComponent,
     FilterGridComponent,
-    EditorComponent
+    EditorComponent,
+    FeaturedGridComponent,
+    FeaturedPipe,
+    TierComponent
   ],
   imports: [
     BrowserModule,

@@ -1,13 +1,32 @@
 <div class="editor-container">
   <!-- Divider -->
-  <div (onMouse)="shopGrid.isHighlightRow = !$event; filterGrid.isHighlightRow = !$event" resizable class="divider"></div>
+  <!-- <div (onMouse)="shopGrid.isHighlightRow = !$event; filterGrid.isHighlightRow = !$event" resizable class="divider"></div> -->
+  <div resizable class="divider"></div>
 
-  <!-- Filter Editor -->
-  <editor [name]="'Filter Editor'">
+  <!-- Editors -->
+  <div class="editor-content-container">
+    <!-- Filter Editor -->
+    <!-- <editor [name]="'Filter Editor'">
       <filter-grid #filterGrid></filter-grid>
-  </editor>
+    </editor> -->
 
+    <!-- Featured Editor -->
+    <!-- <editor [name]="'Featured Editor'">
+        <div style="background: red;
+        position: absolute;
+        top: 108px;
+        left: 10px;
+        z-index: 100;" *ngIf="featuredGrid.showItemList">
+        <div>Hello fsdadf</div>
+        <div>There</div>
+      </div>
+      <featured-grid #featuredGrid [items]="shopGrid.tiers[0]"></featured-grid>
+      
+    </editor> -->
+
+  </div>
 </div>
+
 <div class="grid-container">
   <shop-grid #shopGrid>
     <!-- Tier3 Row Content -->
@@ -19,7 +38,8 @@
       </div>
 
       <!-- Filter Container -->
-      <div #filter style="display: none" (click)="shopGrid.stopPropagation($event)" (mouseover)="shopGrid.isHighlightRow = false" (mouseout)="shopGrid.isHighlightRow = true">
+      <div #filter style="display: none" (click)="shopGrid.stopPropagation($event)" (mouseover)="shopGrid.isHighlightRow = false"
+        (mouseout)="shopGrid.isHighlightRow = true">
         <div *ngIf="shopGrid.filterData" class="filters-container">
           <!-- Filters -->
           <div *ngFor="let filter of shopGrid.filters">

@@ -5,6 +5,10 @@
     float: right;
     max-width: 1600px;
 }
+.editor-content-container{
+    height: 100%;
+    overflow: auto;
+}
 .divider{
     width: 17px;
     height: 100%;

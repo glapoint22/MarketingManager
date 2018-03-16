@@ -40,7 +40,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
 
     tier1 = {
       name: 'Filter',
-      allItems: allItems,
+      // allItems: allItems,
       items: items,
       fields: [
         {
@@ -73,7 +73,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
 
     tier2 = {
       name: 'Filter Option',
-      allItems: allItems,
+      // allItems: allItems,
       items: items,
       fields: [
         {

@@ -1,0 +1,216 @@
+// .header{
+//     height: 20px;
+//     background: #525252;
+//     color: white;
+//     font-size: 14px;
+// }
+// .max-height{
+//     max-height: 0;
+//     overflow: hidden;
+//     transition: max-height 0.5s;
+// }
+// input{
+//     display: none;
+// }
+// input:checked ~ .max-height {
+//     max-height: 22px;
+// }
+// input:checked ~ .max-height-expanded {
+//     max-height: 2000px;
+// }
+
+// .row{
+//     border: 1px solid #343434;
+//     display:inline-block;
+//     vertical-align: top;
+//     line-height: 20px;
+//     color: #aaaaaa;
+//     font-size: 14px;
+//     white-space: nowrap;
+//     box-sizing: border-box;
+//     user-select: none;
+//     width: stretch;
+//     height: 22px;
+// }
+
+// .item{
+//     position: relative;
+// }
+
+
+
+// .no-results{
+//     color: #989898;
+//     text-align: center;
+//     font-size: 22px;
+// }
+// .search-container{
+//     width: 100%;
+//     height: 66px;
+//     background: #313030;
+//     border: 1px solid #272727;
+//     box-sizing: border-box;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     padding-left: 14px;
+// }
+// select{
+//     height: 33px;
+//     border: 1px solid #6d6d6d;
+//     background: #5a5a5a;
+//     cursor: pointer;
+//     border-radius: 100px 0 0 100px;
+//     padding-left: 5px;
+//     color: #ececec;
+//     outline:none;
+// }
+// .fa-search{
+//     position: relative;
+//     left: 10px;
+//     color: #797979;
+// }
+// .fa-times-circle{
+//     position: relative;
+//     left: -26px;
+//     color: #797979;
+//     cursor: pointer;
+// }
+// .fa-times-circle:hover{
+//     color: #c0c0c0;
+// }
+// .fa-times-circle:active{
+//     color: white;
+// }
+// .search{
+//     border-radius: 0 100px 100px 0;
+//     display: inline-block;
+//     width: 1385px;
+//     height: 29px;
+//     background: #3a3a3a;
+//     border: 1px solid #4f4f4f;
+//     outline: none;
+//     color: #d7d7d7;
+//     font-size: 14px;
+//     padding-left: 28px;
+//     min-width: 0;
+//     margin-left: -14px;
+// }
+// .grid{
+//     width: auto;
+//     overflow-x: hidden;
+//     overflow-y: auto;
+// }
+// .header-icon{
+//     position: relative;
+//     float: right;
+//     top: 1px;
+//     margin-right: 15px;
+//     z-index: 10;
+// }
+// .icon:hover{
+//     color: #dbdbdb;
+// }
+// .icon{
+//     color: #a5a5a5;
+//     cursor: pointer;
+// }
+// .icon-disabled{
+//     color: #6f6f6f;
+// }
+// .icon-disabled:hover{
+//     color: #6f6f6f;
+// }
+// .selected{
+//     background: #006492 !important;
+//     color: white;
+//     border: 1px solid #028cce;
+//     box-sizing: border-box;
+// }
+// .input-name::selection{
+//     background: #00df00;
+// }
+// .input-name{
+//     height: 18px;
+//     display: block;
+//     margin-left: -4px;
+//     background: #004d70;
+//     border: none;
+//     outline: none;
+//     color: white;
+//     padding-left: 4px;
+//     font-family: 'Times New Roman', Times, serif;
+//     font-size: 14px;
+// }
+// .static-height{
+//     height: 22px;
+// }
+// .margin{
+//     margin-left: 22px;
+// }
+table{
+    table-layout: fixed;
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+}
+th,td{
+    text-align: justify;
+    height: 22px;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 5px;
+    
+}
+th{
+    background: #525252;
+    color: white;
+    border-right: 1px solid #333333;
+}
+td{
+    color: #aaaaaa;
+    font-size: 14px;
+    height: 22px;
+    line-height: 22px;
+}
+
+tr:nth-child(odd){
+    background: #282828;
+}
+tr:nth-child(even){
+    background: #2d2d2d;
+}
+input{
+    display: none;
+}
+.row-button{
+    width: 20px;
+    height: 20px;
+    background: #383838;
+    border: 1px solid #5e5e5e;
+    display:inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    margin-left: -5px;
+}
+.row-button::after {
+    content: "";
+    position: relative;
+    left: 8px;
+    top: 4px;
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #aeaeae;
+}
+.row-button:hover::after{
+    border-left-color: white;
+}
+.rotate-arrow::after {
+    transform: translate(-1px, 1px) rotate(90deg);
+}
+.row-border{
+    border-left: 1px dashed #484848;
+}

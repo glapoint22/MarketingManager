@@ -4,7 +4,7 @@ import { DataService } from "../data.service";
 
 @Component({
   selector: 'shop-grid',
-  templateUrl: '../expandable-grid/expandable-grid.component.html',
+  templateUrl: '../expandable-grid/expandable-grid2.component.html',
   styleUrls: ['../expandable-grid/expandable-grid.component.scss', './shop-grid.component.scss']
 })
 export class ShopGridComponent extends ExpandableGridComponent implements OnInit {
@@ -28,27 +28,27 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
   setTiers(data: Array<any>) {
     let tier1: Tier, tier2: Tier, tier3: Tier;
-
+    
     //Tier1
-    let allItems = data
+    let items = data
       .map(x => ({
         id: x.id,
-        isExpanded: false,
-        isSelected: false,
-        type: 'Tier1',
-        tier1Index: null,
+        // isExpanded: false,
+        // isSelected: false,
+        tier: 0,
+        // tier1Index: null,
+        // isFeatured: x.featured,
         data: [
           {
-            value: x.name,
-            isEditing: false
+            value: x.name
           }
         ]
       }));
-    let items = allItems.map(x => Object.assign({}, x));
+    // let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
       name: 'Category',
-      allItems: allItems,
+      // allItems: allItems,
       items: items,
       fields: [
         {
@@ -59,29 +59,28 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     }
 
     //Tier2
-    allItems = data
+    items = data
       .map(x => x.niches
         .map(y => ({
-          tier1Id: x.id,
+          parentId: x.id,
           id: y.id,
-          isExpanded: false,
-          isSelected: false,
-          type: 'Tier2',
-          tier1Index: null,
-          tier2Index: null,
+          // isExpanded: false,
+          // isSelected: false,
+          tier: 1,
+          // tier1Index: null,
+          // tier2Index: null,
           data: [
             {
-              value: y.name,
-              isEditing: false
+              value: y.name
             }
           ]
         })));
-    allItems = [].concat.apply([], allItems);
-    items = allItems.map(x => Object.assign({}, x));
+        items = [].concat.apply([], items);
+    // items = allItems.map(x => Object.assign({}, x));
 
     tier2 = {
       name: 'Niche',
-      allItems: allItems,
+      // allItems: allItems,
       items: items,
       fields: [
         {
@@ -92,44 +91,40 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     }
 
     //Tier3
-    allItems = data
+    items = data
       .map(x => x.niches
         .map(y => y.products
           .map(z => ({
-            tier2Id: y.id,
+            parentId: y.id,
             id: z.id,
-            isSelected: false,
-            type: 'Tier3',
-            tier1Index: null,
-            tier2Index: null,
-            tier3Index: null,
+            // isSelected: false,
+            tier: 2,
+            // tier1Index: null,
+            // tier2Index: null,
+            // tier3Index: null,
             data: [
               {
-                value: z.name,
-                isEditing: false
+                value: z.name
               },
               {
-                value: z.hopLink,
-                isEditing: false
+                value: z.hopLink
               },
               {
-                value: z.description,
-                isEditing: false
+                value: z.description
               },
               {
-                value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' }),
-                isEditing: false
+                value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' })
               }
             ],
             filters: z.filters
           }))));
 
-    allItems = [].concat.apply([], allItems.concat.apply([], allItems));
-    items = allItems.map(x => Object.assign({}, x));
+          items = [].concat.apply([], items.concat.apply([], items));
+    // items = allItems.map(x => Object.assign({}, x));
 
     tier3 = {
       name: 'Product',
-      allItems: allItems,
+      // allItems: allItems,
       items: items,
       fields: [
         {
@@ -153,6 +148,11 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
     //Set the tiers array
     this.tiers.push(tier1, tier2, tier3);
+
+    // this.gridService.createGrid('shop', [tier1, tier2, tier3]);
+    // this.tierComponent.tier = this.gridService.getTier('shop', 0);
+    this.tierComponent.tiers = this.tiers;
+    this.tierComponent.tier = this.tiers[0];
   }
 
   onFilterClick(filter, icon, filters, filterOptions) {
@@ -239,5 +239,22 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     } else {
       this.filterData.push(optionId);
     }
+  }
+
+  createId(items, tier): any {
+    //Create an id for the new product
+    if (tier === 'Tier3') {
+      let id, index = 0
+
+      //This makes sure we don't have a duplicate
+      while (index > -1) {
+        id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+        index = items.findIndex(x => x.id == id);
+      }
+      return id;
+    } else {
+      return super.createId(items, tier);
+    }
+
   }
 }
