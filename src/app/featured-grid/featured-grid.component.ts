@@ -39,8 +39,8 @@ export class FeaturedGridComponent extends ExpandableGridComponent implements On
     let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
+      index: 0,
       name: 'Featured Category',
-      // allItems: allItems,
       items: items,
       fields: [
         {

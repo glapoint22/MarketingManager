@@ -1,14 +1,18 @@
-<div *ngIf="tier" [style.marginLeft.px]="margin">
+<div *ngIf="tier" [style.marginLeft.px]="margin" class="tier-container">
   <table>
     <tr>
       <th *ngFor="let field of tier.fields">{{field.name}}</th>
     </tr>
-    <tr *ngFor="let item of tier.items | featured: parentId; let i = index" [ngClass]="{'row-border': item.tier != 0}">
+    <div *ngIf="tier.index < tiers.length - 1" class="header-button-container" (click)="collapse()" [ngClass]="{'disabled': !isCollapsed()}"
+      [title]="'Collapse ' + tier.name">
+      <i class="fas fa-minus-square"></i>
+    </div>
+    <tr *ngFor="let item of tier.items | tierFilter: parentId; let i = index" [ngClass]="{'row-border': tier.index != 0}">
       <td *ngFor="let data of item.data; let j = index">
-        <span *ngIf="j == 0 && item.tier < tiers.length - 1">
-          <span #rowButton class="row-button" (click)="expandRow(item, i); rotateArrow(rowButton)"></span>
+        <span *ngIf="j == 0 && tier.index < tiers.length - 1">
+          <span #rowButton class="row-button" (click)="onRowButtonClick(item.id, i)" [ngClass]="{'rotate-arrow': children && children[i].tier}"></span>
         </span>
-        {{data.value}}
+        <span class="data">{{data.value}}</span>
         <tier [tiers]="tiers"></tier>
       </td>
     </tr>

@@ -1,44 +1,53 @@
-import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
+import { Component, ViewChildren, QueryList, Input, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'tier',
   templateUrl: './tier.component.html',
   styleUrls: ['./tier.component.scss']
 })
-export class TierComponent implements OnInit {
-  @ViewChildren(TierComponent) children: QueryList<TierComponent>;
+export class TierComponent implements AfterViewInit {
+  @ViewChildren(TierComponent) tierComponents: QueryList<TierComponent>;
   @Input() tiers;
   public tier;
   public parentId;
   public margin: number = 0;
+  public children: Array<TierComponent>;
 
   constructor() { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.tierComponents.changes.subscribe((x: QueryList<TierComponent>) => {
+      if (x.length > 0) {
+        this.children = x.toArray();
+      }
+    });
   }
 
-  // ngAfterViewInit(){
-  //   console.log(this.gridId);
-  // }
+  onRowButtonClick(parentId, index) {
+    let child = this.children[index];
 
-  expandRow(item, index) {
-    let child = this.children.toArray()[index];
-
-    if(child.tier){
+    //This will expand or collapse the row
+    if (child.tier) {
       delete child.tier;
-    }else{
-      child.tier = this.tiers[item.tier + 1];
+    } else {
+      child.tier = this.tiers[this.tier.index + 1];
     }
+
+    //Parent id is used to filter out only child records associated with the parent
+    child.parentId = parentId;
     
-    child.parentId = item.id;
-    child.margin = 17;
+    child.margin = 16;
   }
 
-  rotateArrow(button){
-    if(button.classList.contains('rotate-arrow')){
-      button.classList.remove('rotate-arrow')
-    }else{
-      button.classList.add('rotate-arrow');
+  collapse() {
+    //Collapse all rows from this tier
+    this.children.forEach(x => delete x.tier);
+  }
+
+  isCollapsed() {
+    //Test to see if all rows in this tier is collapsed.
+    if (this.children) {
+      return this.children.some(x => x.tier);
     }
   }
 }

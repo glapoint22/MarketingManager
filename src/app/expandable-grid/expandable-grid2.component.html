@@ -1,29 +1,26 @@
-<!-- <div *ngIf="tiers.length > 0"> -->
-    <!-- Temp Select -->
-    <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
-        <option [innerHtml]="selectedSearchOption"></option>
+<!-- Temp Select -->
+<select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
+    <option [innerHtml]="selectedSearchOption"></option>
+</select>
+
+<!-- Search -->
+<div class="search-container">
+    <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions" [style.display]="searchOptions.length > 1 ? 'block' : 'none'">
+        <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
     </select>
-
-    <!-- Search -->
-    <div class="search-container">
-        <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions" [style.display]="searchOptions.length > 1 ? 'block' : 'none'">
-            <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
-        </select>
-        <i class="fas fa-search fa-sm"></i>
-        <input #search type="text" class="search" (input)="onSearchChange($event.target.value)" [style.border-radius]="searchOptions.length > 1 ? '0 100px 100px 0' : '100px'">
-        <div (click)="clearSearchText(search)">
-            <i class="fas fa-times-circle fa-sm"></i>
-        </div>
+    <i class="fas fa-search fa-sm"></i>
+    <input #search type="text" class="search" (input)="onSearchChange($event.target.value)" [style.border-radius]="searchOptions.length > 1 ? '0 100px 100px 0' : '100px'">
+    <div (click)="clearSearchText(search)">
+        <i class="fas fa-times-circle fa-sm"></i>
     </div>
+</div>
 
-    <!-- Grid -->
-    <div class="grid" [style.height.px]="gridHeight" *ngIf="itemResults; else noSearchResults">
-        <tier></tier>
-        <!-- <ng-template #tier></ng-template> -->
+<!-- Grid -->
+<div class="grid" [style.height.px]="gridHeight" *ngIf="itemResults; else noSearchResults">
+    <tier></tier>
+</div>
+<ng-template #noSearchResults>
+    <div class="no-results" [style.lineHeight.px]="gridHeight">
+        No results found
     </div>
-    <ng-template #noSearchResults>
-        <div class="no-results" [style.lineHeight.px]="gridHeight">
-            No results found
-        </div>
-    </ng-template>
-<!-- </div> -->
+</ng-template>

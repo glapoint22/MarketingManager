@@ -346,8 +346,8 @@ export class ExpandableGridComponent implements OnInit {
 }
 
 export type Tier = {
+  index: number,
   name: string,
-  // allItems: Array<any>,
   items: Array<any>,
   fields: Array<any>
 }

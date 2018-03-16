@@ -27,28 +27,22 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   }
 
   setTiers(data: Array<any>) {
-    let tier1: Tier, tier2: Tier, tier3: Tier;
+    let tier0: Tier, tier1: Tier, tier2: Tier;
     
-    //Tier1
+    //Tier0
     let items = data
       .map(x => ({
         id: x.id,
-        // isExpanded: false,
-        // isSelected: false,
-        tier: 0,
-        // tier1Index: null,
-        // isFeatured: x.featured,
         data: [
           {
             value: x.name
           }
         ]
       }));
-    // let items = allItems.map(x => Object.assign({}, x));
 
-    tier1 = {
-      name: 'Category',
-      // allItems: allItems,
+    tier0 = {
+      index: 0,
+      name: 'Categories',
       items: items,
       fields: [
         {
@@ -58,17 +52,12 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       ]
     }
 
-    //Tier2
+    //Tier1
     items = data
       .map(x => x.niches
         .map(y => ({
           parentId: x.id,
           id: y.id,
-          // isExpanded: false,
-          // isSelected: false,
-          tier: 1,
-          // tier1Index: null,
-          // tier2Index: null,
           data: [
             {
               value: y.name
@@ -76,11 +65,10 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           ]
         })));
         items = [].concat.apply([], items);
-    // items = allItems.map(x => Object.assign({}, x));
 
-    tier2 = {
-      name: 'Niche',
-      // allItems: allItems,
+    tier1 = {
+      index: 1,
+      name: 'Niches',
       items: items,
       fields: [
         {
@@ -90,18 +78,13 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       ]
     }
 
-    //Tier3
+    //Tier2
     items = data
       .map(x => x.niches
         .map(y => y.products
           .map(z => ({
             parentId: y.id,
             id: z.id,
-            // isSelected: false,
-            tier: 2,
-            // tier1Index: null,
-            // tier2Index: null,
-            // tier3Index: null,
             data: [
               {
                 value: z.name
@@ -120,11 +103,10 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
           }))));
 
           items = [].concat.apply([], items.concat.apply([], items));
-    // items = allItems.map(x => Object.assign({}, x));
 
-    tier3 = {
-      name: 'Product',
-      // allItems: allItems,
+    tier2 = {
+      index: 2,
+      name: 'Products',
       items: items,
       fields: [
         {
@@ -147,10 +129,8 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     }
 
     //Set the tiers array
-    this.tiers.push(tier1, tier2, tier3);
+    this.tiers.push(tier0, tier1, tier2);
 
-    // this.gridService.createGrid('shop', [tier1, tier2, tier3]);
-    // this.tierComponent.tier = this.gridService.getTier('shop', 0);
     this.tierComponent.tiers = this.tiers;
     this.tierComponent.tier = this.tiers[0];
   }

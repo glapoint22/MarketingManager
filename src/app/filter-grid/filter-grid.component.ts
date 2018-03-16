@@ -39,8 +39,8 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
     let items = allItems.map(x => Object.assign({}, x));
 
     tier1 = {
+      index: 0,
       name: 'Filter',
-      // allItems: allItems,
       items: items,
       fields: [
         {
@@ -72,8 +72,8 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
     items = allItems.map(x => Object.assign({}, x));
 
     tier2 = {
+      index: 1,
       name: 'Filter Option',
-      // allItems: allItems,
       items: items,
       fields: [
         {

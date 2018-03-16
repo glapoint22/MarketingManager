@@ -17,8 +17,9 @@ import { SocialComponent } from './social/social.component';
 import { FilterGridComponent } from './filter-grid/filter-grid.component';
 import { EditorComponent } from './editor/editor.component';
 import { FeaturedGridComponent } from './featured-grid/featured-grid.component';
-import { FeaturedPipe } from './featured.pipe';
 import { TierComponent } from './tier/tier.component';
+import { TierFilterPipe } from './tier-filter.pipe';
+import { SearchFilterPipe } from './search-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -34,8 +35,9 @@ import { TierComponent } from './tier/tier.component';
     FilterGridComponent,
     EditorComponent,
     FeaturedGridComponent,
-    FeaturedPipe,
-    TierComponent
+    TierComponent,
+    TierFilterPipe,
+    SearchFilterPipe
   ],
   imports: [
     BrowserModule,
