@@ -5,8 +5,17 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SearchFilterPipe implements PipeTransform {
 
-  transform(items: Array<any>, id: number): any {
-    return items.slice(0, 10);
+  transform(items: Array<any>, searchValue: string, targetTier: number, tier: number): any {
+    if (!items) return;
+
+    if (tier == targetTier) {
+      let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
+      return items.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y)))).slice(0, 50);
+    } else {
+      return items;
+    }
+
+
   }
 
 }

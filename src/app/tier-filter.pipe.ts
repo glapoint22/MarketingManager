@@ -5,10 +5,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class TierFilterPipe implements PipeTransform {
 
-  transform(items: Array<any>, id: number): any{
-    if(id){
+  transform(items: Array<any>, id: number): any {
+    if (!items) return;
+    if (id) {
       return items.filter(x => x.parentId == id);
-    }else{
+    } else {
       return items;
     }
   }

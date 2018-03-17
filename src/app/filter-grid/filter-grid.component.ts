@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ExpandableGridComponent, Tier } from "../expandable-grid/expandable-grid.component";
+import { ExpandableGridComponent } from "../expandable-grid/expandable-grid.component";
 import { DataService } from "../data.service";
+import { Itier } from '../itier';
 
 @Component({
   selector: 'filter-grid',
@@ -19,7 +20,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
   }
 
   setTiers(data: Array<any>) {
-    let tier1: Tier, tier2: Tier;
+    let tier1: Itier, tier2: Itier;
 
     //Tier1
     let allItems = data

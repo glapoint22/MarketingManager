@@ -1,6 +1,7 @@
 import { Component, OnInit, ContentChild, TemplateRef } from '@angular/core';
-import { ExpandableGridComponent, Tier } from "../expandable-grid/expandable-grid.component";
+import { ExpandableGridComponent } from "../expandable-grid/expandable-grid.component";
 import { DataService } from "../data.service";
+import { Itier } from '../itier';
 
 @Component({
   selector: 'shop-grid',
@@ -19,7 +20,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
-    this.isEditable = true;
+    // this.isEditable = true;
     super.ngOnInit();
   }
   setGridHeight() {
@@ -27,7 +28,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
   }
 
   setTiers(data: Array<any>) {
-    let tier0: Tier, tier1: Tier, tier2: Tier;
+    let tier0: Itier, tier1: Itier, tier2: Itier;
     
     //Tier0
     let items = data
@@ -130,9 +131,12 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
 
     //Set the tiers array
     this.tiers.push(tier0, tier1, tier2);
+    this.grid.tiers.push(tier0, tier1, tier2);
+    this.tierComponent.grid = this.grid;
 
-    this.tierComponent.tiers = this.tiers;
-    this.tierComponent.tier = this.tiers[0];
+    // this.tierComponent.tiers = this.tiers;
+    // this.tierComponent.tier = this.tiers[0];
+    this.tierComponent.setTier(tier0);
   }
 
   onFilterClick(filter, icon, filters, filterOptions) {
@@ -168,21 +172,21 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     }
   }
 
-  selectItem(item, tier1Index, tier2Index, tier3Index) {
-    //If a filter was clicked assign the data
-    if (this.isFilterClicked) {
-      this.isFilterClicked = false;
-      this.filterData = item.filters;
-    } else {
-      //If the item that was clicked is not the current item, reset the filter
-      if (item !== this.currentItem) {
-        if (this.currentFilter) {
-          this.resetFilter();
-        }
-      }
-    }
-    super.selectItem(item, tier1Index, tier2Index, tier3Index);
-  }
+  // selectItem(item, tier1Index, tier2Index, tier3Index) {
+  //   //If a filter was clicked assign the data
+  //   if (this.isFilterClicked) {
+  //     this.isFilterClicked = false;
+  //     this.filterData = item.filters;
+  //   } else {
+  //     //If the item that was clicked is not the current item, reset the filter
+  //     if (item !== this.currentItem) {
+  //       if (this.currentFilter) {
+  //         this.resetFilter();
+  //       }
+  //     }
+  //   }
+  //   super.selectItem(item, tier1Index, tier2Index, tier3Index);
+  // }
 
   resetFilter() {
     //Reset the filter to default values
@@ -195,15 +199,15 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     event.stopPropagation();
   }
 
-  handleKeyboardEvent(event: KeyboardEvent) {
-    //Escape
-    if (event.keyCode === 27) {
-      if (this.currentFilter) {
-        this.resetFilter();
-      }
-    }
-    super.handleKeyboardEvent(event);
-  }
+  // handleKeyboardEvent(event: KeyboardEvent) {
+  //   //Escape
+  //   if (event.keyCode === 27) {
+  //     if (this.currentFilter) {
+  //       this.resetFilter();
+  //     }
+  //   }
+  //   super.handleKeyboardEvent(event);
+  // }
 
   getChecked(optionId): boolean {
     //Return if checkbox is checked
@@ -221,20 +225,20 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
     }
   }
 
-  createId(items, tier): any {
-    //Create an id for the new product
-    if (tier === 'Tier3') {
-      let id, index = 0
+  // createId(items, tier): any {
+  //   //Create an id for the new product
+  //   if (tier === 'Tier3') {
+  //     let id, index = 0
 
-      //This makes sure we don't have a duplicate
-      while (index > -1) {
-        id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
-        index = items.findIndex(x => x.id == id);
-      }
-      return id;
-    } else {
-      return super.createId(items, tier);
-    }
+  //     //This makes sure we don't have a duplicate
+  //     while (index > -1) {
+  //       id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+  //       index = items.findIndex(x => x.id == id);
+  //     }
+  //     return id;
+  //   } else {
+  //     return super.createId(items, tier);
+  //   }
 
-  }
+  // }
 }

@@ -1,19 +1,19 @@
-<div *ngIf="tier" [style.marginLeft.px]="margin" class="tier-container">
+<div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container">
   <table>
     <tr>
-      <th *ngFor="let field of tier.fields">{{field.name}}</th>
+      <th *ngFor="let field of fields">{{field.name}}</th>
     </tr>
-    <div *ngIf="tier.index < tiers.length - 1" class="header-button-container" (click)="collapse()" [ngClass]="{'disabled': !isCollapsed()}"
-      [title]="'Collapse ' + tier.name">
+    <div *ngIf="index < grid.tiers.length - 1" class="header-button-container" (click)="collapse()" [ngClass]="{'disabled': !isCollapsed()}"
+      [title]="'Collapse ' + name">
       <i class="fas fa-minus-square"></i>
     </div>
-    <tr *ngFor="let item of tier.items | tierFilter: parentId; let i = index" [ngClass]="{'row-border': tier.index != 0}">
+    <tr *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index" [ngClass]="{'row-border': index != 0}">
       <td *ngFor="let data of item.data; let j = index">
-        <span *ngIf="j == 0 && tier.index < tiers.length - 1">
-          <span #rowButton class="row-button" (click)="onRowButtonClick(item.id, i)" [ngClass]="{'rotate-arrow': children && children[i].tier}"></span>
+        <span *ngIf="j == 0 && index < grid.tiers.length - 1">
+          <span #rowButton class="row-button" (click)="onRowButtonClick(item.id, i)" [ngClass]="{'rotate-arrow': children && children[i] && children[i].items}"></span>
         </span>
         <span class="data">{{data.value}}</span>
-        <tier [tiers]="tiers"></tier>
+        <tier [grid]="grid"></tier>
       </td>
     </tr>
   </table>

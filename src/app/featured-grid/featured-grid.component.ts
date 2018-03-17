@@ -1,6 +1,7 @@
 import { Component, OnInit, SimpleChanges, Input } from '@angular/core';
-import { ExpandableGridComponent, Tier } from "../expandable-grid/expandable-grid.component";
+import { ExpandableGridComponent } from "../expandable-grid/expandable-grid.component";
 import { DataService } from "../data.service";
+import { Itier } from '../itier';
 
 @Component({
   selector: 'featured-grid',
@@ -20,7 +21,7 @@ export class FeaturedGridComponent extends ExpandableGridComponent implements On
   }
 
   setTiers(data: Array<any>) {
-    let tier1: Tier;
+    let tier1: Itier;
 
     //Tier1
     let allItems = data
