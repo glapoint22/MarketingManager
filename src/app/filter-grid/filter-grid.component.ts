@@ -14,7 +14,7 @@ export class FilterGridComponent extends ExpandableGridComponent implements OnIn
 
   ngOnInit() {
     this.apiUrl = 'api/Filters';
-    this.isEditable = true;
+    // this.isEditable = true;
     this.gridHeight = 262;
     super.ngOnInit();
   }

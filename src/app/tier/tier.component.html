@@ -1,5 +1,25 @@
 <div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container">
-  <table>
+  <!-- Header -->
+  <div class="header">
+    <div *ngFor="let field of fields" class="field" [ngClass]="{'collapsed': index > 0, 'expanded': isExpanded}">
+      {{field.name}}
+    </div>
+  </div>
+  
+  <div *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+    class="row" [ngClass]="{'collapsed': index > 0, 'expanded': isExpanded, 'max-expanded': isMaxExpanded}" (transitionend)="onTransitionEnd(i)">
+    
+    <span *ngIf="index < grid.tiers.length - 1">
+      <input [id]="name + item.id" type="checkbox">
+      <label [for]="name + item.id" (click)="onRowButtonClick(item.id, i)"></label>
+    </span>
+
+    <span *ngFor="let data of item.data; let j = index">
+      <span>{{data.value}}</span>
+    </span>
+    <tier [grid]="grid"></tier>
+  </div>
+  <!-- <table>
     <tr>
       <th *ngFor="let field of fields">{{field.name}}</th>
     </tr>
@@ -10,11 +30,12 @@
     <tr *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index" [ngClass]="{'row-border': index != 0}">
       <td *ngFor="let data of item.data; let j = index">
         <span *ngIf="j == 0 && index < grid.tiers.length - 1">
-          <span #rowButton class="row-button" (click)="onRowButtonClick(item.id, i)" [ngClass]="{'rotate-arrow': children && children[i] && children[i].items}"></span>
+          <span #rowButton class="row-button" (click)="onRowButtonClick(item.id, i)"></span>
         </span>
         <span class="data">{{data.value}}</span>
         <tier [grid]="grid"></tier>
       </td>
     </tr>
-  </table>
+  </table> -->
+
 </div>
