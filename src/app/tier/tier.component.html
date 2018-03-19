@@ -1,17 +1,17 @@
 <div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container">
   <!-- Header -->
-  <div class="header">
-    <div *ngFor="let field of fields" class="field" [ngClass]="{'collapsed': index > 0, 'expanded': isExpanded}">
+  <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expanded': isExpanded}">
+    <div *ngFor="let field of fields" class="field">
       {{field.name}}
     </div>
   </div>
-  
+
   <div *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-    class="row" [ngClass]="{'collapsed': index > 0, 'expanded': isExpanded, 'max-expanded': isMaxExpanded}" (transitionend)="onTransitionEnd(i)">
-    
+    class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expanded': isExpanded, 'max-expanded': isMaxExpanded}" (transitionend)="onTransitionEnd(i)">
+
     <span *ngIf="index < grid.tiers.length - 1">
       <input [id]="name + item.id" type="checkbox">
-      <label [for]="name + item.id" (click)="onRowButtonClick(item.id, i)"></label>
+      <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
     </span>
 
     <span *ngFor="let data of item.data; let j = index">

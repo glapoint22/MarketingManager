@@ -30,18 +30,22 @@ export class TierComponent implements AfterViewInit, Itier {
     });
   }
 
-  onRowButtonClick(itemId: number, rowIndex: number) {
+  setTier(tier: Itier) {
+    this.index = tier.index;
+    this.name = tier.name;
+    this.items = tier.items;
+    this.fields = tier.fields;
+  }
+
+  onToggleExpandCollapse(itemId: number, rowIndex: number) {
     let childTier: TierComponent = this.children[rowIndex];
 
     //This will expand or collapse the row
     if (childTier.isExpanded) {
       childTier.isExpanded = false;
-      // if (this.isMaxExpanded) this.isMaxExpanded = false;
-      if(childTier.isMaxExpanded){
+      if (childTier.isMaxExpanded) {
         childTier.isMaxExpanded = false;
-        // childTier.children.forEach(x => x.isExpanded = false);
       }
-      
     } else {
       childTier.setTier(this.grid.tiers[this.index + 1]);
       childTier.parentId = itemId;
@@ -57,9 +61,9 @@ export class TierComponent implements AfterViewInit, Itier {
     }
   }
 
-  onTransitionEnd(rowIndex: number){
-    if(!this.children[rowIndex].isExpanded){
-      delete this.children[rowIndex].items;
+  onTransitionEnd(rowIndex: number) {
+    if (!this.children[rowIndex].isExpanded) {
+      this.children[rowIndex].index = -1;
     }
   }
 
@@ -75,12 +79,7 @@ export class TierComponent implements AfterViewInit, Itier {
   //   }
   // }
 
-  setTier(tier: Itier) {
-    this.index = tier.index;
-    this.name = tier.name;
-    this.items = tier.items;
-    this.fields = tier.fields;
-  }
+
 
   // clearChildTier(childTier: TierComponent) {
   //   delete childTier.items;

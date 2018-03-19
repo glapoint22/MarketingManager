@@ -16,7 +16,7 @@ export class FeaturedGridComponent extends ExpandableGridComponent implements On
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    this.isEditable = true;
+    // this.isEditable = true;
     this.gridHeight = 262;
   }
 

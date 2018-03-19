@@ -61,7 +61,7 @@ label:hover::after{
     transition: max-height 0.5s;
 }
 .expanded{
-    max-height: 22px
+    max-height: 22px;
 }
 .max-expanded{
     max-height: 2000px;
@@ -69,4 +69,5 @@ label:hover::after{
 .field{
     width: 300px;
     padding-left: 4px;
+    border-right: 1px solid #3a3a3a;
 }
