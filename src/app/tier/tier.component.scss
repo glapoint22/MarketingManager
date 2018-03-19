@@ -1,6 +1,5 @@
 .tier-container{
     position: relative;
-    left: 1px;
 }
 .header, .row{
     line-height: 22px;
@@ -70,4 +69,19 @@ label:hover::after{
     width: 300px;
     padding-left: 4px;
     border-right: 1px solid #3a3a3a;
+}
+.button-container{
+    width: 100%;
+    position: relative;
+    font-size: 16px;
+    color: #c3c3c3;
+}
+.button{
+    width: 22px;
+    height: 22px;
+    float: right;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

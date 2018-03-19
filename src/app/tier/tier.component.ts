@@ -1,4 +1,4 @@
-import { Component, ViewChildren, QueryList, Input, AfterViewInit } from '@angular/core';
+import { Component, ViewChildren, QueryList, Input, AfterViewInit, ElementRef } from '@angular/core';
 import { Itier } from '../itier';
 
 @Component({
@@ -8,6 +8,7 @@ import { Itier } from '../itier';
 })
 export class TierComponent implements AfterViewInit, Itier {
   @ViewChildren(TierComponent) tierComponents: QueryList<TierComponent>;
+  @ViewChildren('checkbox') checkboxElements: QueryList<ElementRef>;
   @Input() grid;
   public parentId: number;
   public margin: number = 0;
@@ -17,7 +18,8 @@ export class TierComponent implements AfterViewInit, Itier {
   public items: Array<any>;
   public fields: Array<any>;
   public isExpanded: boolean = false;;
-  public isMaxExpanded: boolean = false;
+
+  public checkboxes: Array<ElementRef> = [];
 
 
   constructor() { }
@@ -28,9 +30,17 @@ export class TierComponent implements AfterViewInit, Itier {
         this.children = x.toArray();
       }
     });
+
+    this.checkboxElements.changes.subscribe((x: QueryList<ElementRef>) => {
+      if (x.length > 0) {
+        this.checkboxes = x.toArray();
+      }
+    });
   }
 
   setTier(tier: Itier) {
+    this.checkboxes = [];
+    this.children = [];
     this.index = tier.index;
     this.name = tier.name;
     this.items = tier.items;
@@ -42,10 +52,8 @@ export class TierComponent implements AfterViewInit, Itier {
 
     //This will expand or collapse the row
     if (childTier.isExpanded) {
-      childTier.isExpanded = false;
-      if (childTier.isMaxExpanded) {
-        childTier.isMaxExpanded = false;
-      }
+      // childTier.isExpanded = false;
+      this.collapseTier(childTier);
     } else {
       childTier.setTier(this.grid.tiers[this.index + 1]);
       childTier.parentId = itemId;
@@ -54,35 +62,34 @@ export class TierComponent implements AfterViewInit, Itier {
       window.setTimeout(() => {
         childTier.isExpanded = true;
       }, 1);
-
-      if (this.isExpanded) {
-        this.isMaxExpanded = true;
-      }
     }
   }
 
-  onTransitionEnd(rowIndex: number) {
-    if (!this.children[rowIndex].isExpanded) {
+  onTransitionEnd(rowIndex: number, event: TransitionEvent) {
+    if (!this.children[rowIndex].isExpanded && event.elapsedTime >= 0.5) {
       this.children[rowIndex].index = -1;
     }
   }
 
-  // collapse() {
-  //   //Collapse all rows from this tier
-  //   this.children.forEach(x => this.clearChildTier(x));
-  // }
+  collapseTier(tier: TierComponent, checkbox?: ElementRef) {
+    tier.isExpanded = false;
+    if (checkbox) checkbox.nativeElement.checked = false;
+
+    if (tier.children) {
+      this.collapseTiers(tier);
+    }
+  }
+
+  collapseTiers(tier: TierComponent) {
+    for (let i = 0; i < tier.children.length; i++) {
+      this.collapseTier(tier.children[i], tier.checkboxes ? tier.checkboxes[i] : null);
+    }
+  }
 
   // isCollapsed() {
   //   //Test to see if all rows in this tier is collapsed.
   //   if (this.children) {
   //     return this.children.some(x => x.items !== undefined);
   //   }
-  // }
-
-
-
-  // clearChildTier(childTier: TierComponent) {
-  //   delete childTier.items;
-  //   delete childTier.fields;
   // }
 }
