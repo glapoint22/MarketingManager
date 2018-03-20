@@ -94,9 +94,9 @@ export class ExpandableGridComponent implements OnInit {
     this.grid.searchValue = searchValue;
     this.grid.tierToSearch = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
     
-    if(this.grid.tierToSearch != this.tierComponent.index){
+    // if(this.grid.tierToSearch != this.tierComponent.index){
       this.tierComponent.setTier(this.grid.tiers[this.grid.tierToSearch]);
-    }
+    // }
     if(searchValue.length == 0){
       this.grid.tierToSearch = 0;
       this.tierComponent.setTier(this.grid.tiers[0]);

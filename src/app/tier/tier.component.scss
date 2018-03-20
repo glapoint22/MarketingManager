@@ -1,5 +1,7 @@
 .tier-container{
     position: relative;
+    border-left: 1px dashed #616161;
+    border-bottom: 1px solid #3b3b3b;
 }
 .header, .row{
     line-height: 22px;
@@ -59,16 +61,11 @@ label:hover::after{
     max-height: 0;
     transition: max-height 0.5s;
 }
-.expanded{
+.expand{
     max-height: 22px;
 }
-.max-expanded{
+.max-expand{
     max-height: 2000px;
-}
-.field{
-    width: 300px;
-    padding-left: 4px;
-    border-right: 1px solid #3a3a3a;
 }
 .button-container{
     width: 100%;
@@ -84,4 +81,19 @@ label:hover::after{
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+}
+.disabled{
+    color: #656565;
+}
+.field{
+    padding-left: 4px;
+    border-right: 1px solid #3a3a3a;
+}
+.data{
+    overflow: hidden;
+    display: inline-flex;
+    white-space: nowrap;
+    padding-left: 4px;
+    border-right: 1px solid transparent;
 }

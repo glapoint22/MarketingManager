@@ -48,7 +48,8 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       fields: [
         {
           name: 'Category',
-          defaultValue: 'My Category'
+          defaultValue: 'My Category',
+          width: null
         }
       ]
     }
@@ -74,7 +75,8 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       fields: [
         {
           name: 'Niche',
-          defaultValue: 'My Niche'
+          defaultValue: 'My Niche',
+          width: 300
         }
       ]
     }
@@ -112,19 +114,23 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
       fields: [
         {
           name: 'Product',
-          defaultValue: 'My Product'
+          defaultValue: 'My Product',
+          width: 200
         },
         {
           name: 'HopLink',
-          defaultValue: 'HopLink URL'
+          defaultValue: 'HopLink URL',
+          width: 320
         },
         {
           name: 'Description',
-          defaultValue: 'Product Description'
+          defaultValue: 'Product Description',
+          width: 730
         },
         {
           name: 'Price',
-          defaultValue: '$0.00'
+          defaultValue: '$0.00',
+          width: 50
         }
       ]
     }

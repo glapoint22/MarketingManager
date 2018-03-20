@@ -1,34 +1,35 @@
 <div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container">
   <!-- Header -->
-  <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expanded': isExpanded}">
-    <div *ngFor="let field of fields" class="field">
+  <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}">
+
+    <!-- Fields -->
+    <div *ngFor="let field of fields" class="field" [style.minWidth.px]="field.width" [style.width.px]="field.width">
       {{field.name}}
     </div>
 
+    <!-- Buttons -->
     <div class="button-container">
-      <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers(this)">
+      <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers(this)" [ngClass]="{'disabled': !isCollapsed()}"
+        [title]="'Collapse ' + name">
         <i class="fas fa-minus-square"></i>
       </div>
     </div>
-
-
-
-
   </div>
 
-  <div *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-    class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expanded': isExpanded, 'max-expanded': checkboxes.length > 0 && checkboxes[i].nativeElement.checked}"
-    (transitionend)="onTransitionEnd(i, $event)">
+  <!-- Items -->
+  <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+    class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
 
+    <!-- Toggle Expand/Collapse button -->
     <span *ngIf="index < grid.tiers.length - 1">
-      <input #checkbox [id]="name + item.id" type="checkbox">
+      <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
       <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
     </span>
 
-    <span *ngFor="let data of item.data; let j = index">
+    <!-- Data -->
+    <span *ngFor="let data of item.data; let j = index" class="data" [style.width.px]="fields[j].width">
       <span>{{data.value}}</span>
     </span>
     <tier [grid]="grid"></tier>
   </div>
-
 </div>
