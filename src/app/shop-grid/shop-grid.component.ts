@@ -49,7 +49,7 @@ export class ShopGridComponent extends ExpandableGridComponent implements OnInit
         {
           name: 'Category',
           defaultValue: 'My Category',
-          width: null
+          width: 300
         }
       ]
     }

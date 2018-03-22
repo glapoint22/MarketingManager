@@ -50,14 +50,13 @@ export class TierComponent implements Itier {
     if (!child.isExpand && event.elapsedTime >= 0.5) {
       child.index = -1;
     }
-    
   }
 
   collapseTier(tier: TierComponent, checkbox?: ElementRef) {
     tier.isExpand = false;
     if (checkbox) {
       checkbox.nativeElement.checked = false;
-      checkbox.nativeElement.parentElement.parentElement.classList.remove('max-expand');
+      checkbox.nativeElement.parentElement.parentElement.parentElement.classList.remove('max-expand');
     }
 
     if (tier.tierComponents.length > 0) {
