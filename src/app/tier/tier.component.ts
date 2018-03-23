@@ -19,6 +19,7 @@ export class TierComponent implements Itier {
   public fields: Array<any>;
   public isExpand: boolean = false;
   public headerButtons: Array<any> = [];
+  public rowButtons: Array<any> = [];
 
   constructor() { }
 
@@ -28,6 +29,7 @@ export class TierComponent implements Itier {
     this.items = tier.items;
     this.fields = tier.fields;
     this.headerButtons = tier.headerButtons;
+    this.rowButtons = tier.rowButtons;
   }
 
   onToggleExpandCollapse(itemId: number, rowIndex: number) {
@@ -56,6 +58,9 @@ export class TierComponent implements Itier {
   }
 
   collapseTier(tier: TierComponent, checkbox?: ElementRef) {
+    if(this.grid.currentItem && tier.index == this.grid.currentItem.tierIndex){
+      this.grid.currentItem.isSelected = false;
+    }
     tier.isExpand = false;
     if (checkbox) {
       checkbox.nativeElement.checked = false;
@@ -63,13 +68,13 @@ export class TierComponent implements Itier {
     }
 
     if (tier.tierComponents.length > 0) {
-      this.collapseTiers(tier);
+      tier.collapseTiers();
     }
   }
 
-  collapseTiers(tier: TierComponent) {
-    let children = tier.tierComponents.toArray();
-    let checkboxes = tier.checkboxElements.toArray();
+  collapseTiers() {
+    let children = this.tierComponents.toArray();
+    let checkboxes = this.checkboxElements.toArray();
 
     for (let i = 0; i < children.length; i++) {
       this.collapseTier(children[i], checkboxes.length > 0 ? checkboxes[i] : null);
@@ -89,5 +94,9 @@ export class TierComponent implements Itier {
     if (this.tierComponents.length > 0) {
       return this.tierComponents.toArray().some(x => x.isExpand);
     }
+  }
+
+  stopPropagation(event): void {
+    event.stopPropagation();
   }
 }

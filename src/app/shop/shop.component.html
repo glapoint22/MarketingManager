@@ -27,24 +27,24 @@
   </div>
 </div>
 
-<div class="grid-container">
-  <shop-grid #shopGrid>
-    <!-- Tier3 Row Content -->
-    <ng-template #tier3RowContent>
+<div class="shop-grid-container">
+  <shop-grid>
+    
+    <!-- <ng-template #tier3RowContent>
 
-      <!-- Filter Icon -->
+      
       <div #icon class="filter-icon icon" title="Set Filters" (click)="shopGrid.onFilterClick(filter, icon, filterGrid.tiers[0].allItems, filterGrid.tiers[1].allItems)">
         <i class="fas fa-filter" data-fa-transform="rotate-45"></i>
       </div>
 
-      <!-- Filter Container -->
+      
       <div #filter style="display: none" (click)="shopGrid.stopPropagation($event)" (mouseover)="shopGrid.isHighlightRow = false"
         (mouseout)="shopGrid.isHighlightRow = true">
         <div *ngIf="shopGrid.filterData" class="filters-container">
-          <!-- Filters -->
+          
           <div *ngFor="let filter of shopGrid.filters">
             <div class="filter-title">{{filter.name}}</div>
-            <!-- Filter Options -->
+            
             <div *ngFor="let option of filter.options" class="option-container">
               <input type="checkbox" [checked]="shopGrid.getChecked(option.id)" (change)="shopGrid.setChecked(option.id)">
               <span class="filter-option">{{option.name}}</span>
@@ -52,6 +52,6 @@
           </div>
         </div>
       </div>
-    </ng-template>
+    </ng-template> -->
   </shop-grid>
 </div>

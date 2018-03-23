@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { GridComponent } from "../grid/grid.component";
+import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 import { Itier } from '../itier';
 
@@ -8,7 +8,7 @@ import { Itier } from '../itier';
   templateUrl: '../grid/grid.component.html',
   styleUrls: ['../grid/grid.component.scss', './shop-grid.component.scss']
 })
-export class ShopGridComponent extends GridComponent implements OnInit {
+export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   constructor(dataService: DataService) { super(dataService) }
 
@@ -43,28 +43,8 @@ export class ShopGridComponent extends GridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: [
-        {
-          name: 'Create Category',
-          icon: 'fas fa-file-alt',
-          onClick: () => {
-            console.log('Create');
-          },
-          getDisabled: () => {
-            return false;
-          }
-        },
-        {
-          name: 'Delete Category',
-          icon: 'fas fa-trash-alt',
-          onClick: () => {
-            console.log('Delete');
-          },
-          getDisabled: () => {
-            return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == 0) : true;
-          }
-        }
-      ]
+      headerButtons: this.setHeaderButtons('Create Category', 'Delete Category', 0),
+      rowButtons: this.setRowButtons('Edit Category')
     });
 
     //Niches
@@ -93,28 +73,8 @@ export class ShopGridComponent extends GridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: [
-        {
-          name: 'Create Niche',
-          icon: 'fas fa-file-alt',
-          onClick: () => {
-            console.log('Create');
-          },
-          getDisabled: () => {
-            return false;
-          }
-        },
-        {
-          name: 'Delete Niche',
-          icon: 'fas fa-trash-alt',
-          onClick: () => {
-            console.log('Delete');
-          },
-          getDisabled: () => {
-            return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == 1) : true;
-          }
-        }
-      ]
+      headerButtons: this.setHeaderButtons('Create Niche', 'Delete Niche', 1),
+      rowButtons: this.setRowButtons('Edit Niche')
     });
 
     //Products
@@ -144,6 +104,17 @@ export class ShopGridComponent extends GridComponent implements OnInit {
 
     items = [].concat.apply([], items.concat.apply([], items));
 
+    let rowButtons = this.setRowButtons('Edit Product');
+    rowButtons.unshift(
+      {
+        name: 'Filter Product',
+        icon: 'fas fa-filter',
+        onClick: (item) => {
+          console.log(item);
+        }
+      }
+    );
+
     this.tiers.push({
       index: 2,
       name: 'Products',
@@ -170,32 +141,11 @@ export class ShopGridComponent extends GridComponent implements OnInit {
           width: 50
         }
       ],
-      headerButtons: [
-        {
-          name: 'Create Product',
-          icon: 'fas fa-file-alt',
-          onClick: () => {
-            console.log('Create');
-          },
-          getDisabled: () => {
-            return false;
-          }
-        },
-        {
-          name: 'Delete Product',
-          icon: 'fas fa-trash-alt',
-          onClick: () => {
-            console.log('Delete');
-          },
-          getDisabled: () => {
-            return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == 2) : true;
-          }
-        }
-      ]
+      headerButtons: this.setHeaderButtons('Create Product', 'Delete Product', 2),
+      rowButtons: rowButtons
     });
 
-    this.tierComponent.grid = this;
-    this.tierComponent.setTier(this.tiers[0]);
+    super.createTiers();
   }
 
   @HostListener('window:resize', ['$event'])

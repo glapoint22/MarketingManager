@@ -4,4 +4,5 @@ export interface Itier {
     items: Array<any>;
     fields: Array<any>;
     headerButtons: Array<any>;
+    rowButtons: Array<any>;
 }

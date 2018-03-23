@@ -32,8 +32,8 @@ input:checked ~ label:hover::after {
     border-left-color: #00ff00;
 }
 label{
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
     background: #383838;
     border: 1px solid #5e5e5e;
     display: block;
@@ -82,22 +82,41 @@ label:hover::after{
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    color: #bfbfbf;
+    color: #9e9e9e;
+}
+.button:hover{
+    color: #d6d6d6;
 }
 .disabled{
-    color: #656565;
+    color: #656565 !important;
 }
 .field{
     flex: 0 0;
     white-space: nowrap;
     overflow: hidden;
-    padding-left: 5px;
+    padding: 1px 0 0 5px;
+    user-select: none;
 }
 .flex-container{
     display: flex;
 }
-.selected{
-    background: #059205 !important;
+.highlight:hover{
+    background: #1c4450;
     color: white;
-    height: 22px;
+}
+.selected{
+    background: #07729c !important;
+    color: white;
+}
+.selected > .button-container{
+    opacity: 1;
+}
+.visible:not(.selected) > .button-container{
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+.visible:hover:not(.selected) > .button-container{
+    opacity: 1;
+    transition: opacity 0.5s;
+    transition-delay: 0.25s;
 }

@@ -56,15 +56,15 @@ export class FeaturedGridComponent extends ExpandableGridComponent implements On
     // this.tiers.push(tier1);
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges.items.currentValue) {
-      this.createTiers(simpleChanges.items.currentValue.allItems);
-      this.setSearchOptions();
-    }
-  }
+  // ngOnChanges(simpleChanges: SimpleChanges) {
+  //   if (simpleChanges.items.currentValue) {
+  //     this.createTiers(simpleChanges.items.currentValue.allItems);
+  //     this.setSearchOptions();
+  //   }
+  // }
 
-  addItem(itemType: string, tier1Index, tier1Id, tier2Index, tier2Id){
-    this.showItemList = true;
-    // this.nonFeaturedList = this.tiers[0].allItems.filter(x => !x.isFeatured);
-  }
+  // addItem(itemType: string, tier1Index, tier1Id, tier2Index, tier2Id){
+  //   this.showItemList = true;
+  //   // this.nonFeaturedList = this.tiers[0].allItems.filter(x => !x.isFeatured);
+  // }
 }

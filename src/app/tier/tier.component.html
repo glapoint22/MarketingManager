@@ -7,7 +7,7 @@
       <!-- Fields -->
       <div *ngFor="let field of fields" class="field" [style.flexBasis.px]="field.width">{{field.name}}</div>
 
-      <!-- Buttons -->
+      <!-- Header Buttons -->
       <div class="button-container">
         <!-- Generic Buttons -->
         <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick()"
@@ -34,15 +34,16 @@
       <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
     </span>
 
-    <div class="flex-container" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
+    <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
       <!-- Data -->
       <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
 
-      <!-- Buttons -->
-      <!-- <div class="button-container">
-        <div class="button"></div>
-      </div> -->
-
+      <!-- Row Buttons -->
+      <div class="button-container">
+        <div class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item); stopPropagation($event)">
+          <i [class]="rowButton.icon"></i>
+        </div>
+      </div>
     </div>
     <tier [grid]="grid"></tier>
   </div>
