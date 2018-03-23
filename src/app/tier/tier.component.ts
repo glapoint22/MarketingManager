@@ -1,5 +1,6 @@
 import { Component, ViewChildren, QueryList, Input, ElementRef } from '@angular/core';
 import { Itier } from '../itier';
+import { Igrid } from '../igrid';
 
 @Component({
   selector: 'tier',
@@ -9,14 +10,15 @@ import { Itier } from '../itier';
 export class TierComponent implements Itier {
   @ViewChildren(TierComponent) tierComponents: QueryList<TierComponent>;
   @ViewChildren('checkbox') checkboxElements: QueryList<ElementRef>;
-  @Input() grid;
+  @Input() grid: Igrid;
   public parentId: number;
   public margin: number = 0;
   public index: number = -1;
   public name: string;
   public items: Array<any>;
   public fields: Array<any>;
-  public isExpand: boolean = false;;
+  public isExpand: boolean = false;
+  public headerButtons: Array<any> = [];
 
   constructor() { }
 
@@ -25,6 +27,7 @@ export class TierComponent implements Itier {
     this.name = tier.name;
     this.items = tier.items;
     this.fields = tier.fields;
+    this.headerButtons = tier.headerButtons;
   }
 
   onToggleExpandCollapse(itemId: number, rowIndex: number) {
@@ -56,7 +59,7 @@ export class TierComponent implements Itier {
     tier.isExpand = false;
     if (checkbox) {
       checkbox.nativeElement.checked = false;
-      checkbox.nativeElement.parentElement.parentElement.parentElement.classList.remove('max-expand');
+      checkbox.nativeElement.parentElement.parentElement.classList.remove('max-expand');
     }
 
     if (tier.tierComponents.length > 0) {

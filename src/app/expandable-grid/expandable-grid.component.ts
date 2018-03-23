@@ -14,26 +14,27 @@ export class ExpandableGridComponent implements OnInit {
   public searchOptions: Array<string> = [];
   public selectedSearchOption: string;
   public apiUrl: string;
-  public itemResults: boolean = true;
   public gridHeight: number;
+  
+  
   public grid = {
     tiers: [],
     searchValue: '',
     tierToSearch: 0
   };
-
+public itemResults: boolean = true;
   // public isEditable: boolean;
   // public isHighlightRow: boolean = true;
   // public currentItem: any;
   constructor(public dataService: DataService) { }
 
-  setTiers(data: Array<any>) { }
+  createTiers(data: Array<any>) { }
   setGridHeight() { }
 
   ngOnInit() {
     this.dataService.get(this.apiUrl, [{ key: 'includeProducts', value: true }])
       .subscribe((data: any) => {
-        this.setTiers(data);
+        this.createTiers(data);
         this.setSearchOptions();
         this.setGridHeight();
         

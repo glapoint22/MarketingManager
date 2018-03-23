@@ -20,6 +20,7 @@ import { FeaturedGridComponent } from './featured-grid/featured-grid.component';
 import { TierComponent } from './tier/tier.component';
 import { TierFilterPipe } from './tier-filter.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
+import { GridComponent } from './grid/grid.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { SearchFilterPipe } from './search-filter.pipe';
     FeaturedGridComponent,
     TierComponent,
     TierFilterPipe,
-    SearchFilterPipe
+    SearchFilterPipe,
+    GridComponent
   ],
   imports: [
     BrowserModule,

@@ -20,45 +20,45 @@ export class FeaturedGridComponent extends ExpandableGridComponent implements On
     this.gridHeight = 262;
   }
 
-  setTiers(data: Array<any>) {
-    let tier1: Itier;
+  createTiers(data: Array<any>) {
+    // let tier1: Itier;
 
-    //Tier1
-    let allItems = data
-      .map(x => ({
-        id: x.id,
-        isSelected: false,
-        type: x.type,
-        tier1Index: null,
-        data: [
-          {
-            value: x.data[0].value,
-            isEditing: false
-          }
-        ]
-      }));
-    let items = allItems.map(x => Object.assign({}, x));
+    // //Tier1
+    // let allItems = data
+    //   .map(x => ({
+    //     id: x.id,
+    //     isSelected: false,
+    //     type: x.type,
+    //     tier1Index: null,
+    //     data: [
+    //       {
+    //         value: x.data[0].value,
+    //         isEditing: false
+    //       }
+    //     ]
+    //   }));
+    // let items = allItems.map(x => Object.assign({}, x));
 
-    tier1 = {
-      index: 0,
-      name: 'Featured Category',
-      items: items,
-      fields: [
-        {
-          name: 'Categories',
-          defaultValue: 'My Featured Category'
-        }
-      ]
-    }
+    // tier1 = {
+    //   index: 0,
+    //   name: 'Featured Category',
+    //   items: items,
+    //   fields: [
+    //     {
+    //       name: 'Categories',
+    //       defaultValue: 'My Featured Category'
+    //     }
+    //   ]
+    // }
 
 
-    //Set the tiers array
-    this.tiers.push(tier1);
+    // //Set the tiers array
+    // this.tiers.push(tier1);
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
     if (simpleChanges.items.currentValue) {
-      this.setTiers(simpleChanges.items.currentValue.allItems);
+      this.createTiers(simpleChanges.items.currentValue.allItems);
       this.setSearchOptions();
     }
   }
