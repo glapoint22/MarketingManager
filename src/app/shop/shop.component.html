@@ -6,29 +6,20 @@
   <!-- Editors -->
   <div class="editor-content-container">
     <!-- Filter Editor -->
-    <!-- <editor [name]="'Filter Editor'">
-      <filter-grid #filterGrid></filter-grid>
-    </editor> -->
+    <editor [name]="'Filter Editor'">
+      <filter-grid></filter-grid>
+    </editor>
 
     <!-- Featured Editor -->
-    <!-- <editor [name]="'Featured Editor'">
-        <div style="background: red;
-        position: absolute;
-        top: 108px;
-        left: 10px;
-        z-index: 100;" *ngIf="featuredGrid.showItemList">
-        <div>Hello fsdadf</div>
-        <div>There</div>
-      </div>
-      <featured-grid #featuredGrid [items]="shopGrid.tiers[0]"></featured-grid>
-      
-    </editor> -->
+    <editor [name]="'Featured Editor'">
+      <featured-grid [categories]="shopGrid.tiers[0]" [products]="shopGrid.tiers[2]"></featured-grid>
+    </editor>
 
   </div>
 </div>
 
 <div class="shop-grid-container">
-  <shop-grid>
+  <shop-grid #shopGrid>
     
     <!-- <ng-template #tier3RowContent>
 

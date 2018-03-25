@@ -10,10 +10,10 @@ export class EditableGridComponent extends GridComponent  {
   constructor(dataService: DataService) { super(dataService) }
 
 
-  setHeaderButtons(addButtonName: string, deleteButtonName: string, tierIndex: number){
+  setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number){
     return [
       {
-        name: addButtonName,
+        name: newButtonName,
         icon: 'fas fa-file-alt',
         onClick: () => {
           console.log('Create');

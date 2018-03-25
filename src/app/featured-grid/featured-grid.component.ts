@@ -1,70 +1,107 @@
-import { Component, OnInit, SimpleChanges, Input } from '@angular/core';
-import { ExpandableGridComponent } from "../expandable-grid/expandable-grid.component";
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
-import { Itier } from '../itier';
 
 @Component({
   selector: 'featured-grid',
-  templateUrl: '../expandable-grid/expandable-grid.component.html',
-  styleUrls: ['../expandable-grid/expandable-grid.component.scss', './featured-grid.component.scss']
+  templateUrl: '../grid/grid.component.html',
+  styleUrls: ['../grid/grid.component.scss', './featured-grid.component.scss']
 })
-export class FeaturedGridComponent extends ExpandableGridComponent implements OnInit {
-  @Input() items;
-  public showItemList: boolean;
-  public nonFeaturedList: Array<any>;
+export class FeaturedGridComponent extends EditableGridComponent implements OnInit, OnChanges {
+  @Input() categories;
+  @Input() products;
+  private categoriesTier;
+  private productsTier;
 
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    // this.isEditable = true;
     this.gridHeight = 262;
   }
 
-  createTiers(data: Array<any>) {
-    // let tier1: Itier;
+  createTiers() {
+    let headerButtons = this.setHeaderButtons('New Featured Category', 'Delete Featured Category', 0);
+    headerButtons.unshift(
+      {
+        name: 'Switch to Featured Products',
+        icon: 'fas fa-cubes',
+        onClick: () => {
+          this.switchTiers(this.productsTier);
+        },
+        getDisabled: () => {
+          return false;
+        }
+      }
+    );
 
-    // //Tier1
-    // let allItems = data
-    //   .map(x => ({
-    //     id: x.id,
-    //     isSelected: false,
-    //     type: x.type,
-    //     tier1Index: null,
-    //     data: [
-    //       {
-    //         value: x.data[0].value,
-    //         isEditing: false
-    //       }
-    //     ]
-    //   }));
-    // let items = allItems.map(x => Object.assign({}, x));
-
-    // tier1 = {
-    //   index: 0,
-    //   name: 'Featured Category',
-    //   items: items,
-    //   fields: [
-    //     {
-    //       name: 'Categories',
-    //       defaultValue: 'My Featured Category'
-    //     }
-    //   ]
-    // }
+    this.categoriesTier = {
+      index: 0,
+      name: 'Categories',
+      items: this.categories.items.filter(x => x.featured).map(x => Object.assign({}, x)),
+      fields: [
+        {
+          name: 'Category',
+          defaultValue: 'My Category',
+          width: 130
+        }
+      ],
+      headerButtons: headerButtons,
+      rowButtons: []
+    };
 
 
-    // //Set the tiers array
-    // this.tiers.push(tier1);
+    headerButtons = this.setHeaderButtons('New Featured Product', 'Delete Featured Product', 0);
+    headerButtons.unshift(
+      {
+        name: 'Switch to Featured Categories',
+        icon: 'fas fa-sitemap',
+        onClick: () => {
+          this.switchTiers(this.categoriesTier);
+        },
+        getDisabled: () => {
+          return false;
+        }
+      }
+    );
+
+
+    this.productsTier = {
+      index: 0,
+      name: 'Products',
+      items: this.products.items.filter(x => x.featured).map(x => ({
+        data: [x.data[0]],
+        id: x.id,
+        featured: x.featured,
+        tierIndex: 0
+      })),
+      fields: [
+        {
+          name: 'Product',
+          defaultValue: 'My Product',
+          width: 130
+        }
+      ],
+      headerButtons: headerButtons,
+      rowButtons: []
+    };
+
+    this.tiers.push(this.categoriesTier);
+
+    super.createTiers();
+
   }
 
-  // ngOnChanges(simpleChanges: SimpleChanges) {
-  //   if (simpleChanges.items.currentValue) {
-  //     this.createTiers(simpleChanges.items.currentValue.allItems);
-  //     this.setSearchOptions();
-  //   }
-  // }
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    if (simpleChanges.categories.currentValue) {
+      this.createTiers();
+      this.setSearchOptions();
+    }
+  }
 
-  // addItem(itemType: string, tier1Index, tier1Id, tier2Index, tier2Id){
-  //   this.showItemList = true;
-  //   // this.nonFeaturedList = this.tiers[0].allItems.filter(x => !x.isFeatured);
-  // }
+  switchTiers(tier) {
+    if (this.currentItem && this.currentItem.isSelected) this.currentItem.isSelected = false;
+    this.tiers[0] = tier;
+    this.selectedSearchOption = tier.name;
+    this.tierComponent.setTier(this.tiers[0]);
+  }
 }

@@ -49,7 +49,10 @@ export class GridComponent implements OnInit, Igrid {
 
   onSearchChange(searchValue: string) {
     this.tierComponent.collapseTiers();
-    this.currentItem.isSelected = false;
+    if(this.currentItem && this.currentItem.isSelected){
+      this.currentItem.isSelected = false;
+    }
+    
     this.searchValue = searchValue;
     this.tierToSearch = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
 

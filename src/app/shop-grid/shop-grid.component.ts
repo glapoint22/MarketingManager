@@ -1,7 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
-import { Itier } from '../itier';
 
 @Component({
   selector: 'shop-grid',
@@ -30,6 +29,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         .map(x => ({
           id: x.id,
           tierIndex: 0,
+          featured: x.featured,
           data: [
             {
               value: x.name
@@ -43,7 +43,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: this.setHeaderButtons('Create Category', 'Delete Category', 0),
+      headerButtons: this.setHeaderButtons('New Category', 'Delete Category', 0),
       rowButtons: this.setRowButtons('Edit Category')
     });
 
@@ -73,7 +73,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: this.setHeaderButtons('Create Niche', 'Delete Niche', 1),
+      headerButtons: this.setHeaderButtons('New Niche', 'Delete Niche', 1),
       rowButtons: this.setRowButtons('Edit Niche')
     });
 
@@ -85,6 +85,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             parentId: y.id,
             id: z.id,
             tierIndex: 2,
+            featured: z.featured,
             data: [
               {
                 value: z.name
@@ -141,7 +142,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 50
         }
       ],
-      headerButtons: this.setHeaderButtons('Create Product', 'Delete Product', 2),
+      headerButtons: this.setHeaderButtons('New Product', 'Delete Product', 2),
       rowButtons: rowButtons
     });
 
