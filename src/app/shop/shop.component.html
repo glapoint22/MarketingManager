@@ -7,7 +7,7 @@
   <div class="editor-content-container">
     <!-- Filter Editor -->
     <editor [name]="'Filter Editor'">
-      <filter-grid></filter-grid>
+      <filter-grid #filterGrid></filter-grid>
     </editor>
 
     <!-- Featured Editor -->
@@ -18,31 +18,24 @@
   </div>
 </div>
 
+<!-- Shop Grid -->
 <div class="shop-grid-container">
-  <shop-grid #shopGrid>
-    
-    <!-- <ng-template #tier3RowContent>
+  <shop-grid #shopGrid [filterGrid]="filterGrid">
 
-      
-      <div #icon class="filter-icon icon" title="Set Filters" (click)="shopGrid.onFilterClick(filter, icon, filterGrid.tiers[0].allItems, filterGrid.tiers[1].allItems)">
-        <i class="fas fa-filter" data-fa-transform="rotate-45"></i>
-      </div>
-
-      
-      <div #filter style="display: none" (click)="shopGrid.stopPropagation($event)" (mouseover)="shopGrid.isHighlightRow = false"
-        (mouseout)="shopGrid.isHighlightRow = true">
-        <div *ngIf="shopGrid.filterData" class="filters-container">
-          
-          <div *ngFor="let filter of shopGrid.filters">
-            <div class="filter-title">{{filter.name}}</div>
-            
-            <div *ngFor="let option of filter.options" class="option-container">
-              <input type="checkbox" [checked]="shopGrid.getChecked(option.id)" (change)="shopGrid.setChecked(option.id)">
-              <span class="filter-option">{{option.name}}</span>
-            </div>
+    <!-- Filters -->
+    <div *ngIf="shopGrid.filterGrid.tiers.length > 0" class="filters-container" [style.top.px]="shopGrid.filtersContainerTop"
+      [style.display]="shopGrid.showFiltersContainer ? 'block' : 'none'">
+      <div class="label">Product Filters</div>
+      <div class="content">
+        <div *ngFor="let filter of shopGrid.filters">
+          <div class="filter-title">{{filter.name}}</div>
+          <div *ngFor="let option of filter.options" class="option-container">
+            <input type="checkbox" [checked]="option.isChecked">
+            <span class="filter-option">{{option.name}}</span>
           </div>
         </div>
       </div>
-    </ng-template> -->
+    </div>
+    
   </shop-grid>
 </div>

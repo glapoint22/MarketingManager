@@ -41,7 +41,7 @@ export class EditableGridComponent extends GridComponent  {
       {
         name: buttonName,
         icon: 'fas fa-edit',
-        onClick: (item) => {
+        onClick: (item, row) => {
           console.log(item);
         }
       }

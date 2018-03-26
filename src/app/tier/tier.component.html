@@ -1,4 +1,4 @@
-<div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container">
+<div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container" [ngClass]="{'tier-border': index != grid.tierToSearch}">
   <!-- Header -->
   <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}">
 
@@ -28,6 +28,9 @@
   <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
     class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
 
+    <!-- Row Content -->
+    <ng-content></ng-content>
+
     <!-- Toggle Expand/Collapse button -->
     <span *ngIf="index < grid.tiers.length - 1">
       <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
@@ -40,7 +43,7 @@
 
       <!-- Row Buttons -->
       <div class="button-container">
-        <div class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item); stopPropagation($event)">
+        <div class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, row)">
           <i [class]="rowButton.icon"></i>
         </div>
       </div>

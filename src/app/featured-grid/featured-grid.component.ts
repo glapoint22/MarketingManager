@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
+import { Itier } from '../itier';
 
 @Component({
   selector: 'featured-grid',
@@ -10,8 +11,8 @@ import { DataService } from "../data.service";
 export class FeaturedGridComponent extends EditableGridComponent implements OnInit, OnChanges {
   @Input() categories;
   @Input() products;
-  private categoriesTier;
-  private productsTier;
+  private categoriesTier: Itier;
+  private productsTier: Itier;
 
   constructor(dataService: DataService) { super(dataService) }
 
@@ -102,6 +103,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     if (this.currentItem && this.currentItem.isSelected) this.currentItem.isSelected = false;
     this.tiers[0] = tier;
     this.selectedSearchOption = tier.name;
+    this.clearSearchText();
     this.tierComponent.setTier(this.tiers[0]);
   }
 }

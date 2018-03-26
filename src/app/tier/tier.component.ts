@@ -51,14 +51,14 @@ export class TierComponent implements Itier {
 
   onTransitionEnd(rowIndex: number, event: TransitionEvent) {
     let child = this.tierComponents.toArray()[rowIndex];
-    
+
     if (!child.isExpand && event.elapsedTime >= 0.5) {
       child.index = -1;
     }
   }
 
   collapseTier(tier: TierComponent, checkbox?: ElementRef) {
-    if(this.grid.currentItem && tier.index == this.grid.currentItem.tierIndex){
+    if (this.grid.currentItem && tier.index == this.grid.currentItem.tierIndex) {
       this.grid.currentItem.isSelected = false;
     }
     tier.isExpand = false;
@@ -94,9 +94,5 @@ export class TierComponent implements Itier {
     if (this.tierComponents.length > 0) {
       return this.tierComponents.toArray().some(x => x.isExpand);
     }
-  }
-
-  stopPropagation(event): void {
-    event.stopPropagation();
   }
 }

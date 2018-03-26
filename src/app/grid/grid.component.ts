@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, ElementRef } from '@angular/core';
 import { DataService } from "../data.service";
 import { TierComponent } from '../tier/tier.component';
 import { Itier } from '../itier';
@@ -11,6 +11,7 @@ import { Igrid } from '../igrid';
 })
 export class GridComponent implements OnInit, Igrid {
   @ViewChild(TierComponent) tierComponent: TierComponent;
+  @ViewChild('searchInput') searchInput: ElementRef;
   public tiers: Array<Itier> = [];
   public searchOptions: Array<string> = [];
   public selectedSearchOption: string;
@@ -65,11 +66,11 @@ export class GridComponent implements OnInit, Igrid {
     }
   }
 
-  clearSearchText(inputField) {
-    let value = inputField.value;
+  clearSearchText() {
+    let value = this.searchInput.nativeElement.value;
 
     //Set the input field's value to an empty string
-    inputField.value = '';
+    this.searchInput.nativeElement.value = '';
 
     //Call onSearchChange to get items back
     if (value.length > 0) this.onSearchChange('');
