@@ -1,20 +1,33 @@
 <div class="grid-container" tabindex="0" (focus)="hasFocus = true" (blur)="hasFocus = false">
-  <!-- Temp Select -->
-  <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
-    <option [innerHtml]="selectedSearchOption"></option>
-  </select>
-
-  <!-- Search -->
-  <div class="search-container">
-    <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions" [style.display]="searchOptions.length > 1 ? 'block' : 'none'">
-      <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
+  <div *ngIf="tiers.length > 0 else loading">
+    <!-- Temp Select -->
+    <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">
+      <option [innerHtml]="selectedSearchOption"></option>
     </select>
-    <i class="fas fa-search fa-sm"></i>
-    <input #searchInput type="text" class="search" (input)="onSearchChange($event.target.value)" [style.border-radius]="searchOptions.length > 1 ? '0 100px 100px 0' : '100px'">
-    <div (click)="clearSearchText()">
-      <i class="fas fa-times-circle fa-sm"></i>
+
+    <!-- Search -->
+    <div class="search-container">
+      <select [style.width.px]="tmpSelect.offsetWidth" [(ngModel)]="selectedSearchOption" name="searchOptions" [style.display]="searchOptions.length > 1 ? 'block' : 'none'">
+        <option *ngFor="let option of searchOptions" [ngValue]="option">{{option}}</option>
+      </select>
+      <i class="fas fa-search fa-sm"></i>
+      <input #searchInput type="text" class="search" (input)="onSearchChange($event.target.value)" [style.border-radius]="searchOptions.length > 1 ? '0 100px 100px 0' : '100px'">
+      <div (click)="clearSearchText()">
+        <i class="fas fa-times-circle fa-sm"></i>
+      </div>
     </div>
   </div>
+
+  <!-- Loading -->
+  <ng-template #loading>
+    <div class="loading-container" [style.height.px]="tierComponent.parentTierHeight + 89">
+      <div class="loading-ball"></div>
+      <div class="loading-ball" style="animation-delay: .3333s; transform: scale(0);"></div>
+      <div class="loading-ball" style="animation-delay: .6666s; transform: scale(0);"></div>
+    </div>
+  </ng-template>
+
+  <!-- Tier -->
   <tier>
     <ng-content></ng-content>
   </tier>

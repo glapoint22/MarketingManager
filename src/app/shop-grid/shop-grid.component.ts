@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input } from '@angular/core';
+import { Component, OnInit, HostListener, Input, ElementRef } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 
@@ -14,7 +14,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filters: Array<any> = [];
   private filterActivated: boolean;
 
-  constructor(dataService: DataService) { super(dataService) }
+  constructor(dataService: DataService, private element: ElementRef) { super(dataService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
@@ -184,6 +184,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     });
 
     super.createTiers();
+    this.element.nativeElement.firstElementChild.focus();
   }
 
   @HostListener('window:resize', ['$event'])
