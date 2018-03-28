@@ -216,6 +216,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   }
 
   setParentTierHeight(){
-    this.tierComponent.parentTierHeight = window.innerHeight - 89;
+    this.tierComponent.parentTierHeight = window.innerHeight - 91;
   }
 }

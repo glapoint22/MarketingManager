@@ -1,11 +1,11 @@
+@import 'theme';
+
 .grid-container{
-    outline: none;
+    margin: 1px;
+    outline: 1px solid #3a3a3a;
 }
-.grid{
-    width: auto;
-    // overflow-x: hidden;
-    // overflow-y: auto;
-    overflow: hidden;
+.grid-container:focus, .grid-container:focus-within{
+    outline: 1px solid $selected-color;
 }
 .search-container{
     width: 100%;

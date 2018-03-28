@@ -17,7 +17,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    this.tierComponent.parentTierHeight = 230;
+    this.tierComponent.parentTierHeight = 228;
   }
 
   createTiers() {

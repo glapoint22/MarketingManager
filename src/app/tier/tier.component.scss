@@ -1,3 +1,5 @@
+@import 'theme';
+
 .tier-container{
     position: relative;
 }
@@ -102,11 +104,11 @@ label:hover::after{
     display: flex;
 }
 .highlight:hover{
-    background: #1c4450;
+    background: $hover-color;
     color: white;
 }
 .selected{
-    background: #07729c !important;
+    background: $selected-color !important;
     color: white;
 }
 .selected > .button-container{
