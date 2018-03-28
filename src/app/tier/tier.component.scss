@@ -124,3 +124,7 @@ label:hover::after{
     transition: opacity 0.5s;
     transition-delay: 0.25s;
 }
+.parent-tier{
+    overflow: auto;
+    position: relative;
+}

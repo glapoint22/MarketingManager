@@ -7,12 +7,12 @@
     color: white;
     border-radius: 5px;
     border: 1px solid #626262;
-    // overflow: auto;
     input[type=checkbox]{
         display: inline-block;
         margin: 5px;
         cursor: pointer;
     }
+    z-index: 100;
 }
 .label{
     background: #252525;

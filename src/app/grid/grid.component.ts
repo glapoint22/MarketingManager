@@ -17,7 +17,6 @@ export class GridComponent implements OnInit, Igrid {
   public selectedSearchOption: string;
   public apiUrl: string;
   public apiParameters: Array<any> = [];
-  public gridHeight: number;
   public searchValue: string = '';
   public tierToSearch: number = 0;
   public currentItem: any;
@@ -29,14 +28,14 @@ export class GridComponent implements OnInit, Igrid {
     this.tierComponent.grid = this;
     this.tierComponent.setTier(this.tiers[0]);
    }
-  setGridHeight() { }
+
+  onTierCollapse(){}
 
   ngOnInit() {
     this.dataService.get(this.apiUrl, this.apiParameters)
       .subscribe((data: any) => {
         this.createTiers(data);
         this.setSearchOptions();
-        this.setGridHeight();
 
       }, error => {
         // Error

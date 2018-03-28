@@ -12,7 +12,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
   public filters: Array<any> = [];
-
   private filterActivated: boolean;
 
   constructor(dataService: DataService) { super(dataService) }
@@ -20,10 +19,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   ngOnInit() {
     this.apiUrl = 'api/Categories';
     this.apiParameters = [{ key: 'includeProducts', value: true }];
+    this.setParentTierHeight();
     super.ngOnInit();
-  }
-  setGridHeight() {
-    this.gridHeight = window.innerHeight - 66;
   }
 
   createTiers(data: Array<any>) {
@@ -117,17 +114,29 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         name: 'Filter Product',
         icon: 'fas fa-filter',
         onClick: (item, row) => {
+          //Flag that the filters have been clicked
           this.filterActivated = true;
-          if(this.currentItem === item){
+
+          //Show or hide the filters container
+          if (this.currentItem === item) {
             this.showFiltersContainer = !this.showFiltersContainer
-          }else{
+          } else {
             this.showFiltersContainer = true;
           }
 
+          //Position the filters container
+          switch (this.tierToSearch) {
+            case 0:
+              this.filtersContainerTop = row.offsetParent.offsetParent.offsetParent.offsetParent.offsetTop + row.offsetParent.offsetParent.offsetTop + row.offsetTop + 73;
+              break;
+            case 1:
+              this.filtersContainerTop = row.offsetParent.offsetParent.offsetTop + row.offsetTop + 51;
+              break;
+            case 2:
+              this.filtersContainerTop = row.offsetTop + 28;
+          }
 
-          
-          this.filtersContainerTop = row.offsetParent.offsetParent.offsetTop + row.offsetParent.offsetTop + row.offsetTop + 28;
-
+          //Set the data
           this.filters = this.filterGrid.tiers[0].items
             .map(x => ({
               id: x.id,
@@ -179,7 +188,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    this.setGridHeight();
+    this.setParentTierHeight();
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -194,11 +203,19 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   }
 
   onItemSelect(item: any): void {
-    if(this.filterActivated){
+    if (this.filterActivated) {
       this.filterActivated = false;
-    }else{
-      if(item !== this.currentItem)this.showFiltersContainer = false;
+    } else {
+      if (item !== this.currentItem) this.showFiltersContainer = false;
     }
     super.onItemSelect(item);
+  }
+
+  onTierCollapse() {
+    this.showFiltersContainer = false;
+  }
+
+  setParentTierHeight(){
+    this.tierComponent.parentTierHeight = window.innerHeight - 89;
   }
 }

@@ -24,30 +24,32 @@
     </div>
   </div>
 
-  <!-- Items -->
-  <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-    class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
-
-    <!-- Row Content -->
+  <!-- Parent Tier -->
+  <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
     <ng-content></ng-content>
 
-    <!-- Toggle Expand/Collapse button -->
-    <span *ngIf="index < grid.tiers.length - 1">
-      <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
-      <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
-    </span>
+    <!-- Items -->
+    <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+      class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
 
-    <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
-      <!-- Data -->
-      <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
+      <!-- Toggle Expand/Collapse button -->
+      <span *ngIf="index < grid.tiers.length - 1">
+        <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
+        <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
+      </span>
 
-      <!-- Row Buttons -->
-      <div class="button-container">
-        <div class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, row)">
-          <i [class]="rowButton.icon"></i>
+      <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
+        <!-- Data -->
+        <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
+
+        <!-- Row Buttons -->
+        <div class="button-container">
+          <div #foo class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, foo)">
+            <i [class]="rowButton.icon"></i>
+          </div>
         </div>
       </div>
+      <tier [grid]="grid"></tier>
     </div>
-    <tier [grid]="grid"></tier>
   </div>
 </div>

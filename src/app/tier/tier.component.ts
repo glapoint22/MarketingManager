@@ -20,6 +20,7 @@ export class TierComponent implements Itier {
   public isExpand: boolean = false;
   public headerButtons: Array<any> = [];
   public rowButtons: Array<any> = [];
+  public parentTierHeight: number;
 
   constructor() { }
 
@@ -58,6 +59,8 @@ export class TierComponent implements Itier {
   }
 
   collapseTier(tier: TierComponent, checkbox?: ElementRef) {
+    this.grid.onTierCollapse();
+
     if (this.grid.currentItem && tier.index == this.grid.currentItem.tierIndex) {
       this.grid.currentItem.isSelected = false;
     }

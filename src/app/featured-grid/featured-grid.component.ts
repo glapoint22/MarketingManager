@@ -17,7 +17,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    this.gridHeight = 262;
+    this.tierComponent.parentTierHeight = 230;
   }
 
   createTiers() {
@@ -43,7 +43,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
         {
           name: 'Category',
           defaultValue: 'My Category',
-          width: 130
+          width: 250
         }
       ],
       headerButtons: headerButtons,

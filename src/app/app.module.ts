@@ -1,12 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
-
 import { AppComponent } from './app.component';
-
 import { DataService } from "./data.service";
 import { HttpModule } from '@angular/http';
-import { ExpandableGridComponent } from './expandable-grid/expandable-grid.component';
 import { ShopGridComponent } from './shop-grid/shop-grid.component';
 import { ResizableDirective } from './resizable.directive';
 import { ShopComponent } from './shop/shop.component';
@@ -26,7 +23,6 @@ import { EditableGridComponent } from './editable-grid/editable-grid.component';
 @NgModule({
   declarations: [
     AppComponent,
-    ExpandableGridComponent,
     ShopGridComponent,
     ResizableDirective,
     ShopComponent,

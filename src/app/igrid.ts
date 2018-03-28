@@ -6,4 +6,5 @@ export interface Igrid {
     tierToSearch: number;
     currentItem: any;
     onItemSelect(item: any): void;
+    onTierCollapse(): void;
 }

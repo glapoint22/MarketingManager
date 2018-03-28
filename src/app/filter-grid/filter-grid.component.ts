@@ -13,7 +13,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
 
   ngOnInit() {
     this.apiUrl = 'api/Filters';
-    this.gridHeight = 262;
+    this.tierComponent.parentTierHeight = 230;
     super.ngOnInit();
   }
 
@@ -36,7 +36,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
         {
           name: 'Filter',
           defaultValue: 'My Filter',
-          width: 100
+          width: 200
         }
       ],
       headerButtons: this.setHeaderButtons('New Filter', 'Delete Filter', 0),
@@ -66,7 +66,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
         {
           name: 'Filter Option',
           defaultValue: 'My Filter Options',
-          width: 100
+          width: 200
         }
       ],
       headerButtons: this.setHeaderButtons('New Filter Option', 'Delete Filter Option', 1),

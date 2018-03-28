@@ -3,8 +3,9 @@
 }
 .grid{
     width: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
+    // overflow-x: hidden;
+    // overflow-y: auto;
+    overflow: hidden;
 }
 .search-container{
     width: 100%;
