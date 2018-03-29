@@ -130,3 +130,10 @@ label:hover::after{
     overflow: auto;
     position: relative;
 }
+.no-results{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c7c7c7;
+    font-size: 24px;
+}

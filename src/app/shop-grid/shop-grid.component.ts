@@ -113,7 +113,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       {
         name: 'Filter Product',
         icon: 'fas fa-filter',
-        onClick: (item, row) => {
+        onClick: (item, rowButton) => {
           //Flag that the filters have been clicked
           this.filterActivated = true;
 
@@ -127,13 +127,13 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           //Position the filters container
           switch (this.tierToSearch) {
             case 0:
-              this.filtersContainerTop = row.offsetParent.offsetParent.offsetParent.offsetParent.offsetTop + row.offsetParent.offsetParent.offsetTop + row.offsetTop + 73;
+              this.filtersContainerTop = rowButton.offsetParent.offsetParent.offsetParent.offsetParent.offsetTop + rowButton.offsetParent.offsetParent.offsetTop + rowButton.offsetTop + 73;
               break;
             case 1:
-              this.filtersContainerTop = row.offsetParent.offsetParent.offsetTop + row.offsetTop + 51;
+              this.filtersContainerTop = rowButton.offsetParent.offsetParent.offsetTop + rowButton.offsetTop + 51;
               break;
             case 2:
-              this.filtersContainerTop = row.offsetTop + 28;
+              this.filtersContainerTop = rowButton.offsetTop + 28;
           }
 
           //Set the data

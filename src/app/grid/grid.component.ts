@@ -48,18 +48,29 @@ export class GridComponent implements OnInit, Igrid {
   }
 
   onSearchChange(searchValue: string) {
+    //Assign the search value to the grid
+    this.searchValue = searchValue;
+
+    //Check the item result count
+    this.tierComponent.checkItemResults();
+
+    //Collapse all tiers of the grid
     this.tierComponent.collapseTiers();
+
+    //Make sure no item is selected
     if(this.currentItem && this.currentItem.isSelected){
       this.currentItem.isSelected = false;
     }
     
-    this.searchValue = searchValue;
-    this.tierToSearch = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
+    //Set the tier to search based on which search option is selected
+    let tierIndex = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
+    if(tierIndex !== this.tierToSearch){
+      this.tierToSearch = tierIndex;
+      this.tierComponent.setTier(this.tiers[this.tierToSearch]);
+    }
 
-
-    this.tierComponent.setTier(this.tiers[this.tierToSearch]);
-
-    if (searchValue.length == 0) {
+    //If the search value is an empty string, set the tier to search to the first tier
+    if (searchValue.length == 0 && this.tierToSearch !== 0) {
       this.tierToSearch = 0;
       this.tierComponent.setTier(this.tiers[0]);
     }

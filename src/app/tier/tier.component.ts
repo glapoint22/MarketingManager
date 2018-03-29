@@ -10,6 +10,7 @@ import { Igrid } from '../igrid';
 export class TierComponent implements Itier {
   @ViewChildren(TierComponent) tierComponents: QueryList<TierComponent>;
   @ViewChildren('checkbox') checkboxElements: QueryList<ElementRef>;
+  @ViewChildren('row') itemResults: QueryList<ElementRef>;
   @Input() grid: Igrid;
   public parentId: number;
   public margin: number = 0;
@@ -21,6 +22,7 @@ export class TierComponent implements Itier {
   public headerButtons: Array<any> = [];
   public rowButtons: Array<any> = [];
   public parentTierHeight: number;
+  public noResults: boolean;
 
   constructor() { }
 
@@ -97,5 +99,13 @@ export class TierComponent implements Itier {
     if (this.tierComponents.length > 0) {
       return this.tierComponents.toArray().some(x => x.isExpand);
     }
+  }
+
+  checkItemResults() {
+    //This is used to test if we need to dsiplay the no results message
+    this.noResults = false;
+    window.setTimeout(() => {
+      if (this.itemResults.toArray().length === 0) this.noResults = true;
+    }, 1);
   }
 }

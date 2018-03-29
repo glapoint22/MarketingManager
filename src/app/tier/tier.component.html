@@ -1,55 +1,66 @@
 <div *ngIf="index > -1" [style.marginLeft.px]="margin" class="tier-container" [ngClass]="{'tier-border': index != grid.tierToSearch}">
-  <!-- Header -->
-  <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}">
 
-    <div class="flex-container">
+  <!-- Tier -->
+  <div *ngIf="!noResults else noResultsFound">
+    <!-- Header -->
+    <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}">
 
-      <!-- Fields -->
-      <div *ngFor="let field of fields" class="field" [style.flexBasis.px]="field.width">{{field.name}}</div>
+      <div class="flex-container">
 
-      <!-- Header Buttons -->
-      <div class="button-container">
-        <!-- Generic Buttons -->
-        <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick()"
-          [ngClass]="{'disabled': headerButton.getDisabled()}">
-          <i [class]="headerButton.icon"></i>
-        </div>
+        <!-- Fields -->
+        <div *ngFor="let field of fields" class="field" [style.flexBasis.px]="field.width">{{field.name}}</div>
 
-        <!-- Collapse Button -->
-        <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers(this)" [ngClass]="{'disabled': !isCollapsed()}"
-          [title]="'Collapse ' + name">
-          <i class="fas fa-minus-square"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Parent Tier -->
-  <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
-    <ng-content></ng-content>
-
-    <!-- Items -->
-    <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-      class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
-
-      <!-- Toggle Expand/Collapse button -->
-      <span *ngIf="index < grid.tiers.length - 1">
-        <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
-        <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
-      </span>
-
-      <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
-        <!-- Data -->
-        <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
-
-        <!-- Row Buttons -->
+        <!-- Header Buttons -->
         <div class="button-container">
-          <div #foo class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, foo)">
-            <i [class]="rowButton.icon"></i>
+          <!-- Generic Buttons -->
+          <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick()"
+            [ngClass]="{'disabled': headerButton.getDisabled()}">
+            <i [class]="headerButton.icon"></i>
+          </div>
+
+          <!-- Collapse Button -->
+          <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers(this)" [ngClass]="{'disabled': !isCollapsed()}"
+            [title]="'Collapse ' + name">
+            <i class="fas fa-minus-square"></i>
           </div>
         </div>
       </div>
-      <tier [grid]="grid"></tier>
+    </div>
+
+    <!-- Parent Tier -->
+    <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
+      <ng-content></ng-content>
+
+      <!-- Items -->
+      <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+        class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
+
+        <!-- Toggle Expand/Collapse button -->
+        <span *ngIf="index < grid.tiers.length - 1">
+          <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
+          <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
+        </span>
+
+        <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
+          <!-- Data -->
+          <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
+
+          <!-- Row Buttons -->
+          <div class="button-container">
+            <div #button class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, button)">
+              <i [class]="rowButton.icon"></i>
+            </div>
+          </div>
+        </div>
+        <tier [grid]="grid"></tier>
+      </div>
     </div>
   </div>
+
+  <!-- No Results -->
+  <ng-template #noResultsFound>
+    <div [style.height.px]="parentTierHeight + 23" class="no-results">
+      No Results Found
+    </div>
+  </ng-template>
 </div>
