@@ -12,6 +12,7 @@ import { Igrid } from '../igrid';
 export class GridComponent implements OnInit, Igrid {
   @ViewChild(TierComponent) tierComponent: TierComponent;
   @ViewChild('searchInput') searchInput: ElementRef;
+  @ViewChild('grid') grid: ElementRef;
   public tiers: Array<Itier> = [];
   public searchOptions: Array<string> = [];
   public selectedSearchOption: string;

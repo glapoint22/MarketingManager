@@ -38,7 +38,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.categoriesTier = {
       index: 0,
       name: 'Categories',
-      items: this.categories.items.filter(x => x.featured).map(x => Object.assign({}, x)),
+      items: this.categories.items.filter(x => x.featured),
       fields: [
         {
           name: 'Category',
@@ -65,16 +65,10 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
       }
     );
 
-
     this.productsTier = {
       index: 0,
       name: 'Products',
-      items: this.products.items.filter(x => x.featured).map(x => ({
-        data: [x.data[0]],
-        id: x.id,
-        featured: x.featured,
-        tierIndex: 0
-      })),
+      items: this.products.items.filter(x => x.featured),
       fields: [
         {
           name: 'Product',

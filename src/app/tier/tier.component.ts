@@ -103,9 +103,9 @@ export class TierComponent implements Itier {
 
   checkItemResults() {
     //This is used to test if we need to dsiplay the no results message
-    this.noResults = false;
     window.setTimeout(() => {
-      if (this.itemResults.toArray().length === 0) this.noResults = true;
+      this.noResults = false;
+      if (this.itemResults.toArray().length === 0 && this.grid.searchValue.length > 0) this.noResults = true;
     }, 1);
   }
 }

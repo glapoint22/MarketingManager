@@ -26,6 +26,8 @@
 }
 input{
     display: none;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
 }
 input:checked ~ label::after {
     transform: translate(-1px, 1px) rotate(90deg);
@@ -131,9 +133,21 @@ label:hover::after{
     position: relative;
 }
 .no-results{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     color: #c7c7c7;
     font-size: 24px;
+    height: 23px;
+}
+.edit{
+    display: block;
+    background: #8e0000;
+    color: white;
+    line-height: 23px;
+    padding-left: 4px;
+    margin-top: -1px;
+    height: 22px;
+    margin-left: -5px;
+    border: 1px solid #e80c0c;
+    box-sizing: border-box;
+    outline: none;
 }

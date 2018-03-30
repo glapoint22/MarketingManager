@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
 
 @Component({
   template: ''
 })
-export class EditableGridComponent extends GridComponent  {
+export class EditableGridComponent extends GridComponent {
+  public editedFields: Array<any>;
+  public change: number = 0;
+  
 
   constructor(dataService: DataService) { super(dataService) }
 
 
-  setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number){
+  setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number) {
     return [
       {
         name: newButtonName,
@@ -26,7 +29,7 @@ export class EditableGridComponent extends GridComponent  {
         name: deleteButtonName,
         icon: 'fas fa-trash-alt',
         onClick: () => {
-          console.log('Delete');
+          this.setDelete();
         },
         getDisabled: () => {
           return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == tierIndex) : true;
@@ -36,15 +39,56 @@ export class EditableGridComponent extends GridComponent  {
   }
 
 
-  setRowButtons(buttonName: string){
+  setRowButtons(buttonName: string) {
     return [
       {
         name: buttonName,
         icon: 'fas fa-edit',
-        onClick: (item, row) => {
-          console.log(item);
+        onClick: (item, rowButton) => {
+          item.isInEditMode = true;
+          window.setTimeout(() => {
+            this.editedFields = Array.from(document.getElementsByClassName('edit'));
+            this.editedFields[0].focus();
+          }, 1);
         }
       }
     ]
   }
+
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.keyCode === 13) {
+      if (this.currentItem && this.currentItem.isInEditMode) {
+        for(let i = 0; i < this.editedFields.length; i++){
+          this.currentItem.data[i].value = this.editedFields[i].value;
+        }
+        this.currentItem.isInEditMode = false;
+        this.grid.nativeElement.focus();
+      }
+    }
+
+    super.handleKeyboardEvent(event);
+  }
+  
+  setDelete(){
+    if(this.currentItem && this.currentItem.isSelected){
+      this.currentItem.isSelected = false;
+      this.deleteItem(this.currentItem);
+      this.change += 1;
+      this.tierComponent.checkItemResults();
+    }
+  }
+
+  deleteItem(item: any){
+    item.isDeleted = true;
+
+    let nextTier = this.tiers[item.tierIndex + 1];
+    
+    if(nextTier){
+      let items = nextTier.items.filter(x => x.parentId === item.id);
+      items.forEach(x => this.deleteItem(x));
+    }
+
+    
+  }
+
 }

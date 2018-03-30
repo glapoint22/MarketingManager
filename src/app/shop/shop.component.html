@@ -12,7 +12,7 @@
 
     <!-- Featured Editor -->
     <editor [name]="'Featured Editor'">
-      <featured-grid [categories]="shopGrid.tiers[0]" [products]="shopGrid.tiers[2]"></featured-grid>
+      <featured-grid #featuredGrid [categories]="shopGrid.tiers[0]" [products]="shopGrid.tiers[2]"></featured-grid>
     </editor>
 
   </div>
@@ -20,7 +20,7 @@
 
 <!-- Shop Grid -->
 <div class="shop-grid-container">
-  <shop-grid #shopGrid [filterGrid]="filterGrid">
+  <shop-grid #shopGrid [filterGrid]="filterGrid" (onChange)="featuredGrid.change = featuredGrid.change + 1">
 
     <!-- Filters -->
     <div *ngIf="shopGrid.filterGrid.tiers.length > 0" class="filters-container" [style.top.px]="shopGrid.filtersContainerTop"

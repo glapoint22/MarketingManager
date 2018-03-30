@@ -1,4 +1,4 @@
-<div class="grid-container" tabindex="0" (focus)="hasFocus = true" (blur)="hasFocus = false">
+<div #grid class="grid-container" tabindex="0" (focus)="hasFocus = true" (blur)="hasFocus = false">
   <div *ngIf="tiers.length > 0 else loading">
     <!-- Temp Select -->
     <select #tmpSelect style="padding-left: 5px; position: absolute; visibility: hidden">

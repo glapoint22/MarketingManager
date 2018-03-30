@@ -19,6 +19,7 @@ import { TierFilterPipe } from './tier-filter.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
 import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
+import { DataFilterPipe } from './data-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { EditableGridComponent } from './editable-grid/editable-grid.component';
     TierFilterPipe,
     SearchFilterPipe,
     GridComponent,
-    EditableGridComponent
+    EditableGridComponent,
+    DataFilterPipe
   ],
   imports: [
     BrowserModule,

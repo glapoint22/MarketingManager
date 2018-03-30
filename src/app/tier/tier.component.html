@@ -26,40 +26,47 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Parent Tier -->
-    <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
-      <ng-content></ng-content>
+  <!-- Parent Tier -->
+  <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
+    <ng-content></ng-content>
 
-      <!-- Items -->
-      <div #row *ngFor="let item of items | tierFilter: parentId | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-        class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
+    <!-- Items -->
+    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+      class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
 
-        <!-- Toggle Expand/Collapse button -->
-        <span *ngIf="index < grid.tiers.length - 1">
-          <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
-          <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
-        </span>
+      <!-- Toggle Expand/Collapse button -->
+      <span *ngIf="index < grid.tiers.length - 1">
+        <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
+        <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
+      </span>
 
-        <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': item.isSelected}">
-          <!-- Data -->
-          <div *ngFor="let data of item.data; let j = index" class="field" [style.flexBasis.px]="fields[j].width">{{data.value}}</div>
+      <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': grid.currentItem == item && item.isSelected}">
+        <!-- Data -->
+        <div *ngFor="let data of item.data | dataFilter: fields; let j = index" class="field" [style.flexBasis.px]="fields[j].width">
+          <div *ngIf="grid.currentItem == item && item.isInEditMode else dataValue">
+            <input class="edit" type="text" [value]="data.value" [style.width.px]="fields[j].width" onfocus="this.select()">
+          </div>
+          <ng-template #dataValue>
+            {{data.value}}
+          </ng-template>
+        </div>
 
-          <!-- Row Buttons -->
-          <div class="button-container">
-            <div #button class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, button)">
-              <i [class]="rowButton.icon"></i>
-            </div>
+        <!-- Row Buttons -->
+        <div class="button-container">
+          <div #button class="button" *ngFor="let rowButton of rowButtons" [title]="rowButton.name" (click)="rowButton.onClick(item, button)">
+            <i [class]="rowButton.icon"></i>
           </div>
         </div>
-        <tier [grid]="grid"></tier>
       </div>
+      <tier [grid]="grid"></tier>
     </div>
   </div>
 
   <!-- No Results -->
   <ng-template #noResultsFound>
-    <div [style.height.px]="parentTierHeight + 23" class="no-results">
+    <div [style.lineHeight.px]="parentTierHeight" class="no-results">
       No Results Found
     </div>
   </ng-template>

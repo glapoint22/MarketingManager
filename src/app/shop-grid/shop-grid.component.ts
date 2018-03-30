@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener, Input, Output, ElementRef, EventEmitter } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 
@@ -9,6 +9,7 @@ import { DataService } from "../data.service";
 })
 export class ShopGridComponent extends EditableGridComponent implements OnInit {
   @Input() filterGrid;
+  @Output() onChange = new EventEmitter<void>();
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
   public filters: Array<any> = [];
@@ -218,5 +219,10 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   setParentTierHeight(){
     this.tierComponent.parentTierHeight = window.innerHeight - 91;
+  }
+
+  setDelete(){
+    super.setDelete();
+    this.onChange.emit();
   }
 }
