@@ -20,6 +20,7 @@ import { SearchFilterPipe } from './search-filter.pipe';
 import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { DataFilterPipe } from './data-filter.pipe';
+import { FeaturedFilterPipe } from './featured-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { DataFilterPipe } from './data-filter.pipe';
     SearchFilterPipe,
     GridComponent,
     EditableGridComponent,
-    DataFilterPipe
+    DataFilterPipe,
+    FeaturedFilterPipe
   ],
   imports: [
     BrowserModule,

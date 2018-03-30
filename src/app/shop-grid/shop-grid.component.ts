@@ -138,11 +138,11 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           }
 
           //Set the data
-          this.filters = this.filterGrid.tiers[0].items
+          this.filters = this.filterGrid.tiers[0].items.filter(x => !x.isDeleted)
             .map(x => ({
               id: x.id,
               name: x.data[0].value,
-              options: this.filterGrid.tiers[1].items
+              options: this.filterGrid.tiers[1].items.filter(x => !x.isDeleted)
                 .filter(y => y.parentId === x.id)
                 .map(z => ({
                   id: z.id,

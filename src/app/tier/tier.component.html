@@ -33,7 +33,7 @@
     <ng-content></ng-content>
 
     <!-- Items -->
-    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
+    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index | featuredFilter: grid.isFeatured; let i = index"
       class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}" (transitionend)="onTransitionEnd(i, $event)">
 
       <!-- Toggle Expand/Collapse button -->

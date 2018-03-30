@@ -13,11 +13,12 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   @Input() products;
   private categoriesTier: Itier;
   private productsTier: Itier;
+  public isFeatured: boolean = true;
 
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    this.tierComponent.parentTierHeight = 228;
+    this.tierComponent.parentTierHeight = 230;
   }
 
   createTiers() {
@@ -38,7 +39,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.categoriesTier = {
       index: 0,
       name: 'Categories',
-      items: this.categories.items.filter(x => x.featured),
+      items: this.categories.items,
       fields: [
         {
           name: 'Category',
@@ -51,7 +52,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     };
 
 
-    headerButtons = this.setHeaderButtons('New Featured Product', 'Delete Featured Product', 0);
+    headerButtons = this.setHeaderButtons('New Featured Product', 'Delete Featured Product', 2);
     headerButtons.unshift(
       {
         name: 'Switch to Featured Categories',
@@ -68,7 +69,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.productsTier = {
       index: 0,
       name: 'Products',
-      items: this.products.items.filter(x => x.featured),
+      items: this.products.items,
       fields: [
         {
           name: 'Product',
@@ -98,5 +99,9 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.selectedSearchOption = tier.name;
     this.clearSearchText();
     this.tierComponent.setTier(this.tiers[0]);
+  }
+
+  deleteItem(item: any) {
+    item.featured = false;
   }
 }

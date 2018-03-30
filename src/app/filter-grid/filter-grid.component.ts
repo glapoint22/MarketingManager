@@ -13,7 +13,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
 
   ngOnInit() {
     this.apiUrl = 'api/Filters';
-    this.tierComponent.parentTierHeight = 228;
+    this.tierComponent.parentTierHeight = 230;
     super.ngOnInit();
   }
 
