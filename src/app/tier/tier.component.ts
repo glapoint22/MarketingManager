@@ -12,15 +12,15 @@ export class TierComponent implements Itier {
   @ViewChildren('checkbox') checkboxElements: QueryList<ElementRef>;
   @ViewChildren('row') itemResults: QueryList<ElementRef>;
   @Input() grid: Igrid;
-  public parentId: number;
-  public margin: number = 0;
   public index: number = -1;
   public name: string;
   public items: Array<any>;
   public fields: Array<any>;
-  public isExpand: boolean = false;
   public headerButtons: Array<any> = [];
   public rowButtons: Array<any> = [];
+  public isExpanded: boolean = false;
+  public parentId: number;
+  public margin: number = 0;
   public parentTierHeight: number;
   public noResults: boolean;
 
@@ -39,7 +39,7 @@ export class TierComponent implements Itier {
     let child: TierComponent = this.tierComponents.toArray()[rowIndex];
 
     //This will expand or collapse the row
-    if (child.isExpand) {
+    if (child.isExpanded) {
       this.collapseTier(child);
     } else {
       child.setTier(this.grid.tiers[this.index + 1]);
@@ -47,7 +47,7 @@ export class TierComponent implements Itier {
       child.margin = 21;
 
       window.setTimeout(() => {
-        child.isExpand = true;
+        child.isExpanded = true;
       }, 1);
     }
   }
@@ -55,7 +55,7 @@ export class TierComponent implements Itier {
   onTransitionEnd(rowIndex: number, event: TransitionEvent) {
     let child = this.tierComponents.toArray()[rowIndex];
 
-    if (!child.isExpand && event.elapsedTime >= 0.5) {
+    if (!child.isExpanded && event.elapsedTime >= 0.5) {
       child.index = -1;
     }
   }
@@ -66,7 +66,7 @@ export class TierComponent implements Itier {
     if (this.grid.currentItem && tier.index == this.grid.currentItem.tierIndex) {
       this.grid.currentItem.isSelected = false;
     }
-    tier.isExpand = false;
+    tier.isExpanded = false;
     if (checkbox) {
       checkbox.nativeElement.checked = false;
       checkbox.nativeElement.parentElement.parentElement.classList.remove('max-expand');
@@ -97,7 +97,7 @@ export class TierComponent implements Itier {
   isCollapsed() {
     //Test to see if all rows in this tier is collapsed.
     if (this.tierComponents.length > 0) {
-      return this.tierComponents.toArray().some(x => x.isExpand);
+      return this.tierComponents.toArray().some(x => x.isExpanded);
     }
   }
 

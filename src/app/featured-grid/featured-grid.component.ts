@@ -83,7 +83,6 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.tiers.push(this.categoriesTier);
 
     super.createTiers();
-
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {

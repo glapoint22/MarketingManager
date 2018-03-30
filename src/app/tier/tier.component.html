@@ -3,7 +3,7 @@
   <!-- Tier -->
   <div *ngIf="!noResults else noResultsFound">
     <!-- Header -->
-    <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}">
+    <div class="header" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}">
 
       <div class="flex-container">
 
@@ -34,7 +34,7 @@
 
     <!-- Items -->
     <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index; let i = index"
-      class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpand}" (transitionend)="onTransitionEnd(i, $event)">
+      class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}" (transitionend)="onTransitionEnd(i, $event)">
 
       <!-- Toggle Expand/Collapse button -->
       <span *ngIf="index < grid.tiers.length - 1">
