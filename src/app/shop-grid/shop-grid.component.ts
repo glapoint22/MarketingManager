@@ -43,7 +43,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Category',
-          defaultValue: 'New Category',
+          defaultValue: 'Category Name',
           width: 300
         }
       ],
@@ -73,7 +73,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Niche',
-          defaultValue: 'New Niche',
+          defaultValue: 'Niche Name',
           width: 300
         }
       ],
@@ -161,7 +161,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Product',
-          defaultValue: 'New Product',
+          defaultValue: 'Product Name',
           width: 1600
         },
         {
@@ -239,6 +239,14 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       return id;
     } else {
       return super.createItemId(items, tierIndex);
+    }
+  }
+
+  onFilterOptionChange(option) {
+    if (!option.isChecked) {
+      this.currentItem.filters.push(option.id);
+    } else {
+      this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
     }
   }
 }

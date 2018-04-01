@@ -30,7 +30,7 @@
         <div *ngFor="let filter of shopGrid.filters">
           <div class="filter-title">{{filter.name}}</div>
           <div *ngFor="let option of filter.options" class="option-container">
-            <input type="checkbox" [checked]="option.isChecked">
+            <input type="checkbox" [checked]="option.isChecked" (change)="shopGrid.onFilterOptionChange(option)">
             <span class="filter-option">{{option.name}}</span>
           </div>
         </div>
