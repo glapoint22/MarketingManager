@@ -35,7 +35,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
       fields: [
         {
           name: 'Filter',
-          defaultValue: 'My Filter',
+          defaultValue: 'New Filter',
           width: 200
         }
       ],
@@ -65,7 +65,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
       fields: [
         {
           name: 'Filter Option',
-          defaultValue: 'My Filter Options',
+          defaultValue: 'New Filter Option',
           width: 200
         }
       ],

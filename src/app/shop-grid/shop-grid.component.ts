@@ -43,7 +43,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Category',
-          defaultValue: 'My Category',
+          defaultValue: 'New Category',
           width: 300
         }
       ],
@@ -73,7 +73,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Niche',
-          defaultValue: 'My Niche',
+          defaultValue: 'New Niche',
           width: 300
         }
       ],
@@ -147,7 +147,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 .map(z => ({
                   id: z.id,
                   name: z.data[0].value,
-                  isChecked: item.filters.some(x => x === z.id)
+                  isChecked: item.filters ? item.filters.some(x => x === z.id) : false
                 }))
             }))
         }
@@ -161,7 +161,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       fields: [
         {
           name: 'Product',
-          defaultValue: 'My Product',
+          defaultValue: 'New Product',
           width: 1600
         },
         {
@@ -217,12 +217,28 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.showFiltersContainer = false;
   }
 
-  setParentTierHeight(){
+  setParentTierHeight() {
     this.tierComponent.parentTierHeight = window.innerHeight - 91;
   }
 
-  setDelete(){
+  setDelete() {
     super.setDelete();
     this.onChange.emit();
+  }
+
+  createItemId(items: Array<any>, tierIndex: number): any {
+    //Create an id for the new product
+    if (tierIndex === 2) {
+      let id, index = 0
+
+      //This makes sure we don't have a duplicate
+      while (index > -1) {
+        id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+        index = items.findIndex(x => x.id == id);
+      }
+      return id;
+    } else {
+      return super.createItemId(items, tierIndex);
+    }
   }
 }

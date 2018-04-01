@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
+import { TierComponent } from '../tier/tier.component';
 
 @Component({
   template: ''
@@ -16,8 +17,8 @@ export class EditableGridComponent extends GridComponent {
       {
         name: newButtonName,
         icon: 'fas fa-file-alt',
-        onClick: () => {
-          console.log('Create');
+        onClick: (tierIndex: number, parentId: number) => {
+          this.createNewItem(tierIndex, parentId);
         },
         getDisabled: () => {
           return false;
@@ -42,11 +43,7 @@ export class EditableGridComponent extends GridComponent {
         name: buttonName,
         icon: 'fas fa-edit',
         onClick: (item, rowButton) => {
-          item.isInEditMode = true;
-          window.setTimeout(() => {
-            this.editedFields = Array.from(document.getElementsByClassName('edit'));
-            this.editedFields[0].focus();
-          }, 1);
+          this.editItem(item);
         }
       }
     ]
@@ -66,13 +63,32 @@ export class EditableGridComponent extends GridComponent {
     super.handleKeyboardEvent(event);
   }
 
+  editItem(item) {
+    item.isInEditMode = true;
+    window.setTimeout(() => {
+      this.editedFields = Array.from(document.getElementsByClassName('edit'));
+      this.editedFields[0].focus();
+    }, 1);
+  }
+
   setDelete() {
     if (this.currentItem && this.currentItem.isSelected) {
       this.currentItem.isSelected = false;
       this.deleteItem(this.currentItem);
       this.change += 1;
       this.tierComponent.checkItemResults();
+      this.collapseDeletedTier(this.tierComponent.tierComponents);
     }
+  }
+
+  collapseDeletedTier(tierComponents){
+    tierComponents.toArray().filter(x => x.isExpanded).forEach(x => {
+      if(x.parentId === this.currentItem.id){
+        x.isExpanded = false;
+      }else{
+        this.collapseDeletedTier(x.tierComponents);
+      }
+    });
   }
 
   deleteItem(item: any) {
@@ -85,5 +101,25 @@ export class EditableGridComponent extends GridComponent {
       let items = nextTier.items.filter(x => x.parentId === item.id);
       items.forEach(x => this.deleteItem(x));
     }
+  }
+
+  createNewItem(tierIndex: number, parentId: number) {
+    let newItem = {
+      parentId: parentId,
+      id: this.createItemId(this.tiers[tierIndex].items, tierIndex),
+      tierIndex: tierIndex,
+      data: [],
+      isInEditMode: true,
+      isSelected: true
+    }
+    this.tiers[tierIndex].fields.forEach(x => newItem.data.push({ value: x.defaultValue }));
+    this.tiers[tierIndex].items.unshift(newItem);
+    this.change += 1;
+    this.currentItem = newItem;
+    this.editItem(newItem);
+  }
+
+  createItemId(items, tierIndex) {
+    return Math.max(-1, Math.max.apply(null, items.map(x => x.id))) + 1;
   }
 }

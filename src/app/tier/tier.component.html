@@ -13,13 +13,13 @@
         <!-- Header Buttons -->
         <div class="button-container">
           <!-- Generic Buttons -->
-          <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick()"
+          <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick(index, parentId)"
             [ngClass]="{'disabled': headerButton.getDisabled()}">
             <i [class]="headerButton.icon"></i>
           </div>
 
           <!-- Collapse Button -->
-          <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers(this)" [ngClass]="{'disabled': !isCollapsed()}"
+          <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers()" [ngClass]="{'disabled': !isCollapsed()}"
             [title]="'Collapse ' + name">
             <i class="fas fa-minus-square"></i>
           </div>
