@@ -14,6 +14,8 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   private categoriesTier: Itier;
   private productsTier: Itier;
   public isFeatured: boolean = true;
+  public showNonFeaturedList: boolean;
+  public nonFeaturedSearchValue: string = '';
 
   constructor(dataService: DataService) { super(dataService) }
 
@@ -44,7 +46,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
         {
           name: 'Category',
           defaultValue: 'My Category',
-          width: 250
+          width: 420
         }
       ],
       headerButtons: headerButtons,
@@ -74,7 +76,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
         {
           name: 'Product',
           defaultValue: 'My Product',
-          width: 130
+          width: 420
         }
       ],
       headerButtons: headerButtons,
@@ -97,11 +99,31 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     if (this.currentItem && this.currentItem.isSelected) this.currentItem.isSelected = false;
     this.tiers[0] = tier;
     this.selectedSearchOption = tier.name;
+    this.showNonFeaturedList = false;
     this.clearSearchText();
     this.tierComponent.setTier(this.tiers[0]);
+    this.nonFeaturedSearchValue = '';
   }
 
   deleteItem(item: any) {
     item.featured = false;
   }
+
+  createNewItem(){
+    this.showNonFeaturedList = !this.showNonFeaturedList;
+    if(this.currentItem)this.currentItem.isSelected = false;
+  }
+
+  onNonFeaturedItemClick(item){
+    item.featured = true;
+    this.change += 1;
+    this.showNonFeaturedList = false;
+    this.nonFeaturedSearchValue = '';
+  }
+
+  clearSearch(search){
+    search.value = '';
+    this.nonFeaturedSearchValue = '';
+  }
+
 }

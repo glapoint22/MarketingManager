@@ -5,9 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class FeaturedFilterPipe implements PipeTransform {
 
-  transform(items: Array<any>, isFeatured: boolean): any {
+  transform(items: Array<any>, isFeatured: boolean, isNonFeatured: boolean): any {
     if (!items) return;
     if (!isFeatured) return items;
-    return items.filter(x => x.featured);
+    return items.filter(x => x.featured === !isNonFeatured);
   }
 }

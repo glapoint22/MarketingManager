@@ -10,7 +10,7 @@ export class SearchFilterPipe implements PipeTransform {
 
     if (tier == targetTier && searchValue.length > 0) {
       let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
-      return items.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y)))).slice(0, 50);
+      return items.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y))));
     } else {
       return items;
     }

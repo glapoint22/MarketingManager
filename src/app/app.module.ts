@@ -21,6 +21,8 @@ import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { DataFilterPipe } from './data-filter.pipe';
 import { FeaturedFilterPipe } from './featured-filter.pipe';
+import { MaxCountPipe } from './max-count.pipe';
+import { NonFeaturedSearchPipe } from './non-featured-search.pipe';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,9 @@ import { FeaturedFilterPipe } from './featured-filter.pipe';
     GridComponent,
     EditableGridComponent,
     DataFilterPipe,
-    FeaturedFilterPipe
+    FeaturedFilterPipe,
+    MaxCountPipe,
+    NonFeaturedSearchPipe
   ],
   imports: [
     BrowserModule,

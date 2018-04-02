@@ -24,16 +24,21 @@
             <i class="fas fa-minus-square"></i>
           </div>
         </div>
+
+        <!-- Header Content -->
+        <ng-content select="[header-content]"></ng-content>
       </div>
     </div>
   </div>
 
   <!-- Parent Tier -->
   <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
-    <ng-content></ng-content>
+
+    <!-- Row Content -->
+    <ng-content select="[row-content]"></ng-content>
 
     <!-- Items -->
-    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index | featuredFilter: grid.isFeatured; let i = index"
+    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index | featuredFilter: grid.isFeatured | maxCount: 50; let i = index"
       class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}" (transitionend)="onTransitionEnd(i, $event)">
 
       <!-- Toggle Expand/Collapse button -->
