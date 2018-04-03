@@ -5,7 +5,7 @@ import { DataService } from "../data.service";
 @Component({
   selector: 'filter-grid',
   templateUrl: '../grid/grid.component.html',
-  styleUrls: ['../grid/grid.component.scss', './filter-grid.component.scss']
+  styleUrls: ['../grid/grid.component.scss']
 })
 export class FilterGridComponent extends EditableGridComponent implements OnInit {
 

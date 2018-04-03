@@ -16,13 +16,13 @@ import { EditorComponent } from './editor/editor.component';
 import { FeaturedGridComponent } from './featured-grid/featured-grid.component';
 import { TierComponent } from './tier/tier.component';
 import { TierFilterPipe } from './tier-filter.pipe';
-import { SearchFilterPipe } from './search-filter.pipe';
 import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { DataFilterPipe } from './data-filter.pipe';
 import { FeaturedFilterPipe } from './featured-filter.pipe';
 import { MaxCountPipe } from './max-count.pipe';
-import { NonFeaturedSearchPipe } from './non-featured-search.pipe';
+import { TierSearchFilterPipe } from './tier-search-filter.pipe';
+import { SearchFilterPipe } from './search-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -39,13 +39,13 @@ import { NonFeaturedSearchPipe } from './non-featured-search.pipe';
     FeaturedGridComponent,
     TierComponent,
     TierFilterPipe,
-    SearchFilterPipe,
     GridComponent,
     EditableGridComponent,
     DataFilterPipe,
     FeaturedFilterPipe,
     MaxCountPipe,
-    NonFeaturedSearchPipe
+    TierSearchFilterPipe,
+    SearchFilterPipe
   ],
   imports: [
     BrowserModule,

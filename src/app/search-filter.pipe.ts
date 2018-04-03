@@ -5,14 +5,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SearchFilterPipe implements PipeTransform {
 
-  transform(items: Array<any>, searchValue: string, targetTier: number, tier: number): any {
+  transform(items: Array<any>, searchValue: string): any {
     if (!items) return;
 
-    if (tier == targetTier && searchValue.length > 0) {
-      let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
-      return items.filter(x => searchArray.every(y => x.data.some(z => z.value.toLowerCase().includes(y))));
-    } else {
-      return items;
-    }
+    let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
+    return items.filter(x => searchArray.every(y => x.data[0].value.toLowerCase().includes(y)));
   }
+
 }

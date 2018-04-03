@@ -125,5 +125,4 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     search.value = '';
     this.nonFeaturedSearchValue = '';
   }
-
 }

@@ -15,6 +15,7 @@
         cursor: pointer;
     }
     z-index: 100;
+    @include shadow();
 }
 .label{
     background: #252525;

@@ -22,15 +22,16 @@ export class GridComponent implements OnInit, Igrid {
   public tierToSearch: number = 0;
   public currentItem: any;
   public hasFocus: boolean = false;
+  public isHighlightRow: boolean = true;
 
   constructor(public dataService: DataService) { }
 
   createTiers(data?: Array<any>) {
     this.tierComponent.grid = this;
     this.tierComponent.setTier(this.tiers[0]);
-   }
+  }
 
-  onTierCollapse(){}
+  onTierCollapse() { }
 
   ngOnInit() {
     this.dataService.get(this.apiUrl, this.apiParameters)
@@ -58,13 +59,13 @@ export class GridComponent implements OnInit, Igrid {
     this.tierComponent.collapseTiers();
 
     //Make sure no item is selected
-    if(this.currentItem && this.currentItem.isSelected){
+    if (this.currentItem && this.currentItem.isSelected) {
       this.currentItem.isSelected = false;
     }
-    
+
     //Set the tier to search based on which search option is selected
     let tierIndex = this.tiers.findIndex(x => x.name == this.selectedSearchOption);
-    if(tierIndex !== this.tierToSearch){
+    if (tierIndex !== this.tierToSearch) {
       this.tierToSearch = tierIndex;
       this.tierComponent.setTier(this.tiers[this.tierToSearch]);
     }

@@ -1,7 +1,7 @@
 <div class="editor-container">
   <!-- Divider -->
-  <!-- <div (onMouse)="shopGrid.isHighlightRow = !$event; filterGrid.isHighlightRow = !$event" resizable class="divider"></div> -->
-  <div resizable class="divider"></div>
+  <div (onMouse)="shopGrid.isHighlightRow = !$event; filterGrid.isHighlightRow = !$event; featuredGrid.isHighlightRow = !$event"
+    resizable class="divider"></div>
 
   <!-- Editors -->
   <div class="editor-content-container">
@@ -22,7 +22,8 @@
             <i class="fas fa-times-circle fa-sm"></i>
           </div>
           <div *ngIf="featuredGrid.tiers.length > 0" class="content-container">
-            <div *ngFor="let item of featuredGrid.tiers[0].items | featuredFilter : true : true | nonFeaturedSearch: featuredGrid.nonFeaturedSearchValue | maxCount: 20" class="row" (click)="featuredGrid.onNonFeaturedItemClick(item)">
+            <div *ngFor="let item of featuredGrid.tiers[0].items | featuredFilter : true : true | searchFilter: featuredGrid.nonFeaturedSearchValue | maxCount: 20"
+              class="row" (click)="featuredGrid.onNonFeaturedItemClick(item)">
               <div class="item">{{item.data[0].value}}</div>
             </div>
           </div>

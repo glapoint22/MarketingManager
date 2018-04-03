@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
-import { TierComponent } from '../tier/tier.component';
 
 @Component({
   template: ''
@@ -50,6 +49,7 @@ export class EditableGridComponent extends GridComponent {
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {
+    // Enter key
     if (event.keyCode === 13) {
       if (this.currentItem && this.currentItem.isInEditMode) {
         for (let i = 0; i < this.editedFields.length; i++) {

@@ -249,4 +249,16 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
     }
   }
+
+  createNewItem(tierIndex: number, parentId: number) {
+    super.createNewItem(tierIndex, parentId);
+
+    if(tierIndex == 0 || tierIndex == 2){
+      this.tiers[tierIndex].items[0].featured = false;
+    }
+    
+    if(tierIndex == 2){
+      this.tiers[tierIndex].items[0].filters = [];
+    }
+  }
 }

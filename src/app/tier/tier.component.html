@@ -38,7 +38,7 @@
     <ng-content select="[row-content]"></ng-content>
 
     <!-- Items -->
-    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | searchFilter: grid.searchValue: grid.tierToSearch : index | featuredFilter: grid.isFeatured | maxCount: 50; let i = index"
+    <div #row *ngFor="let item of items | tierFilter: parentId: grid.change | tierSearchFilter: grid.searchValue: grid.tierToSearch : index | featuredFilter: grid.isFeatured | maxCount: 50; let i = index"
       class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}" (transitionend)="onTransitionEnd(i, $event)">
 
       <!-- Toggle Expand/Collapse button -->
@@ -47,7 +47,7 @@
         <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
       </span>
 
-      <div class="flex-container highlight visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': grid.currentItem == item && item.isSelected}">
+      <div class="flex-container visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': grid.currentItem == item && item.isSelected, 'highlight': grid.isHighlightRow}">
         <!-- Data -->
         <div *ngFor="let data of item.data | dataFilter: fields; let j = index" class="field" [style.flexBasis.px]="fields[j].width">
           <div *ngIf="grid.currentItem == item && item.isInEditMode else dataValue">
