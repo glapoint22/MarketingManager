@@ -10,6 +10,7 @@ import { DataService } from "../data.service";
 export class ShopGridComponent extends EditableGridComponent implements OnInit {
   @Input() filterGrid;
   @Output() onChange = new EventEmitter<void>();
+  @Output() onItemClick = new EventEmitter<any>();
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
   public filters: Array<any> = [];
@@ -34,6 +35,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           id: x.id,
           tierIndex: 0,
           featured: x.featured,
+          icon: x.icon,
+          categoryImages: x.categoryImages,
           data: [
             {
               value: x.name
@@ -211,6 +214,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       if (item !== this.currentItem) this.showFiltersContainer = false;
     }
     super.onItemSelect(item);
+    this.onItemClick.emit(item);
   }
 
   onTierCollapse() {

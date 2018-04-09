@@ -23,6 +23,7 @@ import { FeaturedFilterPipe } from './featured-filter.pipe';
 import { MaxCountPipe } from './max-count.pipe';
 import { TierSearchFilterPipe } from './tier-search-filter.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
+import { MediaComponent } from './media/media.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { SearchFilterPipe } from './search-filter.pipe';
     FeaturedFilterPipe,
     MaxCountPipe,
     TierSearchFilterPipe,
-    SearchFilterPipe
+    SearchFilterPipe,
+    MediaComponent
   ],
   imports: [
     BrowserModule,
