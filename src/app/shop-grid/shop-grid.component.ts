@@ -61,6 +61,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           parentId: x.id,
           id: y.id,
           tierIndex: 1,
+          icon: y.icon,
           data: [
             {
               value: y.name
@@ -93,6 +94,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             id: z.id,
             tierIndex: 2,
             featured: z.featured,
+            image: z.image,
             data: [
               {
                 value: z.name
@@ -107,7 +109,9 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' })
               }
             ],
-            filters: z.filters
+            filters: z.filters,
+            banners: z.banners,
+            videos: z.videos
           }))));
 
     items = [].concat.apply([], items.concat.apply([], items));

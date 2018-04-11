@@ -15,3 +15,56 @@
     margin-right: 10px;
     cursor: pointer;
 }
+.content {
+    width: 100%;
+    height: 299px;
+    background: #1e1e1e;
+}
+.content-horizontal {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+.content-vertical {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.img-container {
+    position: relative;
+}
+.img-horizontal {
+    display: inline-block;
+    height: 100%;
+}
+.img-vertical {
+    display: block;
+    width: 100%;
+}
+.img-single {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.img-overlay {
+    background: rgba(7, 114, 156, 0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #5bd1ff;
+    box-sizing:border-box;
+}
+.mode-name {
+    float: left;
+    line-height: 22px;
+    margin-left: 5px;
+    color: white;
+}
+.no-preview {
+    display: flex;
+    height: 299px;
+    color: #a7a7a7;
+    font-size: 24px;
+    justify-content: center;
+    align-items: center;
+}
