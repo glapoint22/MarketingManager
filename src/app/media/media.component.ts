@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DataService } from "../data.service";
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'media',
@@ -8,7 +9,9 @@ import { DataService } from "../data.service";
 })
 export class MediaComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
-  public images: Array<any> = [];
+  @ViewChild('videoInput') videoInput: ElementRef;
+  public contents: Array<any> = [];
+  public showVideoInput: boolean = false;
   public mode: any;
   private currentItem: any;
   private categoryIcon: any;
@@ -18,14 +21,14 @@ export class MediaComponent implements OnInit {
   private productVideos: any;
   private productBanners: any;
 
-  constructor(public dataService: DataService) { }
-
+  constructor(public dataService: DataService, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     // Category Icon
     this.categoryIcon = {
       name: 'Category Icon',
       display: 'single',
+      type: 'image',
       buttons: [
         {
           title: 'New Icon',
@@ -45,20 +48,22 @@ export class MediaComponent implements OnInit {
         this.currentItem.icon = image;
       },
       initialize: () => {
-        this.images = [];
+        this.contents = [];
         if (this.currentItem.icon !== null) {
-          this.images[0] = {
+          this.contents[0] = {
             name: this.currentItem.icon,
             isSelected: false
           }
         }
-      }
+      },
+      onClick: () => { }
     }
 
     // Category Images
     this.categoryImages = {
       name: 'Category Images',
       display: 'horizontal',
+      type: 'image',
       buttons: [
         {
           title: 'Delete Image',
@@ -86,8 +91,11 @@ export class MediaComponent implements OnInit {
         });
       },
       initialize: () => {
-        this.images = [];
-        if (this.currentItem.categoryImages.length > 0) this.images = this.currentItem.categoryImages;
+        this.contents = [];
+        if (this.currentItem.categoryImages.length > 0) this.contents = this.currentItem.categoryImages;
+      },
+      onClick: (image) => {
+        this.contents.forEach(x => x.isSelected = image === x);
       }
     }
 
@@ -96,6 +104,7 @@ export class MediaComponent implements OnInit {
     this.nicheIcon = {
       name: 'Niche Icon',
       display: 'single',
+      type: 'image',
       buttons: [
         {
           title: 'New Icon',
@@ -107,21 +116,22 @@ export class MediaComponent implements OnInit {
         this.currentItem.icon = image;
       },
       initialize: () => {
-        this.images = [];
+        this.contents = [];
         if (this.currentItem.icon !== null) {
-          this.images[0] = {
+          this.contents[0] = {
             name: this.currentItem.icon,
             isSelected: false
           }
         }
-      }
+      },
+      onClick: () => { }
     }
-
 
     // Product Image
     this.productImage = {
       name: 'Product Image',
       display: 'single',
+      type: 'image',
       buttons: [
         {
           title: 'New Image',
@@ -149,27 +159,37 @@ export class MediaComponent implements OnInit {
         this.currentItem.image = image;
       },
       initialize: () => {
-        this.images = [];
+        this.contents = [];
         if (this.currentItem.image !== null) {
-          this.images[0] = {
+          this.contents[0] = {
             name: this.currentItem.image,
             isSelected: false
           }
         }
-      }
+      },
+      onClick: () => { }
     }
-
 
 
     // Product Videos
     this.productVideos = {
       name: 'Product Videos',
       display: 'horizontal',
+      type: 'video',
       buttons: [
+        {
+          title: 'Delete Video(s)',
+          icon: 'fas fa-trash-alt',
+          onClick: () => { }
+        },
         {
           title: 'New Video',
           icon: 'fas fa-file-alt',
-          onClick: () => {}
+          onClick: () => {
+            this.videoInput.nativeElement.value = '';
+            this.showVideoInput = !this.showVideoInput;
+          }
+          
         },
         {
           title: 'Product Image',
@@ -189,22 +209,36 @@ export class MediaComponent implements OnInit {
         }
       ],
       initialize: () => {
-        // this.images = [];
-        // if (this.currentItem.image !== null) {
-        //   this.images[0] = {
-        //     name: this.currentItem.image,
-        //     isSelected: false
-        //   }
-        // }
+        this.contents = [];
+        if (this.currentItem.videos.length > 0) {
+          this.currentItem.videos.forEach(video => this.contents.push({
+            url: this.sanitizer.bypassSecurityTrustResourceUrl(video),
+            isSelected: false
+          }));
+        }
+      },
+      onClick: () => {},
+      onSubmit: (url) =>{
+        this.currentItem.videos.push(url);
+        this.contents.push({
+          url: this.sanitizer.bypassSecurityTrustResourceUrl(url),
+          isSelected: false
+        });
+        this.showVideoInput = false;
       }
     }
-
 
     // Product Banners
     this.productBanners = {
       name: 'Product Banners',
       display: 'vertical',
+      type: 'image',
       buttons: [
+        {
+          title: 'Delete Image',
+          icon: 'fas fa-trash-alt',
+          onClick: () => { }
+        },
         {
           title: 'New Banner',
           icon: 'fas fa-file-alt',
@@ -233,13 +267,11 @@ export class MediaComponent implements OnInit {
         });
       },
       initialize: () => {
-        this.images = [];
-        if (this.currentItem.banners.length > 0) this.images = this.currentItem.banners;
-      }
+        this.contents = [];
+        if (this.currentItem.banners.length > 0) this.contents = this.currentItem.banners;
+      },
+      onClick: () => { }
     }
-
-
-
   }
 
   uploadImage(event) {
@@ -259,7 +291,7 @@ export class MediaComponent implements OnInit {
   }
 
   onItemClick(item) {
-    switch(item.tierIndex) {
+    switch (item.tierIndex) {
       case 0:
         this.mode = this.categoryIcon;
         break;
@@ -269,10 +301,9 @@ export class MediaComponent implements OnInit {
       case 2:
         this.mode = this.productImage;
         break;
-  }
-    
+    }
+    this.showVideoInput = false;
     this.currentItem = item;
     this.mode.initialize();
   }
-
 }
