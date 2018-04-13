@@ -5,10 +5,10 @@
     <input #fileInput (change)="uploadImage($event)" type="file" style="display: none">
     <form class="video-input-container" [style.display]="showVideoInput ? 'block': 'none'" (ngSubmit)="mode.onSubmit(videoInput.value)"
       #form="ngForm">
-      <input #videoInput class="video-input">
+      <input #videoInput class="video-input" placeholder="Enter video URL">
       <button type="submit" style="display: none"></button>
     </form>
-    <div *ngFor="let button of mode.buttons" class="button" [title]="button.title" (click)="button.onClick()">
+    <div *ngFor="let button of mode.buttons" class="button" [title]="button.title" (click)="button.onClick()" [ngClass]="{'disabled': button.getDisabled()}">
       <i [class]="button.icon"></i>
     </div>
   </div>
@@ -16,13 +16,12 @@
   <!-- Content -->
   <div *ngIf="contents.length > 0 else noPreview" class="content" [ngClass]="{'content-horizontal': mode.display === 'horizontal', 'content-vertical': mode.display === 'vertical'}">
     <div *ngFor="let content of contents" class="img-container" [ngClass]="{'img-horizontal': mode.display === 'horizontal', 'img-single': mode.display === 'single', 'img-vertical': mode.display === 'vertical'}">
-      <div *ngIf="content.isSelected" class="img-overlay"></div>
+      <div (click)="mode.onClick(content)" *ngIf="content.isSelected" class="img-overlay"></div>
       <img *ngIf="mode.type == 'image'" (click)="mode.onClick(content)" [src]="'/Images/' + content.name" [ngClass]="{'img-horizontal': mode.display === 'horizontal', 'img-single': mode.display === 'single', 'img-vertical': mode.display === 'vertical'}">
       <div style="width: 100%; height: 100%;" *ngIf="mode.type == 'video'">
         <input type="checkbox" style="position: absolute; right: 0;" [checked]="content.isSelected" (change)="content.isSelected = !content.isSelected">
         <iframe [src]="content.url" frameborder="0"></iframe>
       </div>
-
     </div>
   </div>
 

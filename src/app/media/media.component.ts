@@ -31,16 +31,22 @@ export class MediaComponent implements OnInit {
       type: 'image',
       buttons: [
         {
-          title: 'New Icon',
-          icon: 'fas fa-file-alt',
-          onClick: () => this.fileInput.nativeElement.click()
-        },
-        {
           title: 'Switch to Category Images',
           icon: 'far fa-images',
           onClick: () => {
             this.mode = this.categoryImages;
             this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
+          }
+        },
+        {
+          title: 'New Icon',
+          icon: 'fas fa-file-alt',
+          onClick: () => this.fileInput.nativeElement.click(),
+          getDisabled: () => {
+            return false;
           }
         }
       ],
@@ -66,21 +72,39 @@ export class MediaComponent implements OnInit {
       type: 'image',
       buttons: [
         {
-          title: 'Delete Image',
-          icon: 'fas fa-trash-alt',
-          onClick: () => { }
-        },
-        {
-          title: 'New Image',
-          icon: 'fas fa-file-alt',
-          onClick: () => this.fileInput.nativeElement.click()
-        },
-        {
           title: 'Switch to Category Icon',
           icon: 'far fa-image',
           onClick: () => {
             this.mode = this.categoryIcon;
             this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
+          }
+        },
+        {
+          title: 'Delete Image',
+          icon: 'fas fa-trash-alt',
+          onClick: () => {
+            if (this.contents.length > 0) {
+              this.contents.splice(this.contents.findIndex(x => x.isSelected), 1);
+              if (this.contents.length > 0) {
+                this.contents[0].isSelected = true;
+              }
+            }
+          },
+          getDisabled: () => {
+            return this.contents.length === 0;
+          }
+        },
+        {
+          title: 'New Image',
+          icon: 'fas fa-file-alt',
+          onClick: () => {
+            this.fileInput.nativeElement.click()
+          },
+          getDisabled: () => {
+            return false;
           }
         }
       ],
@@ -109,7 +133,10 @@ export class MediaComponent implements OnInit {
         {
           title: 'New Icon',
           icon: 'fas fa-file-alt',
-          onClick: () => this.fileInput.nativeElement.click()
+          onClick: () => this.fileInput.nativeElement.click(),
+          getDisabled: () => {
+            return false;
+          }
         }
       ],
       setNewImage: (image) => {
@@ -134,9 +161,15 @@ export class MediaComponent implements OnInit {
       type: 'image',
       buttons: [
         {
-          title: 'New Image',
-          icon: 'fas fa-file-alt',
-          onClick: () => this.fileInput.nativeElement.click()
+          title: 'Product Banners',
+          icon: 'far fa-images',
+          onClick: () => {
+            this.mode = this.productBanners;
+            this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
+          }
         },
         {
           title: 'Product Videos',
@@ -144,14 +177,17 @@ export class MediaComponent implements OnInit {
           onClick: () => {
             this.mode = this.productVideos;
             this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
           }
         },
         {
-          title: 'Product Banners',
-          icon: 'far fa-images',
-          onClick: () => {
-            this.mode = this.productBanners;
-            this.mode.initialize();
+          title: 'New Image',
+          icon: 'fas fa-file-alt',
+          onClick: () => this.fileInput.nativeElement.click(),
+          getDisabled: () => {
+            return false;
           }
         }
       ],
@@ -178,18 +214,15 @@ export class MediaComponent implements OnInit {
       type: 'video',
       buttons: [
         {
-          title: 'Delete Video(s)',
-          icon: 'fas fa-trash-alt',
-          onClick: () => { }
-        },
-        {
-          title: 'New Video',
-          icon: 'fas fa-file-alt',
+          title: 'Product Banners',
+          icon: 'far fa-images',
           onClick: () => {
-            this.videoInput.nativeElement.value = '';
-            this.showVideoInput = !this.showVideoInput;
+            this.mode = this.productBanners;
+            this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
           }
-          
         },
         {
           title: 'Product Image',
@@ -197,14 +230,35 @@ export class MediaComponent implements OnInit {
           onClick: () => {
             this.mode = this.productImage;
             this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
           }
         },
         {
-          title: 'Product Banners',
-          icon: 'far fa-images',
+          title: 'Delete Video(s)',
+          icon: 'fas fa-trash-alt',
           onClick: () => {
-            this.mode = this.productBanners;
-            this.mode.initialize();
+            for (let i = this.currentItem.videos.length - 1; i > -1; i--) {
+              if (this.contents[i].isSelected) {
+                this.currentItem.videos.splice(i, 1);
+              }
+            }
+            this.contents = this.contents.filter(x => !x.isSelected)
+          },
+          getDisabled: () => {
+            return !this.contents.some(x => x.isSelected);
+          }
+        },
+        {
+          title: 'New Video',
+          icon: 'fas fa-file-alt',
+          onClick: () => {
+            this.videoInput.nativeElement.value = '';
+            this.showVideoInput = !this.showVideoInput;
+          },
+          getDisabled: () => {
+            return false;
           }
         }
       ],
@@ -217,8 +271,8 @@ export class MediaComponent implements OnInit {
           }));
         }
       },
-      onClick: () => {},
-      onSubmit: (url) =>{
+      onClick: () => { },
+      onSubmit: (url) => {
         this.currentItem.videos.push(url);
         this.contents.push({
           url: this.sanitizer.bypassSecurityTrustResourceUrl(url),
@@ -235,14 +289,15 @@ export class MediaComponent implements OnInit {
       type: 'image',
       buttons: [
         {
-          title: 'Delete Image',
-          icon: 'fas fa-trash-alt',
-          onClick: () => { }
-        },
-        {
-          title: 'New Banner',
-          icon: 'fas fa-file-alt',
-          onClick: () => this.fileInput.nativeElement.click()
+          title: 'Product Image',
+          icon: 'far fa-image',
+          onClick: () => {
+            this.mode = this.productImage;
+            this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
+          }
         },
         {
           title: 'Product Videos',
@@ -250,27 +305,47 @@ export class MediaComponent implements OnInit {
           onClick: () => {
             this.mode = this.productVideos;
             this.mode.initialize();
+          },
+          getDisabled: () => {
+            return false;
           }
         },
         {
-          title: 'Product Image',
-          icon: 'far fa-image',
+          title: 'Delete Banner(s)',
+          icon: 'fas fa-trash-alt',
           onClick: () => {
-            this.mode = this.productImage;
-            this.mode.initialize();
+            for (let i = this.contents.length - 1; i > -1; i--) {
+              if (this.contents[i].isSelected) {
+                this.contents.splice(i, 1);
+              }
+            }
+          },
+          getDisabled: () => {
+            return !this.contents.some(x => x.isSelected);
+          }
+        },
+        {
+          title: 'New Banner',
+          icon: 'fas fa-file-alt',
+          onClick: () => this.fileInput.nativeElement.click(),
+          getDisabled: () => {
+            return false;
           }
         }
       ],
       setNewImage: (image) => {
         this.currentItem.banners.push({
-          name: image
+          name: image,
+          isSelected: false
         });
       },
       initialize: () => {
         this.contents = [];
         if (this.currentItem.banners.length > 0) this.contents = this.currentItem.banners;
       },
-      onClick: () => { }
+      onClick: (image) => {
+        image.isSelected = !image.isSelected;
+      }
     }
   }
 
