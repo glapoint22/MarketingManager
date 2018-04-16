@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener, Input, Output, ElementRef, EventEmitter } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
+import { SaveService } from "../save.service";
 
 @Component({
   selector: 'shop-grid',
@@ -16,7 +17,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filters: Array<any> = [];
   private filterActivated: boolean;
 
-  constructor(dataService: DataService, private element: ElementRef) { super(dataService) }
+  constructor(dataService: DataService, private element: ElementRef, private saveService: SaveService) { super(dataService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
@@ -261,12 +262,27 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   createNewItem(tierIndex: number, parentId: number) {
     super.createNewItem(tierIndex, parentId);
 
-    if(tierIndex == 0 || tierIndex == 2){
+    if (tierIndex == 0 || tierIndex == 2) {
       this.tiers[tierIndex].items[0].featured = false;
     }
-    
-    if(tierIndex == 2){
+
+    if (tierIndex == 2) {
       this.tiers[tierIndex].items[0].filters = [];
     }
+
+    switch (tierIndex) {
+      case 0:
+        this.tiers[tierIndex].items[0].icon = null;
+        this.tiers[tierIndex].items[0].categoryImages = [];
+        this.saveService.saveObject.newCategories.push(this.tiers[tierIndex].items[0]);
+        break;
+      case 1:
+
+        break;
+      case 2:
+
+    }
+
+    this.onItemClick.emit(this.tiers[tierIndex].items[0]);
   }
 }

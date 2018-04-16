@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SaveService } from "./save.service";
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,10 @@ import { Component } from '@angular/core';
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(){
+  constructor(private saveService: SaveService){
+  }
+
+  onSaveClick(){
+    this.saveService.save();
   }
 }

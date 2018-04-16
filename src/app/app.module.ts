@@ -1,11 +1,27 @@
+// Modules
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
-import { AppComponent } from './app.component';
-import { DataService } from "./data.service";
 import { HttpModule } from '@angular/http';
-import { ShopGridComponent } from './shop-grid/shop-grid.component';
+
+// Services
+import { DataService } from "./data.service";
+import { SaveService } from "./save.service";
+
+// Directives
 import { ResizableDirective } from './resizable.directive';
+
+// Pipes
+import { TierFilterPipe } from './tier-filter.pipe';
+import { DataFilterPipe } from './data-filter.pipe';
+import { FeaturedFilterPipe } from './featured-filter.pipe';
+import { MaxCountPipe } from './max-count.pipe';
+import { TierSearchFilterPipe } from './tier-search-filter.pipe';
+import { SearchFilterPipe } from './search-filter.pipe';
+
+// Components
+import { AppComponent } from './app.component';
+import { ShopGridComponent } from './shop-grid/shop-grid.component';
 import { ShopComponent } from './shop/shop.component';
 import { MenuButtonComponent } from './menu-button/menu-button.component';
 import { EmailComponent } from './email/email.component';
@@ -15,14 +31,8 @@ import { FilterGridComponent } from './filter-grid/filter-grid.component';
 import { EditorComponent } from './editor/editor.component';
 import { FeaturedGridComponent } from './featured-grid/featured-grid.component';
 import { TierComponent } from './tier/tier.component';
-import { TierFilterPipe } from './tier-filter.pipe';
 import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
-import { DataFilterPipe } from './data-filter.pipe';
-import { FeaturedFilterPipe } from './featured-filter.pipe';
-import { MaxCountPipe } from './max-count.pipe';
-import { TierSearchFilterPipe } from './tier-search-filter.pipe';
-import { SearchFilterPipe } from './search-filter.pipe';
 import { MediaComponent } from './media/media.component';
 
 @NgModule({
@@ -54,7 +64,7 @@ import { MediaComponent } from './media/media.component';
     HttpModule,
     FormsModule
   ],
-  providers: [DataService],
+  providers: [DataService, SaveService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
