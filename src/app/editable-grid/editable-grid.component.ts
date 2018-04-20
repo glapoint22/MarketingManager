@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
+import { SaveService } from "../save.service";
 
 @Component({
   template: ''
@@ -9,7 +10,7 @@ export class EditableGridComponent extends GridComponent {
   public change: number = 0;
   private editedFields: Array<any>;
 
-  constructor(dataService: DataService) { super(dataService) }
+  constructor(dataService: DataService, public saveService: SaveService) { super(dataService) }
 
   setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number) {
     return [
@@ -64,6 +65,10 @@ export class EditableGridComponent extends GridComponent {
   }
 
   editItem(item) {
+    this.setEdit(item);
+  }
+
+  setEdit(item) {
     item.isInEditMode = true;
     window.setTimeout(() => {
       this.editedFields = Array.from(document.getElementsByClassName('edit'));
@@ -78,14 +83,20 @@ export class EditableGridComponent extends GridComponent {
       this.change += 1;
       this.tierComponent.checkItemResults();
       this.collapseDeletedTier(this.tierComponent.tierComponents);
+
+      if (!this.saveService.saveObject.posts.some(x => x.item == this.currentItem)) {
+        this.saveService.saveObject.deleted.push(this.currentItem.id);
+      } else {
+        this.saveService.saveObject.posts.splice(this.saveService.saveObject.posts.findIndex(x => x.item == this.currentItem), 1);
+      }
     }
   }
 
-  collapseDeletedTier(tierComponents){
+  collapseDeletedTier(tierComponents) {
     tierComponents.toArray().filter(x => x.isExpanded).forEach(x => {
-      if(x.parentId === this.currentItem.id){
+      if (x.parentId === this.currentItem.id) {
         x.isExpanded = false;
-      }else{
+      } else {
         this.collapseDeletedTier(x.tierComponents);
       }
     });
@@ -116,7 +127,13 @@ export class EditableGridComponent extends GridComponent {
     this.tiers[tierIndex].items.unshift(newItem);
     this.change += 1;
     this.currentItem = newItem;
-    this.editItem(newItem);
+    this.setEdit(newItem);
+
+    this.saveService.saveObject.posts.push({
+      item: this.tiers[tierIndex].items[0],
+      setItem: (item) => this.tiers[tierIndex].setSave(item),
+      url: this.tiers[tierIndex].url
+    });
   }
 
   createItemId(items, tierIndex) {

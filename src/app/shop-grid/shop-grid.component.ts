@@ -17,7 +17,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filters: Array<any> = [];
   private filterActivated: boolean;
 
-  constructor(dataService: DataService, private element: ElementRef, private saveService: SaveService) { super(dataService) }
+  constructor(dataService: DataService, private element: ElementRef, saveService: SaveService) { super(dataService, saveService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';
@@ -52,7 +52,21 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       ],
       headerButtons: this.setHeaderButtons('New Category', 'Delete Category', 0),
-      rowButtons: this.setRowButtons('Edit Category')
+      rowButtons: this.setRowButtons('Edit Category'),
+      setSave: (item) => {
+        return {
+          ID: item.id,
+          Name: item.data[0].value,
+          Icon: item.icon,
+          Featured: item.featured,
+          CategoryImages: item.categoryImages.map(y => ({
+            CategoryID: item.id,
+            Name: y.name,
+            Selected: y.isSelected
+          }))
+        }
+      },
+      url: 'api/Categories'
     });
 
     //Niches
@@ -83,7 +97,16 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       ],
       headerButtons: this.setHeaderButtons('New Niche', 'Delete Niche', 1),
-      rowButtons: this.setRowButtons('Edit Niche')
+      rowButtons: this.setRowButtons('Edit Niche'),
+      setSave: (item) => {
+        return {
+          ID: item.id,
+          Name: item.data[0].value,
+          Icon: item.icon,
+          CategoryID: item.parentId
+        }
+      },
+      url: 'api/Niches'
     });
 
     //Products
@@ -189,7 +212,33 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       ],
       headerButtons: this.setHeaderButtons('New Product', 'Delete Product', 2),
-      rowButtons: rowButtons
+      rowButtons: rowButtons,
+      setSave: (item) => {
+        return {
+          ID: item.id,
+          Name: item.data[0].value,
+          NicheID: item.parentId,
+          HopLink: item.data[1].value,
+          Description: item.data[2].value,
+          Image: item.image,
+          Price: item.data[3].value,
+          Featured: item.featured,
+          ProductBanners: item.banners.map(x => ({
+            ProductID: item.id,
+            Name: x.name,
+            Selected: x.isSelected
+          })),
+          ProductFilters: item.filters.map(x => ({
+            ProductID: item.id,
+            FilterLabelID: x
+          })),
+          ProductVideos: item.videos.map(x => ({
+            ProductID: item.id,
+            Url: x
+          }))
+        }
+      },
+      url: 'api/Products'
     });
 
     super.createTiers();
@@ -235,6 +284,23 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.onChange.emit();
   }
 
+  editItem(item) {
+    super.editItem(item);
+
+    switch (item.tierIndex) {
+      case 0:
+        // if (!this.saveService.saveObject.newCategories.some(x => x == this.currentItem)) {
+        //   this.saveService.saveObject.updatedCategories.push(item);
+        // }
+        break;
+      case 1:
+
+        break;
+      case 2:
+    }
+
+  }
+
   createItemId(items: Array<any>, tierIndex: number): any {
     //Create an id for the new product
     if (tierIndex === 2) {
@@ -262,25 +328,21 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   createNewItem(tierIndex: number, parentId: number) {
     super.createNewItem(tierIndex, parentId);
 
-    if (tierIndex == 0 || tierIndex == 2) {
-      this.tiers[tierIndex].items[0].featured = false;
-    }
-
-    if (tierIndex == 2) {
-      this.tiers[tierIndex].items[0].filters = [];
-    }
-
     switch (tierIndex) {
       case 0:
+        this.tiers[tierIndex].items[0].featured = false;
         this.tiers[tierIndex].items[0].icon = null;
         this.tiers[tierIndex].items[0].categoryImages = [];
-        this.saveService.saveObject.newCategories.push(this.tiers[tierIndex].items[0]);
         break;
       case 1:
-
+        this.tiers[tierIndex].items[0].icon = null;
         break;
       case 2:
-
+        this.tiers[tierIndex].items[0].featured = false;
+        this.tiers[tierIndex].items[0].filters = [];
+        this.tiers[tierIndex].items[0].image = null;
+        this.tiers[tierIndex].items[0].banners = [];
+        this.tiers[tierIndex].items[0].videos = [];
     }
 
     this.onItemClick.emit(this.tiers[tierIndex].items[0]);

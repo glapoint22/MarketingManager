@@ -32,12 +32,18 @@ export class DataService {
 
 
   post(url: string, body: any): Observable<Response> {
-    return this.http.post(url, body)
-      .map((response: Response) => response.json())
+    return this.http.post(url, body);
   }
 
   put(url: string, body: any): Observable<Response> {
-    return this.http.put(url, body)
-      .map((response: Response) => response.json())
+    return this.http.put(url, body);
+  }
+
+  delete(url: string, body: any): Observable<Response> {
+    let requestOptions: RequestOptions = new RequestOptions({
+      body: body
+    });
+
+    return this.http.delete(url, requestOptions);
   }
 }
