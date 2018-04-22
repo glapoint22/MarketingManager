@@ -53,7 +53,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       ],
       headerButtons: this.setHeaderButtons('New Category', 'Delete Category', 0),
       rowButtons: this.setRowButtons('Edit Category'),
-      setSave: (item) => {
+      setItem: (item) => {
         return {
           ID: item.id,
           Name: item.data[0].value,
@@ -98,7 +98,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       ],
       headerButtons: this.setHeaderButtons('New Niche', 'Delete Niche', 1),
       rowButtons: this.setRowButtons('Edit Niche'),
-      setSave: (item) => {
+      setItem: (item) => {
         return {
           ID: item.id,
           Name: item.data[0].value,
@@ -130,7 +130,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 value: z.description
               },
               {
-                value: z.price.toLocaleString('eng', { style: 'currency', currency: 'USD' })
+                value: z.price
               }
             ],
             filters: z.filters,
@@ -213,7 +213,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       ],
       headerButtons: this.setHeaderButtons('New Product', 'Delete Product', 2),
       rowButtons: rowButtons,
-      setSave: (item) => {
+      setItem: (item) => {
         return {
           ID: item.id,
           Name: item.data[0].value,
@@ -284,23 +284,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.onChange.emit();
   }
 
-  editItem(item) {
-    super.editItem(item);
-
-    switch (item.tierIndex) {
-      case 0:
-        // if (!this.saveService.saveObject.newCategories.some(x => x == this.currentItem)) {
-        //   this.saveService.saveObject.updatedCategories.push(item);
-        // }
-        break;
-      case 1:
-
-        break;
-      case 2:
-    }
-
-  }
-
   createItemId(items: Array<any>, tierIndex: number): any {
     //Create an id for the new product
     if (tierIndex === 2) {
@@ -344,7 +327,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         this.tiers[tierIndex].items[0].banners = [];
         this.tiers[tierIndex].items[0].videos = [];
     }
-
     this.onItemClick.emit(this.tiers[tierIndex].items[0]);
   }
 }

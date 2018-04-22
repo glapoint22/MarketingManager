@@ -5,6 +5,6 @@ export interface Itier {
     fields: Array<any>;
     headerButtons: Array<any>;
     rowButtons: Array<any>;
-    setSave?(item: any): any;
+    setItem?(item: any): any;
     url?: string;
 }

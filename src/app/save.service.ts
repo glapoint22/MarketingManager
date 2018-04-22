@@ -1,59 +1,79 @@
 import { Injectable } from '@angular/core';
-import { Save } from './save';
 import { DataService } from "./data.service";
-import { Category } from "./category";
 
 @Injectable()
 export class SaveService {
-  public saveObject = new Save();
-  private posts: Array<any> = [];
+  public newItems: Array<any> = [];
+  public deletedItems: Array<any> = [];
+  public updatedItems: Array<any> = [];
 
   constructor(private dataService: DataService) { }
 
   save() {
-    this.setPosts();
-    // this.deleteCategories();
-  }
+    // Posts
+    if (this.newItems.length > 0) {
+      let posts = this.mapItems(this.newItems);
+      this.saveItem(posts[0], 'post', posts, this.newItems);
+    }
 
-  setPosts() {
-    let urls: Array<any> = this.saveObject.posts.map(x => x.url).filter((v, i, a) => a.indexOf(v) === i);
+    // Deletes
+    if (this.deletedItems.length > 0) {
+      let deletes = this.mapItems(this.deletedItems).map(x => ({
+        items: x.items.map(y => y.ID),
+        url: x.url
+      }));
+      this.saveItem(deletes[0], 'delete', deletes, this.deletedItems);
+    }
 
-    if (urls.length > 0) {
-      urls.forEach(url => {
-        this.posts.push(
-          {
-            url: url,
-            items: this.saveObject.posts.filter(x => x.url == url).map(x => x.setItem(x.item))
-          }
-        );
-      });
-
-      this.savePost(this.posts[0]);
+    // Updates
+    if (this.updatedItems.length > 0) {
+      let updates = this.mapItems(this.updatedItems);
+      this.saveItem(updates[0], 'put', updates, this.updatedItems);
     }
   }
 
-  savePost(post: any) {
-    this.dataService.post(post.url, post.items)
+  mapItems(items: Array<any>) {
+    let mappedItems: Array<any> = [], urls: Array<any> = items.map(x => x.url).filter((v, i, a) => a.indexOf(v) === i);
+
+    urls.forEach(url => {
+      mappedItems.push(
+        {
+          url: url,
+          items: items.filter(x => x.url == url).map(x => x.setItem(x.item))
+        }
+      );
+    });
+
+    return mappedItems;
+  }
+
+  saveItem(item, verb, items, saveArray: Array<any>) {
+    this.dataService[verb](item.url, item.items)
       .subscribe((data: any) => {
-        this.saveObject.posts = this.saveObject.posts.filter(x => x.url !== post.url);
-        this.posts = this.posts.filter(x => x !== post);
+        items = items.filter(x => x !== item);
 
-        if (this.posts.length > 0) this.savePost(this.posts[0]);
-
-      }, error => {
+        // Save the next item
+        if (items.length > 0) {
+          this.saveItem(items[0], verb, items, saveArray);
+        } else {
+          saveArray = [];
+        }
+      }, (error: any) => {
         // Error
-        error;
+        console.log(error);
       });
   }
 
-  // deleteCategories() {
-  //   if (this.saveObject.deletedCategories.length > 0) {
-  //     this.dataService.delete('api/Categories', this.saveObject.deletedCategories.map(x => x.id))
-  //       .subscribe((data: any) => {
-  //         this.saveObject.deletedCategories = [];
-  //       }, error => {
-  //         // Error
-  //       });
-  //   }
-  // }
+  addSaveItem(array: Array<any>, saveItem: any, tier: any) {
+    if (!this.newItems.some(x => x.item == saveItem)) {
+      array.push(
+        {
+          item: saveItem,
+          setItem: (item) => tier.setItem(item),
+          url: tier.url
+        });
+    } else {
+      this.newItems.splice(this.newItems.findIndex(x => x.item == saveItem), 1);
+    }
+  }
 }

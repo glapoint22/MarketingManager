@@ -66,6 +66,9 @@ export class EditableGridComponent extends GridComponent {
 
   editItem(item) {
     this.setEdit(item);
+
+    // Put this edited item in the edited items array so it can persist to the database
+    this.saveService.addSaveItem(this.saveService.updatedItems, item, this.tiers[item.tierIndex]);
   }
 
   setEdit(item) {
@@ -84,11 +87,8 @@ export class EditableGridComponent extends GridComponent {
       this.tierComponent.checkItemResults();
       this.collapseDeletedTier(this.tierComponent.tierComponents);
 
-      if (!this.saveService.saveObject.posts.some(x => x.item == this.currentItem)) {
-        this.saveService.saveObject.deleted.push(this.currentItem.id);
-      } else {
-        this.saveService.saveObject.posts.splice(this.saveService.saveObject.posts.findIndex(x => x.item == this.currentItem), 1);
-      }
+      // Put this deleted item in the deleted items array so it can persist to the database
+      this.saveService.addSaveItem(this.saveService.deletedItems, this.currentItem, this.tiers[this.currentItem.tierIndex]);
     }
   }
 
@@ -129,11 +129,8 @@ export class EditableGridComponent extends GridComponent {
     this.currentItem = newItem;
     this.setEdit(newItem);
 
-    this.saveService.saveObject.posts.push({
-      item: this.tiers[tierIndex].items[0],
-      setItem: (item) => this.tiers[tierIndex].setSave(item),
-      url: this.tiers[tierIndex].url
-    });
+    // Put this item in the newItems array so it can be saved to the database
+    this.saveService.addSaveItem(this.saveService.newItems, this.tiers[tierIndex].items[0], this.tiers[tierIndex]);
   }
 
   createItemId(items, tierIndex) {
