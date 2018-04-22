@@ -11,3 +11,21 @@
     height: 100%;
     overflow:hidden;
 }
+.save-button {
+    width: 50px;
+    height: 25px;
+    background: #424141;
+    position: absolute;
+    bottom: 0;
+    border: 1px solid #d0d0d0;
+    box-sizing: border-box;
+    color: #ffffff;
+    text-align: center;
+    font-size: 14px;
+    line-height: 25px;
+    cursor: pointer;
+}
+.button-disabled {
+    border-color: #585858;
+    color: #6b6b6b;
+}

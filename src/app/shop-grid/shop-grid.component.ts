@@ -66,7 +66,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           }))
         }
       },
-      url: 'api/Categories'
+      url: 'api/Categories',
+      postOrder: 3
     });
 
     //Niches
@@ -106,7 +107,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           CategoryID: item.parentId
         }
       },
-      url: 'api/Niches'
+      url: 'api/Niches',
+      postOrder: 4
     });
 
     //Products
@@ -207,7 +209,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         },
         {
           name: 'Price',
-          defaultValue: '$0.00',
+          defaultValue: '0.00',
           width: 400
         }
       ],
@@ -238,7 +240,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           }))
         }
       },
-      url: 'api/Products'
+      url: 'api/Products',
+      postOrder: 5
     });
 
     super.createTiers();

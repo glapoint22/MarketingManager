@@ -43,7 +43,7 @@ export class EditableGridComponent extends GridComponent {
         name: buttonName,
         icon: 'fas fa-edit',
         onClick: (item, rowButton) => {
-          this.editItem(item);
+          this.setEdit(item);
         }
       }
     ]
@@ -64,14 +64,17 @@ export class EditableGridComponent extends GridComponent {
     super.handleKeyboardEvent(event);
   }
 
-  editItem(item) {
-    this.setEdit(item);
+  setEdit(item) {
+    this.editItem(item);
 
     // Put this edited item in the edited items array so it can persist to the database
-    this.saveService.addSaveItem(this.saveService.updatedItems, item, this.tiers[item.tierIndex]);
+    if (!this.saveService.newItems.some(x => x.item == item)){
+      this.saveService.addSaveItem(this.saveService.updatedItems, item, this.tiers[item.tierIndex]);
+    }
+    
   }
 
-  setEdit(item) {
+  editItem(item) {
     item.isInEditMode = true;
     window.setTimeout(() => {
       this.editedFields = Array.from(document.getElementsByClassName('edit'));
@@ -88,7 +91,11 @@ export class EditableGridComponent extends GridComponent {
       this.collapseDeletedTier(this.tierComponent.tierComponents);
 
       // Put this deleted item in the deleted items array so it can persist to the database
-      this.saveService.addSaveItem(this.saveService.deletedItems, this.currentItem, this.tiers[this.currentItem.tierIndex]);
+      if (!this.saveService.newItems.some(x => x.item == this.currentItem)) {
+        this.saveService.addSaveItem(this.saveService.deletedItems, this.currentItem, this.tiers[this.currentItem.tierIndex]);
+      } else {
+        this.saveService.newItems.splice(this.saveService.newItems.findIndex(x => x.item == this.currentItem), 1);
+      }
     }
   }
 
@@ -127,7 +134,7 @@ export class EditableGridComponent extends GridComponent {
     this.tiers[tierIndex].items.unshift(newItem);
     this.change += 1;
     this.currentItem = newItem;
-    this.setEdit(newItem);
+    this.editItem(newItem);
 
     // Put this item in the newItems array so it can be saved to the database
     this.saveService.addSaveItem(this.saveService.newItems, this.tiers[tierIndex].items[0], this.tiers[tierIndex]);

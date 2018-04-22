@@ -41,7 +41,15 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
         }
       ],
       headerButtons: this.setHeaderButtons('New Filter', 'Delete Filter', 0),
-      rowButtons: this.setRowButtons('Edit Filter')
+      rowButtons: this.setRowButtons('Edit Filter'),
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          Name: item.data[0].value
+        }
+      },
+      url: 'api/Filters',
+      postOrder: 1
     });
 
     //Filter Options
@@ -71,7 +79,16 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
         }
       ],
       headerButtons: this.setHeaderButtons('New Filter Option', 'Delete Filter Option', 1),
-      rowButtons: this.setRowButtons('Edit Filter Option')
+      rowButtons: this.setRowButtons('Edit Filter Option'),
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          Name: item.data[0].value,
+          FilterID: item.parentId
+        }
+      },
+      url: 'api/FilterLabels',
+      postOrder: 2
     });
 
     super.createTiers();

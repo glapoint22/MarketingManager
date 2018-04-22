@@ -11,8 +11,4 @@ export class AppComponent {
 
   constructor(private saveService: SaveService){
   }
-
-  onSaveClick(){
-    this.saveService.save();
-  }
 }

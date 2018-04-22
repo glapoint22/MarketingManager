@@ -12,8 +12,8 @@ export class SaveService {
   save() {
     // Posts
     if (this.newItems.length > 0) {
-      let posts = this.mapItems(this.newItems);
-      this.saveItem(posts[0], 'post', posts, this.newItems);
+      let posts = this.mapItems(this.newItems.sort((a, b) => a.postOrder - b.postOrder));
+      this.saveItem(posts[0], 'post', posts);
     }
 
     // Deletes
@@ -22,13 +22,13 @@ export class SaveService {
         items: x.items.map(y => y.ID),
         url: x.url
       }));
-      this.saveItem(deletes[0], 'delete', deletes, this.deletedItems);
+      this.saveItem(deletes[0], 'delete', deletes);
     }
 
     // Updates
     if (this.updatedItems.length > 0) {
       let updates = this.mapItems(this.updatedItems);
-      this.saveItem(updates[0], 'put', updates, this.updatedItems);
+      this.saveItem(updates[0], 'put', updates);
     }
   }
 
@@ -47,16 +47,28 @@ export class SaveService {
     return mappedItems;
   }
 
-  saveItem(item, verb, items, saveArray: Array<any>) {
+  saveItem(item: any, verb: string, items: Array<any>) {
     this.dataService[verb](item.url, item.items)
       .subscribe((data: any) => {
         items = items.filter(x => x !== item);
 
         // Save the next item
         if (items.length > 0) {
-          this.saveItem(items[0], verb, items, saveArray);
+          this.saveItem(items[0], verb, items);
         } else {
-          saveArray = [];
+          switch (verb) {
+            case 'post':
+              this.newItems = [];
+              break;
+            case 'delete':
+              this.deletedItems = [];
+              break;
+            case 'put':
+              this.updatedItems = [];
+              break;
+          }
+
+          this.newItems = [];
         }
       }, (error: any) => {
         // Error
@@ -65,15 +77,18 @@ export class SaveService {
   }
 
   addSaveItem(array: Array<any>, saveItem: any, tier: any) {
-    if (!this.newItems.some(x => x.item == saveItem)) {
-      array.push(
-        {
-          item: saveItem,
-          setItem: (item) => tier.setItem(item),
-          url: tier.url
-        });
-    } else {
-      this.newItems.splice(this.newItems.findIndex(x => x.item == saveItem), 1);
-    }
+    array.push(
+      {
+        item: saveItem,
+        setItem: (item) => tier.setItem(item),
+        url: tier.url,
+        postOrder: tier.postOrder
+      });
+  }
+
+  isChange() {
+    return this.newItems.length > 0 ||
+      this.deletedItems.length > 0 ||
+      this.updatedItems.length > 0;
   }
 }
