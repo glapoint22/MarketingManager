@@ -108,22 +108,26 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
 
   deleteItem(item: any) {
     item.featured = false;
+    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
   }
 
-  createNewItem(){
+  createNewItem() {
     this.showNonFeaturedList = !this.showNonFeaturedList;
-    if(this.currentItem)this.currentItem.isSelected = false;
+    if (this.currentItem) this.currentItem.isSelected = false;
   }
 
-  onNonFeaturedItemClick(item){
+  onNonFeaturedItemClick(item) {
     item.featured = true;
     this.change += 1;
     this.showNonFeaturedList = false;
     this.nonFeaturedSearchValue = '';
+    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
   }
 
-  clearSearch(search){
+  clearSearch(search) {
     search.value = '';
     this.nonFeaturedSearchValue = '';
   }
+  
+  saveDelete(item){}
 }

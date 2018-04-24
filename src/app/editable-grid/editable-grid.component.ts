@@ -58,6 +58,7 @@ export class EditableGridComponent extends GridComponent {
         }
         this.currentItem.isInEditMode = false;
         this.grid.nativeElement.focus();
+        this.change += 1;
       }
     }
 
@@ -66,12 +67,14 @@ export class EditableGridComponent extends GridComponent {
 
   setEdit(item) {
     this.editItem(item);
+    this.saveUpdate(item, this.tiers[item.tierIndex]);
+  }
 
-    // Put this edited item in the edited items array so it can persist to the database
-    if (!this.saveService.newItems.some(x => x.item == item)){
-      this.saveService.addSaveItem(this.saveService.updatedItems, item, this.tiers[item.tierIndex]);
+  saveUpdate(item, tier) {
+    // Put this edited item in the updated items array so it can be saved to the database
+    if (!this.saveService.newItems.some(x => x.item == item) && !this.saveService.updatedItems.some(x => x.item == item)) {
+      this.saveService.addSaveItem(this.saveService.updatedItems, item, tier);
     }
-    
   }
 
   editItem(item) {
@@ -89,13 +92,17 @@ export class EditableGridComponent extends GridComponent {
       this.change += 1;
       this.tierComponent.checkItemResults();
       this.collapseDeletedTier(this.tierComponent.tierComponents);
+      this.saveDelete(this.currentItem);
+    }
+  }
 
-      // Put this deleted item in the deleted items array so it can persist to the database
-      if (!this.saveService.newItems.some(x => x.item == this.currentItem)) {
-        this.saveService.addSaveItem(this.saveService.deletedItems, this.currentItem, this.tiers[this.currentItem.tierIndex]);
-      } else {
-        this.saveService.newItems.splice(this.saveService.newItems.findIndex(x => x.item == this.currentItem), 1);
-      }
+  saveDelete(item) {
+    // Put this deleted item in the deleted items array so it can be saved to the database
+    if (!this.saveService.newItems.some(x => x.item == item)) {
+      this.saveService.addSaveItem(this.saveService.deletedItems, item, this.tiers[item.tierIndex]);
+      this.saveService.updatedItems.splice(this.saveService.updatedItems.findIndex(x => x.item == item), 1);
+    } else {
+      this.saveService.newItems.splice(this.saveService.newItems.findIndex(x => x.item == item), 1);
     }
   }
 

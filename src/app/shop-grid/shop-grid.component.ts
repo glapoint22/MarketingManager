@@ -132,7 +132,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 value: z.description
               },
               {
-                value: z.price
+                value: z.price.toString()
               }
             ],
             filters: z.filters,
@@ -180,7 +180,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 .map(z => ({
                   id: z.id,
                   name: z.data[0].value,
-                  isChecked: item.filters ? item.filters.some(x => x === z.id) : false
+                  isChecked: item.filters ? item.filters.some(x => x.filterOption === z.id) : false
                 }))
             }))
         }
@@ -209,7 +209,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         },
         {
           name: 'Price',
-          defaultValue: '0.00',
+          defaultValue: '0',
           width: 400
         }
       ],
@@ -231,8 +231,9 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             Selected: x.isSelected
           })),
           ProductFilters: item.filters.map(x => ({
+            ID: x.id,
             ProductID: item.id,
-            FilterLabelID: x
+            FilterLabelID: x.filterOption
           })),
           ProductVideos: item.videos.map(x => ({
             ProductID: item.id,
@@ -309,6 +310,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     } else {
       this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
     }
+    this.saveUpdate(this.currentItem, this.tiers[2]);
   }
 
   createNewItem(tierIndex: number, parentId: number) {

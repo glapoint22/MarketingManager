@@ -32,7 +32,12 @@ export class DataService {
 
 
   post(url: string, body: any): Observable<Response> {
-    return this.http.post(url, body);
+    return this.http.post(url, body)
+      .map((response: any) => {
+        if (response._body !== "") {
+          return response.json();
+        }
+      });
   }
 
   put(url: string, body: any): Observable<Response> {

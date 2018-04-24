@@ -18,6 +18,7 @@ import { FeaturedFilterPipe } from './featured-filter.pipe';
 import { MaxCountPipe } from './max-count.pipe';
 import { TierSearchFilterPipe } from './tier-search-filter.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
+import { SortPipe } from './sort.pipe';
 
 // Components
 import { AppComponent } from './app.component';
@@ -57,7 +58,8 @@ import { MediaComponent } from './media/media.component';
     MaxCountPipe,
     TierSearchFilterPipe,
     SearchFilterPipe,
-    MediaComponent
+    MediaComponent,
+    SortPipe
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { DataService } from "../data.service";
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 
 @Component({
   selector: 'media',
@@ -10,6 +11,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class MediaComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('videoInput') videoInput: ElementRef;
+  @Input() shopGrid: ShopGridComponent;
   public contents: Array<any> = [];
   public showVideoInput: boolean = false;
   public mode: any;
@@ -91,6 +93,7 @@ export class MediaComponent implements OnInit {
               if (this.contents.length > 0) {
                 this.contents[0].isSelected = true;
               }
+              this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
             }
           },
           getDisabled: () => {
@@ -120,6 +123,7 @@ export class MediaComponent implements OnInit {
       },
       onClick: (image) => {
         this.contents.forEach(x => x.isSelected = image === x);
+        this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
       }
     }
 
@@ -359,6 +363,7 @@ export class MediaComponent implements OnInit {
         .subscribe((image: any) => {
           this.mode.setNewImage(image);
           this.mode.initialize(image);
+          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
         }, error => {
           // Error
         });
