@@ -11,6 +11,7 @@ export class TierComponent implements Itier {
   @ViewChildren(TierComponent) tierComponents: QueryList<TierComponent>;
   @ViewChildren('checkbox') checkboxElements: QueryList<ElementRef>;
   @ViewChildren('row') itemResults: QueryList<ElementRef>;
+  @ViewChildren('edit') editInputElements: QueryList<ElementRef>;
   @Input() grid: Igrid;
   public index: number = -1;
   public name: string;
@@ -107,5 +108,14 @@ export class TierComponent implements Itier {
       this.noResults = false;
       if (this.itemResults.toArray().length === 0 && this.grid.searchValue.length > 0) this.noResults = true;
     }, 1);
+  }
+
+  checkFocus(item: any) {
+    window.setTimeout(() => {
+      if(!this.editInputElements.some(x => x.nativeElement == document.activeElement)){
+        item.isInEditMode = false;
+      }
+    }, 1);
+    
   }
 }

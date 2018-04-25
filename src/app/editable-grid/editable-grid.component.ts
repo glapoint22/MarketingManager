@@ -50,8 +50,12 @@ export class EditableGridComponent extends GridComponent {
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.currentItem && !this.currentItem.isInEditMode){
+      super.handleKeyboardEvent(event);
+    }
+
     // Enter key
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || event.keyCode === 27) {
       if (this.currentItem && this.currentItem.isInEditMode) {
         for (let i = 0; i < this.editedFields.length; i++) {
           this.currentItem.data[i].value = this.editedFields[i].value;
@@ -59,15 +63,15 @@ export class EditableGridComponent extends GridComponent {
         this.currentItem.isInEditMode = false;
         this.grid.nativeElement.focus();
         this.change += 1;
+        this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
       }
     }
 
-    super.handleKeyboardEvent(event);
+    
   }
 
   setEdit(item) {
     this.editItem(item);
-    this.saveUpdate(item, this.tiers[item.tierIndex]);
   }
 
   saveUpdate(item, tier) {

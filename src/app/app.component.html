@@ -3,7 +3,7 @@
     <menu-button buttonId="email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
     <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
     <menu-button buttonId="social" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
-    <div class="save-button" (click)="saveService.save()" [ngClass]="{'button-disabled': !saveService.isChange()}">Save</div>
+    <div class="save-button" (click)="saveService.save()" [class]="saveService.isChange() ? 'save-button blink' : 'save-button button-disabled'">Save</div>
 </div>
 <div class="content-container">
     <shop *ngIf="activeScreen == 'shop'"></shop>

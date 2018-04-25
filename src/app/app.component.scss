@@ -12,20 +12,46 @@
     overflow:hidden;
 }
 .save-button {
-    width: 50px;
+    width: 49px;
     height: 25px;
-    background: #424141;
+    background: #585858;
     position: absolute;
     bottom: 0;
-    border: 1px solid #d0d0d0;
+    border: 1px solid;
     box-sizing: border-box;
-    color: #ffffff;
     text-align: center;
     font-size: 14px;
     line-height: 25px;
     cursor: pointer;
 }
+
 .button-disabled {
     border-color: #585858;
     color: #6b6b6b;
+    background: #424141;
+}
+.blink{
+    &.save-button:active{
+        font-size: 13px;
+        height: 24px;
+    }
+    animation: 1s blink;
+    animation-iteration-count: infinite;
+}
+@keyframes blink {
+    0% {
+      border-color: #585858;
+      background: #424141;
+      color: #929292;
+    }
+    50% {
+        border-color: #ff0000;
+        background: #530000;
+        color: #ffffff;
+    }
+    100% {
+        border-color: #585858;
+        background: #424141;
+        color: #929292;
+    }
 }

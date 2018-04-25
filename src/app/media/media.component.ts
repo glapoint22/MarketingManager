@@ -246,6 +246,7 @@ export class MediaComponent implements OnInit {
             for (let i = this.currentItem.videos.length - 1; i > -1; i--) {
               if (this.contents[i].isSelected) {
                 this.currentItem.videos.splice(i, 1);
+                this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
               }
             }
             this.contents = this.contents.filter(x => !x.isSelected)
@@ -277,11 +278,14 @@ export class MediaComponent implements OnInit {
       },
       onClick: () => { },
       onSubmit: (url) => {
-        this.currentItem.videos.push(url);
-        this.contents.push({
-          url: this.sanitizer.bypassSecurityTrustResourceUrl(url),
-          isSelected: false
-        });
+        if (url.search(/\S/) !== -1) {
+          this.currentItem.videos.push(url);
+          this.contents.push({
+            url: this.sanitizer.bypassSecurityTrustResourceUrl(url),
+            isSelected: false
+          });
+          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+        }
         this.showVideoInput = false;
       }
     }
@@ -321,6 +325,7 @@ export class MediaComponent implements OnInit {
             for (let i = this.contents.length - 1; i > -1; i--) {
               if (this.contents[i].isSelected) {
                 this.contents.splice(i, 1);
+                this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
               }
             }
           },
@@ -349,6 +354,7 @@ export class MediaComponent implements OnInit {
       },
       onClick: (image) => {
         image.isSelected = !image.isSelected;
+        this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
       }
     }
   }

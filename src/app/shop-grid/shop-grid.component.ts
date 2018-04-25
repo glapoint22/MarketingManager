@@ -306,9 +306,12 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   onFilterOptionChange(option) {
     if (!option.isChecked) {
-      this.currentItem.filters.push(option.id);
+      this.currentItem.filters.push({
+        id: 0,
+        filterOption: option.id
+      });
     } else {
-      this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
+      this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x.filterOption === option.id), 1);
     }
     this.saveUpdate(this.currentItem, this.tiers[2]);
   }
