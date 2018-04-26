@@ -43,35 +43,45 @@ export class EditableGridComponent extends GridComponent {
         name: buttonName,
         icon: 'fas fa-edit',
         onClick: (item, rowButton) => {
-          this.setEdit(item);
+          this.editItem(item);
         }
       }
     ]
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (this.currentItem && !this.currentItem.isInEditMode){
+    let dataChanged: boolean;
+
+    // Don't call super if item is in edit mode
+    if (this.currentItem && !this.currentItem.isInEditMode) {
       super.handleKeyboardEvent(event);
     }
 
-    // Enter key
+    // Enter key or escape key
     if (event.keyCode === 13 || event.keyCode === 27) {
       if (this.currentItem && this.currentItem.isInEditMode) {
-        for (let i = 0; i < this.editedFields.length; i++) {
-          this.currentItem.data[i].value = this.editedFields[i].value;
+
+        // If enter key was pressed
+        if (event.keyCode === 13) {
+          for (let i = 0; i < this.editedFields.length; i++) {
+            if (this.editedFields[i].value !== this.currentItem.data[i].value) {
+              dataChanged = true;
+              this.currentItem.data[i].value = this.editedFields[i].value;
+            }
+          }
         }
+
+        // If there was a change to the data
+        if (dataChanged) {
+          this.change += 1;
+          this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
+        }
+
+        // Get out of edit mode
         this.currentItem.isInEditMode = false;
         this.grid.nativeElement.focus();
-        this.change += 1;
-        this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
       }
     }
-
-    
-  }
-
-  setEdit(item) {
-    this.editItem(item);
   }
 
   saveUpdate(item, tier) {
