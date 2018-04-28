@@ -107,8 +107,8 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   deleteItem(item: any) {
-    item.featured = false;
     this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
+    item.featured = false;
   }
 
   createNewItem() {
@@ -117,11 +117,11 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   onNonFeaturedItemClick(item) {
+    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
     item.featured = true;
     this.change += 1;
     this.showNonFeaturedList = false;
     this.nonFeaturedSearchValue = '';
-    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
   }
 
   clearSearch(search) {

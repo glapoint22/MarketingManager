@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { DataService } from "../data.service";
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ShopGridComponent } from '../shop-grid/shop-grid.component';
+import { SaveService } from "../save.service";
 
 @Component({
   selector: 'media',
@@ -23,7 +24,7 @@ export class MediaComponent implements OnInit {
   private productVideos: any;
   private productBanners: any;
 
-  constructor(public dataService: DataService, private sanitizer: DomSanitizer) { }
+  constructor(public dataService: DataService, private sanitizer: DomSanitizer, private saveService: SaveService) { }
 
   ngOnInit() {
     // Category Icon
@@ -89,11 +90,22 @@ export class MediaComponent implements OnInit {
           icon: 'fas fa-trash-alt',
           onClick: () => {
             if (this.contents.length > 0) {
-              this.contents.splice(this.contents.findIndex(x => x.isSelected), 1);
+              this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+
+              let imageIndex = this.contents.findIndex(x => x.isSelected);
+              let image = this.contents[imageIndex].name;
+              let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
+
+              if (!saveItem.originalItem.categoryImages.some(x => x.name === image)) {
+                // Delete image on the server
+                this.dataService.delete('/api/Image', [image]).subscribe(() => { });
+              }
+
+              this.contents.splice(imageIndex, 1);
               if (this.contents.length > 0) {
                 this.contents[0].isSelected = true;
               }
-              this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+              this.saveService.checkForNoChanges();
             }
           },
           getDisabled: () => {
@@ -122,8 +134,8 @@ export class MediaComponent implements OnInit {
         if (this.currentItem.categoryImages.length > 0) this.contents = this.currentItem.categoryImages;
       },
       onClick: (image) => {
-        this.contents.forEach(x => x.isSelected = image === x);
         this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+        this.contents.forEach(x => x.isSelected = image === x);
       }
     }
 
@@ -245,11 +257,12 @@ export class MediaComponent implements OnInit {
           onClick: () => {
             for (let i = this.currentItem.videos.length - 1; i > -1; i--) {
               if (this.contents[i].isSelected) {
-                this.currentItem.videos.splice(i, 1);
                 this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+                this.currentItem.videos.splice(i, 1);
               }
             }
             this.contents = this.contents.filter(x => !x.isSelected)
+            this.saveService.checkForNoChanges();
           },
           getDisabled: () => {
             return !this.contents.some(x => x.isSelected);
@@ -279,12 +292,12 @@ export class MediaComponent implements OnInit {
       onClick: () => { },
       onSubmit: (url) => {
         if (url.search(/\S/) !== -1) {
+          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
           this.currentItem.videos.push(url);
           this.contents.push({
             url: this.sanitizer.bypassSecurityTrustResourceUrl(url),
             isSelected: false
           });
-          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
         }
         this.showVideoInput = false;
       }
@@ -324,10 +337,19 @@ export class MediaComponent implements OnInit {
           onClick: () => {
             for (let i = this.contents.length - 1; i > -1; i--) {
               if (this.contents[i].isSelected) {
-                this.contents.splice(i, 1);
                 this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+
+                let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
+
+                if (!saveItem.originalItem.banners.some(x => x.name === this.contents[i].name)) {
+                  // Delete image on the server
+                  this.dataService.delete('/api/Image', [this.contents[i].name]).subscribe(() => { });
+                }
+
+                this.contents.splice(i, 1);
               }
             }
+            this.saveService.checkForNoChanges();
           },
           getDisabled: () => {
             return !this.contents.some(x => x.isSelected);
@@ -353,8 +375,8 @@ export class MediaComponent implements OnInit {
         if (this.currentItem.banners.length > 0) this.contents = this.currentItem.banners;
       },
       onClick: (image) => {
-        image.isSelected = !image.isSelected;
         this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+        image.isSelected = !image.isSelected;
       }
     }
   }
@@ -367,9 +389,9 @@ export class MediaComponent implements OnInit {
 
       this.dataService.post('/api/Image', formData)
         .subscribe((image: any) => {
+          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
           this.mode.setNewImage(image);
           this.mode.initialize(image);
-          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
         }, error => {
           // Error
         });

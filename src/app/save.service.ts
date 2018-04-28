@@ -82,7 +82,8 @@ export class SaveService {
         item: saveItem,
         setItem: (item) => tier.setItem(item),
         url: tier.url,
-        postOrder: tier.postOrder
+        postOrder: tier.postOrder,
+        originalItem: JSON.parse(JSON.stringify(saveItem))
       });
   }
 
@@ -90,5 +91,13 @@ export class SaveService {
     return this.newItems.length > 0 ||
       this.deletedItems.length > 0 ||
       this.updatedItems.length > 0;
+  }
+
+  checkForNoChanges() {
+    let regEx = /(,*"isSelected":(true|false))|(,*"isInEditMode":(true|false))/g;
+
+    if (this.updatedItems.every(x => JSON.stringify(x.originalItem).replace(regEx, '') === JSON.stringify(x.item).replace(regEx, ''))) {
+      this.updatedItems = [];
+    }
   }
 }

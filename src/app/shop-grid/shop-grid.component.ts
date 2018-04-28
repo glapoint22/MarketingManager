@@ -305,6 +305,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   }
 
   onFilterOptionChange(option) {
+    this.saveUpdate(this.currentItem, this.tiers[2]);
     if (!option.isChecked) {
       this.currentItem.filters.push({
         id: 0,
@@ -313,7 +314,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     } else {
       this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x.filterOption === option.id), 1);
     }
-    this.saveUpdate(this.currentItem, this.tiers[2]);
   }
 
   createNewItem(tierIndex: number, parentId: number) {

@@ -63,18 +63,15 @@ export class EditableGridComponent extends GridComponent {
 
         // If enter key was pressed
         if (event.keyCode === 13) {
-          for (let i = 0; i < this.editedFields.length; i++) {
-            if (this.editedFields[i].value !== this.currentItem.data[i].value) {
-              dataChanged = true;
-              this.currentItem.data[i].value = this.editedFields[i].value;
-            }
-          }
-        }
+          dataChanged = this.editedFields.some((x, i) => x.value !== this.currentItem.data[i].value);
 
-        // If there was a change to the data
-        if (dataChanged) {
-          this.change += 1;
-          this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
+          // If there was a change to the data
+          if (dataChanged) {
+            this.change += 1;
+            this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
+            this.currentItem.data.forEach((x, i) => x.value = this.editedFields[i].value);
+            this.saveService.checkForNoChanges();
+          }
         }
 
         // Get out of edit mode
