@@ -48,8 +48,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           Name: item.data[0].value
         }
       },
-      url: 'api/Filters',
-      postOrder: 1
+      url: 'api/Filters'
     });
 
     //Filter Options
@@ -87,8 +86,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           FilterID: item.parentId
         }
       },
-      url: 'api/FilterLabels',
-      postOrder: 2
+      url: 'api/FilterLabels'
     });
 
     super.createTiers();

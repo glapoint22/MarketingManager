@@ -1,34 +1,54 @@
 import { Injectable } from '@angular/core';
 import { DataService } from "./data.service";
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class SaveService {
   public newItems: Array<any> = [];
   public deletedItems: Array<any> = [];
   public updatedItems: Array<any> = [];
+  private savePosts = new Subject<void>();
+  private saveDeletes = new Subject<void>();
+  private saveUpdates = new Subject<void>();
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService) {
+    this.savePosts.subscribe(() => {
+      // Posts
+      if (this.newItems.length > 0) {
+        let posts = this.mapItems(this.newItems);
+        this.saveItem(posts[0], 'post', posts);
+      } else {
+        this.saveDeletes.next();
+      }
+    });
+
+    this.saveDeletes.subscribe(() => {
+      // Deletes
+      if (this.deletedItems.length > 0) {
+        let deletes = this.mapItems(this.deletedItems).map(x => ({
+          items: x.items.map(y => y.ID),
+          url: x.url
+        }));
+        this.saveItem(deletes[0], 'delete', deletes);
+      } else {
+        this.saveUpdates.next();
+      }
+    });
+
+    this.saveUpdates.subscribe(() => {
+      // Updates
+      if (this.updatedItems.length > 0) {
+        let updates = this.mapItems(this.updatedItems);
+        this.saveItem(updates[0], 'put', updates);
+      }
+    });
+  }
 
   save() {
-    // Posts
-    if (this.newItems.length > 0) {
-      let posts = this.mapItems(this.newItems.sort((a, b) => a.postOrder - b.postOrder));
-      this.saveItem(posts[0], 'post', posts);
-    }
-
-    // Deletes
-    if (this.deletedItems.length > 0) {
-      let deletes = this.mapItems(this.deletedItems).map(x => ({
-        items: x.items.map(y => y.ID),
-        url: x.url
-      }));
-      this.saveItem(deletes[0], 'delete', deletes);
-    }
-
-    // Updates
-    if (this.updatedItems.length > 0) {
-      let updates = this.mapItems(this.updatedItems);
-      this.saveItem(updates[0], 'put', updates);
+    if (this.newItems.length > 0 ||
+      this.deletedItems.length > 0 ||
+      this.updatedItems.length > 0) {
+      this.savePosts.next();
     }
   }
 
@@ -59,16 +79,16 @@ export class SaveService {
           switch (verb) {
             case 'post':
               this.newItems = [];
+              this.saveDeletes.next();
               break;
             case 'delete':
               this.deletedItems = [];
+              this.saveUpdates.next();
               break;
             case 'put':
               this.updatedItems = [];
               break;
           }
-
-          this.newItems = [];
         }
       }, (error: any) => {
         // Error
@@ -82,7 +102,6 @@ export class SaveService {
         item: saveItem,
         setItem: (item) => tier.setItem(item),
         url: tier.url,
-        postOrder: tier.postOrder,
         originalItem: JSON.parse(JSON.stringify(saveItem))
       });
   }

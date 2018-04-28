@@ -7,5 +7,4 @@ export interface Itier {
     rowButtons: Array<any>;
     setItem?(item: any): any;
     url?: string;
-    postOrder?: number;
 }
