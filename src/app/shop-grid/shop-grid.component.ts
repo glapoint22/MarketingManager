@@ -303,10 +303,14 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   onFilterOptionChange(option) {
     this.saveUpdate(this.currentItem, this.tiers[2]);
     if (!option.isChecked) {
+      option.isChecked = true;
       this.currentItem.filters.push(option.id);
+      this.currentItem.filters.sort((a, b) => { return a - b });
     } else {
+      option.isChecked = false;
       this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
     }
+    this.saveService.checkForNoChanges();
   }
 
   createNewItem(tierIndex: number, parentId: number) {
@@ -329,5 +333,10 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         this.tiers[tierIndex].items[0].videos = [];
     }
     this.onItemClick.emit(this.tiers[tierIndex].items[0]);
+  }
+
+  onBlur() {
+    super.onBlur();
+    this.showFiltersContainer = false;
   }
 }
