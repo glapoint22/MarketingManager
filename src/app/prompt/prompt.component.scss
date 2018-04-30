@@ -1,0 +1,62 @@
+@import 'theme';
+
+.prompt-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.prompt {
+    background: #424141;
+    width: 300px;
+    border-radius: 10px;
+    border: 1px solid #656565;
+    position: relative;
+    @include shadow();
+}
+.prompt-title {
+    color: #9e9e9e;
+    margin: 5px 5px 5px 10px;
+}
+.close {
+    color: #bbbbbb;;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+}
+.close:hover {
+    color: white;
+}
+.close:active {
+    color: #868686
+}
+.content {
+    background: #333333;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #585858;
+}
+.prompt-text {
+    color: #dedede;
+    padding: 5px;
+    text-align: center;
+}
+.buttons-container {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    button {
+        margin-right: 20px;
+        cursor: pointer;
+    }
+}

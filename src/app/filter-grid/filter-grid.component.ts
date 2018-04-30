@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
+import { PromptService } from "../prompt.service";
 
 @Component({
   selector: 'filter-grid',
@@ -10,7 +11,7 @@ import { SaveService } from "../save.service";
 })
 export class FilterGridComponent extends EditableGridComponent implements OnInit {
 
-  constructor(dataService: DataService, saveService: SaveService) { super(dataService, saveService) }
+  constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Filters';

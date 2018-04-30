@@ -1,0 +1,14 @@
+<div *ngIf="promptService.show" class="prompt-container">
+  <div class="prompt">
+    <div class="prompt-title">{{promptService.title}}</div>
+    <div class="close" (click)="promptService.show = false">
+      <i class="far fa-window-close"></i>
+    </div>
+    <div class="content">
+      <div class="prompt-text">{{promptService.text}}</div>
+      <div class="buttons-container">
+        <button [id]="i == 0 ? 'default-prompt-button' : ''" *ngFor="let button of promptService.buttons; let i = index" (click)="promptService.show = false; button.callback()">{{button.text}}</button>
+      </div>
+    </div>
+  </div>
+</div>

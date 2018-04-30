@@ -3,6 +3,7 @@ import { EditableGridComponent } from "../editable-grid/editable-grid.component"
 import { DataService } from "../data.service";
 import { Itier } from '../itier';
 import { SaveService } from "../save.service";
+import { PromptService } from "../prompt.service";
 
 @Component({
   selector: 'featured-grid',
@@ -18,7 +19,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   public showNonFeaturedList: boolean;
   public nonFeaturedSearchValue: string = '';
 
-  constructor(dataService: DataService, saveService: SaveService) { super(dataService, saveService) }
+  constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
   ngOnInit() {
     this.tierComponent.parentTierHeight = 230;

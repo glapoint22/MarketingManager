@@ -3,6 +3,7 @@ import { DataService } from "../data.service";
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 import { SaveService } from "../save.service";
+import { PromptService } from "../prompt.service";
 
 @Component({
   selector: 'media',
@@ -24,7 +25,7 @@ export class MediaComponent implements OnInit {
   private productVideos: any;
   private productBanners: any;
 
-  constructor(public dataService: DataService, private sanitizer: DomSanitizer, private saveService: SaveService) { }
+  constructor(public dataService: DataService, private sanitizer: DomSanitizer, private saveService: SaveService, private promptService: PromptService) { }
 
   ngOnInit() {
     // Category Icon
@@ -45,7 +46,7 @@ export class MediaComponent implements OnInit {
           }
         },
         {
-          title: 'New Icon',
+          title: 'New Category Icon',
           icon: 'fas fa-file-alt',
           onClick: () => this.fileInput.nativeElement.click(),
           getDisabled: () => {
@@ -86,34 +87,46 @@ export class MediaComponent implements OnInit {
           }
         },
         {
-          title: 'Delete Image',
+          title: 'Delete Category Image',
           icon: 'fas fa-trash-alt',
           onClick: () => {
             if (this.contents.length > 0) {
-              this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+              this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this category image?', [
+                {
+                  text: 'Yes',
+                  callback: () => {
+                    this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
 
-              let imageIndex = this.contents.findIndex(x => x.isSelected);
-              let image = this.contents[imageIndex].name;
-              let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
+                    let imageIndex = this.contents.findIndex(x => x.isSelected);
+                    let image = this.contents[imageIndex].name;
+                    let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
 
-              if (!saveItem.originalItem.categoryImages.some(x => x.name === image)) {
-                // Delete image on the server
-                this.dataService.delete('/api/Image', [image]).subscribe(() => { });
-              }
+                    if (!saveItem.originalItem.categoryImages.some(x => x.name === image)) {
+                      // Delete image on the server
+                      this.dataService.delete('/api/Image', [image]).subscribe(() => { });
+                    }
 
-              this.contents.splice(imageIndex, 1);
-              if (this.contents.length > 0) {
-                this.contents[0].isSelected = true;
-              }
-              this.saveService.checkForNoChanges();
+                    this.contents.splice(imageIndex, 1);
+                    if (this.contents.length > 0) {
+                      this.contents[0].isSelected = true;
+                    }
+                    this.saveService.checkForNoChanges();
+                  }
+                },
+                {
+                  text: 'No',
+                  callback: () => { }
+                }
+              ]);
             }
+
           },
           getDisabled: () => {
             return this.contents.length === 0;
           }
         },
         {
-          title: 'New Image',
+          title: 'New Category Image',
           icon: 'fas fa-file-alt',
           onClick: () => {
             this.fileInput.nativeElement.click()
@@ -255,14 +268,28 @@ export class MediaComponent implements OnInit {
           title: 'Delete Video(s)',
           icon: 'fas fa-trash-alt',
           onClick: () => {
-            for (let i = this.currentItem.videos.length - 1; i > -1; i--) {
-              if (this.contents[i].isSelected) {
-                this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
-                this.currentItem.videos.splice(i, 1);
-              }
+            if (this.contents.some(x => x.isSelected)) {
+              this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' +
+                (this.contents.filter(x => x.isSelected).length === 1 ? 'this product video?' : 'these product videos?'), [
+                  {
+                    text: 'Yes',
+                    callback: () => {
+                      for (let i = this.currentItem.videos.length - 1; i > -1; i--) {
+                        if (this.contents[i].isSelected) {
+                          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+                          this.currentItem.videos.splice(i, 1);
+                        }
+                      }
+                      this.contents = this.contents.filter(x => !x.isSelected)
+                      this.saveService.checkForNoChanges();
+                    }
+                  },
+                  {
+                    text: 'No',
+                    callback: () => { }
+                  }
+                ]);
             }
-            this.contents = this.contents.filter(x => !x.isSelected)
-            this.saveService.checkForNoChanges();
           },
           getDisabled: () => {
             return !this.contents.some(x => x.isSelected);
@@ -335,21 +362,35 @@ export class MediaComponent implements OnInit {
           title: 'Delete Banner(s)',
           icon: 'fas fa-trash-alt',
           onClick: () => {
-            for (let i = this.contents.length - 1; i > -1; i--) {
-              if (this.contents[i].isSelected) {
-                this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+            if (this.contents.some(x => x.isSelected)) {
+              this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' +
+                (this.contents.filter(x => x.isSelected).length === 1 ? 'this product banner?' : 'these product banners?'), [
+                  {
+                    text: 'Yes',
+                    callback: () => {
+                      for (let i = this.contents.length - 1; i > -1; i--) {
+                        if (this.contents[i].isSelected) {
+                          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
 
-                let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
+                          let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
 
-                if (!saveItem.originalItem.banners.some(x => x.name === this.contents[i].name)) {
-                  // Delete image on the server
-                  this.dataService.delete('/api/Image', [this.contents[i].name]).subscribe(() => { });
-                }
+                          if (!saveItem.originalItem.banners.some(x => x.name === this.contents[i].name)) {
+                            // Delete image on the server
+                            this.dataService.delete('/api/Image', [this.contents[i].name]).subscribe(() => { });
+                          }
 
-                this.contents.splice(i, 1);
-              }
+                          this.contents.splice(i, 1);
+                        }
+                      }
+                      this.saveService.checkForNoChanges();
+                    }
+                  },
+                  {
+                    text: 'No',
+                    callback: () => { }
+                  }
+                ]);
             }
-            this.saveService.checkForNoChanges();
           },
           getDisabled: () => {
             return !this.contents.some(x => x.isSelected);

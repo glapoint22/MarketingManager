@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, Input, Output, ElementRef, EventEmitte
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
+import { PromptService } from "../prompt.service";
 
 @Component({
   selector: 'shop-grid',
@@ -17,7 +18,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filters: Array<any> = [];
   private filterActivated: boolean;
 
-  constructor(dataService: DataService, private element: ElementRef, saveService: SaveService) { super(dataService, saveService) }
+  constructor(dataService: DataService, private element: ElementRef, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Categories';

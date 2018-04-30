@@ -7,6 +7,7 @@ import { HttpModule } from '@angular/http';
 // Services
 import { DataService } from "./data.service";
 import { SaveService } from "./save.service";
+import { PromptService } from "./prompt.service";
 
 // Directives
 import { ResizableDirective } from './resizable.directive';
@@ -35,6 +36,7 @@ import { TierComponent } from './tier/tier.component';
 import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { MediaComponent } from './media/media.component';
+import { PromptComponent } from './prompt/prompt.component';
 
 @NgModule({
   declarations: [
@@ -59,14 +61,15 @@ import { MediaComponent } from './media/media.component';
     TierSearchFilterPipe,
     SearchFilterPipe,
     MediaComponent,
-    SortPipe
+    SortPipe,
+    PromptComponent
   ],
   imports: [
     BrowserModule,
     HttpModule,
     FormsModule
   ],
-  providers: [DataService, SaveService],
+  providers: [DataService, SaveService, PromptService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

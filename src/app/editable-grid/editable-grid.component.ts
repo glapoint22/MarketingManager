@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
+import { PromptService } from "../prompt.service";
 
 @Component({
   template: ''
@@ -10,7 +11,7 @@ export class EditableGridComponent extends GridComponent {
   public change: number = 0;
   private editedFields: Array<any>;
 
-  constructor(dataService: DataService, public saveService: SaveService) { super(dataService) }
+  constructor(dataService: DataService, public saveService: SaveService, public promptService: PromptService) { super(dataService) }
 
   setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number) {
     return [
@@ -28,7 +29,18 @@ export class EditableGridComponent extends GridComponent {
         name: deleteButtonName,
         icon: 'fas fa-trash-alt',
         onClick: () => {
-          this.setDelete();
+          if (this.currentItem && this.currentItem.isSelected) {
+            this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' + this.currentItem.data[0].value + '?', [
+              {
+                text: 'Yes',
+                callback: () => this.setDelete()
+              },
+              {
+                text: 'No',
+                callback: () => { }
+              }
+            ]);
+          }
         },
         getDisabled: () => {
           return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == tierIndex) : true;
