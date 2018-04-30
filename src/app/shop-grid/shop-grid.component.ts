@@ -176,7 +176,10 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             .map(x => ({
               id: x.id,
               name: x.data[0].value,
-              options: this.filterGrid.tiers[1].items.filter(y => !y.isDeleted && y.parentId === x.id)
+              options: this.filterGrid.tiers[1].items.filter(y => !y.isDeleted && y.parentId === x.id).sort((a, b) => {
+                if (a.data[0].value.toLowerCase() > b.data[0].value.toLowerCase()) return 1;
+                if (a.data[0].value.toLowerCase() < b.data[0].value.toLowerCase()) return -1;
+              })
                 .map(z => ({
                   id: z.id,
                   name: z.data[0].value,
@@ -256,11 +259,13 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     if (this.hasFocus) {
       //Escape
       if (event.keyCode === 27) {
-        this.showFiltersContainer = false;
+        if (this.showFiltersContainer) {
+          this.showFiltersContainer = false;
+        } else {
+          super.handleKeyboardEvent(event);
+        }
       }
     }
-
-    super.handleKeyboardEvent(event);
   }
 
   onItemSelect(item: any): void {
