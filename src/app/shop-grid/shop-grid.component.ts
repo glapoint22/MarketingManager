@@ -257,16 +257,14 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (this.hasFocus) {
-      //Escape
-      if (event.keyCode === 27) {
-        if (this.showFiltersContainer) {
-          this.showFiltersContainer = false;
-        } else {
-          super.handleKeyboardEvent(event);
-        }
-      }
+    //Escape
+    if (event.keyCode === 27) {
+      if (this.showFiltersContainer) {
+        this.showFiltersContainer = false;
+        return;
+      } 
     }
+    super.handleKeyboardEvent(event);
   }
 
   onItemSelect(item: any): void {
