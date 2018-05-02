@@ -1,6 +1,7 @@
 import { Component, ViewChildren, QueryList, Input, ElementRef } from '@angular/core';
 import { Itier } from '../itier';
 import { Igrid } from '../igrid';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'tier',

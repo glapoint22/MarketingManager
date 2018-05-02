@@ -131,7 +131,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 value: z.description
               },
               {
-                value: z.price.toString()
+                value: z.price.toString(),
+                type: 'currency'
               }
             ],
             filters: z.filters,
@@ -262,7 +263,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       if (this.showFiltersContainer) {
         this.showFiltersContainer = false;
         return;
-      } 
+      }
     }
     super.handleKeyboardEvent(event);
   }
@@ -337,6 +338,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         this.tiers[tierIndex].items[0].image = null;
         this.tiers[tierIndex].items[0].banners = [];
         this.tiers[tierIndex].items[0].videos = [];
+        this.tiers[tierIndex].items[0].data[3].type = 'currency';
     }
     this.onItemClick.emit(this.tiers[tierIndex].items[0]);
   }
