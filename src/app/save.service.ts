@@ -15,8 +15,10 @@ export class SaveService {
     this.savePosts.subscribe(() => {
       // Posts
       if (this.newItems.length > 0) {
-        let posts = this.mapItems(this.newItems);
-        this.saveItem(posts[0], 'post', posts);
+        if (this.newItems.every(x => x.check(x.item))) {
+          let posts = this.mapItems(this.newItems);
+          this.saveItem(posts[0], 'post', posts);
+        }
       } else {
         this.saveDeletes.next();
       }
@@ -38,8 +40,10 @@ export class SaveService {
     this.saveUpdates.subscribe(() => {
       // Updates
       if (this.updatedItems.length > 0) {
-        let updates = this.mapItems(this.updatedItems);
-        this.saveItem(updates[0], 'put', updates);
+        if (this.updatedItems.every(x => x.check(x.item))) {
+          let updates = this.mapItems(this.updatedItems);
+          this.saveItem(updates[0], 'put', updates);
+        }
       }
     });
   }
@@ -101,6 +105,7 @@ export class SaveService {
       {
         item: saveItem,
         setItem: (item) => tier.setItem(item),
+        check: (item) => tier.check ? tier.check(item) : true,
         url: tier.url,
         originalItem: JSON.parse(JSON.stringify(saveItem))
       });

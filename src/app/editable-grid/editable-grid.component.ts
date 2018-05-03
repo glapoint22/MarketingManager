@@ -81,7 +81,11 @@ export class EditableGridComponent extends GridComponent {
           if (dataChanged) {
             this.change += 1;
             this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
-            this.currentItem.data.forEach((x, i) => x.value = this.editedFields[i].value);
+            this.currentItem.data.forEach((x, i) => {
+              if (this.editedFields[i].value.search(/\S/) !== -1) {
+                x.value = this.editedFields[i].value;
+              }
+            });
             this.saveService.checkForNoChanges();
           }
         }

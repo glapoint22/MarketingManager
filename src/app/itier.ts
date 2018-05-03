@@ -6,5 +6,6 @@ export interface Itier {
     headerButtons: Array<any>;
     rowButtons: Array<any>;
     setItem?(item: any): any;
+    check?(item: any): any;
     url?: string;
 }

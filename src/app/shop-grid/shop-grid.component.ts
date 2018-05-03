@@ -67,6 +67,28 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           }))
         }
       },
+      check: (item) => {
+        if (item.icon === null) {
+          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '", needs an icon.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+        if (item.categoryImages.length === 0) {
+          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '", needs at least one category image.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+        return true;
+      },
       url: 'api/Categories'
     });
 
@@ -106,6 +128,18 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           Icon: item.icon,
           CategoryID: item.parentId
         }
+      },
+      check: (item) => {
+        if (item.icon === null) {
+          this.promptService.prompt('Quality Control', 'Niche "' + item.data[0].value + '", needs an icon.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+        return true;
       },
       url: 'api/Niches'
     });
@@ -244,6 +278,18 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             Url: x
           }))
         }
+      },
+      check: (item) => {
+        if (item.image === null) {
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", needs an image.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+        return true;
       },
       url: 'api/Products'
     });
