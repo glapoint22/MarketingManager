@@ -7,15 +7,18 @@ export class SaveService {
   public newItems: Array<any> = [];
   public deletedItems: Array<any> = [];
   public updatedItems: Array<any> = [];
+  public isSaving: boolean;
   private savePosts = new Subject<void>();
   private saveDeletes = new Subject<void>();
   private saveUpdates = new Subject<void>();
+  private saveComplete = new Subject<void>();
 
   constructor(private dataService: DataService) {
     this.savePosts.subscribe(() => {
       // Posts
       if (this.newItems.length > 0) {
         if (this.newItems.every(x => x.check(x.item))) {
+          this.isSaving = true;
           let posts = this.mapItems(this.newItems);
           this.saveItem(posts[0], 'post', posts);
         }
@@ -27,6 +30,7 @@ export class SaveService {
     this.saveDeletes.subscribe(() => {
       // Deletes
       if (this.deletedItems.length > 0) {
+        this.isSaving = true;
         let deletes = this.mapItems(this.deletedItems).map(x => ({
           items: x.items.map(y => y.ID),
           url: x.url
@@ -41,10 +45,17 @@ export class SaveService {
       // Updates
       if (this.updatedItems.length > 0) {
         if (this.updatedItems.every(x => x.check(x.item))) {
+          this.isSaving = true;
           let updates = this.mapItems(this.updatedItems);
           this.saveItem(updates[0], 'put', updates);
         }
+      } else {
+        this.saveComplete.next();
       }
+    });
+
+    this.saveComplete.subscribe(() => {
+      this.isSaving = false;
     });
   }
 
@@ -91,6 +102,7 @@ export class SaveService {
               break;
             case 'put':
               this.updatedItems = [];
+              this.saveComplete.next();
               break;
           }
         }
