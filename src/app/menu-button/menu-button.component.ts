@@ -14,12 +14,12 @@ export class MenuButtonComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if(this.default){
+    if (this.default) {
       this.onButtonClick.emit(this.buttonId);
     }
   }
 
-  onChange(){
+  onChange() {
     this.onButtonClick.emit(this.buttonId);
   }
 }

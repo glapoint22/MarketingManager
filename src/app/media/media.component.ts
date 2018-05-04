@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { DataService } from "../data.service";
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
@@ -17,7 +17,7 @@ export class MediaComponent implements OnInit {
   public contents: Array<any> = [];
   public showVideoInput: boolean = false;
   public mode: any;
-  private currentItem: any;
+  public currentItem: any;
   private categoryIcon: any;
   private categoryImages: any;
   private nicheIcon: any;

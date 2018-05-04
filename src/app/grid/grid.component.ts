@@ -112,11 +112,11 @@ export class GridComponent implements OnInit, Igrid {
     }
   }
 
-  onFocus(){
+  onFocus() {
     this.hasFocus = true;
   }
 
-  onBlur(){
+  onBlur() {
     this.hasFocus = false;
   }
 }

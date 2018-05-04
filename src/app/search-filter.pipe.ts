@@ -11,5 +11,4 @@ export class SearchFilterPipe implements PipeTransform {
     let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
     return items.filter(x => searchArray.every(y => x.data[0].value.toLowerCase().includes(y)));
   }
-
 }

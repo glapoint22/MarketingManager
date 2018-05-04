@@ -97,7 +97,7 @@ export class TierComponent implements Itier {
   }
 
   isCollapsed() {
-    //Test to see if all rows in this tier is collapsed.
+    //Test to see if all rows in this tier are collapsed.
     if (this.tierComponents.length > 0) {
       return this.tierComponents.toArray().some(x => x.isExpanded);
     }
@@ -113,10 +113,9 @@ export class TierComponent implements Itier {
 
   checkFocus(item: any) {
     window.setTimeout(() => {
-      if(!this.editInputElements.some(x => x.nativeElement == document.activeElement)){
+      if (!this.editInputElements.some(x => x.nativeElement == document.activeElement)) {
         item.isInEditMode = false;
       }
     }, 1);
-    
   }
 }

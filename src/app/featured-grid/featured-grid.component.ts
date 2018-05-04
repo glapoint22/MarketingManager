@@ -131,6 +131,6 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     search.value = '';
     this.nonFeaturedSearchValue = '';
   }
-  
-  saveDelete(item){}
+
+  saveDelete(item) { }
 }

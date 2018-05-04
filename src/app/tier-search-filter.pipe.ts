@@ -15,5 +15,4 @@ export class TierSearchFilterPipe implements PipeTransform {
       return items;
     }
   }
-
 }

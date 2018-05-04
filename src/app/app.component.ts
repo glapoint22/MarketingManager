@@ -9,6 +9,5 @@ import { SaveService } from "./save.service";
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(private saveService: SaveService){
-  }
+  constructor(public saveService: SaveService) { }
 }
