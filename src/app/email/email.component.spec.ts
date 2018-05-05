@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EmailComponent } from './email.component';
 
-describe('EmailComponent', () => {
+xdescribe('EmailComponent', () => {
   let component: EmailComponent;
   let fixture: ComponentFixture<EmailComponent>;
 
