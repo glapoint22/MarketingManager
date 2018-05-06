@@ -70,11 +70,11 @@ export class EditableGridComponent extends GridComponent {
     }
 
     // Enter key or escape key
-    if (event.keyCode === 13 || event.keyCode === 27) {
+    if (event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'Escape') {
       if (this.currentItem && this.currentItem.isInEditMode) {
 
         // If enter key was pressed
-        if (event.keyCode === 13) {
+        if (event.code === 'Enter' || event.code === 'NumpadEnter') {
           dataChanged = this.editedFields.some((x, i) => x.value !== this.currentItem.data[i].value);
 
           // If there was a change to the data

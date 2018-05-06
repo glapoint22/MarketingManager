@@ -26,13 +26,6 @@ export class GridComponent implements OnInit, Igrid {
 
   constructor(public dataService: DataService) { }
 
-  createTiers(data?: Array<any>) {
-    this.tierComponent.grid = this;
-    this.tierComponent.setTier(this.tiers[0]);
-  }
-
-  onTierCollapse() { }
-
   ngOnInit() {
     this.dataService.get(this.apiUrl, this.apiParameters)
       .subscribe((data: any) => {
@@ -41,6 +34,11 @@ export class GridComponent implements OnInit, Igrid {
       }, error => {
         // Error
       });
+  }
+
+  createTiers(data?: Array<any>) {
+    this.tierComponent.grid = this;
+    this.tierComponent.setTier(this.tiers[0]);
   }
 
   setSearchOptions() {
@@ -104,7 +102,7 @@ export class GridComponent implements OnInit, Igrid {
   handleKeyboardEvent(event: KeyboardEvent) {
     if (this.hasFocus) {
       //Escape
-      if (event.keyCode === 27) {
+      if (event.code === 'Escape') {
         if (this.currentItem) {
           this.currentItem.isSelected = false;
         }
@@ -119,4 +117,6 @@ export class GridComponent implements OnInit, Igrid {
   onBlur() {
     this.hasFocus = false;
   }
+
+  onTierCollapse() { }
 }

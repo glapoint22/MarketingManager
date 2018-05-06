@@ -12,7 +12,7 @@
       </select>
       <i class="fas fa-search fa-sm"></i>
       <input #searchInput type="text" class="search" (input)="onSearchChange($event.target.value)" [style.border-radius]="searchOptions.length > 1 ? '0 100px 100px 0' : '100px'">
-      <div (click)="clearSearchText()">
+      <div id="clearSearch" (click)="clearSearchText()">
         <i class="fas fa-times-circle fa-sm"></i>
       </div>
     </div>

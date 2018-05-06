@@ -296,6 +296,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
     super.createTiers();
     this.element.nativeElement.firstElementChild.focus();
+    this.hasFocus = true;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -305,7 +306,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
-    if (event.keyCode === 27) {
+    if (event.code === 'Escape') {
       if (this.showFiltersContainer) {
         this.showFiltersContainer = false;
         return;
