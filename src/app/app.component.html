@@ -16,7 +16,7 @@
 </div>
 
 <!-- Prompt -->
-<prompt></prompt>
+<prompt *ngIf="promptService.show"></prompt>
 
 <!-- Saving -->
 <div *ngIf="saveService.isSaving" class="saving">

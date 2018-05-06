@@ -21,7 +21,7 @@ describe('GridComponent', () => {
   let component: GridComponent;
   let fixture: ComponentFixture<GridComponent>;
   let dataService: DataService;
-  let compiled;
+  let domElement;
   let data = { id: 0, name: 'myItem' };
 
   beforeEach(async(() => {
@@ -69,7 +69,7 @@ describe('GridComponent', () => {
     component = fixture.componentInstance;
     component.tierComponent = new MockTierComponent();
     component.tiers = tiers;
-    compiled = fixture.debugElement.nativeElement;
+    domElement = fixture.debugElement.nativeElement;
     fixture.detectChanges();
   });
 
@@ -77,12 +77,12 @@ describe('GridComponent', () => {
     component.tiers = [];
     fixture.detectChanges();
 
-    let loadingContainer = compiled.querySelector('.loading-container');
+    let loadingContainer = domElement.querySelector('.loading-container');
     expect(loadingContainer).not.toBeNull();
   });
 
   it('should NOT show loading when tiers are created', () => {
-    let loadingContainer = compiled.querySelector('.loading-container');
+    let loadingContainer = domElement.querySelector('.loading-container');
     expect(loadingContainer).toBeNull();
   });
 
@@ -104,7 +104,7 @@ describe('GridComponent', () => {
   });
 
   it('should call onSearchChange when a value is entered into the search input', () => {
-    let input = compiled.querySelector('input');
+    let input = domElement.querySelector('input');
 
     spyOn(component, 'onSearchChange');
     input.value = 'a';
@@ -144,8 +144,8 @@ describe('GridComponent', () => {
   });
 
   it('should clear search text when x is clicked within the search input', () => {
-    let clearSearch = compiled.querySelector('#clearSearch');
-    let input = compiled.querySelector('input');
+    let clearSearch = domElement.querySelector('#clearSearch');
+    let input = domElement.querySelector('input');
     input.value = 'Hello';
     clearSearch.click();
 
@@ -153,7 +153,7 @@ describe('GridComponent', () => {
   });
 
   it('should call onSearchChange when x is clicked within the search input and the input value has 1 or more characters', () => {
-    let input = compiled.querySelector('input');
+    let input = domElement.querySelector('input');
     input.value = 'Hello';
     spyOn(component, 'onSearchChange');
     component.clearSearchText();
@@ -189,13 +189,13 @@ describe('GridComponent', () => {
 
   it('should set property hasFocus to true when grid gets focus', () => {
     component.hasFocus = false;
-    compiled.querySelector('.grid-container').dispatchEvent(new Event('focus'));
+    domElement.querySelector('.grid-container').dispatchEvent(new Event('focus'));
     expect(component.hasFocus).toBeTruthy();
   });
 
   it('should set property hasFocus to false when grid loses focus', () => {
     component.hasFocus = true;
-    compiled.querySelector('.grid-container').dispatchEvent(new Event('blur'));
+    domElement.querySelector('.grid-container').dispatchEvent(new Event('blur'));
     expect(component.hasFocus).toBeFalsy();
   });
 });

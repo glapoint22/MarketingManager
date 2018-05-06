@@ -9,25 +9,22 @@ export class DataService {
   constructor(private http: Http) { }
 
   get(url: string, parameters?: Array<any>): Observable<Response> {
-    if (parameters) {
-      let params: URLSearchParams = new URLSearchParams(),
-        requestOptions: RequestOptions = new RequestOptions();
+    let params: URLSearchParams, requestOptions: RequestOptions;
 
-      //Loop through the parameters
-      for (let i = 0; i < parameters.length; i++) {
-        params.set(parameters[i].key, parameters[i].value);
-      }
+    if (parameters && parameters.length > 0) {
+      params = new URLSearchParams();
+      requestOptions = new RequestOptions();
+
+      //Set the params
+      parameters.forEach(x => params.set(x.key, x.value));
 
       //Assign the params to the request options
       requestOptions.params = params;
-
-      //Get the data
-      return this.http.get(url, requestOptions)
-        .map((response: Response) => response.json())
-    } else {
-      return this.http.get(url)
-        .map((response: Response) => response.json())
     }
+
+    //Get the data
+    return this.http.get(url, requestOptions)
+      .map((response: Response) => response.json());
   }
 
 

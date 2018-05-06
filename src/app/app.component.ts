@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SaveService } from "./save.service";
+import { PromptService } from "./prompt.service";
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,5 @@ import { SaveService } from "./save.service";
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService) { }
+  constructor(public saveService: SaveService, public promptService: PromptService) { }
 }
