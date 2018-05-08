@@ -3,6 +3,7 @@ import { EditableGridComponent } from "../editable-grid/editable-grid.component"
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
+import { GridButton } from '../grid-button';
 
 @Component({
   selector: 'shop-grid',
@@ -52,7 +53,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: this.setHeaderButtons('New Category', 'Delete Category', 0),
+      headerButtons: this.setHeaderButtons('New Category', 'Delete Category'),
       rowButtons: this.setRowButtons('Edit Category'),
       setItem: (item) => {
         return {
@@ -119,7 +120,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 300
         }
       ],
-      headerButtons: this.setHeaderButtons('New Niche', 'Delete Niche', 1),
+      headerButtons: this.setHeaderButtons('New Niche', 'Delete Niche'),
       rowButtons: this.setRowButtons('Edit Niche'),
       setItem: (item) => {
         return {
@@ -176,7 +177,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
     items = [].concat.apply([], items.concat.apply([], items));
 
-    let rowButtons = this.setRowButtons('Edit Product');
+    let rowButtons: Array<GridButton> = this.setRowButtons('Edit Product');
     rowButtons.unshift(
       {
         name: 'Filter Product',
@@ -252,7 +253,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           width: 400
         }
       ],
-      headerButtons: this.setHeaderButtons('New Product', 'Delete Product', 2),
+      headerButtons: this.setHeaderButtons('New Product', 'Delete Product'),
       rowButtons: rowButtons,
       setItem: (item) => {
         return {

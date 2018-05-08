@@ -4,6 +4,7 @@ import { DataService } from "../data.service";
 import { Itier } from '../itier';
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
+import { GridButton } from '../grid-button';
 
 @Component({
   selector: 'featured-grid',
@@ -26,7 +27,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   createTiers() {
-    let headerButtons = this.setHeaderButtons('New Featured Category', 'Delete Featured Category', 0);
+    let headerButtons: Array<GridButton> = this.setHeaderButtons('New Featured Category', 'Delete Featured Category');
     headerButtons.unshift(
       {
         name: 'Switch to Featured Products',
@@ -56,7 +57,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     };
 
 
-    headerButtons = this.setHeaderButtons('New Featured Product', 'Delete Featured Product', 2);
+    headerButtons = this.setHeaderButtons('New Featured Product', 'Delete Featured Product');
     headerButtons.unshift(
       {
         name: 'Switch to Featured Categories',

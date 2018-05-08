@@ -11,7 +11,7 @@ import { TierComponent } from '../tier/tier.component';
   selector: 'tier',
   template: '',
 })
-export class MockTierComponent extends TierComponent {
+class MockTierComponent extends TierComponent {
   setTier(tier: Itier) { }
   checkItemResults() { }
   collapseTiers() { }

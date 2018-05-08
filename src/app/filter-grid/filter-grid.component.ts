@@ -41,7 +41,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           width: 200
         }
       ],
-      headerButtons: this.setHeaderButtons('New Filter', 'Delete Filter', 0),
+      headerButtons: this.setHeaderButtons('New Filter', 'Delete Filter'),
       rowButtons: this.setRowButtons('Edit Filter'),
       setItem: (item) => {
         return {
@@ -78,7 +78,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           width: 200
         }
       ],
-      headerButtons: this.setHeaderButtons('New Filter Option', 'Delete Filter Option', 1),
+      headerButtons: this.setHeaderButtons('New Filter Option', 'Delete Filter Option'),
       rowButtons: this.setRowButtons('Edit Filter Option'),
       setItem: (item) => {
         return {

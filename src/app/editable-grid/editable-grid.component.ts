@@ -3,6 +3,7 @@ import { GridComponent } from "../grid/grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
+import { GridButton } from "../grid-button";
 
 @Component({
   template: ''
@@ -13,7 +14,7 @@ export class EditableGridComponent extends GridComponent {
 
   constructor(dataService: DataService, public saveService: SaveService, public promptService: PromptService) { super(dataService) }
 
-  setHeaderButtons(newButtonName: string, deleteButtonName: string, tierIndex: number) {
+  setHeaderButtons(newButtonName: string, deleteButtonName: string): Array<GridButton> {
     return [
       {
         name: newButtonName,
@@ -42,19 +43,19 @@ export class EditableGridComponent extends GridComponent {
             ]);
           }
         },
-        getDisabled: () => {
+        getDisabled: (tierIndex: number) => {
           return this.currentItem ? !(this.currentItem.isSelected && this.currentItem.tierIndex == tierIndex) : true;
         }
       }
     ]
   }
 
-  setRowButtons(buttonName: string) {
+  setRowButtons(buttonName: string): Array<GridButton> {
     return [
       {
         name: buttonName,
         icon: 'fas fa-edit',
-        onClick: (item, rowButton) => {
+        onClick: (item) => {
           this.editItem(item);
         }
       }

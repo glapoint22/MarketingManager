@@ -14,7 +14,7 @@
         <div class="button-container">
           <!-- Generic Buttons -->
           <div class="button" *ngFor="let headerButton of headerButtons" [title]="headerButton.name" (click)="headerButton.onClick(index, parentId)"
-            [ngClass]="{'disabled': headerButton.getDisabled()}">
+            [ngClass]="{'disabled': headerButton.getDisabled(index)}">
             <i [class]="headerButton.icon"></i>
           </div>
 
