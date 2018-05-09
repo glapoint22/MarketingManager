@@ -7,7 +7,9 @@ import { GridButton } from '../grid-button';
 import { GridComponent } from '../grid/grid.component';
 
 class MockDataService { }
-class MockSaveService { }
+class MockSaveService {
+  checkForNoChanges() { }
+}
 class MockPromptService {
   prompt(title: string, text: string, buttons: Array<any>) { }
 }
@@ -15,6 +17,8 @@ class MockPromptService {
 describe('EditableGridComponent', () => {
   let component: EditableGridComponent;
   let fixture: ComponentFixture<EditableGridComponent>;
+  let saveService: SaveService;
+  let event: KeyboardEvent;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,6 +37,30 @@ describe('EditableGridComponent', () => {
     fixture = TestBed.createComponent(EditableGridComponent);
     component = fixture.componentInstance;
     spyOn(component, 'ngOnInit');
+    saveService = TestBed.get(SaveService);
+    component.currentItem = {
+      isSelected: true,
+      isInEditMode: true,
+      tierIndex: 2,
+      data: [
+        { value: 'Strategy Guides 1' },
+        { value: 'http://56e2c0n4zhqi1se007udp9fq11.hop.clickbank.net/' },
+        { value: 'A Foolproof, Science-Based System that\'s Guaranteed to Melt Away All Your Unwanted Stubborn Body Fat in Just 14 Days.' },
+        { value: '40.7934' }
+      ]
+    }
+    component.grid = {
+      nativeElement: { focus() { } }
+    }
+    component['editedFields'] = [
+      { value: 'Strategy Guides 1' },
+      { value: 'http://56e2c0n4zhqi1se007udp9fq11.hop.clickbank.net/' },
+      { value: 'A Foolproof, Science-Based System that\'s Guaranteed to Melt Away All Your Unwanted Stubborn Body Fat in Just 22 Days.' },
+      { value: '40.7934' }
+    ]
+    event = new KeyboardEvent("keydown", {
+      "code": "Enter",
+    });
     fixture.detectChanges();
   });
 
@@ -63,10 +91,7 @@ describe('EditableGridComponent', () => {
     let buttons: Array<GridButton> = component.setHeaderButtons('MyNewButtonName', 'MyDeleteButtonName');
     let spy = spyOn(component.promptService, 'prompt');
 
-    component.currentItem = {
-      isSelected: false,
-      data: [{ value: 'myItem' }]
-    }
+    component.currentItem.isSelected = false;
     buttons[1].onClick();
     expect(spy).not.toHaveBeenCalled();
 
@@ -75,25 +100,17 @@ describe('EditableGridComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should NOT disable the delete header button if and item is selected', () => {
+  it('should NOT disable the delete header button if an item is selected', () => {
     let buttons: Array<GridButton> = component.setHeaderButtons('MyNewButtonName', 'MyDeleteButtonName');
-    component.currentItem = {
-      isSelected: true
-    }
-    let result = buttons[1].getDisabled();
+    let result = buttons[1].getDisabled(2);
     expect(result).toBeFalsy();
   });
 
-  it('should disable the delete header button if and item is NOT selected', () => {
+  it('should disable the delete header button if item is NOT selected', () => {
     let buttons: Array<GridButton> = component.setHeaderButtons('MyNewButtonName', 'MyDeleteButtonName');
-    let result = buttons[1].getDisabled();
-    expect(result).toBeTruthy();
+    component.currentItem.isSelected = false;
 
-    component.currentItem = {
-      isSelected: false
-    }
-
-    result = buttons[1].getDisabled();
+    let result = buttons[1].getDisabled(2);
     expect(result).toBeTruthy();
   });
 
@@ -112,21 +129,58 @@ describe('EditableGridComponent', () => {
     expect(component.editItem).toHaveBeenCalled();
   });
 
-  it('should not call super handleKeyboardEvent if selected item is in edit mode', () => {
+  it('should not call super handleKeyboardEvent if selected item is in edit mode when a key is pressed', () => {
     spyOn(GridComponent.prototype, 'handleKeyboardEvent');
-    let event = new KeyboardEvent("keydown", {
-      "code": "Escape",
-    });
-
-    component.currentItem = {
-      isSelected: true,
-      isInEditMode: true
-    }
-    component.grid = {
-      nativeElement: { focus() { } }
-    }
+    let spy = spyOn(component, 'saveUpdate');
     component.handleKeyboardEvent(event);
     expect(GridComponent.prototype.handleKeyboardEvent).not.toHaveBeenCalled();
+  });
 
+  it('should call saveUpdate if a field was updated and enter was pressed', () => {
+    let spy = spyOn(component, 'saveUpdate');
+    component.handleKeyboardEvent(event);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should update the current item\'s data if a field was edited and enter was pressed', () => {
+    spyOn(component, 'saveUpdate');
+    component.handleKeyboardEvent(event);
+    expect(component.currentItem.data[2].value).toEqual('A Foolproof, Science-Based System that\'s Guaranteed to Melt Away All Your Unwanted Stubborn Body Fat in Just 22 Days.')
+  });
+
+  it('should call saveService.checkForNoChanges if a field was updated and enter was pressed', () => {
+    let spy = spyOn(saveService, 'checkForNoChanges');
+    spyOn(component, 'saveUpdate');
+    component.handleKeyboardEvent(event);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should set the current item to be not in edit mode if escape or enter was pressed', () => {
+    spyOn(component, 'saveUpdate');
+    component.handleKeyboardEvent(event);
+    expect(component.currentItem.isInEditMode).toBeFalsy();
+
+    event = new KeyboardEvent("keydown", {
+      "code": "Escape",
+    });
+    component.currentItem.isInEditMode = true;
+    component.handleKeyboardEvent(event);
+    expect(component.currentItem.isInEditMode).toBeFalsy();
+  });
+
+  it('should put focus to the grid if the item was in edit mode and escape or enter was pressed', () => {
+    let spy = spyOn(component.grid.nativeElement, 'focus');
+    spyOn(component, 'saveUpdate');
+    
+    component.handleKeyboardEvent(event);
+    expect(spy).toHaveBeenCalled();
+
+    event = new KeyboardEvent("keydown", {
+      "code": "Escape",
+    });
+    component.currentItem.isInEditMode = true;
+
+    component.handleKeyboardEvent(event);
+    expect(spy).toHaveBeenCalled();
   });
 });
