@@ -58,6 +58,66 @@ describe('EditableGridComponent', () => {
         { value: '40.7934' }
       ]
     }
+    component.tiers.push({
+      index: 0,
+      name: 'Filters',
+      items: [
+        {
+          id: 22,
+          tierIndex: 0
+        }
+      ],
+      fields: [
+        {
+          name: 'Filter',
+          defaultValue: 'Filter Name',
+          width: 200
+        }
+      ],
+      headerButtons: [],
+      rowButtons: [],
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          Name: ''
+        }
+      },
+      url: 'api/Filters'
+    });
+
+    component.tiers.push({
+      index: 1,
+      name: 'Filter Options',
+      items: [
+        {
+          id: 44,
+          tierIndex: 1,
+          parentId: 22
+        },
+        {
+          id: 45,
+          tierIndex: 1,
+          parentId: 22
+        }
+      ],
+      fields: [
+        {
+          name: 'Filter Option',
+          defaultValue: 'Filter Option Name',
+          width: 200
+        }
+      ],
+      headerButtons: [],
+      rowButtons: [],
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          Name: ''
+        }
+      },
+      url: 'api/Filters'
+    });
+    component.change = 0;
     saveService = TestBed.get(SaveService);
     fixture.detectChanges();
   });
@@ -158,7 +218,6 @@ describe('EditableGridComponent', () => {
     });
 
     it('should increment change property if a field was updated and enter was pressed', () => {
-      component.change = 0;
       component.handleKeyboardEvent(event);
       expect(component.change).toEqual(1);
     });
@@ -268,7 +327,6 @@ describe('EditableGridComponent', () => {
     });
 
     it('should increment change property', () => {
-      component.change = 0;
       component.setDelete();
       expect(component.change).toEqual(1);
     });
@@ -309,7 +367,7 @@ describe('EditableGridComponent', () => {
   describe('collapseDeletedTier', () => {
     let parentTier: TierComponent;
     let chidTier: TierComponent;
-    beforeEach(()=>{
+    beforeEach(() => {
       component.tierComponent = new MockTierComponent();
       component.tierComponent.tierComponents = new QueryList<TierComponent>();
       parentTier = new TierComponent();
@@ -334,11 +392,61 @@ describe('EditableGridComponent', () => {
     });
   });
 
+  describe('deleteItem', () => {
+    it('should set parent item and all child items as deleted', () => {
+      component.deleteItem(component.tiers[0].items[0]);
+      expect(component.tiers[0].items[0].isDeleted).toBeTruthy();
+      expect(component.tiers[1].items[0].isDeleted).toBeTruthy();
+      expect(component.tiers[1].items[1].isDeleted).toBeTruthy();
+    });
+  });
 
+  describe('createNewItem', () => {
+    let editItem;
+    let addSaveItem;
+    let newItem;
 
+    beforeEach(() => {
+      editItem = spyOn(component, 'editItem');
+      addSaveItem = spyOn(saveService, 'addSaveItem');
+      newItem = {
+        data: [{ value: 'Filter Option Name' }],
+        id: 46,
+        isInEditMode: true,
+        isSelected: true,
+        parentId: 22,
+        tierIndex: 1
+      }
+    });
 
+    it('should call createItemId, editItem, and addSaveItem', () => {
+      let createItemId = spyOn(component, 'createItemId');
+      component.createNewItem(1, 22);
+      expect(createItemId).toHaveBeenCalled();
+      expect(editItem).toHaveBeenCalled();
+      expect(addSaveItem).toHaveBeenCalled();
+    });
 
+    it('should create a new item', () => {
+      component.createNewItem(1, 22);
+      expect(component.tiers[1].items[0]).toEqual(newItem);
+    });
 
+    it('should increment change', () => {
+      component.createNewItem(1, 22);
+      expect(component.change).toEqual(1);
+    });
 
+    it('should set the new item as the current item', () => {
+      component.createNewItem(1, 22);
+      expect(component.currentItem).toEqual(newItem);
+    });
+  });
 
+  describe('createItemId', () => {
+    it('should create a new item id', () => {
+      let id = component.createItemId(component.tiers[1].items, 1);
+      expect(id).toEqual(46);
+    });
+  });
 });
