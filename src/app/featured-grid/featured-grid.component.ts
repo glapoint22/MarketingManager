@@ -133,5 +133,18 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.nonFeaturedSearchValue = '';
   }
 
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.hasFocus && this.showNonFeaturedList && event.code === 'Escape') {
+      this.showNonFeaturedList = false;
+    } else {
+      super.handleKeyboardEvent(event);
+    }
+  }
+
+  onItemSelect(item: any): void {
+    this.showNonFeaturedList = false;
+    super.onItemSelect(item);
+  }
+
   saveDelete(item) { }
 }
