@@ -4,7 +4,7 @@ import { Directive, ElementRef, HostListener, Output, EventEmitter } from '@angu
   selector: '[resizable]'
 })
 export class ResizableDirective {
-  public isMousedown: boolean;
+  private isMousedown: boolean;
   private currentX: number;
   @Output() onMouse = new EventEmitter<boolean>();
 

@@ -251,7 +251,7 @@ describe('EditableGridComponent', () => {
       expect(component.currentItem.isInEditMode).toBeFalsy();
     });
 
-    it('should put focus to the grid if the item was in edit mode and escape or enter was pressed', () => {
+    it('should give focus to the grid if the item was in edit mode and escape or enter was pressed', () => {
       let spy = spyOn(component.grid.nativeElement, 'focus');
 
       component.handleKeyboardEvent(event);
