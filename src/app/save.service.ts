@@ -14,8 +14,8 @@ export class SaveService {
   private saveComplete = new Subject<void>();
 
   constructor(private dataService: DataService) {
+    // Posts
     this.savePosts.subscribe(() => {
-      // Posts
       if (this.newItems.length > 0) {
         if (this.newItems.every(x => x.check(x.item))) {
           this.isSaving = true;
@@ -27,8 +27,8 @@ export class SaveService {
       }
     });
 
+    // Deletes
     this.saveDeletes.subscribe(() => {
-      // Deletes
       if (this.deletedItems.length > 0) {
         this.isSaving = true;
         let deletes = this.mapItems(this.deletedItems).map(x => ({
@@ -41,8 +41,8 @@ export class SaveService {
       }
     });
 
+    // Updates
     this.saveUpdates.subscribe(() => {
-      // Updates
       if (this.updatedItems.length > 0) {
         if (this.updatedItems.every(x => x.check(x.item))) {
           this.isSaving = true;
@@ -54,6 +54,7 @@ export class SaveService {
       }
     });
 
+    // Save complete
     this.saveComplete.subscribe(() => {
       this.isSaving = false;
     });
@@ -68,7 +69,8 @@ export class SaveService {
   }
 
   mapItems(items: Array<any>) {
-    let mappedItems: Array<any> = [], urls: Array<any> = items.map(x => x.url).filter((v, i, a) => a.indexOf(v) === i);
+    let mappedItems: Array<any> = [],
+      urls: Array<any> = items.map(x => x.url).filter((v, i, a) => a.indexOf(v) === i);
 
     urls.forEach(url => {
       mappedItems.push(
