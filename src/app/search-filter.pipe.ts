@@ -4,11 +4,10 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'searchFilter'
 })
 export class SearchFilterPipe implements PipeTransform {
-
-  transform(items: Array<any>, searchValue: string): any {
+  transform(items: Array<any>, searchValue: string): Array<any> {
     if (!items) return;
 
-    let searchArray = searchValue.toLowerCase().split(/(?=\s)/g);
+    let searchArray = searchValue.toLowerCase().split(' ');
     return items.filter(x => searchArray.every(y => x.data[0].value.toLowerCase().includes(y)));
   }
 }

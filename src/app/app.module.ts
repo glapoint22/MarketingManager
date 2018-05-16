@@ -17,7 +17,6 @@ import { TierFilterPipe } from './tier-filter.pipe';
 import { DataFilterPipe } from './data-filter.pipe';
 import { FeaturedFilterPipe } from './featured-filter.pipe';
 import { MaxCountPipe } from './max-count.pipe';
-import { TierSearchFilterPipe } from './tier-search-filter.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
 import { SortPipe } from './sort.pipe';
 
@@ -58,7 +57,6 @@ import { PromptComponent } from './prompt/prompt.component';
     DataFilterPipe,
     FeaturedFilterPipe,
     MaxCountPipe,
-    TierSearchFilterPipe,
     SearchFilterPipe,
     MediaComponent,
     SortPipe,
