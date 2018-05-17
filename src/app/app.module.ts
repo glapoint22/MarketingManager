@@ -36,6 +36,7 @@ import { GridComponent } from './grid/grid.component';
 import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { MediaComponent } from './media/media.component';
 import { PromptComponent } from './prompt/prompt.component';
+import { DeletedFilterPipe } from './deleted-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { PromptComponent } from './prompt/prompt.component';
     SearchFilterPipe,
     MediaComponent,
     SortPipe,
-    PromptComponent
+    PromptComponent,
+    DeletedFilterPipe
   ],
   imports: [
     BrowserModule,

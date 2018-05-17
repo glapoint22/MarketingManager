@@ -1,8 +1,8 @@
-import { SortPipe } from './sort.pipe';
+import { DeletedFilterPipe } from './deleted-filter.pipe';
 
-describe('SortPipe', () => {
-  it('should sort the items in ascending order', () => {
-    const pipe = new SortPipe();
+describe('DeletedFilterPipe', () => {
+  it('should not show items that are makred deleted', () => {
+    const pipe = new DeletedFilterPipe();
     let items = [
       {
         data: [
@@ -12,6 +12,7 @@ describe('SortPipe', () => {
         ]
       },
       {
+        isDeleted: true,
         data: [
           {
             value: 'Apple'
@@ -26,31 +27,22 @@ describe('SortPipe', () => {
         ]
       }
     ];
-
-    let result = pipe.transform(items);
-    let sortedItems =  [
-      {
-        data: [
-          {
-            value: 'Apple'
-          }
-        ]
-      },
-      {
-        data: [
-          {
-            value: 'Book'
-          }
-        ]
-      },
+    let result = pipe.transform(items, 1);
+    expect(result).toEqual([
       {
         data: [
           {
             value: 'Chair'
           }
         ]
+      },
+      {
+        data: [
+          {
+            value: 'Book'
+          }
+        ]
       }
-    ];
-    expect(result).toEqual(sortedItems);
+    ]);
   });
 });
