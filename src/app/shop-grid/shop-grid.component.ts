@@ -17,7 +17,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
   public filters: Array<any> = [];
-  private filterActivated: boolean;
+  private filterButtonClicked: boolean;
 
   constructor(dataService: DataService, private element: ElementRef, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
@@ -183,8 +183,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         name: 'Filter Product',
         icon: 'fas fa-filter',
         onClick: (item, rowButton) => {
-          //Flag that the filters have been clicked
-          this.filterActivated = true;
+          //Flag that the filter button has been clicked
+          this.filterButtonClicked = true;
 
           //Show or hide the filters container
           if (this.currentItem === item) {
@@ -317,8 +317,8 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   }
 
   onItemSelect(item: any): void {
-    if (this.filterActivated) {
-      this.filterActivated = false;
+    if (this.filterButtonClicked) {
+      this.filterButtonClicked = false;
     } else {
       if (item !== this.currentItem) this.showFiltersContainer = false;
     }

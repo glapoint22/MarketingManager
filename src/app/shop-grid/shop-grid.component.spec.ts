@@ -7,6 +7,7 @@ import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
 import { GridComponent } from '../grid/grid.component';
+import { EditableGridComponent } from '../editable-grid/editable-grid.component';
 
 @Component({
   selector: 'tier',
@@ -14,7 +15,10 @@ import { GridComponent } from '../grid/grid.component';
 })
 class MockTierComponent extends TierComponent { }
 class MockDataService { }
-class MockSaveService { }
+class MockSaveService {
+  checkForNoChanges() { }
+  addSaveItem() { }
+}
 class MockPromptService {
   prompt() { }
 }
@@ -25,6 +29,7 @@ describe('ShopGridComponent', () => {
   let ngOnInit;
   let setParentTierHeight;
   let promptService: MockPromptService;
+  let saveService: MockSaveService;
   let data = [
     {
       "id": 1,
@@ -241,8 +246,9 @@ describe('ShopGridComponent', () => {
     component = fixture.componentInstance;
     component.tierComponent = new MockTierComponent();
     ngOnInit = spyOn(GridComponent.prototype, 'ngOnInit');
-    setParentTierHeight = spyOn(component, 'setParentTierHeight');
+    setParentTierHeight = spyOn(component, 'setParentTierHeight').and.callThrough();
     promptService = TestBed.get(PromptService);
+    saveService = TestBed.get(SaveService);
     fixture.detectChanges();
   });
 
@@ -275,7 +281,7 @@ describe('ShopGridComponent', () => {
     });
 
     describe('categories tier', () => {
-      beforeEach(()=>{
+      beforeEach(() => {
         component.tiers[0].items[0].icon = 'icon';
         component.tiers[0].items[0].categoryImages = ['images']
       });
@@ -322,12 +328,11 @@ describe('ShopGridComponent', () => {
         component.tiers[2].check(component.tiers[2].items[0]);
         expect(prompt).toHaveBeenCalled();
       });
+
+      it('should create two buttons in rowButtons', () => {
+        expect(component.tiers[2].rowButtons.length).toEqual(2);
+      });
     });
-
-    
-    
-    
-
 
     it('should call super createTiers', () => {
       expect(createTiers).toHaveBeenCalled();
@@ -336,9 +341,223 @@ describe('ShopGridComponent', () => {
     it('should set focus to the grid', () => {
       expect(component.hasFocus).toBeTruthy();
     });
+  });
 
+  describe('onResize', () => {
+    it('should call setParentTierHeight', () => {
+      let event = new Event("resize", {});
+      setParentTierHeight.calls.reset();
+      component.onResize(event);
+      expect(setParentTierHeight).toHaveBeenCalled();
+    });
+  });
 
+  describe('handleKeyboardEvent', () => {
+    it('should hide filters if the escape key is pressed', () => {
+      let event = new KeyboardEvent("keydown", {
+        "code": "Escape",
+      });
+      component.showFiltersContainer = true;
+      component.handleKeyboardEvent(event);
+      expect(component.showFiltersContainer).toBeFalsy();
+    });
 
+    it('should call super handleKeyboardEvent if filters are hidden', () => {
+      let event = new KeyboardEvent("keydown", {
+        "code": "Escape",
+      });
+      let handleKeyboardEvent = spyOn(EditableGridComponent.prototype, 'handleKeyboardEvent');
+      component.showFiltersContainer = false;
+      component.handleKeyboardEvent(event);
+      expect(handleKeyboardEvent).toHaveBeenCalled();
+    });
+  });
+
+  describe('onItemSelect', () => {
+    it('should not hide the filters container if the filter button was clicked', () => {
+      component.showFiltersContainer = true;
+      component['filterButtonClicked'] = true;
+      component.onItemSelect({});
+      expect(component.showFiltersContainer).toBeTruthy();
+    });
+
+    it('should hide the filters container if the filter button was NOT clicked and the item is NOT the current item', () => {
+      let item = { name: 'bar' };
+
+      component.currentItem = { name: 'foo' };
+      component.showFiltersContainer = true;
+      component.onItemSelect(item);
+      expect(component.showFiltersContainer).toBeFalsy();
+
+      component.currentItem = item;
+      component.showFiltersContainer = true;
+      component.onItemSelect(item);
+      expect(component.showFiltersContainer).toBeTruthy();
+    });
+
+    it('should call super onItemSelect and onItemClick.emit', () => {
+      let onItemSelect = spyOn(GridComponent.prototype, 'onItemSelect');
+      let emit = spyOn(component.onItemClick, 'emit');
+
+      component.onItemSelect({});
+      expect(onItemSelect).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('onTierCollapse', () => {
+    it('should hide the filters container', () => {
+      component.showFiltersContainer = true;
+      component.onTierCollapse();
+      expect(component.showFiltersContainer).toBeFalsy();
+    });
+  });
+
+  describe('setParentTierHeight', () => {
+    it('should set tier component parentTierHeight', () => {
+      component.setParentTierHeight();
+      expect(component.tierComponent.parentTierHeight).toBeTruthy();
+    });
+  });
+
+  describe('setDelete', () => {
+    it('should call super setDelete and onChange.emit', () => {
+      let setDelete = spyOn(EditableGridComponent.prototype, 'setDelete');
+      let emit = spyOn(component.onChange, 'emit');
+      component.setDelete();
+      expect(setDelete).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('createItemId', () => {
+    it('should create an id if it\'s an item from the products tier', () => {
+      component.createTiers(data);
+      let id = component.createItemId(component.tiers[2].items, 2);
+      expect(id).toBeTruthy();
+    });
+
+    it('should call super createItemId if the item is NOT from the products tier', () => {
+      let createItemId = spyOn(EditableGridComponent.prototype, 'createItemId');
+      component.createTiers(data);
+      let id = component.createItemId(component.tiers[0].items, 0);
+      expect(createItemId).toHaveBeenCalled();
+    });
+  });
+
+  describe('onFilterOptionChange', () => {
+    let option;
+    let saveUpdate;
+    beforeEach(() => {
+      saveUpdate = spyOn(component, 'saveUpdate');
+      option = { "id": 27, "name": "Trial", "isChecked": false };
+      component.currentItem = {
+        filters: [1, 2, 3]
+      }
+    });
+
+    it('should call saveUpdate', () => {
+      component.onFilterOptionChange(option);
+      expect(saveUpdate).toHaveBeenCalled();
+    });
+
+    it('should add filter option to current item filters', () => {
+      component.onFilterOptionChange(option);
+      expect(component.currentItem.filters).toEqual([1, 2, 3, 27]);
+    });
+
+    it('should remove option from current item filters if checked', () => {
+      option = { "id": 27, "name": "Trial", "isChecked": true };
+      component.currentItem = {
+        filters: [1, 2, 3, 27]
+      }
+      component.onFilterOptionChange(option);
+      expect(component.currentItem.filters).toEqual([1, 2, 3]);
+    });
+
+    it('should call checkForNoChanges', () => {
+      let checkForNoChanges = spyOn(saveService, 'checkForNoChanges');
+      component.onFilterOptionChange(option);
+      expect(checkForNoChanges).toHaveBeenCalled();
+    });
+  });
+
+  describe('createNewItem', () => {
+    beforeEach(() => {
+      component.createTiers(data);
+      spyOn(EditableGridComponent.prototype, 'editItem');
+    });
+
+    it('should call super createNewItem', () => {
+      let createNewItem = spyOn(EditableGridComponent.prototype, 'createNewItem');
+      component.createNewItem(2, 1);
+      expect(createNewItem).toHaveBeenCalled();
+    });
+
+    it('should set categories tier item', () => {
+      let item = { "parentId": 1, "id": 3, "tierIndex": 0, "data": [{ "value": "Category Name" }], "isInEditMode": true, "isSelected": true, "featured": false, "icon": null, "categoryImages": [] };
+      component.createNewItem(0, 1);
+      expect(component.tiers[0].items[0]).toEqual(item);
+    });
+
+    it('should set niche tier item', () => {
+      let item = { "parentId": 1, "id": 22, "tierIndex": 1, "data": [{ "value": "Niche Name" }], "isInEditMode": true, "isSelected": true, "icon": null };
+      component.createNewItem(1, 1);
+      expect(component.tiers[1].items[0]).toEqual(item);
+    });
+
+    it('should set products tier item', () => {
+      spyOn(component, 'createItemId').and.returnValue('DF7EB352A1');
+      let item = {
+        "parentId": 1,
+        "id": "DF7EB352A1",
+        "tierIndex": 2,
+        "data": [
+          {
+            "value": "Product Name"
+          },
+          {
+            "value": "HopLink URL"
+          },
+          {
+            "value": "Product Description"
+          },
+          {
+            "value": "0",
+            type: 'currency'
+          }
+        ],
+        "isInEditMode": true,
+        "isSelected": true,
+        "featured": false,
+        "filters": [],
+        "image": null,
+        "banners": [],
+        "videos": []
+      }
+      component.createNewItem(2, 1);
+      expect(component.tiers[2].items[0]).toEqual(item);
+    });
+
+    it('should call onItemClick.emit', () => {
+      let emit = spyOn(component.onItemClick, 'emit');
+      component.createNewItem(2, 1);
+      expect(emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('onBlur', () => {
+    it('should call super onBlur', () => {
+      let onBlur = spyOn(GridComponent.prototype, 'onBlur');
+      component.onBlur();
+      expect(onBlur).toHaveBeenCalled();
+    });
+
+    it('should call super onBlur', () => {
+      component.showFiltersContainer = true;
+      component.onBlur();
+      expect(component.showFiltersContainer).toBeFalsy();
+    });
   });
 
 
