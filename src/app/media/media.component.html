@@ -1,7 +1,7 @@
 <div *ngIf="currentItem && currentItem.isSelected else noItem">
   <!-- Header -->
   <div class="header">
-    <div class="mode-name">{{mode.name}}</div>
+    <div class="title">{{mode.name}}</div>
     <input #fileInput (change)="uploadImage($event)" type="file" style="display: none">
     <form class="video-input-container" [style.display]="showVideoInput ? 'block': 'none'" (ngSubmit)="mode.onSubmit(videoInput.value)"
       #form="ngForm">
