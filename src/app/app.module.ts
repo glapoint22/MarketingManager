@@ -2,7 +2,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 // Services
 import { DataService } from "./data.service";
@@ -66,7 +66,7 @@ import { DeletedFilterPipe } from './deleted-filter.pipe';
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     FormsModule
   ],
   providers: [DataService, SaveService, PromptService],

@@ -103,7 +103,7 @@ export class MediaComponent implements OnInit {
 
                     if (!saveItem.originalItem.categoryImages.some(x => x.name === image)) {
                       // Delete image on the server
-                      this.dataService.delete('/api/Image', [image]).subscribe(() => { });
+                      this.dataService.delete('/api/Image', image).subscribe(() => { });
                     }
 
                     this.contents.splice(imageIndex, 1);
@@ -376,7 +376,7 @@ export class MediaComponent implements OnInit {
 
                           if (!saveItem.originalItem.banners.some(x => x.name === this.contents[i].name)) {
                             // Delete image on the server
-                            this.dataService.delete('/api/Image', [this.contents[i].name]).subscribe(() => { });
+                            this.dataService.delete('/api/Image', this.contents[i].name).subscribe(() => { });
                           }
 
                           this.contents.splice(i, 1);

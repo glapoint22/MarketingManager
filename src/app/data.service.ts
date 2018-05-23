@@ -1,51 +1,35 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, RequestOptions, URLSearchParams } from "@angular/http";
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class DataService {
 
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
-  get(url: string, parameters?: Array<any>): Observable<Response> {
-    let params: URLSearchParams, requestOptions: RequestOptions;
+  get(url: string, parameters?: Array<any>): Observable<any> {
+    let params = new HttpParams();
 
-    if (parameters && parameters.length > 0) {
-      params = new URLSearchParams();
-      requestOptions = new RequestOptions();
-
-      //Set the params
-      parameters.forEach(x => params.set(x.key, x.value));
-
-      //Assign the params to the request options
-      requestOptions.params = params;
-    }
+    //Set the params
+    parameters.forEach(x => params = params.set(x.key, x.value));
 
     //Get the data
-    return this.http.get(url, requestOptions)
-      .map((response: Response) => response.json());
+    return this.http.get(url, { params: params });
   }
 
 
-  post(url: string, body: any): Observable<Response> {
-    return this.http.post(url, body)
-      .map((response: any) => {
-        if (response._body !== "") {
-          return response.json();
-        }
-      });
+  post(url: string, body: any) {
+    return this.http.post(url, body);
   }
 
-  put(url: string, body: any): Observable<Response> {
+  put(url: string, body: any) {
     return this.http.put(url, body);
   }
 
-  delete(url: string, body: any): Observable<Response> {
-    let requestOptions: RequestOptions = new RequestOptions({
-      body: body
-    });
+  delete(url: string, body: any) {
+    let params = new HttpParams();
 
-    return this.http.delete(url, requestOptions);
+    params = params.set('itemIds', body);
+    return this.http.delete(url, { params: params });
   }
 }
