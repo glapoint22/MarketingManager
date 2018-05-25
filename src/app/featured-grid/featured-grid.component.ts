@@ -44,7 +44,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.categoriesTier = {
       index: 0,
       name: 'Categories',
-      items: this.categories.items,
+      items: this.categories.items.map(x => Object.assign({}, x)),
       fields: [
         {
           name: 'Category',
@@ -74,7 +74,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.productsTier = {
       index: 0,
       name: 'Products',
-      items: this.products.items,
+      items: this.products.items.map(x => Object.assign({}, x)),
       fields: [
         {
           name: 'Product',
@@ -85,6 +85,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
       headerButtons: headerButtons,
       rowButtons: []
     };
+    this.productsTier.items.forEach(x => x.tierIndex = 0);
 
     this.tiers.push(this.categoriesTier);
 
