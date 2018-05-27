@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { GridComponent } from './grid.component';
 import { FormsModule } from '@angular/forms';
 import { DataService } from "../data.service";
-import { of } from "rxjs/observable/of";
+import { of } from "rxjs/";
 import { Component } from '@angular/core';
 import { Itier } from '../itier';
 import { TierComponent } from '../tier/tier.component';

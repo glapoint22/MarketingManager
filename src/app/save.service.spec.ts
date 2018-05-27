@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { SaveService } from './save.service';
 import { DataService } from "./data.service";
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 class MockDataService {
   post(url: string, body: any) { }

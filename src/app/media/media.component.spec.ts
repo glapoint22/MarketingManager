@@ -6,7 +6,7 @@ import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
 import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 import { ElementRef } from '@angular/core';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 class MockDataService {
   delete() { }
