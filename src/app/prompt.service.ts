@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 export class PromptService {
   public show: boolean;
   public title: string;

@@ -4,11 +4,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-// Services
-import { DataService } from "./data.service";
-import { SaveService } from "./save.service";
-import { PromptService } from "./prompt.service";
-
 // Directives
 import { ResizableDirective } from './resizable.directive';
 
@@ -69,7 +64,6 @@ import { DeletedFilterPipe } from './deleted-filter.pipe';
     HttpClientModule,
     FormsModule
   ],
-  providers: [DataService, SaveService, PromptService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

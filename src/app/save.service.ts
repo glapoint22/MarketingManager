@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { DataService } from "./data.service";
 import { Subject } from 'rxjs';
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 export class SaveService {
   public newItems: Array<any> = [];
   public deletedItems: Array<any> = [];
