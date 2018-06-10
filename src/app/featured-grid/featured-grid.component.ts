@@ -110,8 +110,11 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   deleteItem(item: any) {
-    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
+    let shopItem = this.getItem(item, item.parentId ? this.products : this.categories);
+
+    this.saveUpdate(shopItem, shopItem.parentId ? this.products : this.categories);
     item.featured = false;
+    shopItem.featured = false;
     this.saveService.checkForNoChanges();
   }
 
@@ -121,8 +124,11 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   onNonFeaturedItemClick(item) {
-    this.saveUpdate(item, item.tierIndex === 0 ? this.categories : this.products);
+    let shopItem = this.getItem(item, item.parentId ? this.products : this.categories);
+
+    this.saveUpdate(shopItem, shopItem.parentId ? this.products : this.categories);
     item.featured = true;
+    shopItem.featured = true;
     this.change += 1;
     this.showNonFeaturedList = false;
     this.nonFeaturedSearchValue = '';
@@ -147,5 +153,18 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     super.onItemSelect(item);
   }
 
+  onShopItemDelete(item) {
+    this.getItem(item, item.parentId ? this.productsTier : this.categoriesTier).isDeleted = true;
+    this.change += 1;
+  }
+  onNewItem(item) {
+    (item.parentId ? this.productsTier : this.categoriesTier).items.push(Object.assign({}, item));
+  }
+
   saveDelete(item) { }
+
+  getItem(item, tier) {
+    let index = tier.items.findIndex(x => x.data[0].value === item.data[0].value);
+    return tier.items[index];
+  }
 }

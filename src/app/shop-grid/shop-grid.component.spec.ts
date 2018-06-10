@@ -421,9 +421,9 @@ describe('ShopGridComponent', () => {
   });
 
   describe('setDelete', () => {
-    it('should call super setDelete and onChange.emit', () => {
+    it('should call super setDelete and onDelete.emit', () => {
       let setDelete = spyOn(EditableGridComponent.prototype, 'setDelete');
-      let emit = spyOn(component.onChange, 'emit');
+      let emit = spyOn(component.onDelete, 'emit');
       component.setDelete();
       expect(setDelete).toHaveBeenCalled();
       expect(emit).toHaveBeenCalled();

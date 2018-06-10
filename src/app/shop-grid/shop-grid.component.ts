@@ -12,8 +12,9 @@ import { GridButton } from '../grid-button';
 })
 export class ShopGridComponent extends EditableGridComponent implements OnInit {
   @Input() filterGrid;
-  @Output() onChange = new EventEmitter<void>();
+  @Output() onDelete = new EventEmitter<any>();
   @Output() onItemClick = new EventEmitter<any>();
+  @Output() onNewItem = new EventEmitter<any>();
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
   public filters: Array<any> = [];
@@ -336,7 +337,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
   setDelete() {
     super.setDelete();
-    this.onChange.emit();
+    this.onDelete.emit(this.currentItem);
   }
 
   createItemId(items: Array<any>, tierIndex: number): any {
@@ -389,6 +390,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         this.tiers[tierIndex].items[0].data[3].type = 'currency';
     }
     this.onItemClick.emit(this.tiers[tierIndex].items[0]);
+    this.onNewItem.emit(this.tiers[tierIndex].items[0]);
   }
 
   onBlur() {

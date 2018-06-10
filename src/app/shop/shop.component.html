@@ -42,7 +42,7 @@
 
 <!-- Shop Grid -->
 <div class="shop-grid-container">
-  <shop-grid #shopGrid [filterGrid]="filterGrid" (onChange)="featuredGrid.change = featuredGrid.change + 1" (onItemClick)="media.onItemClick($event)">
+  <shop-grid #shopGrid [filterGrid]="filterGrid" (onDelete)="featuredGrid.onShopItemDelete($event)" (onItemClick)="media.onItemClick($event)" (onNewItem)="featuredGrid.onNewItem($event)">
 
     <!-- Filters -->
     <div row-content *ngIf="shopGrid.filterGrid.tiers.length > 0" class="filters-container" [style.top.px]="shopGrid.filtersContainerTop"
