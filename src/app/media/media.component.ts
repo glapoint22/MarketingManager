@@ -433,8 +433,6 @@ export class MediaComponent implements OnInit {
           this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
           this.mode.setNewImage(image);
           this.mode.initialize(image);
-        }, error => {
-          // Error
         });
     }
   }

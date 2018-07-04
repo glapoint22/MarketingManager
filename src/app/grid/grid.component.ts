@@ -31,8 +31,6 @@ export class GridComponent implements OnInit, Igrid {
       .subscribe((data: any) => {
         this.createTiers(data);
         this.setSearchOptions();
-      }, error => {
-        // Error
       });
   }
 

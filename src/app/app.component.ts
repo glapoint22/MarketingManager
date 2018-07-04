@@ -11,4 +11,8 @@ export class AppComponent {
   public activeScreen: string;
 
   constructor(public saveService: SaveService, public promptService: PromptService) { }
+
+  ngAfterContentChecked() {
+    if (this.promptService.show) this.saveService.isSaving = false;
+  }
 }

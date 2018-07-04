@@ -112,9 +112,6 @@ export class SaveService {
               break;
           }
         }
-      }, (error: any) => {
-        // Error
-        console.log(error);
       });
   }
 
