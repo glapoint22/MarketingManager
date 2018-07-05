@@ -47,12 +47,12 @@ describe('FeaturedGridComponent', () => {
     component.categories = {
       index: 0,
       name: 'Categories',
-      items: [{ id: 0, name: 'MyItem', tierIndex: 0, featured: true }]
+      items: [{ id: 0, name: 'MyItem', tierIndex: 0, featured: true, data: [{ "value": "Business / Investing" }] }]
     }
     component.products = {
       index: 1,
       name: 'Products',
-      items: [{ id: 0, name: 'MyItem', tierIndex: 1, featured: true }]
+      items: [{ id: 0, name: 'MyItem', tierIndex: 1, featured: true, data: [{ "value": "Arabic 2" }, { "value": "http://56e2c0n4zhqi1se007udp9fq11.hop.clickbank.net/" }, { "value": "A Foolproof, Science-Based System that's Guaranteed to Melt Away All Your Unwanted Stubborn Body Fat in Just 14 Days." }, { "value": "10.85", "type": "currency" }] }]
     }
     component.currentItem = {
       isSelected: true
