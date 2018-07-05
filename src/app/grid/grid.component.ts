@@ -108,6 +108,15 @@ export class GridComponent implements OnInit, Igrid {
     }
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.setParentTierHeight();
+  }
+
+  setParentTierHeight() {
+    this.tierComponent.parentTierHeight = window.innerHeight - 91;
+  }
+
   onFocus() {
     this.hasFocus = true;
   }

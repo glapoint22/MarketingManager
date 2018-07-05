@@ -33,3 +33,10 @@ html, body
 .row:nth-child(even){
     background: #2d2d2d;
 }
+.divider {
+    width: 17px;
+    height: 100%;
+    background: #333333;
+    cursor: col-resize;
+    float: left;
+}

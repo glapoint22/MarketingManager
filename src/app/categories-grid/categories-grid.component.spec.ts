@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EmailComponent } from './email.component';
+import { CategoriesGridComponent } from './categories-grid.component';
 
-xdescribe('EmailComponent', () => {
-  let component: EmailComponent;
-  let fixture: ComponentFixture<EmailComponent>;
+xdescribe('CategoriesGridComponent', () => {
+  let component: CategoriesGridComponent;
+  let fixture: ComponentFixture<CategoriesGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EmailComponent ]
+      declarations: [ CategoriesGridComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EmailComponent);
+    fixture = TestBed.createComponent(CategoriesGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

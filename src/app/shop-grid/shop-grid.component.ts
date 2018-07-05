@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input, Output, ElementRef, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, ElementRef, EventEmitter } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
@@ -301,10 +301,10 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.hasFocus = true;
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.setParentTierHeight();
-  }
+  // @HostListener('window:resize', ['$event'])
+  // onResize(event) {
+  //   this.setParentTierHeight();
+  // }
 
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
@@ -331,9 +331,9 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.showFiltersContainer = false;
   }
 
-  setParentTierHeight() {
-    this.tierComponent.parentTierHeight = window.innerHeight - 91;
-  }
+  // setParentTierHeight() {
+  //   this.tierComponent.parentTierHeight = window.innerHeight - 91;
+  // }
 
   setDelete() {
     super.setDelete();
