@@ -12,8 +12,7 @@ export class CategoriesGridComponent extends GridComponent implements OnInit {
   constructor(dataService: DataService) { super(dataService) }
 
   ngOnInit() {
-    this.apiUrl = 'api/Categories';
-    this.apiParameters = [{ key: 'isManager', value: true }];
+    this.apiUrl = 'api/Mail';
     this.setParentTierHeight();
     super.ngOnInit();
   }

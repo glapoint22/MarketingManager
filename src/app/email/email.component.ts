@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 @Component({
   selector: 'email',
@@ -6,10 +6,21 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./email.component.scss']
 })
 export class EmailComponent implements OnInit {
+  public height: number;
 
   constructor() { }
 
   ngOnInit() {
+    this.setHeight();
+  }
+
+  setHeight() {
+    this.height = window.innerHeight - 22;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.setHeight();
   }
 
 }
