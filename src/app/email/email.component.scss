@@ -1,10 +1,15 @@
-.email-container {
+.container {
     width: 1370px;
     height: 100%;
-    background: #151515;
+    background: #1e1e1e;
     float: right;
     max-width: 1600px;
     box-sizing: border-box;
+}
+.emails-container {
+    width: auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 .header {
     width: auto;
@@ -13,4 +18,37 @@
     color: white;
     overflow-x: hidden;
     box-sizing: border-box;
+}
+.bar {
+    width: auto;
+    height: 22px;
+}
+.toolbar {
+    background: #3f3f3f;
+    transition: max-height 0.5s;
+}
+.email-content-container {
+    width: auto;
+    height: 800px;
+    overflow-x: hidden;
+    background: #1e1e1e;
+    clear: both;
+    transition: max-height 0.5s;
+}
+.header, .row{
+    line-height: 22px;
+}
+.subject {
+    padding-left: 5px;
+}
+input {
+    display: none;
+}
+.no-content {
+    color: #8e8e8e;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }

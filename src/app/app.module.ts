@@ -32,7 +32,8 @@ import { EditableGridComponent } from './editable-grid/editable-grid.component';
 import { MediaComponent } from './media/media.component';
 import { PromptComponent } from './prompt/prompt.component';
 import { DeletedFilterPipe } from './deleted-filter.pipe';
-import { CategoriesGridComponent } from './categories-grid/categories-grid.component';
+import { EmailGridComponent } from './email-grid/email-grid.component';
+import { EditBoxComponent } from './edit-box/edit-box.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { CategoriesGridComponent } from './categories-grid/categories-grid.compo
     SortPipe,
     PromptComponent,
     DeletedFilterPipe,
-    CategoriesGridComponent
+    EmailGridComponent,
+    EditBoxComponent
   ],
   imports: [
     BrowserModule,

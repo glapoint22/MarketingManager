@@ -1,85 +1,56 @@
-<div style="width: 1370px; height: 100%; background: #1e1e1e; float: right; max-width: 1600px; box-sizing: border-box">
+<div class="container">
     <div resizable class="divider"></div>
-    <div class="header">Day</div>
-    <div style="width: auto; box-sizing: border-box; overflow-x: hidden;" [style.height.px]="height">
+    <!-- <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailContent">
+        No Content
+    </div>
 
-        <div class="row">
-            <div style="width: auto;height: 22px;color: white;"></div>
-            <div style="width: auto;height: 22px;background: #3f3f3f;color: white; max-height: 22px;"></div>
-            <div style="width: 100%; height: 800px; overflow-x: hidden;">
-                <table style="background-color:#c7c7c7;width:100%;height:100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td style="display:block">
-                            <table style="width:600px;height:100%" border="0" cellpadding="0" cellspacing="0" align="center">
-                                <tr>
-                                    <td>
-                                        <img src="http://localhost:49699/images/header.jpg" style="width:100%;display:block">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="http://localhost:49699/images/ubt_ebook_600.jpg" style="width:100%;display:block">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table style="font-size:18px;color:#fff;background:#333802;padding:1px 10px 1px 10px;text-align:center;width:100%">
-                                            <tr style="font-size:26px">
-                                                <td>Hi Tyrion,</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    Thank you for taking the time to sign up for some great offers! Click the button below to download the
-                                                    <span style="font-weight:700;font-style:italic">Ultimate Body Transformation</span> eBook.
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding-top:10px">Also, be sure to visit your
-                                                    <a href="http://localhost:4200/preferences?cid={2}" style="color:#c5ce5b;font-style:italic">email preferences</a> so you can customize how your email content is
-                                                    sent.</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="http://localhost:49699/Downloads/UltimateBodyTransformation.pdf" style="text-decoration:none;display:block;width:300px;background:#708434;height:50px;margin:auto;margin-top:20px;text-align:center;line-height:50px;font-size:24px;color:#e8e8e8;border-radius:5px">Download</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <tr>
-                                            <td>
-                                                <img src="http://localhost:49699/images/footer.jpg" style="width:100%;display:block">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <table style="background:#2f2f2f;text-align:center;width:100%">
-                                                    <tr>
-                                                        <td style="padding-top:20px;color:#c7c7c7;font-size:24px">Niche Shack</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="color:#e2e2e2;padding-bottom:20px">
-                                                            <a href="http://localhost:4200/contact" style="padding:0 5px 0 5px;color:#16a6bf">Contact us</a> | Manage your
-                                                            <a href="http://localhost:4200/preferences?cid={2}" style="color:#16a6bf">email preferences</a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="color:#e2e2e2;padding-bottom:20px;font-size:12px">Trouble viewing this email?
-                                                            <a href="http://localhost:4200/mail?eid={1}&cid={2}" style="color:#16a6bf">Click here</a>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+    <ng-template #emailContent>
+        <div class="header"></div>
+        <div class="emails-container" [style.height.px]="height">
+            <div *ngFor="let email of emails" class="row">
+                <span>
+                    <input #inputToggle name="email" [id]="email.id" type="radio">
+                    <label class="toggle-button" [for]="email.id" (click)="inputToggle.checked ? inputToggle.checked = false : inputToggle.checked = true"></label>
+                </span>
+                <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
+                <div class="bar toolbar" [style.maxHeight.px]="inputToggle.checked ? 22 : 0"></div>
+                <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
+                    <div [innerHTML]="email.body"></div>
+                </div>
             </div>
         </div>
+    </ng-template> -->
 
+    
+    <!-- <div style="overflow-x: hidden; height: 100%">
+        <table bgcolor="#c7c7c7" width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr valign="top">
+                <td>
+                    <table bgcolor="#ffffff" width="600" border="1" cellpadding="0" cellspacing="0" align="center">
+                        <tr><td height="25"></td></tr>
+                        <tr valign="top"> 
+                            <td>
+                                <table border="1" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="right" valign="top" width="200" height="100">Hello</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div> -->
 
+    <div style="overflow-x: hidden; height: 100%">
+        <edit-box></edit-box>
+        
     </div>
+
+    
+
+
 
 
 
@@ -88,5 +59,5 @@
 </div>
 
 <div style="width: auto; height: 100%; background: #1e1e1e; overflow-x: hidden;">
-    <categories-grid></categories-grid>
+    <email-grid (onItemClick)="onItemClick($event)"></email-grid>
 </div>

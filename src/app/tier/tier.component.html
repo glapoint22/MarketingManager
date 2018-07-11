@@ -44,7 +44,7 @@
       <!-- Toggle Expand/Collapse button -->
       <span *ngIf="index < grid.tiers.length - 1">
         <input #checkbox [id]="name + item.id" type="checkbox" (change)="onCheckboxChange(checkbox, row)">
-        <label [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
+        <label class="toggle-button" [for]="name + item.id" (click)="onToggleExpandCollapse(item.id, i)"></label>
       </span>
 
       <div class="flex-container visible" (click)="grid.onItemSelect(item)" [ngClass]="{'selected': grid.currentItem == item && item.isSelected, 'highlight': grid.isHighlightRow}">

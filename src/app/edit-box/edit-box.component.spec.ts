@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CategoriesGridComponent } from './categories-grid.component';
+import { EditBoxComponent } from './edit-box.component';
 
-xdescribe('CategoriesGridComponent', () => {
-  let component: CategoriesGridComponent;
-  let fixture: ComponentFixture<CategoriesGridComponent>;
+describe('EditBoxComponent', () => {
+  let component: EditBoxComponent;
+  let fixture: ComponentFixture<EditBoxComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoriesGridComponent ]
+      declarations: [ EditBoxComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CategoriesGridComponent);
+    fixture = TestBed.createComponent(EditBoxComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

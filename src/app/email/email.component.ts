@@ -1,4 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'email',
@@ -7,8 +8,10 @@ import { Component, OnInit, HostListener } from '@angular/core';
 })
 export class EmailComponent implements OnInit {
   public height: number;
+  public emails: Array<SafeHtml> = [];
+  public currentItem: any;
 
-  constructor() { }
+  constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.setHeight();
@@ -16,6 +19,21 @@ export class EmailComponent implements OnInit {
 
   setHeight() {
     this.height = window.innerHeight - 22;
+  }
+
+  onItemClick(item) {
+    this.currentItem = item;
+
+    if (item.tierIndex === 0) {
+      this.emails = [];
+      return;
+    }
+    this.emails = item.emails
+      .map(x => ({
+        id: x.id,
+        subject: x.subject,
+        body: this.sanitizer.bypassSecurityTrustHtml(x.body),
+      }));
   }
 
   @HostListener('window:resize', ['$event'])

@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from '../data.service';
 
 @Component({
-  selector: 'categories-grid',
+  selector: 'email-grid',
   templateUrl: '../grid/grid.component.html',
   styleUrls: ['../grid/grid.component.scss']
 })
-export class CategoriesGridComponent extends GridComponent implements OnInit {
+export class EmailGridComponent extends GridComponent implements OnInit {
+  @Output() onItemClick = new EventEmitter<any>();
 
   constructor(dataService: DataService) { super(dataService) }
 
@@ -47,6 +48,7 @@ export class CategoriesGridComponent extends GridComponent implements OnInit {
           parentId: x.id,
           id: y.id,
           tierIndex: 1,
+          emails: y.emails,
           data: [
             {
               value: y.name
@@ -75,6 +77,7 @@ export class CategoriesGridComponent extends GridComponent implements OnInit {
             parentId: y.id,
             id: z.id,
             tierIndex: 2,
+            emails: z.emails,
             data: [
               {
                 value: z.name
@@ -98,4 +101,10 @@ export class CategoriesGridComponent extends GridComponent implements OnInit {
 
     super.createTiers();
   }
+
+  onItemSelect(item: any): void {
+    this.onItemClick.emit(item);
+    super.onItemSelect(item);
+  }
+
 }

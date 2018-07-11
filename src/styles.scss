@@ -40,3 +40,35 @@ html, body
     cursor: col-resize;
     float: left;
 }
+input:checked ~ .toggle-button::after {
+    transform: translate(-1px, 1px) rotate(90deg);
+    border-left-color: #02ce02;
+}
+input:checked ~ .toggle-button:hover::after {
+    border-left-color: #00ff00;
+}
+.toggle-button{
+    width: 21px;
+    height: 21px;
+    background: #383838;
+    border: 1px solid #5e5e5e;
+    display: block;
+    cursor: pointer;
+    float: left;
+}
+.toggle-button::after {
+    content: "";
+    position: relative;
+    left: 8px;
+    top: 4px;
+    display: block;
+    width: 0; 
+    height: 0; 
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #aeaeae;
+    transition: transform 0.5s;
+}
+.toggle-button:hover::after{
+    border-left-color: white;
+}
