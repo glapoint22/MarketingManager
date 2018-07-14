@@ -1,5 +1,6 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ImageBoxComponent } from '../image-box/image-box.component';
 
 @Component({
   selector: 'email',
@@ -11,10 +12,21 @@ export class EmailComponent implements OnInit {
   public emails: Array<SafeHtml> = [];
   public currentItem: any;
 
-  constructor(private sanitizer: DomSanitizer) { }
+
+  @ViewChild('contentContainer', { read: ViewContainerRef }) contentContainer: ViewContainerRef;
+
+
+  constructor(private sanitizer: DomSanitizer, private resolver: ComponentFactoryResolver) { }
 
   ngOnInit() {
     this.setHeight();
+    
+    
+    let componentFactory = this.resolver.resolveComponentFactory(ImageBoxComponent);
+    let image = document.createElement('img');
+    image.src = 'Images/ubt_ebook.png';
+    image.setAttribute('style', 'width: 100%; height: 100%; display: block;');
+    this.contentContainer.createComponent(componentFactory, null, null, [[image]]);
   }
 
   setHeight() {

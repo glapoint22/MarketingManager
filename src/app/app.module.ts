@@ -34,6 +34,8 @@ import { PromptComponent } from './prompt/prompt.component';
 import { DeletedFilterPipe } from './deleted-filter.pipe';
 import { EmailGridComponent } from './email-grid/email-grid.component';
 import { EditBoxComponent } from './edit-box/edit-box.component';
+import { UniformBoxComponent } from './uniform-box/uniform-box.component';
+import { ImageBoxComponent } from './image-box/image-box.component';
 
 @NgModule({
   declarations: [
@@ -61,13 +63,16 @@ import { EditBoxComponent } from './edit-box/edit-box.component';
     PromptComponent,
     DeletedFilterPipe,
     EmailGridComponent,
-    EditBoxComponent
+    EditBoxComponent,
+    UniformBoxComponent,
+    ImageBoxComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ImageBoxComponent]
 })
 export class AppModule { }

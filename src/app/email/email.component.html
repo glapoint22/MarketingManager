@@ -1,6 +1,6 @@
 <div class="container">
     <div resizable class="divider"></div>
-    <!-- <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailContent">
+    <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailContent">
         No Content
     </div>
 
@@ -13,15 +13,14 @@
                     <label class="toggle-button" [for]="email.id" (click)="inputToggle.checked ? inputToggle.checked = false : inputToggle.checked = true"></label>
                 </span>
                 <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
-                <div class="bar toolbar" [style.maxHeight.px]="inputToggle.checked ? 22 : 0"></div>
                 <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
                     <div [innerHTML]="email.body"></div>
                 </div>
             </div>
         </div>
-    </ng-template> -->
+    </ng-template>
 
-    
+
     <!-- <div style="overflow-x: hidden; height: 100%">
         <table bgcolor="#c7c7c7" width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
             <tr valign="top">
@@ -43,12 +42,14 @@
         </table>
     </div> -->
 
-    <div style="overflow-x: hidden; height: 100%">
-        <edit-box></edit-box>
-        
-    </div>
-
     
+    
+    
+    <!-- <div style="overflow-x: hidden; height: 100%">
+        <ng-template #contentContainer></ng-template>
+    </div> -->
+
+
 
 
 
