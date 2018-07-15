@@ -40,8 +40,14 @@ export class EditBoxComponent {
 
       switch (this.handle) {
         case 'center':
-          this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + deltaX) + 'px';
-          this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop + deltaY) + 'px';
+          let left = this.editBox.nativeElement.offsetLeft + deltaX;
+          left = Math.max(0, left);
+          left = Math.min(600 - this.editBox.nativeElement.clientWidth, left);
+          this.editBox.nativeElement.style.left = left + 'px';
+
+          let top = this.editBox.nativeElement.offsetTop + deltaY;
+          top = Math.max(0, top);
+          this.editBox.nativeElement.style.top = top + 'px';
           break;
         case 'right':
           this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth + deltaX) + 'px';

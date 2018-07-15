@@ -1,24 +1,30 @@
 <div class="container">
     <div resizable class="divider"></div>
-    <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailContent">
+    <!-- <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailTemplate">
         No Content
-    </div>
+    </div> -->
 
-    <ng-template #emailContent>
-        <div class="header"></div>
-        <div class="emails-container" [style.height.px]="height">
-            <div *ngFor="let email of emails" class="row">
-                <span>
-                    <input #inputToggle name="email" [id]="email.id" type="radio">
-                    <label class="toggle-button" [for]="email.id" (click)="inputToggle.checked ? inputToggle.checked = false : inputToggle.checked = true"></label>
-                </span>
-                <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
-                <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
-                    <div [innerHTML]="email.body"></div>
+    <!-- <ng-template #emailTemplate> -->
+    <div class="header">
+        <button (click)="foo()">Image</button>
+    </div>
+    <div class="emails-container" [style.height.px]="height">
+        <div *ngFor="let email of emails; let i = index" class="row">
+            <span>
+                <input #inputToggle name="email" [id]="email.id" type="radio">
+                <label class="toggle-button" [for]="email.id" (click)="onToggleButtonClick(inputToggle, i); $event.preventDefault()"></label>
+            </span>
+            <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
+            <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
+                <!-- <div [innerHTML]="email.body"></div> -->
+                <div style="width: 600px; height: 600px; background: #e4e4e4; margin: auto; position: relative;">
+                    <ng-template #emailContent></ng-template>
                 </div>
+
             </div>
         </div>
-    </ng-template>
+    </div>
+    <!-- </ng-template> -->
 
 
     <!-- <div style="overflow-x: hidden; height: 100%">
@@ -42,9 +48,9 @@
         </table>
     </div> -->
 
-    
-    
-    
+
+
+
     <!-- <div style="overflow-x: hidden; height: 100%">
         <ng-template #contentContainer></ng-template>
     </div> -->
