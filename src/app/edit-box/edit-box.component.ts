@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, Input, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'edit-box',
@@ -7,6 +7,7 @@ import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
+  @Input() parentContainer: ViewContainerRef;
 
   private isMousedown: boolean;
   private currentX: number;
@@ -41,12 +42,61 @@ export class EditBoxComponent {
       switch (this.handle) {
         case 'center':
           let left = this.editBox.nativeElement.offsetLeft + deltaX;
+          let top = this.editBox.nativeElement.offsetTop + deltaY;
+
+
+
           left = Math.max(0, left);
           left = Math.min(600 - this.editBox.nativeElement.clientWidth, left);
-          this.editBox.nativeElement.style.left = left + 'px';
-
-          let top = this.editBox.nativeElement.offsetTop + deltaY;
           top = Math.max(0, top);
+
+          for (let i = 0; i < this.parentContainer.length; i++) {
+            let viewRef: any = this.parentContainer.get(i);
+            let child = viewRef.rootNodes[0].firstChild;
+
+            if (child !== this.editBox.nativeElement) {
+              if (left + this.editBox.nativeElement.clientWidth >= child.offsetLeft && left <= child.offsetLeft + child.clientWidth &&
+                top + this.editBox.nativeElement.clientHeight >= child.offsetTop && top <= child.offsetTop + child.clientHeight) {
+
+
+                let x1 = this.editBox.nativeElement.offsetLeft + (this.editBox.nativeElement.clientWidth * 0.5);
+                let y1 = this.editBox.nativeElement.offsetTop + (this.editBox.nativeElement.clientHeight * 0.5);
+
+                let x2 = child.offsetLeft + (child.clientWidth * 0.5);
+                let y2 = child.offsetTop + (child.clientHeight * 0.5);
+
+
+                let x = (x2 - x1) / child.clientWidth;
+                let y = (y2 - y1) / child.clientHeight;
+
+
+                if (Math.abs(x) > Math.abs(y)) {
+                  if (x > 0) {
+                    //left
+                    left = child.offsetLeft - this.editBox.nativeElement.clientWidth;
+                  } else {
+                    //right
+                    left = child.offsetLeft + child.clientWidth;
+                  }
+                } else {
+                  if (y > 0) {
+                    //top
+                    top = child.offsetTop - this.editBox.nativeElement.clientHeight;
+                  } else {
+                    //bottom
+                    top = child.offsetTop + child.clientHeight;
+                  }
+                }
+              }
+            }
+          }
+
+
+
+
+
+
+          this.editBox.nativeElement.style.left = left + 'px';
           this.editBox.nativeElement.style.top = top + 'px';
           break;
         case 'right':
@@ -120,4 +170,14 @@ export class EditBoxComponent {
     this.showBottomHandle = showBottomHandle;
     this.showBottomRightHandle = showBottomRightHandle;
   }
+
+  checkCollision(left: number, top: number) {
+
+
+
+
+
+  }
+
+
 }

@@ -7,7 +7,7 @@ import { ImageBoxComponent } from '../image-box/image-box.component';
   styleUrls: ['./email.component.scss']
 })
 export class EmailComponent implements OnInit {
-  @ViewChildren('emailContent', { read: ViewContainerRef }) emailContent: QueryList<ViewContainerRef>;
+  @ViewChildren('emailContentContainer', { read: ViewContainerRef }) emailContentContainer: QueryList<ViewContainerRef>;
   public height: number;
   public emails: Array<any> = [];
   public currentEmailIndex: number = -1;
@@ -59,7 +59,8 @@ export class EmailComponent implements OnInit {
     let image = document.createElement('img');
     image.src = 'Images/ubt_ebook.png';
     image.setAttribute('style', 'width: 100%; height: 100%; display: block;');
-    this.emailContent.toArray()[this.currentEmailIndex].createComponent(componentFactory, null, null, [[image]]);
+    let imageBox = this.emailContentContainer.toArray()[this.currentEmailIndex].createComponent(componentFactory, null, null, [[image]]);
+    imageBox.instance.parentContainer = this.emailContentContainer.toArray()[this.currentEmailIndex];
   }
 
 }
