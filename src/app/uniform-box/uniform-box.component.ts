@@ -11,11 +11,17 @@ export class UniformBoxComponent extends EditBoxComponent {
   private width: number;
   private scaleSpeed: number;
 
+  private offsetLeft: number;
+  private offsetTop: number;
+
   onMouseDown(event, handle) {
     super.onMouseDown(event, handle);
     this.scale = 1;
     this.width = this.editBox.nativeElement.clientWidth;
     this.height = this.editBox.nativeElement.clientHeight;
+
+    this.offsetLeft = this.editBox.nativeElement.offsetLeft;
+    this.offsetTop = this.editBox.nativeElement.offsetTop;
 
     // 1 / diagonal length of the rectangle
     this.scaleSpeed = 1 / Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height, 2));
@@ -32,22 +38,40 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.height = (this.height * this.scale) + 'px';
   }
 
+
+  getScale(currentScale: number, deltaPosition: Vector2, sign: number): number {
+    let scale = currentScale;
+    let distance = Math.sqrt(Math.pow(deltaPosition.x, 2) + Math.pow(deltaPosition.y, 2));
+    scale += (distance * sign * this.scaleSpeed);
+    scale = Math.max(0, scale);
+
+    return scale;
+  }
+
   setTopLeft(deltaPosition: Vector2) {
-    // Get the initial position of the bottom and right side
-    let bottomPos1 = this.editBox.nativeElement.offsetTop + this.editBox.nativeElement.clientHeight;
-    let rightPos1 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
 
     // Set the scale, width, and height
-    this.setScale(deltaPosition, Math.sign(-deltaPosition.x + -deltaPosition.y));
-    this.setWidthHeight();
+    let scale = this.getScale(this.scale, deltaPosition, Math.sign(-deltaPosition.x + -deltaPosition.y));
 
-    // Get the positions of bottom and right
-    let bottomPos2 = this.editBox.nativeElement.offsetTop + this.editBox.nativeElement.clientHeight;
-    let rightPos2 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
 
-    // Set the top and left positions
-    this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop - (bottomPos2 - bottomPos1)) + 'px';
-    this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + (rightPos1 - rightPos2)) + 'px';
+    let newWidth = this.width * scale;
+    let newHeight = this.height * scale;
+
+    let newLeft = (this.width - newWidth) + this.offsetLeft;
+    let newTop = (this.height - newHeight) + this.offsetTop;
+
+
+    if (newLeft >= 0) {
+      this.editBox.nativeElement.style.width = newWidth + 'px';
+      this.editBox.nativeElement.style.height = newHeight + 'px';
+
+      this.editBox.nativeElement.style.left = newLeft + 'px';
+      this.editBox.nativeElement.style.top = newTop + 'px';
+
+      this.scale = scale;
+    }
+
+
   }
 
   setTopRight(deltaPosition: Vector2) {
