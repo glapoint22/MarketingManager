@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { Vector2 } from '../vector2';
 
 @Component({
   template: '',
@@ -20,8 +21,8 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.scaleSpeed = 1 / Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height, 2));
   }
 
-  setScale(deltaX: number, deltaY: number, sign: number) {
-    let distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  setScale(deltaPosition: Vector2, sign: number) {
+    let distance = Math.sqrt(Math.pow(deltaPosition.x, 2) + Math.pow(deltaPosition.y, 2));
     this.scale += (distance * sign * this.scaleSpeed);
     this.scale = Math.max(0, this.scale);
   }
@@ -31,13 +32,13 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.height = (this.height * this.scale) + 'px';
   }
 
-  setTopLeft(deltaX: number, deltaY: number) {
+  setTopLeft(deltaPosition: Vector2) {
     // Get the initial position of the bottom and right side
     let bottomPos1 = this.editBox.nativeElement.offsetTop + this.editBox.nativeElement.clientHeight;
     let rightPos1 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
 
     // Set the scale, width, and height
-    this.setScale(deltaX, deltaY, Math.sign(-deltaX + -deltaY));
+    this.setScale(deltaPosition, Math.sign(-deltaPosition.x + -deltaPosition.y));
     this.setWidthHeight();
 
     // Get the positions of bottom and right
@@ -49,12 +50,12 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + (rightPos1 - rightPos2)) + 'px';
   }
 
-  setTopRight(deltaX: number, deltaY: number) {
+  setTopRight(deltaPosition: Vector2) {
     // Get the initial position of the bottom
     let bottomPos1 = this.editBox.nativeElement.offsetTop + this.editBox.nativeElement.clientHeight;
 
     // Set the scale, width, and height
-    this.setScale(deltaX, deltaY, Math.sign(deltaX + -deltaY));
+    this.setScale(deltaPosition, Math.sign(deltaPosition.x + -deltaPosition.y));
     this.setWidthHeight();
 
     // Get the bottom position
@@ -64,12 +65,12 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop - (bottomPos2 - bottomPos1)) + 'px';
   }
 
-  setBottomLeft(deltaX: number, deltaY: number) {
+  setBottomLeft(deltaPosition: Vector2) {
     // Get the initial position of the right
     let rightPos1 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
 
     // Set the scale, width, and height
-    this.setScale(deltaX, deltaY, Math.sign(-deltaX + deltaY));
+    this.setScale(deltaPosition, Math.sign(-deltaPosition.x + deltaPosition.y));
     this.setWidthHeight();
 
     // Get the right position
@@ -79,9 +80,9 @@ export class UniformBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + (rightPos1 - rightPos2)) + 'px';
   }
 
-  setBottomRight(deltaX: number, deltaY: number) {
+  setBottomRight(deltaPosition: Vector2) {
     // Set the scale, width, and height
-    this.setScale(deltaX, deltaY, Math.sign(deltaX + deltaY));
+    this.setScale(deltaPosition, Math.sign(deltaPosition.x + deltaPosition.y));
     this.setWidthHeight();
   }
 
