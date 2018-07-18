@@ -133,24 +133,6 @@ export class EditBoxComponent {
   }
 
 
-  isCollision() {
-    // Check for collision with the page
-    if (this.rect.x < 0 || this.rect.xMax > 600 || this.rect.y < 0) return true;
-
-    for (let i = 0; i < this.parentContainer.length; i++) {
-      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
-
-      if (this.rect !== otherRect) {
-        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
-          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-
   setPosition() {
     this.rect.x = Math.min(600 - this.rect.width, Math.max(0, this.rect.x));
     this.rect.y = Math.max(0, this.rect.y);

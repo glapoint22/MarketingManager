@@ -27,71 +27,134 @@ export class UniformBoxComponent extends EditBoxComponent {
   }
 
   setTopLeft(deltaPosition: Vector2) {
-    let scale = this.getScale(this.scale, deltaPosition, Math.sign(-deltaPosition.x + -deltaPosition.y));
-    let size = this.getSize(scale);
+    this.setScale(deltaPosition, Math.sign(-deltaPosition.x + -deltaPosition.y));
+    let size = this.getSize();
 
-    this.rect = new Rect(
-      (this.width - size.x) + this.left,
-      (this.height - size.y) + this.top,
-      size.x,
-      size.y
-    );
+    this.rect = new Rect(this.getX(size.x), this.getY(size.y), size.x, size.y);
 
-    if (!this.isCollision()) {
-      this.setElement();
-      this.scale = scale;
+    if (this.isCollision()) {
+      size = this.getSize();
+      this.rect = new Rect(this.getX(size.x), this.getY(size.y), size.x, size.y);
     }
+    this.setElement();
   }
 
   setTopRight(deltaPosition: Vector2) {
-    let scale = this.getScale(this.scale, deltaPosition, Math.sign(deltaPosition.x + -deltaPosition.y));
-    let size = this.getSize(scale);
+    this.setScale(deltaPosition, Math.sign(deltaPosition.x + -deltaPosition.y));
+    let size = this.getSize();
 
-    this.rect = new Rect(
-      this.rect.x,
-      (this.height - size.y) + this.top,
-      size.x,
-      size.y
-    );
+    this.rect = new Rect(this.rect.x, this.getY(size.y), size.x, size.y);
 
-    if (!this.isCollision()) {
-      this.setElement();
-      this.scale = scale;
+    if (this.isCollision()) {
+      size = this.getSize();
+      this.rect = new Rect(this.rect.x, this.getY(size.y), size.x, size.y);
     }
+
+    this.setElement();
   }
 
   setBottomLeft(deltaPosition: Vector2) {
-    // // Get the initial position of the right
-    // let rightPos1 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
+    this.setScale(deltaPosition, Math.sign(-deltaPosition.x + deltaPosition.y));
+    let size = this.getSize();
 
-    // // Set the scale, width, and height
-    // this.setScale(deltaPosition, Math.sign(-deltaPosition.x + deltaPosition.y));
-    // this.setWidthHeight();
+    this.rect = new Rect(this.getX(size.x), this.rect.y, size.x, size.y);
 
-    // // Get the right position
-    // let rightPos2 = this.editBox.nativeElement.offsetLeft + this.editBox.nativeElement.clientWidth;
+    if (this.isCollision()) {
+      size = this.getSize();
+      this.rect = new Rect(this.getX(size.x), this.rect.y, size.x, size.y);
+    }
 
-    // // Set the left position
-    // this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + (rightPos1 - rightPos2)) + 'px';
+    this.setElement();
   }
 
   setBottomRight(deltaPosition: Vector2) {
-    // // Set the scale, width, and height
-    // this.setScale(deltaPosition, Math.sign(deltaPosition.x + deltaPosition.y));
-    // this.setWidthHeight();
+    this.setScale(deltaPosition, Math.sign(deltaPosition.x + deltaPosition.y));
+    let size = this.getSize();
+
+    this.rect = new Rect(this.rect.x, this.rect.y, size.x, size.y);
+
+    if (this.isCollision()) {
+      size = this.getSize();
+      this.rect = new Rect(this.rect.x, this.rect.y, size.x, size.y);
+    }
+
+    this.setElement();
   }
 
-  getScale(currentScale: number, deltaPosition: Vector2, sign: number): number {
-    let scale = currentScale;
+  setScale(deltaPosition: Vector2, sign: number) {
     let distance = Math.sqrt(Math.pow(deltaPosition.x, 2) + Math.pow(deltaPosition.y, 2));
-    scale += (distance * sign * this.scaleSpeed);
-    scale = Math.max(0, scale);
-
-    return scale;
+    this.scale += (distance * sign * this.scaleSpeed);
+    this.scale = Math.max(0, this.scale);
   }
 
-  getSize(scale: number):Vector2{
-    return new Vector2(this.width * scale, this.height * scale)
+  getSize(): Vector2 {
+    return new Vector2(this.width * this.scale, this.height * this.scale)
   }
 
+  isCollision() {
+    if (this.rect.x < 0) {
+      this.resetScale(0 - this.rect.x, this.rect.width, this.width);
+      return true;
+    }
+
+    if (this.rect.xMax > 600) {
+      this.resetScale(this.rect.xMax - 600, this.rect.width, this.width);
+      return true;
+    }
+
+    if (this.rect.y < 0) {
+      this.resetScale(0 - this.rect.y, this.rect.height, this.height);
+      return true;
+    }
+
+
+    for (let i = 0; i < this.parentContainer.length; i++) {
+      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
+
+      if (this.rect !== otherRect) {
+        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
+          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
+
+          let x = (otherRect.center.x - this.rect.center.x) / otherRect.width;
+          let y = (otherRect.center.y - this.rect.center.y) / otherRect.height;
+
+          if (Math.abs(x) > Math.abs(y)) {
+            if (x > 0) {
+              // Collision is on left side of other rect
+              this.resetScale(this.rect.xMax - otherRect.x, this.rect.width, this.width);
+              return true;
+            } else {
+              //  Collision is on right side of other rect
+              this.resetScale(otherRect.xMax - this.rect.x, this.rect.width, this.width);
+              return true;
+            }
+          } else {
+            if (y > 0) {
+              // Collision is on top side of other rect
+              this.resetScale(this.rect.yMax - otherRect.y, this.rect.height, this.height);
+              return true;
+            } else {
+              //Collision is on bottom side of other rect
+              this.resetScale(otherRect.yMax - this.rect.y, this.rect.height, this.height);
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  resetScale(diff: number, rectDimension: number, dimension: number) {
+    let value = rectDimension - diff;
+    this.scale = value / dimension;
+  }
+
+  getX(size): number {
+    return (this.width - size) + this.left;
+  }
+
+  getY(size): number {
+    return (this.height - size) + this.top;
+  }
 }
