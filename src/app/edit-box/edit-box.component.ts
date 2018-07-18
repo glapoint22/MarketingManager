@@ -1,5 +1,6 @@
-import { Component, HostListener, ViewChild, ElementRef, Input, ViewContainerRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, Input } from '@angular/core';
 import { Vector2 } from "../vector2";
+import { Rect } from '../rect';
 
 @Component({
   selector: 'edit-box',
@@ -8,7 +9,7 @@ import { Vector2 } from "../vector2";
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
-  @Input() parentContainer: ViewContainerRef;
+  @Input() parentContainer: any;
   private isMousedown: boolean;
   private handle: string;
   private currentPosition: Vector2;
@@ -21,6 +22,16 @@ export class EditBoxComponent {
   public showBottomLeftHandle: boolean;
   public showBottomHandle: boolean;
   public showBottomRightHandle: boolean;
+  public rect: Rect;
+
+  ngAfterViewInit() {
+    var interval = window.setInterval(() => {
+      if (this.editBox.nativeElement.clientWidth > 0) {
+        clearInterval(interval);
+        this.rect = new Rect(0, 0, this.editBox.nativeElement.clientWidth, this.editBox.nativeElement.clientHeight);
+      }
+    }, 1);
+  }
 
   onMouseDown(event, handle) {
     event.preventDefault();
@@ -43,11 +54,11 @@ export class EditBoxComponent {
 
       switch (this.handle) {
         case 'center':
-          let position: Vector2 = new Vector2(this.editBox.nativeElement.offsetLeft + deltaPosition.x, this.editBox.nativeElement.offsetTop + deltaPosition.y);
+          this.rect.x += deltaPosition.x;
+          this.rect.y += deltaPosition.y;
+          this.setPosition();
+          this.setElement();
 
-          position = this.checkCollision(position);
-          this.editBox.nativeElement.style.left = position.x + 'px';
-          this.editBox.nativeElement.style.top = position.y + 'px';
           break;
         case 'right':
           this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth + deltaPosition.x) + 'px';
@@ -121,61 +132,65 @@ export class EditBoxComponent {
     this.showBottomRightHandle = showBottomRightHandle;
   }
 
-  checkCollision(position: Vector2): Vector2 {
-    // Check collision with the page
-    position = {
-      x: Math.min(600 - this.editBox.nativeElement.clientWidth, Math.max(0, position.x)),
-      y: Math.max(0, position.y)
-    }
 
-    // Loop through all the objects on the page
+  isCollision() {
+    // Check for collision with the page
+    if (this.rect.x < 0 || this.rect.xMax > 600 || this.rect.y < 0) return true;
+
     for (let i = 0; i < this.parentContainer.length; i++) {
-      let viewRef: any = this.parentContainer.get(i);
-      let other = viewRef.rootNodes[0].firstChild;
+      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
 
-      // Test to see if there is a collision
-      if (other !== this.editBox.nativeElement) {
-        if (position.x + this.editBox.nativeElement.clientWidth >= other.offsetLeft && position.x <= other.offsetLeft + other.clientWidth &&
-          position.y + this.editBox.nativeElement.clientHeight >= other.offsetTop && position.y <= other.offsetTop + other.clientHeight) {
-
-          // There was a collision!
-
-          // Get the centers
-          let thisCenter: Vector2 = new Vector2(
-            this.editBox.nativeElement.offsetLeft + (this.editBox.nativeElement.clientWidth * 0.5),
-            this.editBox.nativeElement.offsetTop + (this.editBox.nativeElement.clientHeight * 0.5)
-          );
-
-          let otherCenter: Vector2 = new Vector2(
-            other.offsetLeft + (other.clientWidth * 0.5),
-            other.offsetTop + (other.clientHeight * 0.5)
-          );
+      if (this.rect !== otherRect) {
+        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
+          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
 
-          // Here we test which side to place the box
-          let x = (otherCenter.x - thisCenter.x) / other.clientWidth;
-          let y = (otherCenter.y - thisCenter.y) / other.clientHeight;
+  setPosition() {
+    this.rect.x = Math.min(600 - this.rect.width, Math.max(0, this.rect.x));
+    this.rect.y = Math.max(0, this.rect.y);
+
+
+    for (let i = 0; i < this.parentContainer.length; i++) {
+      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
+
+      if (this.rect !== otherRect) {
+        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
+          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
+          let x = (otherRect.center.x - this.rect.center.x) / otherRect.width;
+          let y = (otherRect.center.y - this.rect.center.y) / otherRect.height;
 
           if (Math.abs(x) > Math.abs(y)) {
             if (x > 0) {
               //left
-              position.x = other.offsetLeft - this.editBox.nativeElement.clientWidth;
+              this.rect.x = otherRect.x - this.rect.width;
             } else {
               //right
-              position.x = other.offsetLeft + other.clientWidth;
+              this.rect.x = otherRect.xMax;
             }
           } else {
             if (y > 0) {
               //top
-              position.y = other.offsetTop - this.editBox.nativeElement.clientHeight;
+              this.rect.y = otherRect.y - this.rect.height;
             } else {
               //bottom
-              position.y = other.offsetTop + other.clientHeight;
+              this.rect.y = otherRect.yMax;
             }
           }
         }
       }
     }
-    return position;
+  }
+
+  setElement() {
+    this.editBox.nativeElement.style.left = this.rect.x + 'px';
+    this.editBox.nativeElement.style.top = this.rect.y + 'px';
+    this.editBox.nativeElement.style.width = this.rect.width + 'px';
+    this.editBox.nativeElement.style.height = this.rect.height + 'px';
   }
 }
