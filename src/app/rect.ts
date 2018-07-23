@@ -4,9 +4,16 @@ export class Rect {
     public get xMax() : number {
         return this.x + this.width;
     }
+    public set xMax(value){
+        this.width = value - this.x;
+    }
 
     public get yMax(): number {
         return this.y + this.height;
+    }
+
+    public set yMax(value){
+        this.height = value - this.y;
     }
 
     public get center(): Vector2 {

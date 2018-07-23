@@ -1,6 +1,7 @@
 import { Component, HostListener, ViewChild, ElementRef, Input } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
+import { Line } from '../line';
 
 @Component({
   selector: 'edit-box',
@@ -37,42 +38,43 @@ export class EditBoxComponent {
     event.preventDefault();
     this.isMousedown = true;
     this.handle = handle;
-    this.currentPosition = {
-      x: event.clientX,
-      y: event.clientY
-    }
+    this.currentPosition = new Vector2(event.clientX, event.clientY);
   }
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     if (this.isMousedown) {
       let deltaPosition = new Vector2(event.clientX - this.currentPosition.x, event.clientY - this.currentPosition.y);
-      this.currentPosition = {
-        x: event.clientX,
-        y: event.clientY
-      }
+      this.currentPosition = new Vector2(event.clientX, event.clientY);
 
       switch (this.handle) {
         case 'center':
-          this.rect.x += deltaPosition.x;
-          this.rect.y += deltaPosition.y;
-          this.setPosition();
+          this.setRect(() => {
+            return new Rect(this.rect.x + deltaPosition.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height);
+          });
           this.setElement();
-
           break;
         case 'right':
-          this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth + deltaPosition.x) + 'px';
+          this.rect.width += deltaPosition.x;
+          this.foo();
+          this.setElement();
           break;
         case 'left':
-          this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth - deltaPosition.x) + 'px';
-          this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + deltaPosition.x) + 'px';
+          this.rect.width -= deltaPosition.x;
+          this.rect.x += deltaPosition.x;
+          this.foo();
+          this.setElement();
           break;
         case 'bottom':
-          this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight + deltaPosition.y) + 'px';
+          this.rect.height += deltaPosition.y;
+          this.foo();
+          this.setElement();
           break;
         case 'top':
-          this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight - deltaPosition.y) + 'px';
-          this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop + deltaPosition.y) + 'px';
+          this.rect.height -= deltaPosition.y;
+          this.rect.y += deltaPosition.y;
+          this.foo();
+          this.setElement();
           break;
         case 'topLeft':
           this.setTopLeft(deltaPosition);
@@ -92,28 +94,36 @@ export class EditBoxComponent {
 
 
   setTopLeft(deltaPosition: Vector2) {
-    this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight - deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop + deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth - deltaPosition.x) + 'px';
-    this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + deltaPosition.x) + 'px';
+    this.rect.height -= deltaPosition.y;
+    this.rect.y += deltaPosition.y;
+    this.rect.width -= deltaPosition.x;
+    this.rect.x += deltaPosition.x;
+    this.foo();
+    this.setElement();
   }
 
 
   setTopRight(deltaPosition: Vector2) {
-    this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight - deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.top = (this.editBox.nativeElement.offsetTop + deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth + deltaPosition.x) + 'px';
+    this.rect.height -= deltaPosition.y;
+    this.rect.y += deltaPosition.y;
+    this.rect.width += deltaPosition.x;
+    this.foo();
+    this.setElement();
   }
 
   setBottomLeft(deltaPosition: Vector2) {
-    this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight + deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth - deltaPosition.x) + 'px';
-    this.editBox.nativeElement.style.left = (this.editBox.nativeElement.offsetLeft + deltaPosition.x) + 'px';
+    this.rect.height += deltaPosition.y;
+    this.rect.width -= deltaPosition.x;
+    this.rect.x += deltaPosition.x;
+    this.foo();
+    this.setElement();
   }
 
   setBottomRight(deltaPosition: Vector2) {
-    this.editBox.nativeElement.style.height = (this.editBox.nativeElement.clientHeight + deltaPosition.y) + 'px';
-    this.editBox.nativeElement.style.width = (this.editBox.nativeElement.clientWidth + deltaPosition.x) + 'px';
+    this.rect.width += deltaPosition.x;
+    this.rect.height += deltaPosition.y;
+    this.foo();
+    this.setElement();
   }
 
   @HostListener('document:mouseup', ['$event'])
@@ -174,5 +184,96 @@ export class EditBoxComponent {
     this.editBox.nativeElement.style.top = this.rect.y + 'px';
     this.editBox.nativeElement.style.width = this.rect.width + 'px';
     this.editBox.nativeElement.style.height = this.rect.height + 'px';
+  }
+
+
+  foo() {
+    if (this.rect.x < 0) {
+      let diff = 0 - this.rect.x;
+      this.rect.x = 0;
+      this.rect.width -= diff;
+    }
+
+    if (this.rect.xMax > 600) {
+      this.rect.xMax = 600;
+    }
+
+    if (this.rect.y < 0) {
+      let diff = 0 - this.rect.y;
+      this.rect.y = 0;
+      this.rect.height -= diff;
+    }
+
+
+    for (let i = 0; i < this.parentContainer.length; i++) {
+      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
+
+      if (this.rect !== otherRect) {
+        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
+          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
+
+          let x = (otherRect.center.x - this.rect.center.x) / otherRect.width;
+          let y = (otherRect.center.y - this.rect.center.y) / otherRect.height;
+
+          if (Math.abs(x) > Math.abs(y)) {
+            if (x > 0) {
+              // Collision is on left side of other rect
+              this.rect.xMax = otherRect.x;
+
+            } else {
+              //  Collision is on right side of other rect
+              let diff = otherRect.xMax - this.rect.x;
+              this.rect.x = otherRect.xMax;
+              this.rect.width -= diff;
+            }
+          } else {
+            if (y > 0) {
+              // Collision is on top side of other rect
+              this.rect.yMax = otherRect.y;
+            } else {
+              //Collision is on bottom side of other rect
+              let diff = otherRect.yMax - this.rect.y;
+              this.rect.y = otherRect.yMax;
+              this.rect.height -= diff;
+            }
+          }
+        }
+      }
+    }
+
+  }
+
+
+  setRect(action) {
+    let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center);
+
+    for (let i = 0; i < this.parentContainer.length; i++) {
+      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
+
+      if (this.rect !== otherRect) {
+        if (tempRect.xMax > otherRect.x && tempRect.x < otherRect.xMax &&
+          tempRect.yMax > otherRect.y && tempRect.y < otherRect.yMax) {
+
+          if (direction.y > 0) {
+            if (this.rect.yMax <= otherRect.y) {
+              tempRect.y = otherRect.y - this.rect.height;
+              continue;
+            }
+          } else {
+            if (this.rect.y >= otherRect.yMax) {
+              tempRect.y = otherRect.yMax;
+              continue;
+            }
+          }
+
+          if (direction.x > 0) {
+            tempRect.x = otherRect.x - this.rect.width;
+          } else {
+            tempRect.x = otherRect.xMax;
+          }
+        }
+      }
+    }
+    this.rect = tempRect;
   }
 }
