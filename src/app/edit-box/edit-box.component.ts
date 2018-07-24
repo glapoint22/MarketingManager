@@ -12,7 +12,6 @@ export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
   @Input() parentContainer: any;
   private isMousedown: boolean;
-  private handle: string;
   private currentPosition: Vector2;
 
   public showTopLeftHandle: boolean;
@@ -24,6 +23,7 @@ export class EditBoxComponent {
   public showBottomHandle: boolean;
   public showBottomRightHandle: boolean;
   public rect: Rect;
+  public handle: string;
 
   ngAfterViewInit() {
     var interval = window.setInterval(() => {
@@ -52,7 +52,8 @@ export class EditBoxComponent {
           this.setRect(() => {
             return new Rect(this.rect.x + deltaPosition.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height);
           });
-          this.setElement();
+
+          // this.setElement();
           break;
         case 'right':
           this.rect.width += deltaPosition.x;
@@ -143,41 +144,7 @@ export class EditBoxComponent {
   }
 
 
-  setPosition() {
-    this.rect.x = Math.min(600 - this.rect.width, Math.max(0, this.rect.x));
-    this.rect.y = Math.max(0, this.rect.y);
 
-
-    for (let i = 0; i < this.parentContainer.length; i++) {
-      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
-
-      if (this.rect !== otherRect) {
-        if (this.rect.xMax > otherRect.x && this.rect.x < otherRect.xMax &&
-          this.rect.yMax > otherRect.y && this.rect.y < otherRect.yMax) {
-          let x = (otherRect.center.x - this.rect.center.x) / otherRect.width;
-          let y = (otherRect.center.y - this.rect.center.y) / otherRect.height;
-
-          if (Math.abs(x) > Math.abs(y)) {
-            if (x > 0) {
-              //left
-              this.rect.x = otherRect.x - this.rect.width;
-            } else {
-              //right
-              this.rect.x = otherRect.xMax;
-            }
-          } else {
-            if (y > 0) {
-              //top
-              this.rect.y = otherRect.y - this.rect.height;
-            } else {
-              //bottom
-              this.rect.y = otherRect.yMax;
-            }
-          }
-        }
-      }
-    }
-  }
 
   setElement() {
     this.editBox.nativeElement.style.left = this.rect.x + 'px';
@@ -244,7 +211,7 @@ export class EditBoxComponent {
   }
 
 
-  setRect(action) {
+  setRect(action, response?) {
     let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center);
 
     for (let i = 0; i < this.parentContainer.length; i++) {
@@ -255,25 +222,56 @@ export class EditBoxComponent {
           tempRect.yMax > otherRect.y && tempRect.y < otherRect.yMax) {
 
           if (direction.y > 0) {
-            if (this.rect.yMax <= otherRect.y) {
-              tempRect.y = otherRect.y - this.rect.height;
+            if (+(this.rect.yMax.toFixed(2)) <= +(otherRect.y.toFixed(2))) {
+              // Top of other rect
+              // tempRect.y = otherRect.y - this.rect.height;
+              this.setTopCollision(tempRect, otherRect);
+              if (response) tempRect = response();
               continue;
             }
           } else {
-            if (this.rect.y >= otherRect.yMax) {
-              tempRect.y = otherRect.yMax;
+            if (+(this.rect.y.toFixed(2)) >= +(otherRect.yMax.toFixed(2))) {
+              // Bottom of other rect
+              // tempRect.y = otherRect.yMax;
+              this.setBottomCollision(tempRect, otherRect);
+              if (response) tempRect = response();
               continue;
             }
           }
 
           if (direction.x > 0) {
-            tempRect.x = otherRect.x - this.rect.width;
+            // Left of other rect
+            // tempRect.x = otherRect.x - this.rect.width;
+            this.setLeftCollision(tempRect, otherRect);
+            if (response) tempRect = response();
           } else {
-            tempRect.x = otherRect.xMax;
+            // Right of other rect
+            // tempRect.x = otherRect.xMax;
+            this.setRightCollision(tempRect, otherRect);
+            if (response) tempRect = response();
           }
         }
+
       }
     }
     this.rect = tempRect;
+
+    this.setElement();
+  }
+
+  setTopCollision(tempRect: Rect, otherRect: Rect) {
+    tempRect.y = otherRect.y - this.rect.height;
+  }
+
+  setBottomCollision(tempRect: Rect, otherRect: Rect) {
+    tempRect.y = otherRect.yMax;
+  }
+
+  setLeftCollision(tempRect: Rect, otherRect: Rect) {
+    tempRect.x = otherRect.x - this.rect.width;
+  }
+
+  setRightCollision(tempRect: Rect, otherRect: Rect) {
+    tempRect.x = otherRect.xMax;
   }
 }

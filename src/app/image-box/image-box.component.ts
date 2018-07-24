@@ -7,10 +7,10 @@ import { EditBoxComponent } from '../edit-box/edit-box.component';
   templateUrl: '../edit-box/edit-box.component.html',
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
-export class ImageBoxComponent extends EditBoxComponent {
+export class ImageBoxComponent extends UniformBoxComponent {
 
   ngOnInit() {
-    // this.setVisibleHandles(true, false, true, false, false, true, false, true);
-    this.setVisibleHandles(true, true, true, true, true, true, true, true);
+    this.setVisibleHandles(true, false, true, false, false, true, false, true);
+    // this.setVisibleHandles(true, true, true, true, true, true, true, true);
   }
 }
