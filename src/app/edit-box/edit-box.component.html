@@ -1,4 +1,4 @@
-<div #editBox class="edit-box">
+<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0">
   <div class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
 
   <div *ngIf="showTopHandle" class="horizontal-side top-side" (mousedown)="onMouseDown($event, 'top')">

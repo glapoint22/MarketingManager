@@ -75,7 +75,7 @@ export class UniformBoxComponent extends EditBoxComponent {
   }
 
   getSize(): Vector2 {
-    return new Vector2(this.width * this.scale, this.height * this.scale)
+    return new Vector2(this.width * this.scale, this.height * this.scale);
   }
 
   resetScale(diff: number, rectDimension: number, dimension: number) {

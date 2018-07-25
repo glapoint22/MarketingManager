@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener, ViewContainerRef, ComponentFactoryResolver, ViewChildren, QueryList } from '@angular/core';
 import { ImageBoxComponent } from '../image-box/image-box.component';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'email',
@@ -61,6 +62,14 @@ export class EmailComponent implements OnInit {
     image.setAttribute('style', 'width: 100%; height: 100%; display: block;');
     let imageBox = this.emailContentContainer.toArray()[this.currentEmailIndex].createComponent(componentFactory, null, null, [[image]]);
     imageBox.instance.parentContainer = this.emailContentContainer.toArray()[this.currentEmailIndex];
+
+    var interval = window.setInterval(() => {
+      if (image.clientWidth > 0) {
+        clearInterval(interval);
+        imageBox.instance.rect = new Rect(100, 100, image.clientWidth, image.clientHeight);
+        imageBox.instance.setElement();
+      }
+    }, 1);
   }
 
 }

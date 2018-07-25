@@ -9,7 +9,7 @@ import { Rect } from '../rect';
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
-  @Input() parentContainer: any;
+  
   private isMousedown: boolean;
   private currentPosition: Vector2;
 
@@ -23,15 +23,16 @@ export class EditBoxComponent {
   public showBottomRightHandle: boolean;
   public rect: Rect;
   public handle: string;
+  public parentContainer: any;
 
-  ngAfterViewInit() {
-    var interval = window.setInterval(() => {
-      if (this.editBox.nativeElement.clientWidth > 0) {
-        clearInterval(interval);
-        this.rect = new Rect(0, 0, this.editBox.nativeElement.clientWidth, this.editBox.nativeElement.clientHeight);
-      }
-    }, 1);
-  }
+  // ngAfterViewInit() {
+  //   var interval = window.setInterval(() => {
+  //     if (this.editBox.nativeElement.clientWidth > 0) {
+  //       clearInterval(interval);
+  //       this.rect = new Rect(0, 0, this.editBox.nativeElement.clientWidth, this.editBox.nativeElement.clientHeight);
+  //     }
+  //   }, 1);
+  // }
 
   onMouseDown(event, handle) {
     event.preventDefault();
@@ -164,8 +165,8 @@ export class EditBoxComponent {
       let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
 
       if (this.rect !== otherRect) {
-        if (tempRect.xMax > otherRect.x && tempRect.x < otherRect.xMax &&
-          tempRect.yMax > otherRect.y && tempRect.y < otherRect.yMax) {
+        if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
+          +(tempRect.yMax.toFixed(2)) > +(otherRect.y.toFixed(2)) && +(tempRect.y.toFixed(2)) < +(otherRect.yMax.toFixed(2))) {
 
           if (direction.y > 0) {
             if (+(this.rect.yMax.toFixed(2)) <= +(otherRect.y.toFixed(2))) {
