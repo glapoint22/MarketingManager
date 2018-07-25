@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
-import { EditBoxComponent } from '../edit-box/edit-box.component';
+// import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'image-box',
