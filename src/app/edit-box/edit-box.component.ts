@@ -25,15 +25,6 @@ export class EditBoxComponent {
   public handle: string;
   public parentContainer: any;
 
-  // ngAfterViewInit() {
-  //   var interval = window.setInterval(() => {
-  //     if (this.editBox.nativeElement.clientWidth > 0) {
-  //       clearInterval(interval);
-  //       this.rect = new Rect(0, 0, this.editBox.nativeElement.clientWidth, this.editBox.nativeElement.clientHeight);
-  //     }
-  //   }, 1);
-  // }
-
   onMouseDown(event, handle) {
     event.preventDefault();
     this.isMousedown = true;

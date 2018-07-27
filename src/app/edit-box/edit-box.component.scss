@@ -4,6 +4,7 @@
     cursor: move;
     width: max-content;
     height: max-content;
+    user-select: none;
 }
 .center-handle {
     position: absolute;
