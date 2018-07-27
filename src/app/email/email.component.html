@@ -6,8 +6,9 @@
 
     <!-- <ng-template #emailTemplate> -->
     <div class="header">
-        <input #fileInput (change)="setImage($event)" type="file" style="display: none">
+        <input #fileInput (change)="setImageBox($event)" type="file" style="display: none">
         <button (click)="fileInput.click()">Image</button>
+        <button (click)="setTextBox()">Text</button>
     </div>
     <div class="emails-container" [style.height.px]="height">
         <div *ngFor="let email of emails; let i = index" class="row">

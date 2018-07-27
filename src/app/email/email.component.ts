@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ViewContainerRef, ComponentFactoryReso
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { Rect } from '../rect';
 import { DataService } from "../data.service";
+import { TextBoxComponent } from '../text-box/text-box.component';
 
 @Component({
   selector: 'email',
@@ -61,7 +62,7 @@ export class EmailComponent implements OnInit {
     this.setHeight();
   }
 
-  setImage(event) {
+  setImageBox(event) {
     if (event.target.files.length > 0) {
       let file: File = event.target.files[0];
       let formData: FormData = new FormData();
@@ -88,24 +89,37 @@ export class EmailComponent implements OnInit {
     }
   }
 
-  setEditBoxPosition(editBox, content, container) {
-    // Assign the rect
-    editBox.instance.rect = new Rect(0, 0, content.clientWidth, content.clientHeight);
+  setTextBox() {
+    let componentFactory = this.resolver.resolveComponentFactory(TextBoxComponent);
+    let container = this.emailContentContainerArray[this.currentEmailIndex];
+    let div = document.createElement('div');
+    div.innerHTML = '<span>I\'m a paragraph. Click here to add your own text and edit me. It\'s easy.</span>';
+    div.setAttribute('style', 'color: #414141');
+    div.setAttribute('contenteditable', 'true');
+    let textBox = container.createComponent(componentFactory, null, null, [[div]]);
+    textBox.instance.parentContainer = container;
+    this.setEditBoxPosition(textBox, div, container);
+     
+}
 
-    // Get an array of all rects in the container
-    let rects: Array<Rect> = container._embeddedViews.map(x => x.nodes[1].instance.rect);
+setEditBoxPosition(editBox, content, container) {
+  // Assign the rect
+  editBox.instance.rect = new Rect(0, 0, content.clientWidth, content.clientHeight);
 
-    // Order the rects
-    if (rects.length > 1) {
-      editBox.instance.rect.y = -Infinity;
-      rects = rects.sort((a: Rect, b: Rect) => {
-        if (a.yMax > b.yMax) return 1;
-        return -1;
-      });
-      editBox.instance.rect.y = rects[rects.length - 1].yMax;
-    }
+  // Get an array of all rects in the container
+  let rects: Array<Rect> = container._embeddedViews.map(x => x.nodes[1].instance.rect);
 
-    editBox.instance.setElement();
+  // Order the rects
+  if (rects.length > 1) {
+    editBox.instance.rect.y = -Infinity;
+    rects = rects.sort((a: Rect, b: Rect) => {
+      if (a.yMax > b.yMax) return 1;
+      return -1;
+    });
+    editBox.instance.rect.y = rects[rects.length - 1].yMax;
   }
+
+  editBox.instance.setElement();
+}
 
 }

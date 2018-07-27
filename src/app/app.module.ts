@@ -36,6 +36,7 @@ import { EmailGridComponent } from './email-grid/email-grid.component';
 import { EditBoxComponent } from './edit-box/edit-box.component';
 import { UniformBoxComponent } from './uniform-box/uniform-box.component';
 import { ImageBoxComponent } from './image-box/image-box.component';
+import { TextBoxComponent } from './text-box/text-box.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { ImageBoxComponent } from './image-box/image-box.component';
     EmailGridComponent,
     EditBoxComponent,
     UniformBoxComponent,
-    ImageBoxComponent
+    ImageBoxComponent,
+    TextBoxComponent
   ],
   imports: [
     BrowserModule,
@@ -73,6 +75,6 @@ import { ImageBoxComponent } from './image-box/image-box.component';
     FormsModule
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ImageBoxComponent]
+  entryComponents: [ImageBoxComponent, TextBoxComponent]
 })
 export class AppModule { }

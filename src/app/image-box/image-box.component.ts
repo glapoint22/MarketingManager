@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
-// import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'image-box',
@@ -11,6 +10,5 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
   ngOnInit() {
     this.setVisibleHandles(true, false, true, false, false, true, false, true);
-    // this.setVisibleHandles(true, true, true, true, true, true, true, true);
   }
 }
