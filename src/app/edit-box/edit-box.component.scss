@@ -1,10 +1,11 @@
 .edit-box {
     position: absolute;
     border: 1px solid #3899ec;
-    cursor: move;
+    // cursor: move;
     width: max-content;
     height: max-content;
     user-select: none;
+    box-sizing: border-box;
 }
 .center-handle {
     position: absolute;

@@ -13,6 +13,7 @@ export class EditBoxComponent {
   private isMousedown: boolean;
   private currentPosition: Vector2;
 
+  public id: string;
   public showTopLeftHandle: boolean;
   public showTopHandle: boolean;
   public showTopRightHandle: boolean;
@@ -24,6 +25,7 @@ export class EditBoxComponent {
   public rect: Rect;
   public handle: string;
   public parentContainer: any;
+  public showHandles: boolean = true;
 
   onMouseDown(event, handle) {
     event.preventDefault();
@@ -40,29 +42,19 @@ export class EditBoxComponent {
 
       switch (this.handle) {
         case 'center':
-          this.setRect(() => {
-            return new Rect(this.rect.x + deltaPosition.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height);
-          });
+          this.setCenterHandle(deltaPosition);
           break;
         case 'right':
-          this.setRect(() => {
-            return new Rect(this.rect.x, this.rect.y, this.rect.width + deltaPosition.x, this.rect.height);
-          });
+          this.setRightHandle(deltaPosition);
           break;
         case 'left':
-          this.setRect(() => {
-            return new Rect(this.rect.x + deltaPosition.x, this.rect.y, this.rect.width - deltaPosition.x, this.rect.height);
-          });
+          this.setLeftHandle(deltaPosition);
           break;
         case 'bottom':
-          this.setRect(() => {
-            return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height + deltaPosition.y);
-          });
+          this.setBottomHandle(deltaPosition);
           break;
         case 'top':
-          this.setRect(() => {
-            return new Rect(this.rect.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height - deltaPosition.y);
-          });
+          this.setTopHandle(deltaPosition);
           break;
         case 'topLeft':
           this.setTopLeftHandle(deltaPosition);
@@ -80,6 +72,35 @@ export class EditBoxComponent {
     }
   }
 
+  setCenterHandle(deltaPosition: Vector2){
+    this.setRect(() => {
+      return new Rect(this.rect.x + deltaPosition.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height);
+    });
+  }
+
+  setRightHandle(deltaPosition: Vector2){
+    this.setRect(() => {
+      return new Rect(this.rect.x, this.rect.y, this.rect.width + deltaPosition.x, this.rect.height);
+    });
+  }
+
+  setLeftHandle(deltaPosition: Vector2){
+    this.setRect(() => {
+      return new Rect(this.rect.x + deltaPosition.x, this.rect.y, this.rect.width - deltaPosition.x, this.rect.height);
+    });
+  }
+
+  setBottomHandle(deltaPosition: Vector2){
+    this.setRect(() => {
+      return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height + deltaPosition.y);
+    });
+  }
+
+  setTopHandle(deltaPosition: Vector2){
+    this.setRect(() => {
+      return new Rect(this.rect.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height - deltaPosition.y);
+    });
+  }
 
   setTopLeftHandle(deltaPosition: Vector2) {
     this.setRect(() => {
@@ -163,14 +184,14 @@ export class EditBoxComponent {
             if (+(this.rect.yMax.toFixed(2)) <= +(otherRect.y.toFixed(2))) {
               // Top of other rect
               this.setTopCollision(tempRect, otherRect);
-              if (response) tempRect = response();
+              if (response) tempRect = response(tempRect);
               continue;
             }
           } else {
             if (+(this.rect.y.toFixed(2)) >= +(otherRect.yMax.toFixed(2))) {
               // Bottom of other rect
               this.setBottomCollision(tempRect, otherRect);
-              if (response) tempRect = response();
+              if (response) tempRect = response(tempRect);
               continue;
             }
           }
@@ -178,11 +199,11 @@ export class EditBoxComponent {
           if (direction.x > 0) {
             // Left of other rect
             this.setLeftCollision(tempRect, otherRect);
-            if (response) tempRect = response();
+            if (response) tempRect = response(tempRect);
           } else {
             // Right of other rect
             this.setRightCollision(tempRect, otherRect);
-            if (response) tempRect = response();
+            if (response) tempRect = response(tempRect);
           }
         }
       }

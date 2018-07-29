@@ -1,25 +1,28 @@
-<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0">
-  <div class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
+<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (dblclick)="showHandles = false;" [style.cursor]="showHandles ? 'move' : 'text'">
+  <div *ngIf="showHandles">
+    <div class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
 
-  <div *ngIf="showTopHandle" class="horizontal-side top-side" (mousedown)="onMouseDown($event, 'top')">
-    <div class="handle horizontal-handle"></div>
+    <div *ngIf="showTopHandle" class="horizontal-side top-side" (mousedown)="onMouseDown($event, 'top')">
+      <div class="handle horizontal-handle"></div>
+    </div>
+
+    <div *ngIf="showBottomHandle" class="horizontal-side bottom-side" (mousedown)="onMouseDown($event, 'bottom')">
+      <div class="handle horizontal-handle"></div>
+    </div>
+
+    <div *ngIf="showRightHandle" class="vertical-side right-side" (mousedown)="onMouseDown($event, 'right')">
+      <div class="handle vertical-handle"></div>
+    </div>
+
+    <div *ngIf="showLeftHandle" class="vertical-side left-side" (mousedown)="onMouseDown($event, 'left')">
+      <div class="handle vertical-handle"></div>
+    </div>
+    <div *ngIf="showTopLeftHandle" class="handle top-left-handle" (mousedown)="onMouseDown($event, 'topLeft')"></div>
+    <div *ngIf="showTopRightHandle" class="handle top-right-handle" (mousedown)="onMouseDown($event, 'topRight')"></div>
+    <div *ngIf="showBottomLeftHandle" class="handle bottom-left-handle" (mousedown)="onMouseDown($event, 'bottomLeft')"></div>
+    <div *ngIf="showBottomRightHandle" class="handle bottom-right-handle" (mousedown)="onMouseDown($event, 'bottomRight')"></div>
   </div>
 
-  <div *ngIf="showBottomHandle" class="horizontal-side bottom-side" (mousedown)="onMouseDown($event, 'bottom')">
-    <div class="handle horizontal-handle"></div>
-  </div>
-
-  <div *ngIf="showRightHandle" class="vertical-side right-side" (mousedown)="onMouseDown($event, 'right')">
-    <div class="handle vertical-handle"></div>
-  </div>
-
-  <div *ngIf="showLeftHandle" class="vertical-side left-side" (mousedown)="onMouseDown($event, 'left')">
-    <div class="handle vertical-handle"></div>
-  </div>
-  <div *ngIf="showTopLeftHandle" class="handle top-left-handle" (mousedown)="onMouseDown($event, 'topLeft')"></div>
-  <div *ngIf="showTopRightHandle" class="handle top-right-handle" (mousedown)="onMouseDown($event, 'topRight')"></div>
-  <div *ngIf="showBottomLeftHandle" class="handle bottom-left-handle" (mousedown)="onMouseDown($event, 'bottomLeft')"></div>
-  <div *ngIf="showBottomRightHandle" class="handle bottom-right-handle" (mousedown)="onMouseDown($event, 'bottomRight')"></div>
 
   <ng-content></ng-content>
 </div>

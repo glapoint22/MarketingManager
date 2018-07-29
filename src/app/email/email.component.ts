@@ -82,7 +82,7 @@ export class EmailComponent implements OnInit {
           let interval = window.setInterval(() => {
             if (image.clientWidth > 0) {
               clearInterval(interval);
-              this.setEditBoxPosition(imageBox, image, container);
+              this.setEditBoxPosition(imageBox, image, new Rect(300 - (image.clientWidth * 0.5), 0, image.clientWidth, image.clientHeight));
             }
           }, 1);
         });
@@ -93,21 +93,24 @@ export class EmailComponent implements OnInit {
     let componentFactory = this.resolver.resolveComponentFactory(TextBoxComponent);
     let container = this.emailContentContainerArray[this.currentEmailIndex];
     let div = document.createElement('div');
-    div.innerHTML = '<span>I\'m a paragraph. Click here to add your own text and edit me. It\'s easy.</span>';
+    let id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+    div.setAttribute('id', id);
+    div.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
     div.setAttribute('style', 'color: #414141');
     div.setAttribute('contenteditable', 'true');
     let textBox = container.createComponent(componentFactory, null, null, [[div]]);
     textBox.instance.parentContainer = container;
-    this.setEditBoxPosition(textBox, div, container);
+    textBox.instance.id = id;
+    this.setEditBoxPosition(textBox, div, new Rect(300 - (180 * 0.5), 0, 180, 44));
      
 }
 
-setEditBoxPosition(editBox, content, container) {
+setEditBoxPosition(editBox, content, rect: Rect) {
   // Assign the rect
-  editBox.instance.rect = new Rect(0, 0, content.clientWidth, content.clientHeight);
+  editBox.instance.rect = rect;
 
-  // Get an array of all rects in the container
-  let rects: Array<Rect> = container._embeddedViews.map(x => x.nodes[1].instance.rect);
+  // Get an array of all rects from the container
+  let rects: Array<Rect> = this.emailContentContainerArray[this.currentEmailIndex]._embeddedViews.map(x => x.nodes[1].instance.rect);
 
   // Order the rects
   if (rects.length > 1) {
