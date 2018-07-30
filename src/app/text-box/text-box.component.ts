@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { Rect } from '../rect';
@@ -21,10 +21,19 @@ export class TextBoxComponent extends EditBoxComponent {
 
   setContent() {
     this.content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
-    this.content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word;');
+    this.content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
     this.content.onblur = () => {
       this.contentHasFocus = false;
       this.onBlur();
+    }
+    this.content.oninput = () => {
+      this.content.style.height = '';
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
+      }, () => {
+        this.content.style.height = this.rect.height + 'px';
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+      });
     }
   }
 
@@ -76,6 +85,16 @@ export class TextBoxComponent extends EditBoxComponent {
       super.onBlur();
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape' && this.hasFocus) {
+      let el: any = document.querySelector(':focus');
+      this.contentHasFocus = false;
+      if (el) el.blur();
     }
   }
 }
