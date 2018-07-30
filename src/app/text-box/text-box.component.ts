@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { Rect } from '../rect';
@@ -9,32 +9,43 @@ import { Rect } from '../rect';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class TextBoxComponent extends EditBoxComponent {
-  public content: HTMLElement;
   private height: number = -Infinity;
-  public contentHasFocus: boolean;
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
-    this.setContent();
+    this.isContentEditable = true;
     super.ngOnInit();
   }
 
-  setContent() {
-    this.content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
-    this.content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
-    this.content.onblur = () => {
+  initialize(parentContainer: any, content: HTMLElement) {
+    let pageWidth = parentContainer.element.nativeElement.parentElement.clientWidth,
+      textBoxWidth = 180,
+      textBoxHeight = 44;
+    
+    // Set the HTML and style
+    content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
+    content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
+    
+    // Assign the rect
+    this.rect = new Rect((pageWidth * 0.5) - (textBoxWidth * 0.5), 0, textBoxWidth, textBoxHeight);
+    
+    // Event when the content loses focus
+    content.onblur = () => {
       this.contentHasFocus = false;
       this.onBlur();
     }
-    this.content.oninput = () => {
-      this.content.style.height = '';
+    
+    // Event when content changes
+    content.oninput = () => {
+      content.style.height = '';
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, content.clientHeight);
       }, () => {
-        this.content.style.height = this.rect.height + 'px';
+        content.style.height = this.rect.height + 'px';
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
       });
     }
+    super.initialize(parentContainer, content);
   }
 
   setRightHandle(deltaPosition: Vector2) {
@@ -85,16 +96,6 @@ export class TextBoxComponent extends EditBoxComponent {
       super.onBlur();
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
-    }
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    //Escape
-    if (event.code === 'Escape' && this.hasFocus) {
-      let el: any = document.querySelector(':focus');
-      this.contentHasFocus = false;
-      if (el) el.blur();
     }
   }
 }

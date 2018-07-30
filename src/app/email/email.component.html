@@ -6,9 +6,10 @@
 
     <!-- <ng-template #emailTemplate> -->
     <div class="header">
-        <input #fileInput (change)="setImageBox($event)" type="file" style="display: none">
+        <input #fileInput (change)="createImageBox($event)" type="file" style="display: none">
         <button (click)="fileInput.click()">Image</button>
-        <button (click)="setTextBox()">Text</button>
+        <button (click)="createTextBox()">Text</button>
+        <button (click)="createButtonBox()">Button</button>
     </div>
     <div class="emails-container" [style.height.px]="height">
         <div *ngFor="let email of emails; let i = index" class="row">
@@ -19,7 +20,7 @@
             <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
             <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
                 <!-- <div [innerHTML]="email.body"></div> -->
-                <div style="width: 600px; height: 600px; background: #e4e4e4; margin: auto; position: relative;">
+                <div [style.width.px]="pageWidth" style="height: 600px; background: #e4e4e4; margin: auto; position: relative;">
                     <ng-template #emailContentContainer></ng-template>
                 </div>
 

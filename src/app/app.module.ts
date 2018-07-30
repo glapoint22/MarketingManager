@@ -37,6 +37,7 @@ import { EditBoxComponent } from './edit-box/edit-box.component';
 import { UniformBoxComponent } from './uniform-box/uniform-box.component';
 import { ImageBoxComponent } from './image-box/image-box.component';
 import { TextBoxComponent } from './text-box/text-box.component';
+import { ButtonBoxComponent } from './button-box/button-box.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { TextBoxComponent } from './text-box/text-box.component';
     EditBoxComponent,
     UniformBoxComponent,
     ImageBoxComponent,
-    TextBoxComponent
+    TextBoxComponent,
+    ButtonBoxComponent
   ],
   imports: [
     BrowserModule,
@@ -75,6 +77,6 @@ import { TextBoxComponent } from './text-box/text-box.component';
     FormsModule
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ImageBoxComponent, TextBoxComponent]
+  entryComponents: [ImageBoxComponent, TextBoxComponent, ButtonBoxComponent]
 })
 export class AppModule { }

@@ -9,7 +9,7 @@ import { Rect } from '../rect';
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
-  
+
   private isMousedown: boolean;
   private currentPosition: Vector2;
 
@@ -26,8 +26,11 @@ export class EditBoxComponent {
   public parentContainer: any;
   public hasFocus: boolean;
   public inEditMode: boolean;
+  public content: HTMLElement;
+  public contentHasFocus: boolean;
+  public isContentEditable: boolean;
 
-  ngOnInit(){
+  ngOnInit() {
     this.editBox.nativeElement.focus();
   }
 
@@ -76,31 +79,31 @@ export class EditBoxComponent {
     }
   }
 
-  setCenterHandle(deltaPosition: Vector2){
+  setCenterHandle(deltaPosition: Vector2) {
     this.setRect(() => {
       return new Rect(this.rect.x + deltaPosition.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height);
     });
   }
 
-  setRightHandle(deltaPosition: Vector2){
+  setRightHandle(deltaPosition: Vector2) {
     this.setRect(() => {
       return new Rect(this.rect.x, this.rect.y, this.rect.width + deltaPosition.x, this.rect.height);
     });
   }
 
-  setLeftHandle(deltaPosition: Vector2){
+  setLeftHandle(deltaPosition: Vector2) {
     this.setRect(() => {
       return new Rect(this.rect.x + deltaPosition.x, this.rect.y, this.rect.width - deltaPosition.x, this.rect.height);
     });
   }
 
-  setBottomHandle(deltaPosition: Vector2){
+  setBottomHandle(deltaPosition: Vector2) {
     this.setRect(() => {
       return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height + deltaPosition.y);
     });
   }
 
-  setTopHandle(deltaPosition: Vector2){
+  setTopHandle(deltaPosition: Vector2) {
     this.setRect(() => {
       return new Rect(this.rect.x, this.rect.y + deltaPosition.y, this.rect.width, this.rect.height - deltaPosition.y);
     });
@@ -155,19 +158,20 @@ export class EditBoxComponent {
   }
 
   setRect(action, response?) {
-    let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center);
+    let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center),
+      pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
 
     // Set rect with page
     if (this.handle === 'center') {
-      tempRect.x = Math.min(600 - tempRect.width, Math.max(0, tempRect.x));
+      tempRect.x = Math.min(pageWidth - tempRect.width, Math.max(0, tempRect.x));
       tempRect.y = Math.max(0, tempRect.y);
     } else {
       if (tempRect.x < 0) {
         this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
         if (response) tempRect = response();
       }
-      if (tempRect.xMax > 600) {
-        this.setLeftCollision(tempRect, new Rect(600, 0, 0, 0));
+      if (tempRect.xMax > pageWidth) {
+        this.setLeftCollision(tempRect, new Rect(pageWidth, 0, 0, 0));
         if (response) tempRect = response();
       }
       if (tempRect.y < 0) {
@@ -252,16 +256,46 @@ export class EditBoxComponent {
     }
   }
 
-  onFocus(){
+  onFocus() {
     this.hasFocus = true;
   }
 
-  onBlur(){
+  onBlur() {
     this.hasFocus = false;
     this.inEditMode = false;
   }
 
-  setEditMode(){
-    this.inEditMode = true;
+  setEditMode() {
+    if (this.isContentEditable) this.inEditMode = true;
+  }
+
+  initialize(parentContainer: any, content: HTMLElement) {
+    this.parentContainer = parentContainer;
+    this.content = content;
+
+    // Get an array of all rects from the container
+    let rects: Array<Rect> = parentContainer._embeddedViews.map(x => x.nodes[1].instance.rect);
+
+    // Order the rects so we can set the y position
+    if (rects.length > 1) {
+      this.rect.y = -Infinity;
+      rects = rects.sort((a: Rect, b: Rect) => {
+        if (a.yMax > b.yMax) return 1;
+        return -1;
+      });
+      this.rect.y = rects[rects.length - 1].yMax;
+    }
+
+    this.setElement();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape' && this.hasFocus) {
+      let el: any = document.querySelector(':focus');
+      this.contentHasFocus = false;
+      if (el) el.blur();
+    }
   }
 }
