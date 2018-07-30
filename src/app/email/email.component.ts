@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewContainerRef, ComponentFactoryResolver, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, HostListener, ViewContainerRef, ComponentFactoryResolver, ViewChildren, QueryList, ComponentFactory } from '@angular/core';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { Rect } from '../rect';
 import { DataService } from "../data.service";
@@ -13,10 +13,8 @@ export class EmailComponent implements OnInit {
   @ViewChildren('emailContentContainer', { read: ViewContainerRef }) emailContentContainer: QueryList<ViewContainerRef>;
   public height: number;
   public emails: Array<any> = [];
-  public currentEmailIndex: number = -1;
-
+  private currentEmailIndex: number = -1;
   private emailContentContainerArray: Array<any>;
-
 
   constructor(private resolver: ComponentFactoryResolver, private dataService: DataService) { }
 
@@ -25,7 +23,7 @@ export class EmailComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.emailContentContainer.changes.subscribe((x) => {
+    this.emailContentContainer.changes.subscribe((x: QueryList<ViewContainerRef>) => {
       this.emailContentContainerArray = x.toArray();
     });
   }
@@ -70,7 +68,7 @@ export class EmailComponent implements OnInit {
 
       this.dataService.post('/api/Image', formData)
         .subscribe((imageName: any) => {
-          let componentFactory = this.resolver.resolveComponentFactory(ImageBoxComponent);
+          let componentFactory: ComponentFactory<ImageBoxComponent> = this.resolver.resolveComponentFactory(ImageBoxComponent);
           let container = this.emailContentContainerArray[this.currentEmailIndex];
           let image = document.createElement('img');
           image.src = 'Images/' + imageName;
@@ -82,7 +80,7 @@ export class EmailComponent implements OnInit {
           let interval = window.setInterval(() => {
             if (image.clientWidth > 0) {
               clearInterval(interval);
-              this.setEditBoxPosition(imageBox, image, new Rect(300 - (image.clientWidth * 0.5), 0, image.clientWidth, image.clientHeight));
+              this.initEditBox(imageBox, new Rect(300 - (image.clientWidth * 0.5), 0, image.clientWidth, image.clientHeight));
             }
           }, 1);
         });
@@ -90,39 +88,34 @@ export class EmailComponent implements OnInit {
   }
 
   setTextBox() {
-    let componentFactory = this.resolver.resolveComponentFactory(TextBoxComponent);
+    let componentFactory: ComponentFactory<TextBoxComponent> = this.resolver.resolveComponentFactory(TextBoxComponent);
     let container = this.emailContentContainerArray[this.currentEmailIndex];
-    let div = document.createElement('div');
-    let id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
-    div.setAttribute('id', id);
-    div.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
-    div.setAttribute('style', 'color: #414141');
-    div.setAttribute('contenteditable', 'true');
+    let div: HTMLDivElement = document.createElement('div');
+
     let textBox = container.createComponent(componentFactory, null, null, [[div]]);
     textBox.instance.parentContainer = container;
-    textBox.instance.id = id;
-    this.setEditBoxPosition(textBox, div, new Rect(300 - (180 * 0.5), 0, 180, 44));
-     
-}
-
-setEditBoxPosition(editBox, content, rect: Rect) {
-  // Assign the rect
-  editBox.instance.rect = rect;
-
-  // Get an array of all rects from the container
-  let rects: Array<Rect> = this.emailContentContainerArray[this.currentEmailIndex]._embeddedViews.map(x => x.nodes[1].instance.rect);
-
-  // Order the rects
-  if (rects.length > 1) {
-    editBox.instance.rect.y = -Infinity;
-    rects = rects.sort((a: Rect, b: Rect) => {
-      if (a.yMax > b.yMax) return 1;
-      return -1;
-    });
-    editBox.instance.rect.y = rects[rects.length - 1].yMax;
+    textBox.instance.content = div;
+    this.initEditBox(textBox, new Rect(300 - (180 * 0.5), 0, 180, 44));
   }
 
-  editBox.instance.setElement();
-}
+  initEditBox(editBox, rect: Rect) {
+    // Assign the rect
+    editBox.instance.rect = rect;
+
+    // Get an array of all rects from the container
+    let rects: Array<Rect> = this.emailContentContainerArray[this.currentEmailIndex]._embeddedViews.map(x => x.nodes[1].instance.rect);
+
+    // Order the rects so we can set the y position
+    if (rects.length > 1) {
+      editBox.instance.rect.y = -Infinity;
+      rects = rects.sort((a: Rect, b: Rect) => {
+        if (a.yMax > b.yMax) return 1;
+        return -1;
+      });
+      editBox.instance.rect.y = rects[rects.length - 1].yMax;
+    }
+
+    editBox.instance.setElement();
+  }
 
 }

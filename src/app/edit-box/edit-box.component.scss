@@ -1,11 +1,12 @@
 .edit-box {
     position: absolute;
-    border: 1px solid #3899ec;
-    // cursor: move;
+    border: 1px solid #00000000;
+    cursor: move;
     width: max-content;
     height: max-content;
     user-select: none;
     box-sizing: border-box;
+    outline: none;
 }
 .center-handle {
     position: absolute;
@@ -73,4 +74,14 @@
 }
 .bottom-side {
     bottom: -6px;
+}
+.edit-box:hover:not(:focus){
+    border-color: #32c90080;
+}
+
+.edit-box:focus, .edit-box:focus-within{
+    border-color: #3899ec;
+}
+.edit-mode {
+    border-color: #ff000080 !important;
 }

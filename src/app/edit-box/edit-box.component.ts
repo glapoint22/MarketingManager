@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 
@@ -13,7 +13,6 @@ export class EditBoxComponent {
   private isMousedown: boolean;
   private currentPosition: Vector2;
 
-  public id: string;
   public showTopLeftHandle: boolean;
   public showTopHandle: boolean;
   public showTopRightHandle: boolean;
@@ -25,7 +24,12 @@ export class EditBoxComponent {
   public rect: Rect;
   public handle: string;
   public parentContainer: any;
-  public showHandles: boolean = true;
+  public hasFocus: boolean;
+  public inEditMode: boolean;
+
+  ngOnInit(){
+    this.editBox.nativeElement.focus();
+  }
 
   onMouseDown(event, handle) {
     event.preventDefault();
@@ -246,5 +250,18 @@ export class EditBoxComponent {
       tempRect.x = otherRect.xMax;
       tempRect.width -= diff;
     }
+  }
+
+  onFocus(){
+    this.hasFocus = true;
+  }
+
+  onBlur(){
+    this.hasFocus = false;
+    this.inEditMode = false;
+  }
+
+  setEditMode(){
+    this.inEditMode = true;
   }
 }

@@ -9,12 +9,23 @@ import { Rect } from '../rect';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class TextBoxComponent extends EditBoxComponent {
-  private content: any;
+  public content: HTMLElement;
   private height: number = -Infinity;
+  public contentHasFocus: boolean;
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
-    this.content = document.getElementById(this.id);
+    this.setContent();
+    super.ngOnInit();
+  }
+
+  setContent() {
+    this.content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
+    this.content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word;');
+    this.content.onblur = () => {
+      this.contentHasFocus = false;
+      this.onBlur();
+    }
   }
 
   setRightHandle(deltaPosition: Vector2) {
@@ -42,8 +53,29 @@ export class TextBoxComponent extends EditBoxComponent {
       this.setRect(() => {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
       });
-    }else{
+    } else {
       this.height = this.rect.height;
+    }
+  }
+
+  setEditMode() {
+    this.contentHasFocus = true;
+    this.content.setAttribute('contenteditable', 'true');
+    let range = document.createRange();
+    range.selectNodeContents(this.content);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+
+    this.content.style.setProperty('cursor', 'text');
+    super.setEditMode();
+
+  }
+
+  onBlur() {
+    if (!this.contentHasFocus) {
+      super.onBlur();
+      this.content.setAttribute('contenteditable', 'false');
+      this.content.style.setProperty('cursor', '');
     }
   }
 }
