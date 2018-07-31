@@ -11,7 +11,6 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
   ngOnInit() {
     this.setVisibleHandles(true, false, true, false, false, true, false, true);
-    this.isContentEditable = false;
   }
 
   initialize(parentContainer: any, content: HTMLElement) {
@@ -27,4 +26,6 @@ export class ImageBoxComponent extends UniformBoxComponent {
       }
     }, 1);
   }
+
+  setEditMode() { }
 }

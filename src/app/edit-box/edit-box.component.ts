@@ -28,7 +28,7 @@ export class EditBoxComponent {
   public inEditMode: boolean;
   public content: HTMLElement;
   public contentHasFocus: boolean;
-  public isContentEditable: boolean;
+
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -261,12 +261,26 @@ export class EditBoxComponent {
   }
 
   onBlur() {
-    this.hasFocus = false;
-    this.inEditMode = false;
+    if (!this.contentHasFocus) {
+      this.hasFocus = false;
+      if (this.content.getAttribute('contenteditable')) {
+        this.inEditMode = false;
+        this.content.setAttribute('contenteditable', 'false');
+        this.content.style.setProperty('cursor', '');
+      }
+    }
   }
 
   setEditMode() {
-    if (this.isContentEditable) this.inEditMode = true;
+    this.inEditMode = true;
+    this.contentHasFocus = true;
+    this.content.setAttribute('contenteditable', 'true');
+    let range = document.createRange();
+    range.selectNodeContents(this.content);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+
+    this.content.style.setProperty('cursor', 'text');
   }
 
   initialize(parentContainer: any, content: HTMLElement) {
@@ -284,6 +298,12 @@ export class EditBoxComponent {
         return -1;
       });
       this.rect.y = rects[rects.length - 1].yMax;
+    }
+
+    // Event when the content loses focus
+    content.onblur = () => {
+      this.contentHasFocus = false;
+      this.onBlur();
     }
 
     this.setElement();

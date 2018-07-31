@@ -11,7 +11,6 @@ export class ButtonBoxComponent extends UniformBoxComponent{
 
   ngOnInit() {
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
-    this.isContentEditable = true;
   }
 
   initialize(parentContainer: any, content: HTMLElement) {
@@ -21,12 +20,11 @@ export class ButtonBoxComponent extends UniformBoxComponent{
     
     // Set the style
     content.innerHTML = '<span>Button</span>';
-    content.setAttribute('style', 'text-align: center; color: white; background: #c1c1c1; width: ' +  buttonWidth + 'px; height: ' + buttonHeight + 'px');
+    content.setAttribute('style', 'outline: none; color: white; background: #c1c1c1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden;');
     
     // Assign the rect
     this.rect = new Rect((pageWidth * 0.5) - (buttonWidth * 0.5), 0, buttonWidth, buttonHeight);
     
     super.initialize(parentContainer, content);
   }
-
 }

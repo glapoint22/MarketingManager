@@ -13,7 +13,6 @@ export class TextBoxComponent extends EditBoxComponent {
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
-    this.isContentEditable = true;
     super.ngOnInit();
   }
 
@@ -28,12 +27,6 @@ export class TextBoxComponent extends EditBoxComponent {
     
     // Assign the rect
     this.rect = new Rect((pageWidth * 0.5) - (textBoxWidth * 0.5), 0, textBoxWidth, textBoxHeight);
-    
-    // Event when the content loses focus
-    content.onblur = () => {
-      this.contentHasFocus = false;
-      this.onBlur();
-    }
     
     // Event when content changes
     content.oninput = () => {
@@ -75,27 +68,6 @@ export class TextBoxComponent extends EditBoxComponent {
       });
     } else {
       this.height = this.rect.height;
-    }
-  }
-
-  setEditMode() {
-    this.contentHasFocus = true;
-    this.content.setAttribute('contenteditable', 'true');
-    let range = document.createRange();
-    range.selectNodeContents(this.content);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-
-    this.content.style.setProperty('cursor', 'text');
-    super.setEditMode();
-
-  }
-
-  onBlur() {
-    if (!this.contentHasFocus) {
-      super.onBlur();
-      this.content.setAttribute('contenteditable', 'false');
-      this.content.style.setProperty('cursor', '');
     }
   }
 }
