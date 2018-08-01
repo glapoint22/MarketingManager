@@ -19,7 +19,12 @@ export class ContainerBoxComponent extends EditBoxComponent {
       containerHeight = 250;
     
     // Set the style
-    content.setAttribute('style', 'background-color: blue; width: 100%; height: 100%');
+    // content.setAttribute('style', 'background-color: blue; width: 100%; height: 100%');
+
+    content.style.width = '100%';
+    content.style.height = '100%';
+    content.style.backgroundColor = 'red';
+    
     
     // Assign the rect
     this.rect = new Rect((pageWidth * 0.5) - (containerWidth * 0.5), 0, containerWidth, containerHeight);

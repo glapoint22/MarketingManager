@@ -1,4 +1,135 @@
 <div class="container">
+    <div style="width: 320px;height: 100%;background: #151515;float: right;max-width: 1600px;">
+        <div resizable class="divider"></div>
+        <editor [name]="'Properties'">
+            <div style="width: 100%; height: 22px; background: #2d2d2d; font-size: 14px">
+
+                <span style="color: #9a9a9a;margin-right: 12px;float: right;">
+                    <i class="fas fa-trash-alt"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-right: 12px;float: right;">
+                    <i class="fas fa-copy"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-right: 12px;float: right;">
+                    <i class="fas fa-paste"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-right: 12px; float: right;">
+                    <i class="fas fa-link"></i>
+                </span>
+
+            </div>
+
+
+            <div style="width: 100%; height: 22px; background: #282828; font-size: 14px; clear: both;">
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-bold"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-italic"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-underline"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-font"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-fill"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-align-left"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-align-center"></i>
+                </span>
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-align-right"></i>
+                </span>
+
+
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-list-ul"></i>
+                </span>
+                <span style="color: #9a9a9a;margin-left: 12px; ">
+                    <i class="fas fa-list-ol"></i>
+                </span>
+            </div>
+
+            <div style="width: 100%;
+            text-align: center;
+            margin-top: 28px;color: #d2d2d2;  ">
+                
+                    <div style="color: white; margin-top: 5px; margin-bottom: 5px">Position</div>
+                    <span style="margin-right: 10px; font-size: 14px;">X:</span><input style="display: inline-block;
+                    width: 35px;
+                    text-align: center;
+                    border: none;
+                    border-radius: 5px;
+                    outline: none;
+                    color: #d2d2d2;
+                    font-size: 14px;
+                    background: #1e1e1e;" value="999">
+                    <br>
+
+                    <span style="margin-right: 10px; font-size: 14px;">Y:</span><input style="display: inline-block;
+                    width: 35px;
+                    text-align: center;
+                    border: none;
+                    border-radius: 5px;
+                    outline: none;
+                    color: #d2d2d2;
+                    font-size: 14px;
+                    background: #1e1e1e;" value="999">
+                    
+
+                    <div style="color: white; margin-top: 5px; margin-bottom: 5px">Size</div>
+                    <span style="margin-right: 10px; font-size: 14px;">W:</span><input style="display: inline-block;
+                    width: 35px;
+                    text-align: center;
+                    border: none;
+                    border-radius: 5px;
+                    outline: none;
+                    color: #d2d2d2;
+                    font-size: 14px;
+                    background: #1e1e1e;" value="999">
+                    <br>
+
+                    <span style="margin-right: 10px; font-size: 14px;">H:</span><input style="display: inline-block;
+                    width: 35px;
+                    text-align: center;
+                    border: none;
+                    border-radius: 5px;
+                    outline: none;
+                    color: #d2d2d2;
+                    font-size: 14px;
+                    background: #1e1e1e;" value="999">
+                    
+                
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+        </editor>
+    </div>
     <div resizable class="divider"></div>
     <!-- <div class="no-content" *ngIf="emails.length === 0 || (currentItem && !currentItem.isSelected) else emailTemplate">
         No Content
@@ -21,7 +152,7 @@
             <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
             <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0">
                 <!-- <div [innerHTML]="email.body"></div> -->
-                <div [style.width.px]="pageWidth" style="height: 600px; background: #e4e4e4; margin: auto; position: relative;">
+                <div [style.width.px]="pageWidth" style="height: 600px; background: #e4e4e4; margin: auto; position: relative; top: 10px">
                     <ng-template #emailContentContainer></ng-template>
                 </div>
 
