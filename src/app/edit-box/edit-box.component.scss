@@ -75,17 +75,17 @@
     bottom: -6px;
 }
 
-.edit-box:hover:not(:focus), .edit-box:focus, .edit-box:focus-within, .edit-mode {
+.edit-box:hover:not(.selected), .selected, .edit-mode {
     outline: 1px solid;
 }
 
-.edit-box:hover:not(:focus){
-    outline-color: #32c90080;
-}
-
-.edit-box:focus, .edit-box:focus-within{
+.selected {
     outline-color: #3899ec;
     z-index: 1;
+}
+
+.edit-box:hover:not(.selected){
+    outline-color: #32c90080;
 }
 .edit-mode {
     outline-color: #ff000080 !important;

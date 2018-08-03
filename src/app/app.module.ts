@@ -39,6 +39,7 @@ import { ImageBoxComponent } from './image-box/image-box.component';
 import { TextBoxComponent } from './text-box/text-box.component';
 import { ButtonBoxComponent } from './button-box/button-box.component';
 import { ContainerBoxComponent } from './container-box/container-box.component';
+import { PropertiesComponent } from './properties/properties.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { ContainerBoxComponent } from './container-box/container-box.component';
     ImageBoxComponent,
     TextBoxComponent,
     ButtonBoxComponent,
-    ContainerBoxComponent
+    ContainerBoxComponent,
+    PropertiesComponent
   ],
   imports: [
     BrowserModule,

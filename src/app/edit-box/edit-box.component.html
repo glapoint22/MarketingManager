@@ -1,5 +1,5 @@
-<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (dblclick)="setEditMode()" (focus)="onFocus()" (blur)="onBlur()" tabindex="0" [ngClass]="{'edit-mode': inEditMode}">
-  <div *ngIf="hasFocus && !inEditMode">
+<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (mousedown)="setSelection(); $event.stopPropagation()" (dblclick)="setEditMode()" tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}">
+  <div *ngIf="isSelected && !inEditMode">
     <div class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
 
     <div *ngIf="showTopHandle" class="horizontal-side top-side" (mousedown)="onMouseDown($event, 'top')">

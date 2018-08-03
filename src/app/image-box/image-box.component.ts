@@ -16,12 +16,14 @@ export class ImageBoxComponent extends UniformBoxComponent {
   initialize(parentContainer: any, content: HTMLElement) {
     let pageWidth = parentContainer.element.nativeElement.parentElement.clientWidth;
 
-    content.setAttribute('style', 'width: 100%; height: 100%; display: block; max-width: ' + pageWidth + 'px;');
-
     let interval = window.setInterval(() => {
       if (content.clientWidth > 0) {
         clearInterval(interval);
+        content.setAttribute('style', 'display: block; max-width: ' + pageWidth + 'px;');
         this.rect = new Rect((pageWidth * 0.5) - (content.clientWidth * 0.5), 0, content.clientWidth, content.clientHeight);
+        content.style.width = '100%';
+        content.style.height = '100%';
+        
         super.initialize(parentContainer, content);
       }
     }, 1);

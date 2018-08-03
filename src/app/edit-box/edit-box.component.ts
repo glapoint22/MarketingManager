@@ -24,11 +24,9 @@ export class EditBoxComponent {
   public rect: Rect;
   public handle: string;
   public parentContainer: any;
-  public hasFocus: boolean;
   public inEditMode: boolean;
   public content: HTMLElement;
-  public contentHasFocus: boolean;
-
+  public isSelected: boolean;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -39,6 +37,7 @@ export class EditBoxComponent {
     this.isMousedown = true;
     this.handle = handle;
     this.currentPosition = new Vector2(event.clientX, event.clientY);
+    this.setSelection();
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -256,24 +255,22 @@ export class EditBoxComponent {
     }
   }
 
-  onFocus() {
-    this.hasFocus = true;
-  }
-
-  onBlur() {
-    if (!this.contentHasFocus) {
-      this.hasFocus = false;
-      if (this.content.getAttribute('contenteditable')) {
-        this.inEditMode = false;
-        this.content.setAttribute('contenteditable', 'false');
-        this.content.style.setProperty('cursor', '');
+  setSelection() {
+    this.isSelected = true;
+    if (this.parentContainer.currentEditBox && this.parentContainer.currentEditBox !== this) {
+      this.parentContainer.currentEditBox.isSelected = false;
+      if (this.parentContainer.currentEditBox.content.getAttribute('contenteditable')) {
+        this.parentContainer.currentEditBox.inEditMode = false;
+        this.parentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
+        this.parentContainer.currentEditBox.content.style.setProperty('cursor', '');
       }
     }
+
+    this.parentContainer.currentEditBox = this;
   }
 
   setEditMode() {
     this.inEditMode = true;
-    this.contentHasFocus = true;
     this.content.setAttribute('contenteditable', 'true');
     let range = document.createRange();
     range.selectNodeContents(this.content);
@@ -299,23 +296,24 @@ export class EditBoxComponent {
       });
       this.rect.y = rects[rects.length - 1].yMax;
     }
-
-    // Event when the content loses focus
-    content.onblur = () => {
-      this.contentHasFocus = false;
-      this.onBlur();
-    }
-
+    this.setSelection();
     this.setElement();
   }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
-    if (event.code === 'Escape' && this.hasFocus) {
-      let el: any = document.querySelector(':focus');
-      this.contentHasFocus = false;
-      if (el) el.blur();
+    if (event.code === 'Escape') {
+      this.unSelect();
+    }
+  }
+
+  unSelect() {
+    this.isSelected = false;
+    if (this.content.getAttribute('contenteditable')) {
+      this.inEditMode = false;
+      this.content.setAttribute('contenteditable', 'false');
+      this.content.style.setProperty('cursor', '');
     }
   }
 }
