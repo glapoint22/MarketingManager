@@ -280,22 +280,27 @@ export class EditBoxComponent {
     this.content.style.setProperty('cursor', 'text');
   }
 
-  initialize(parentContainer: any, content: HTMLElement) {
-    this.parentContainer = parentContainer;
+  initialize(content: HTMLElement, size?: Vector2) {
+    let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+    let y = 0;
+
     this.content = content;
+    this.rect = new Rect(0, -Infinity, 0, 0);
 
     // Get an array of all rects from the container
-    let rects: Array<Rect> = parentContainer._embeddedViews.map(x => x.nodes[1].instance.rect);
+    let rects: Array<Rect> = this.parentContainer._embeddedViews.map(x => x.nodes[1].instance.rect);
 
     // Order the rects so we can set the y position
     if (rects.length > 1) {
-      this.rect.y = -Infinity;
       rects = rects.sort((a: Rect, b: Rect) => {
         if (a.yMax > b.yMax) return 1;
         return -1;
       });
-      this.rect.y = rects[rects.length - 1].yMax;
+      y = rects[rects.length - 1].yMax;
     }
+
+    this.rect = new Rect((pageWidth * 0.5) - (size.x * 0.5), y, size.x, size.y);
+
     this.setSelection();
     this.setElement();
   }

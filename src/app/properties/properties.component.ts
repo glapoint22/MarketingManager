@@ -1,4 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
+import { TextBoxComponent } from '../text-box/text-box.component';
+import { ImageBoxComponent } from '../image-box/image-box.component';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { ButtonBoxComponent } from '../button-box/button-box.component';
+import { ContainerBoxComponent } from '../container-box/container-box.component';
+import { Rect } from '../rect';
+import { Vector2 } from '../vector2';
 
 @Component({
   selector: 'properties',
@@ -7,8 +14,9 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class PropertiesComponent implements OnInit {
   @Input() currentContainer;
+  private copied: any = {};
 
-  constructor() { }
+  constructor(private resolver: ComponentFactoryResolver) { }
 
   ngOnInit() {
   }
@@ -21,4 +29,38 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
+  copy() {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+      if (this.currentContainer.currentEditBox instanceof TextBoxComponent) {
+        this.copied.component = TextBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ImageBoxComponent) {
+        this.copied.component = ImageBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ButtonBoxComponent) {
+        this.copied.component = ButtonBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ContainerBoxComponent) {
+        this.copied.component = ContainerBoxComponent;
+      }
+
+      this.copied.nodeName = this.currentContainer.currentEditBox.content.nodeName;
+      this.copied.style = this.currentContainer.currentEditBox.content.getAttribute('style');
+      this.copied.innerHTML = this.currentContainer.currentEditBox.content.innerHTML;
+      this.copied.rect = JSON.parse(JSON.stringify(this.currentContainer.currentEditBox.rect));
+      this.copied.src = this.currentContainer.currentEditBox.content.src;
+    }
+  }
+
+  paste() {
+    if (this.copied) {
+      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component);
+      let content = document.createElement(this.copied.nodeName);
+      content.setAttribute('style', this.copied.style);
+      content.innerHTML = this.copied.innerHTML;
+      content.src = this.copied.src;
+
+      let box = this.currentContainer.createComponent(componentFactory, null, null, [[content]]);
+
+      box.instance.parentContainer = this.currentContainer;
+      box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
+    }
+  }
 }

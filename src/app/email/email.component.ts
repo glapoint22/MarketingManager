@@ -88,7 +88,8 @@ export class EmailComponent implements OnInit {
       content = document.createElement(contentType),
       box = container.createComponent(componentFactory, null, null, [[content]]);
 
-    box.instance.initialize(container, content);
+    box.instance.parentContainer = container;
+    box.instance.initialize(content);
     return content;
   }
 }

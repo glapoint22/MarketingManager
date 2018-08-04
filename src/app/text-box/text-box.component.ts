@@ -13,32 +13,30 @@ export class TextBoxComponent extends EditBoxComponent {
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
-    super.ngOnInit();
-  }
 
-  initialize(parentContainer: any, content: HTMLElement) {
-    let pageWidth = parentContainer.element.nativeElement.parentElement.clientWidth,
-      textBoxWidth = 180,
-      textBoxHeight = 44;
-    
-    // Set the HTML and style
-    content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
-    content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
-    
-    // Assign the rect
-    this.rect = new Rect((pageWidth * 0.5) - (textBoxWidth * 0.5), 0, textBoxWidth, textBoxHeight);
-    
     // Event when content changes
-    content.oninput = () => {
-      content.style.height = '';
+    this.content.oninput = () => {
+      this.content.style.height = '';
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, content.clientHeight);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
       }, () => {
-        content.style.height = this.rect.height + 'px';
+        this.content.style.height = this.rect.height + 'px';
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
       });
     }
-    super.initialize(parentContainer, content);
+
+    super.ngOnInit();
+  }
+
+  initialize(content: HTMLElement, size?: Vector2) {
+    if (!size) {
+      // Set the HTML and style
+      content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
+      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
+      size = new Vector2(180, 44);
+    }
+
+    super.initialize(content, size);
   }
 
   setRightHandle(deltaPosition: Vector2) {
