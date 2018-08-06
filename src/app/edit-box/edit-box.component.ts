@@ -274,8 +274,9 @@ export class EditBoxComponent {
     this.content.setAttribute('contenteditable', 'true');
     let range = document.createRange();
     range.selectNodeContents(this.content);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
+    let selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
 
     this.content.style.setProperty('cursor', 'text');
   }

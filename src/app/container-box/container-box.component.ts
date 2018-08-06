@@ -18,7 +18,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       // Set the HTML and style
       content.style.width = '100%';
       content.style.height = '100%';
-      content.style.backgroundColor = 'red';
+      content.style.backgroundColor = '#767676';
       size = new Vector2(560, 250);
     }
 
