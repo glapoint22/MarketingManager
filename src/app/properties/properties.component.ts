@@ -81,14 +81,41 @@ export class PropertiesComponent implements OnInit {
     let contents;
 
 
-    contents = range.extractContents();
+    // contents = range.extractContents();
 
-    if (contents.childNodes.length === 1) {
+
+
+
+
+
+
+
+    // if (Array.from(contents.childNodes).every((x: any) => x.nodeType !== 1)) {
+    if (selection.focusNode.nodeType === 3 && selection.focusNode.parentNode === this.currentContainer.currentEditBox.content.firstChild) {
       let span = document.createElement('SPAN');
-      span.appendChild(contents);
+      span.appendChild(range.extractContents());
       span.style.fontWeight = 'bold';
       contents = span;
     } else {
+      if (selection.focusNode.nodeType === 3 && range.cloneContents().childNodes.length === 1) {
+        let anchorNode = this.currentContainer.currentEditBox.content.firstChild;
+        let anchorOffset = Array.from(anchorNode.childNodes).findIndex(x => x === selection.focusNode.parentNode) + 1;
+        let focusNode = selection.focusNode.parentNode;
+        let focusOffset = 0;
+        selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
+        range = selection.getRangeAt(0);
+      }
+
+      contents = range.extractContents();
+
+        for (let i = 0; i < contents.childNodes.length; i++) {
+          if (contents.childNodes[i].length === 0) {
+            contents.removeChild(contents.childNodes[i]);
+            i--;
+          }
+        }
+
+
       if (Array.from(contents.childNodes).every((x: any) => x.style && x.style.fontWeight.length > 0)) {
         // take off style
         for (let i = 0; i < contents.childNodes.length; i++) {
@@ -109,6 +136,9 @@ export class PropertiesComponent implements OnInit {
           contents.childNodes[i].style.fontWeight = 'bold';
         }
       }
+
+
+
     }
     range.insertNode(contents);
 
