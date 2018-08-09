@@ -75,13 +75,43 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
+  getChild(parent) {
+    for (let i = 0; i < parent.children.length; i++) {
+      let child = parent.children[i];
+      if (child.style && child.style.fontWeight.length > 0) {
+        return child;
+      }
+      child = this.getChild(child);
+      if (child) return child;
+      continue;
+    }
+
+    return null;
+  }
+
+
+
   setBold() {
     let selection = document.getSelection();
-    let range = selection.getRangeAt(0);
+    let range: any = selection.getRangeAt(0);
     let contents;
 
 
-    // contents = range.extractContents();
+
+    // if (range.commonAncestorContainer.nodeType === 1 && range.commonAncestorContainer.getAttribute('style') === null) {
+    //   console.log(this.getChild(range.cloneContents()));
+    // } else {
+    //   let parent = this.getParent(range.startContainer);
+    //   if (!parent && range.startContainer !== range.endContainer) parent = this.getParent(range.endContainer);
+    //   console.log(parent);
+    // }
+
+
+    let foo = this.getChild(range.cloneContents());
+    if(!foo)foo = this.getParent(range.startContainer);
+    if(!foo)foo = this.getParent(range.endContainer);
+
+    console.log(foo);
 
 
 
@@ -90,57 +120,110 @@ export class PropertiesComponent implements OnInit {
 
 
 
-    // if (Array.from(contents.childNodes).every((x: any) => x.nodeType !== 1)) {
-    if (selection.focusNode.nodeType === 3 && selection.focusNode.parentNode === this.currentContainer.currentEditBox.content.firstChild) {
-      let span = document.createElement('SPAN');
-      span.appendChild(range.extractContents());
-      span.style.fontWeight = 'bold';
-      contents = span;
-    } else {
-      if (selection.focusNode.nodeType === 3 && range.cloneContents().childNodes.length === 1) {
-        let anchorNode = this.currentContainer.currentEditBox.content.firstChild;
-        let anchorOffset = Array.from(anchorNode.childNodes).findIndex(x => x === selection.focusNode.parentNode) + 1;
-        let focusNode = selection.focusNode.parentNode;
-        let focusOffset = 0;
-        selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
-        range = selection.getRangeAt(0);
+
+    // if (selection.focusNode.nodeType === 3 && selection.focusNode.parentNode === this.currentContainer.currentEditBox.content.firstChild) {
+    //   let span = document.createElement('SPAN');
+    //   span.appendChild(range.extractContents());
+    //   span.style.fontWeight = 'bold';
+    //   contents = span;
+    // } else {
+    //   if (selection.focusNode.nodeType === 3 && range.cloneContents().childNodes.length === 1) {
+    //     let anchorNode = this.currentContainer.currentEditBox.content.firstChild;
+    //     let anchorOffset = Array.from(anchorNode.childNodes).findIndex(x => x === selection.focusNode.parentNode) + 1;
+    //     let focusNode = selection.focusNode.parentNode;
+    //     let focusOffset = 0;
+    //     selection.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
+    //     range = selection.getRangeAt(0);
+    //   }
+
+    //   contents = range.extractContents();
+
+    //   for (let i = 0; i < contents.childNodes.length; i++) {
+    //     if (contents.childNodes[i].length === 0) {
+    //       contents.removeChild(contents.childNodes[i]);
+    //       i--;
+    //     }
+    //   }
+
+
+    //   if (Array.from(contents.childNodes).every((x: any) => x.style && x.style.fontWeight.length > 0)) {
+    //     // take off style
+    //     for (let i = 0; i < contents.childNodes.length; i++) {
+    //       contents.childNodes[i].style.fontWeight = null;
+    //       if (contents.childNodes[i].style.length === 0) {
+    //         contents.replaceChild(document.createTextNode(contents.childNodes[i].innerText), contents.childNodes[i]);
+    //         // i--;
+    //       }
+    //     }
+    //   } else {
+    //     // apply style
+    //     for (let i = 0; i < contents.childNodes.length; i++) {
+    //       if (contents.childNodes[i].nodeType === 3) {
+    //         let span = document.createElement('SPAN');
+    //         span.appendChild(contents.childNodes[i]);
+    //         contents.insertBefore(span, contents.childNodes[i]);
+    //       }
+    //       contents.childNodes[i].style.fontWeight = 'bold';
+    //     }
+    //   }
+
+
+
+    // }
+    // range.insertNode(contents);
+
+    // let nodeList = this.currentContainer.currentEditBox.content.firstChild.childNodes;
+    // this.clean(nodeList);
+  }
+
+  getParent(child) {
+    while (child.parentElement.getAttribute('style')) {
+      if (child.parentElement.style.fontWeight.length > 0) {
+        return child.parentElement;
+      }
+      child = child.parentElement;
+    }
+
+    return null;
+  }
+
+
+
+
+  clean(nodeList) {
+    for (let i = 0; i < nodeList.length; i++) {
+      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+        // this.clean(nodeList);
       }
 
-      contents = range.extractContents();
-
-        for (let i = 0; i < contents.childNodes.length; i++) {
-          if (contents.childNodes[i].length === 0) {
-            contents.removeChild(contents.childNodes[i]);
-            i--;
-          }
-        }
-
-
-      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style.fontWeight.length > 0)) {
-        // take off style
-        for (let i = 0; i < contents.childNodes.length; i++) {
-          contents.childNodes[i].style.fontWeight = null;
-          if (contents.childNodes[i].style.length === 0) {
-            contents.replaceChild(document.createTextNode(contents.childNodes[i].innerText), contents.childNodes[i]);
-            // i--;
-          }
-        }
-      } else {
-        // apply style
-        for (let i = 0; i < contents.childNodes.length; i++) {
-          if (contents.childNodes[i].nodeType === 3) {
-            let span = document.createElement('SPAN');
-            span.appendChild(contents.childNodes[i]);
-            contents.insertBefore(span, contents.childNodes[i]);
-          }
-          contents.childNodes[i].style.fontWeight = 'bold';
-        }
+      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+        // this.clean(nodeList);
       }
 
+      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
+        nodeList[i].appendData(nodeList[i + 1].data);
+        nodeList[i + 1].remove();
+        i = -1;
+        continue;
+        // this.clean(nodeList);
+      }
 
+      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style')) {
+        nodeList[i].innerText += nodeList[i + 1].innerText;
+        nodeList[i + 1].remove();
+        // this.clean(nodeList);
+        i = -1;
+        continue;
+      }
 
     }
-    range.insertNode(contents);
-
   }
+
+
 }
