@@ -75,44 +75,90 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-  getChild(parent) {
+  childHasStyle(parent, style): boolean {
     for (let i = 0; i < parent.children.length; i++) {
       let child = parent.children[i];
-      if (child.style && child.style.fontWeight.length > 0) {
-        return child;
+      if (child.style && child.style[style].length > 0) {
+        return true;
       }
-      child = this.getChild(child);
-      if (child) return child;
+      child = this.childHasStyle(child, style);
+      if (child) return true;
       continue;
     }
+    return false;
+  }
 
-    return null;
+  parentHasStyle(child, style): boolean {
+    while (child.parentElement.getAttribute('style')) {
+      if (child.parentElement.style[style].length > 0) {
+        return true;
+      }
+      child = child.parentElement;
+    }
+    return false;
+  }
+
+  selectionHasStyle(style, range) {
+    let found;
+
+    if (range.commonAncestorContainer.nodeType === 1 && range.commonAncestorContainer.getAttribute('style') === null) {
+      found = this.childHasStyle(range.cloneContents(), style);
+    } else {
+      found = this.parentHasStyle(range.startContainer, style);
+      if (!found && range.startContainer !== range.endContainer) found = this.parentHasStyle(range.endContainer, style);
+      if (!found) found = this.childHasStyle(range.cloneContents(), style);
+    }
+
+    return found;
   }
 
 
 
-  setBold() {
+  setStyle(style, styleValue) {
     let selection = document.getSelection();
     let range: any = selection.getRangeAt(0);
     let contents;
 
+    if (this.selectionHasStyle(style, range)) {
+      if (range.startContainer === range.endContainer) {
 
+        // Whole text is selected
+        if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
+          contents = range.cloneContents();
+          range.startContainer.parentElement.remove();
+          range.insertNode(contents);
+        }
 
-    // if (range.commonAncestorContainer.nodeType === 1 && range.commonAncestorContainer.getAttribute('style') === null) {
-    //   console.log(this.getChild(range.cloneContents()));
-    // } else {
-    //   let parent = this.getParent(range.startContainer);
-    //   if (!parent && range.startContainer !== range.endContainer) parent = this.getParent(range.endContainer);
-    //   console.log(parent);
-    // }
+        // Start text is selected
+        if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
+          contents = range.extractContents();
 
+          let index = Array.from(range.startContainer.parentElement.parentElement.childNodes).findIndex(x => x === range.startContainer.parentElement);
+          selection.setPosition(range.startContainer.parentElement.parentElement, index);
+          range = selection.getRangeAt(0);
+          range.insertNode(contents);
+        }
 
-    let foo = this.getChild(range.cloneContents());
-    if(!foo)foo = this.getParent(range.startContainer);
-    if(!foo)foo = this.getParent(range.endContainer);
+        // Mid text is selected
+        if (range.startOffset > 0 && range.endOffset < range.startContainer.length) {
+          let startString = range.startContainer.substringData(0, range.startOffset),
+            endString = range.endContainer.substringData(range.endOffset, range.endContainer.length),
+            startSpan = document.createElement('span'), endSpan = document.createElement('span');
 
-    console.log(foo);
+          startSpan.style[style] = endSpan.style[style] = styleValue;
+          startSpan.appendChild(document.createTextNode(startString));
+          endSpan.appendChild(document.createTextNode(endString));
+          contents = range.cloneContents();
+          range.startContainer.parentElement.remove();
+          contents.insertBefore(startSpan, contents.childNodes[0]);
+          contents.insertBefore(endSpan, contents.childNodes[1].nextSibling);
+          range.insertNode(contents);
 
+          let node = range.startContainer.childNodes[range.startOffset + 1];
+          selection.setBaseAndExtent(node, 0, node, node.length);
+        }
+      }
+    }
 
 
 
@@ -176,16 +222,7 @@ export class PropertiesComponent implements OnInit {
     // this.clean(nodeList);
   }
 
-  getParent(child) {
-    while (child.parentElement.getAttribute('style')) {
-      if (child.parentElement.style.fontWeight.length > 0) {
-        return child.parentElement;
-      }
-      child = child.parentElement;
-    }
 
-    return null;
-  }
 
 
 
