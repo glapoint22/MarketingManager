@@ -81,9 +81,9 @@ export class PropertiesComponent implements OnInit {
       if (child.style && child.style[style].length > 0) {
         return true;
       }
-      child = this.childHasStyle(child, style);
-      if (child) return true;
-      continue;
+      // child = this.childHasStyle(child, style);
+      // if (child) return true;
+      // continue;
     }
     return false;
   }
@@ -99,18 +99,109 @@ export class PropertiesComponent implements OnInit {
   }
 
   selectionHasStyle(style, range) {
-    let found;
+    // let found;
 
     if (range.commonAncestorContainer.nodeType === 1 && range.commonAncestorContainer.getAttribute('style') === null) {
-      found = this.childHasStyle(range.cloneContents(), style);
+      // found = this.childHasStyle(range.cloneContents(), style);
+
+      let parent = range.cloneContents();
+
+      for (let i = 0; i < parent.children.length; i++) {
+        let child = parent.children[i];
+        if (child.style && child.style[style].length > 0) {
+          return true;
+        }
+      }
+
+
     } else {
-      found = this.parentHasStyle(range.startContainer, style);
-      if (!found && range.startContainer !== range.endContainer) found = this.parentHasStyle(range.endContainer, style);
-      if (!found) found = this.childHasStyle(range.cloneContents(), style);
+      // found = this.parentHasStyle(range.startContainer, style);
+      // if (!found && range.startContainer !== range.endContainer) found = this.parentHasStyle(range.endContainer, style);
+      // if (!found) found = this.childHasStyle(range.cloneContents(), style);
+
+      if (range.startContainer.parentElement.style[style].length > 0) {
+        return true;
+      }
     }
 
-    return found;
+    return false;
+    // return found;
   }
+
+  setWholeText(range, style, styleValue, contents) {
+    range.startContainer.parentElement.style[style] = styleValue;
+
+    if (range.startContainer.parentElement.getAttribute('style').length === 0) {
+      contents = range.cloneContents();
+      range.startContainer.parentElement.remove();
+      range.insertNode(contents);
+    }
+  }
+
+
+  setBeginningOrEndText(range, style, styleValue, contents, selection, position) {
+    let node = range.startContainer.parentElement.cloneNode();
+    node.style[style] = styleValue;
+    contents = range.extractContents();
+
+    if (node.getAttribute('style').length > 0) {
+      node.appendChild(contents);
+      contents = node;
+    }
+
+    let index = Array.from(range.startContainer.parentElement.parentElement.childNodes).findIndex(x => x === range.startContainer.parentElement);
+    selection.setPosition(range.startContainer.parentElement.parentElement, index + position);
+    range = selection.getRangeAt(0);
+    range.insertNode(contents);
+  }
+
+  setMidText(range, style, styleValue, contents, selection) {
+    let startString = range.startContainer.substringData(0, range.startOffset),
+      endString = range.endContainer.substringData(range.endOffset, range.endContainer.length),
+      startSpan = document.createElement('span'), endSpan = document.createElement('span');
+
+    startSpan.setAttribute('style', range.startContainer.parentElement.getAttribute('style'));
+    startSpan.appendChild(document.createTextNode(startString));
+    endSpan.setAttribute('style', range.startContainer.parentElement.getAttribute('style'));
+    endSpan.appendChild(document.createTextNode(endString));
+
+    let tempNode = range.startContainer.parentElement.cloneNode();
+    tempNode.style[style] = styleValue;
+
+
+    contents = range.cloneContents();
+
+    if (tempNode.getAttribute('style').length > 0) {
+      tempNode.appendChild(contents);
+      contents = document.createDocumentFragment();
+      contents.appendChild(tempNode);
+    }
+
+    range.startContainer.parentElement.remove();
+    contents.insertBefore(startSpan, contents.childNodes[0]);
+    contents.insertBefore(endSpan, contents.childNodes[1].nextSibling);
+    range.insertNode(contents);
+
+    let node = range.startContainer.childNodes[range.startOffset + 1];
+    selection.setBaseAndExtent(node, 0, node, node.nodeType === 1 ? 1 : node.length);
+  }
+
+  setSelectedText(range, style, styleValue, contents, selection) {
+    // Whole text is selected
+    if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
+      this.setWholeText(range, style, styleValue, contents);
+      // Beginning text is selected
+    } else if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
+      this.setBeginningOrEndText(range, style, styleValue, contents, selection, 0);
+      // Mid text is selected
+    } else if (range.startOffset > 0 && range.endOffset < range.startContainer.length) {
+      this.setMidText(range, style, styleValue, contents, selection);
+      // End text is selected
+    } else if (range.startOffset > 0 && range.endOffset === range.startContainer.length) {
+      this.setBeginningOrEndText(range, style, styleValue, contents, selection, 1);
+    }
+  }
+
 
 
 
@@ -119,46 +210,23 @@ export class PropertiesComponent implements OnInit {
     let range: any = selection.getRangeAt(0);
     let contents;
 
-    if (this.selectionHasStyle(style, range)) {
-      if (range.startContainer === range.endContainer) {
-
-        // Whole text is selected
-        if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
-          contents = range.cloneContents();
-          range.startContainer.parentElement.remove();
+    if (range.startContainer === range.endContainer) {
+      if (this.selectionHasStyle(style, range)) {
+        this.setSelectedText(range, style, null, contents, selection);
+      } else {
+        if (!range.startContainer.parentElement.getAttribute('style')) {
+          let span = document.createElement('SPAN');
+          span.appendChild(range.extractContents());
+          span.style.fontWeight = 'bold';
+          contents = span;
           range.insertNode(contents);
-        }
-
-        // Start text is selected
-        if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
-          contents = range.extractContents();
-
-          let index = Array.from(range.startContainer.parentElement.parentElement.childNodes).findIndex(x => x === range.startContainer.parentElement);
-          selection.setPosition(range.startContainer.parentElement.parentElement, index);
-          range = selection.getRangeAt(0);
-          range.insertNode(contents);
-        }
-
-        // Mid text is selected
-        if (range.startOffset > 0 && range.endOffset < range.startContainer.length) {
-          let startString = range.startContainer.substringData(0, range.startOffset),
-            endString = range.endContainer.substringData(range.endOffset, range.endContainer.length),
-            startSpan = document.createElement('span'), endSpan = document.createElement('span');
-
-          startSpan.style[style] = endSpan.style[style] = styleValue;
-          startSpan.appendChild(document.createTextNode(startString));
-          endSpan.appendChild(document.createTextNode(endString));
-          contents = range.cloneContents();
-          range.startContainer.parentElement.remove();
-          contents.insertBefore(startSpan, contents.childNodes[0]);
-          contents.insertBefore(endSpan, contents.childNodes[1].nextSibling);
-          range.insertNode(contents);
-
-          let node = range.startContainer.childNodes[range.startOffset + 1];
-          selection.setBaseAndExtent(node, 0, node, node.length);
+        } else {
+          this.setSelectedText(range, style, styleValue, contents, selection);
         }
       }
     }
+
+
 
 
 

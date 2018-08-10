@@ -38,7 +38,8 @@ export class TextBoxComponent extends EditBoxComponent {
   initialize(content: HTMLElement, size?: Vector2) {
     if (!size) {
       // Set the HTML and style
-      content.innerHTML = '<span>This <span style="font-weight: bold">is</span> <span style="font-style: italic">a <span style="font-weight: bold"><span style="color: blue">temp</span>orary</span> paragraph</span>. <span style="font-weight: bold">Double click to</span> edit this text.</span>';
+      // content.innerHTML = '<span>This <span style="font-weight: bold">is</span> <span style="font-style: italic">a <span style="font-weight: bold"><span style="color: blue">temp</span>orary</span> paragraph</span>. <span style="font-weight: bold">Double click to</span> edit this text.</span>';
+      content.innerHTML = '<span>This <span style="font-weight: bold">is</span> <span style="font-style: italic">a </span><span style="color: blue; font-weight: bold; font-style: italic">temp</span><span style="font-weight: bold; font-style: italic">orary</span> <span style="font-style: italic">paragraph.</span> <span style="font-weight: bold">Double click to</span> edit this text.</span>'
       content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden');
       size = new Vector2(180, 44);
     }
