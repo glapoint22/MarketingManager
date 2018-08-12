@@ -273,7 +273,7 @@ export class EditBoxComponent {
     this.inEditMode = true;
     this.content.setAttribute('contenteditable', 'true');
     let range = document.createRange();
-    range.selectNodeContents(this.content);
+    range.selectNodeContents(this.content.firstChild.firstChild);
     let selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
