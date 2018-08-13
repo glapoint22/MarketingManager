@@ -32,7 +32,51 @@ export class TextBoxComponent extends EditBoxComponent {
       selection.addRange(range);
     }
 
+    // this.content.onselectstart = () => {
+    //   this.clean();
+    // }
+
     super.ngOnInit();
+  }
+  unSelect(){
+    this.clean();
+    super.unSelect();
+  }
+
+  clean() {
+    let nodeList: any = this.content.firstChild.childNodes;
+
+    for (let i = 0; i < nodeList.length; i++) {
+      // Remove text with no data
+      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+      }
+
+      // Remove a node with no text
+      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+      }
+
+      // Combine two adjacent text nodes
+      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
+        nodeList[i].appendData(nodeList[i + 1].data);
+        nodeList[i + 1].remove();
+        i = -1;
+        continue;
+      }
+
+      // combine two adjacent nodes with the same style
+      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
+        nodeList[i].innerText += nodeList[i + 1].innerText;
+        nodeList[i + 1].remove();
+        i = -1;
+        continue;
+      }
+    }
   }
 
   initialize(content: HTMLElement, size?: Vector2) {

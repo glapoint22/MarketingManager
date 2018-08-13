@@ -95,13 +95,15 @@ export class PropertiesComponent implements OnInit {
     return false;
   }
 
-  setWholeText(range, style, styleValue, contents) {
+  setWholeText(range, style, styleValue, contents, selection) {
     range.startContainer.parentElement.style[style] = styleValue;
 
     if (range.startContainer.parentElement.getAttribute('style').length === 0) {
       contents = range.cloneContents();
       range.startContainer.parentElement.remove();
       range.insertNode(contents);
+      let node = range.startContainer.childNodes[range.startOffset];
+      selection.setBaseAndExtent(node, 0, node, node.length);
     }
   }
 
@@ -122,8 +124,8 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(contents);
 
     // Reset selection
-    node = range.startContainer.childNodes[range.startOffset].firstChild;
-    selection.setBaseAndExtent(node, 0, node, contents.firstChild.length);
+    node = node = range.startContainer.childNodes[range.startOffset];
+    selection.setBaseAndExtent(node, 0, node, node.length);
   }
 
   setMidText(range, style, styleValue, contents, selection) {
@@ -154,14 +156,14 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(contents);
 
     // Reset selection
-    let node = range.startContainer.childNodes[range.startOffset + 1].firstChild;
+    let node = range.startContainer.childNodes[range.startOffset + 1];
     selection.setBaseAndExtent(node, 0, node, node.length);
   }
 
   setSelectedText(range, style, styleValue, contents, selection) {
     // Whole text is selected
     if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
-      this.setWholeText(range, style, styleValue, contents);
+      this.setWholeText(range, style, styleValue, contents, selection);
       // Beginning text is selected
     } else if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
       this.setBeginningOrEndText(range, style, styleValue, contents, selection, 0);
@@ -212,7 +214,7 @@ export class PropertiesComponent implements OnInit {
         // Remove style
         contents.childNodes.forEach((x, i, v) => {
           x.style[style] = null;
-          if(x.getAttribute('style').length === 0){
+          if (x.getAttribute('style').length === 0) {
             let text = x.innerText;
             x.remove();
             let textNode = document.createTextNode(text);
@@ -234,44 +236,63 @@ export class PropertiesComponent implements OnInit {
       }
       range.insertNode(contents);
     }
-    this.clean(this.currentContainer.currentEditBox.content.firstChild.childNodes, selection);
+    // this.clean();
   }
 
 
-  clean(nodeList, selection) {
-    for (let i = 0; i < nodeList.length; i++) {
-      // Text with no data
-      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
+  // clean() {
+  //   let nodeList = this.currentContainer.currentEditBox.content.firstChild.childNodes;
 
-      // Node with no text
-      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
+  //   for (let i = 0; i < nodeList.length; i++) {
+  //     // Remove text with no data
+  //     if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
+  //       nodeList[i].remove();
+  //       i = -1;
+  //       continue;
+  //     }
 
-      // Combine two adjacent text nodes
-      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
-        nodeList[i].appendData(nodeList[i + 1].data);
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
+  //     // Remove a node with no text
+  //     if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
+  //       nodeList[i].remove();
+  //       i = -1;
+  //       continue;
+  //     }
 
-      // combine two adjacent nodes with the same style
-      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style')) {
-        nodeList[i].innerText += nodeList[i + 1].innerText;
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
+  //     // Combine two adjacent text nodes
+  //     if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
+  //       nodeList[i].appendData(nodeList[i + 1].data);
 
-    }
-  }
+
+  //       // if (range.startContainer.childNodes[range.startOffset] === nodeList[i + 1]) {
+  //       //   let node = range.startContainer.childNodes[range.startOffset - 1];
+  //       //   selection.setBaseAndExtent(node, node.length - nodeList[i + 1].length, node, node.length);
+  //       //   range = selection.getRangeAt(0);
+  //       // }
+
+
+  //       nodeList[i + 1].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+
+  //     // combine two adjacent nodes with the same style
+  //     if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
+  //       nodeList[i].innerText += nodeList[i + 1].innerText;
+
+
+  //       // if(range.startContainer.nodeType === 3){
+  //       //   selection.setBaseAndExtent(nodeList[i].firstChild, nodeList[i].firstChild.length - nodeList[i + 1].firstChild.length, nodeList[i].firstChild, nodeList[i].firstChild.length);
+  //       // }
+        
+  //       nodeList[i + 1].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+
+  //   }
+
+
+  // }
 
 
 }
