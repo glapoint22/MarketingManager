@@ -16,13 +16,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
     // Event when content changes
     this.content.oninput = () => {
-      this.content.style.height = '';
-      this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
-      }, () => {
-        this.content.style.height = this.rect.height + 'px';
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
-      });
+      this.setChange();
     }
 
     this.content.onblur = () => {
@@ -32,15 +26,21 @@ export class TextBoxComponent extends EditBoxComponent {
       selection.addRange(range);
     }
 
-    // this.content.onselectstart = () => {
-    //   this.clean();
-    // }
-
     super.ngOnInit();
   }
-  unSelect(){
+  unSelect() {
     this.clean();
     super.unSelect();
+  }
+
+  setChange() {
+    this.content.style.height = '';
+    this.setRect(() => {
+      return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
+    }, () => {
+      this.content.style.height = this.rect.height + 'px';
+      return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+    });
   }
 
   clean() {

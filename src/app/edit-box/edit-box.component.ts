@@ -270,15 +270,16 @@ export class EditBoxComponent {
   }
 
   setEditMode() {
-    this.inEditMode = true;
     this.content.setAttribute('contenteditable', 'true');
-    let range = document.createRange();
-    range.selectNodeContents(this.content);
-    let selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
 
+    let selection = document.getSelection(),
+      node: any = this.content.firstChild,
+      firstChild = node.firstChild.nodeType === 3 ? node.firstChild : node.firstChild.firstChild,
+      lastChild = node.lastChild.nodeType === 3 ? node.lastChild : node.lastChild.firstChild;
+
+    selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
     this.content.style.setProperty('cursor', 'text');
+    this.inEditMode = true;
   }
 
   initialize(content: HTMLElement, size?: Vector2) {

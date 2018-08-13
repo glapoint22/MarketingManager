@@ -102,8 +102,9 @@ export class PropertiesComponent implements OnInit {
       contents = range.cloneContents();
       range.startContainer.parentElement.remove();
       range.insertNode(contents);
-      let node = range.startContainer.childNodes[range.startOffset];
-      selection.setBaseAndExtent(node, 0, node, node.length);
+
+      // Reset selection
+      range.selectNodeContents(range.startContainer.childNodes[range.startOffset]);
     }
   }
 
@@ -124,8 +125,7 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(contents);
 
     // Reset selection
-    node = node = range.startContainer.childNodes[range.startOffset];
-    selection.setBaseAndExtent(node, 0, node, node.length);
+    range.selectNodeContents(range.startContainer.childNodes[range.startOffset]);
   }
 
   setMidText(range, style, styleValue, contents, selection) {
@@ -156,8 +156,7 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(contents);
 
     // Reset selection
-    let node = range.startContainer.childNodes[range.startOffset + 1];
-    selection.setBaseAndExtent(node, 0, node, node.length);
+    range.selectNodeContents(range.startContainer.childNodes[range.startOffset + 1]);
   }
 
   setSelectedText(range, style, styleValue, contents, selection) {
@@ -200,8 +199,7 @@ export class PropertiesComponent implements OnInit {
           range.insertNode(contents);
 
           // Reset selection
-          let node: any = selection.focusNode.childNodes[selection.focusOffset - 1].firstChild;
-          selection.setBaseAndExtent(node, 0, node, node.length);
+          range.selectNodeContents(range.endContainer.childNodes[range.endOffset - 1].firstChild);
         } else {
           // Some other style - Add this style
           this.setSelectedText(range, style, styleValue, contents, selection);
@@ -236,63 +234,6 @@ export class PropertiesComponent implements OnInit {
       }
       range.insertNode(contents);
     }
-    // this.clean();
+    this.currentContainer.currentEditBox.setChange();
   }
-
-
-  // clean() {
-  //   let nodeList = this.currentContainer.currentEditBox.content.firstChild.childNodes;
-
-  //   for (let i = 0; i < nodeList.length; i++) {
-  //     // Remove text with no data
-  //     if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
-  //       nodeList[i].remove();
-  //       i = -1;
-  //       continue;
-  //     }
-
-  //     // Remove a node with no text
-  //     if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
-  //       nodeList[i].remove();
-  //       i = -1;
-  //       continue;
-  //     }
-
-  //     // Combine two adjacent text nodes
-  //     if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
-  //       nodeList[i].appendData(nodeList[i + 1].data);
-
-
-  //       // if (range.startContainer.childNodes[range.startOffset] === nodeList[i + 1]) {
-  //       //   let node = range.startContainer.childNodes[range.startOffset - 1];
-  //       //   selection.setBaseAndExtent(node, node.length - nodeList[i + 1].length, node, node.length);
-  //       //   range = selection.getRangeAt(0);
-  //       // }
-
-
-  //       nodeList[i + 1].remove();
-  //       i = -1;
-  //       continue;
-  //     }
-
-  //     // combine two adjacent nodes with the same style
-  //     if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
-  //       nodeList[i].innerText += nodeList[i + 1].innerText;
-
-
-  //       // if(range.startContainer.nodeType === 3){
-  //       //   selection.setBaseAndExtent(nodeList[i].firstChild, nodeList[i].firstChild.length - nodeList[i + 1].firstChild.length, nodeList[i].firstChild, nodeList[i].firstChild.length);
-  //       // }
-        
-  //       nodeList[i + 1].remove();
-  //       i = -1;
-  //       continue;
-  //     }
-
-  //   }
-
-
-  // }
-
-
 }
