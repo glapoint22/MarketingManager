@@ -27,3 +27,27 @@ input {
     outline: #bfbfbf;
     text-align: center;
 }
+.style-button {
+    color: #9a9a9a;
+    margin-left: 8px;
+    background: #282828;
+    border-radius: 4px;
+    width: 20px;
+    height: 18px;
+    line-height: 18px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+.style-button:hover:not(.style-button-activated):not(.style-button-disabled) {
+    background: #414141;
+    color: #bebebe;
+}
+.style-button-activated {
+    background: #0066ff;
+    color: #ffffff;
+}
+.style-button-disabled {
+    background: #282828;
+    color: #3c3c3c;
+}

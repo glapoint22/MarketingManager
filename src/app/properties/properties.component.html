@@ -20,27 +20,31 @@
 
 
 <div class="bar" style="background: #282828;">
-    <span style="color: #9a9a9a;margin-left: 12px;" (click)="setBackgroundColor()">
-        <i class="fas fa-fill"></i>
-    </span>
-    <span style="color: #9a9a9a;margin-left: 12px;" (click)="setStyle('fontWeight', 'bold')">
+    <div class="style-button" (click)="setStyle('fontWeight', 'bold')" title="Bold (Ctrl+B)" [ngClass]="{'style-button-activated': isBold}">
         <i class="fas fa-bold"></i>
+    </div>
+
+    <span class="style-button" (click)="setStyle('fontStyle', 'italic')" title="Italic (Ctrl+I)">
+        <i class="fas fa-italic"></i>
     </span>
 
-    <span style="color: #9a9a9a;margin-left: 12px;" (click)="setStyle('fontStyle', 'italic')">
-      <i class="fas fa-italic"></i>
-  </span>
+    <span class="style-button" (click)="setStyle('textDecoration', 'underline')" title="Underline (Ctrl+U)">
+        <i class="fas fa-underline"></i>
+    </span>
+    <div class="style-button" (click)="setColor('color')" title="Text color">
+        <i class="fas fa-font"></i>
+    </div>
 
-  <span style="color: #9a9a9a;margin-left: 12px;" (click)="setStyle('textDecoration', 'underline')">
-      <i class="fas fa-underline"></i>
-  </span>
+    <div class="style-button" (click)="setColor('background-color')" title="Background color">
+        <i class="fas fa-fill"></i>
+    </div>
+
+
     <!-- 
 
   
 
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-font"></i>
-  </span>
+  
 
   
 

@@ -1,10 +1,8 @@
-import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
-import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
-import { Rect } from '../rect';
 import { Vector2 } from '../vector2';
 
 @Component({
@@ -12,14 +10,28 @@ import { Vector2 } from '../vector2';
   templateUrl: './properties.component.html',
   styleUrls: ['./properties.component.scss']
 })
-export class PropertiesComponent implements OnInit {
+export class PropertiesComponent {
   @Input() currentContainer;
+  public isBold: boolean;
+  public isItalic: boolean;
+  public isUnderline: boolean;
   private copied: any = {};
 
   constructor(private resolver: ComponentFactoryResolver) { }
 
-  ngOnInit() {
+  ngDoCheck() {
+    if (this.currentContainer && this.currentContainer.currentEditBox) {
+      if (this.currentContainer.currentEditBox.checkStyle) {
+        this.currentContainer.currentEditBox.checkStyle = false;
+        this.isBold = this.selectionHasStyle('fontWeight');
+      }
+
+      if(!this.currentContainer.currentEditBox.inEditMode){
+        this.isBold = false;
+      }
+    }
   }
+
 
   delete() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
@@ -64,38 +76,44 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-  setBackgroundColor() {
+  setColor(colorType: string) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      let input = document.createElement('input');
-      input.type = 'color';
-      input.click();
-      input.onchange = (event: any) => {
-        this.currentContainer.currentEditBox.content.style.backgroundColor = event.path[0].value;
+      let colorPalette = this.getColorPalette();
+
+      colorPalette.onchange = (event: any) => {
+        if (this.currentContainer.currentEditBox.inEditMode) {
+          this.setStyle(colorType, event.path[0].value);
+        } else {
+          this.currentContainer.currentEditBox.content.style[colorType] = event.path[0].value;
+        }
       }
     }
   }
 
+  getColorPalette(): HTMLInputElement {
+    let input = document.createElement('input');
+    input.type = 'color';
+    input.click();
 
-  selectionHasStyle(style, range) {
-    if (range.commonAncestorContainer.nodeType === 1 && range.commonAncestorContainer.getAttribute('style') === null) {
-      let parent = range.cloneContents();
+    return input;
+  }
 
-      for (let i = 0; i < parent.children.length; i++) {
-        let child = parent.children[i];
-        if (child.style && child.style[style].length > 0) {
-          return true;
-        }
-      }
+
+  selectionHasStyle(style) {
+    let selection = document.getSelection();
+
+    let range: any = selection.getRangeAt(0);
+
+    if (range.startContainer === range.endContainer) {
+      if (range.startContainer.parentElement.style[style].length > 0) return true;
     } else {
-      if (range.startContainer.parentElement.style[style].length > 0) {
-        return true;
-      }
+      if (Array.from(range.cloneContents().childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
     }
 
     return false;
   }
 
-  setWholeText(range, style, styleValue, contents, selection) {
+  setWholeText(range, style, styleValue, contents) {
     range.startContainer.parentElement.style[style] = styleValue;
 
     if (range.startContainer.parentElement.getAttribute('style').length === 0) {
@@ -162,7 +180,7 @@ export class PropertiesComponent implements OnInit {
   setSelectedText(range, style, styleValue, contents, selection) {
     // Whole text is selected
     if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
-      this.setWholeText(range, style, styleValue, contents, selection);
+      this.setWholeText(range, style, styleValue, contents);
       // Beginning text is selected
     } else if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
       this.setBeginningOrEndText(range, style, styleValue, contents, selection, 0);
@@ -178,62 +196,67 @@ export class PropertiesComponent implements OnInit {
 
 
 
-  setStyle(style, styleValue) {
-    let selection = document.getSelection();
-    let range: any = selection.getRangeAt(0);
-    let contents;
+  setStyle(style: string, styleValue: string) {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+      let selection = document.getSelection();
+      let range: any = selection.getRangeAt(0);
+      let contents;
 
-    // Single container
-    if (range.startContainer === range.endContainer) {
-      // Has this style - remove this style
-      if (this.selectionHasStyle(style, range)) {
-        this.setSelectedText(range, style, null, contents, selection);
-        // Does not have this style
-      } else {
-        // No style at all - Add this style
-        if (!range.startContainer.parentElement.getAttribute('style')) {
-          let span = document.createElement('SPAN');
-          span.appendChild(range.extractContents());
-          span.style[style] = styleValue;
-          contents = span;
-          range.insertNode(contents);
-
-          // Reset selection
-          range.selectNodeContents(range.endContainer.childNodes[range.endOffset - 1].firstChild);
+      // Single container
+      if (range.startContainer === range.endContainer) {
+        // Has this style - remove this style
+        if (range.startContainer.parentElement.style[style].length > 0) {
+          this.setSelectedText(range, style, null, contents, selection);
+          // Does not have this style
         } else {
-          // Some other style - Add this style
-          this.setSelectedText(range, style, styleValue, contents, selection);
-        }
-      }
-      // Multiple containers
-    } else {
-      contents = range.extractContents();
-      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) {
-        // Remove style
-        contents.childNodes.forEach((x, i, v) => {
-          x.style[style] = null;
-          if (x.getAttribute('style').length === 0) {
-            let text = x.innerText;
-            x.remove();
-            let textNode = document.createTextNode(text);
-            contents.insertBefore(textNode, v[i]);
-          }
-        });
-      } else {
-        // Apply style
-        contents.childNodes.forEach((x, i, v) => {
-          if (x.nodeType === 3) {
+          // No style at all - Add this style
+          if (!range.startContainer.parentElement.getAttribute('style')) {
             let span = document.createElement('SPAN');
-            span.appendChild(x);
+            span.appendChild(range.extractContents());
             span.style[style] = styleValue;
-            contents.insertBefore(span, v[i]);
+            contents = span;
+            range.insertNode(contents);
+
+            // Reset selection
+            range.selectNodeContents(range.endContainer.childNodes[range.endOffset - 1].firstChild);
           } else {
-            x.style[style] = styleValue;
+            // Some other style - Add this style
+            this.setSelectedText(range, style, styleValue, contents, selection);
           }
-        });
+        }
+        // Multiple containers
+      } else {
+        contents = range.extractContents();
+        if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) {
+          // Remove style
+          contents.childNodes.forEach((x, i, v) => {
+            x.style[style] = null;
+            if (x.getAttribute('style').length === 0) {
+              let text = x.innerText;
+              x.remove();
+              let textNode = document.createTextNode(text);
+              contents.insertBefore(textNode, v[i]);
+            }
+          });
+        } else {
+          // Apply style
+          contents.childNodes.forEach((x, i, v) => {
+            if (x.nodeType === 3) {
+              let span = document.createElement('SPAN');
+              span.appendChild(x);
+              span.style[style] = styleValue;
+              contents.insertBefore(span, v[i]);
+            } else {
+              x.style[style] = styleValue;
+            }
+          });
+        }
+        range.insertNode(contents);
       }
-      range.insertNode(contents);
+      this.currentContainer.currentEditBox.setChange();
+      this.currentContainer.currentEditBox.checkStyle = true;
     }
-    this.currentContainer.currentEditBox.setChange();
   }
+
+
 }

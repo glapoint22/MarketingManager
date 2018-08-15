@@ -25,7 +25,7 @@ export class EditBoxComponent {
   public handle: string;
   public parentContainer: any;
   public inEditMode: boolean;
-  public content: HTMLElement;
+  public content: any;
   public isSelected: boolean;
 
   ngOnInit() {
