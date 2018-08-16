@@ -11,7 +11,6 @@ import { Rect } from '../rect';
 export class TextBoxComponent extends EditBoxComponent {
   private height: number = -Infinity;
   private padding: number = 7;
-  public checkStyle: boolean;
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
@@ -19,19 +18,6 @@ export class TextBoxComponent extends EditBoxComponent {
     // Event when content changes
     this.content.oninput = () => {
       this.setChange();
-    }
-
-    this.content.onkeydown = (event) => {
-      if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' || event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-
-        window.setTimeout(() => {
-          this.checkStyle = true;
-        }, 1);
-      }
-    }
-
-    this.content.onmouseup = () => {
-      this.checkStyle = true;
     }
 
     this.content.onblur = () => {
@@ -44,12 +30,7 @@ export class TextBoxComponent extends EditBoxComponent {
     super.ngOnInit();
   }
 
-  setEditMode() {
-    this.checkStyle = true;
-    super.setEditMode();
-  }
-
-
+  
   unSelect() {
     this.clean();
     super.unSelect();

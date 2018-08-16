@@ -1,4 +1,4 @@
-import { Component, Input, ComponentFactoryResolver } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver, HostListener } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
@@ -19,20 +19,7 @@ export class PropertiesComponent {
 
   constructor(private resolver: ComponentFactoryResolver) { }
 
-  ngDoCheck() {
-    if (this.currentContainer && this.currentContainer.currentEditBox) {
-      if (this.currentContainer.currentEditBox.checkStyle) {
-        this.currentContainer.currentEditBox.checkStyle = false;
-        this.isBold = this.selectionHasStyle('fontWeight');
-      }
-
-      if(!this.currentContainer.currentEditBox.inEditMode){
-        this.isBold = false;
-      }
-    }
-  }
-
-
+  
   delete() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
       let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
@@ -101,13 +88,19 @@ export class PropertiesComponent {
 
   selectionHasStyle(style) {
     let selection = document.getSelection();
-
     let range: any = selection.getRangeAt(0);
 
     if (range.startContainer === range.endContainer) {
       if (range.startContainer.parentElement.style[style].length > 0) return true;
     } else {
-      if (Array.from(range.cloneContents().childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
+      let contents = range.cloneContents();
+      for (let i = 0; i < contents.childNodes.length; i++) {
+        if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
+          contents.childNodes[i].remove();
+          i--;
+        }
+      }
+      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
     }
 
     return false;
@@ -143,10 +136,11 @@ export class PropertiesComponent {
     range.insertNode(contents);
 
     // Reset selection
-    range.selectNodeContents(range.startContainer.childNodes[range.startOffset]);
+    node = range.startContainer.childNodes[range.startOffset].nodeType === 1 ? range.startContainer.childNodes[range.startOffset].firstChild : range.startContainer.childNodes[range.startOffset];
+    range.selectNodeContents(node);
   }
 
-  setMidText(range, style, styleValue, contents, selection) {
+  setMidText(range, style, styleValue, contents) {
     let startString = range.startContainer.substringData(0, range.startOffset),
       endString = range.endContainer.substringData(range.endOffset, range.endContainer.length),
       startSpan = document.createElement('span'), endSpan = document.createElement('span');
@@ -156,16 +150,16 @@ export class PropertiesComponent {
     endSpan.setAttribute('style', range.startContainer.parentElement.getAttribute('style'));
     endSpan.appendChild(document.createTextNode(endString));
 
-    let tempNode = range.startContainer.parentElement.cloneNode();
-    tempNode.style[style] = styleValue;
+    let node = range.startContainer.parentElement.cloneNode();
+    node.style[style] = styleValue;
 
 
     contents = range.cloneContents();
 
-    if (tempNode.getAttribute('style').length > 0) {
-      tempNode.appendChild(contents);
+    if (node.getAttribute('style').length > 0) {
+      node.appendChild(contents);
       contents = document.createDocumentFragment();
-      contents.appendChild(tempNode);
+      contents.appendChild(node);
     }
 
     range.startContainer.parentElement.remove();
@@ -174,7 +168,8 @@ export class PropertiesComponent {
     range.insertNode(contents);
 
     // Reset selection
-    range.selectNodeContents(range.startContainer.childNodes[range.startOffset + 1]);
+    node = range.startContainer.childNodes[range.startOffset + 1].nodeType === 1 ? range.startContainer.childNodes[range.startOffset + 1].firstChild : range.startContainer.childNodes[range.startOffset + 1];
+    range.selectNodeContents(node);
   }
 
   setSelectedText(range, style, styleValue, contents, selection) {
@@ -186,14 +181,12 @@ export class PropertiesComponent {
       this.setBeginningOrEndText(range, style, styleValue, contents, selection, 0);
       // Mid text is selected
     } else if (range.startOffset > 0 && range.endOffset < range.startContainer.length) {
-      this.setMidText(range, style, styleValue, contents, selection);
+      this.setMidText(range, style, styleValue, contents);
       // End text is selected
     } else if (range.startOffset > 0 && range.endOffset === range.startContainer.length) {
       this.setBeginningOrEndText(range, style, styleValue, contents, selection, 1);
     }
   }
-
-
 
 
   setStyle(style: string, styleValue: string) {
@@ -227,6 +220,24 @@ export class PropertiesComponent {
         // Multiple containers
       } else {
         contents = range.extractContents();
+
+        // Remove any text nodes with a length of zero
+        for (let i = 0; i < contents.childNodes.length; i++) {
+          if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
+            contents.childNodes[i].remove();
+            i--;
+          }
+        }
+
+        // Remove any empty nodes
+        for (let i = 0; i < range.startContainer.childElementCount; i++) {
+          if (range.startContainer.children[i].firstChild.length === 0) {
+            range.startContainer.children[i].remove();
+            i--;
+          }
+        }
+
+        // Test to see if every node has this style
         if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) {
           // Remove style
           contents.childNodes.forEach((x, i, v) => {
@@ -252,11 +263,50 @@ export class PropertiesComponent {
           });
         }
         range.insertNode(contents);
+
+        // Reset selection
+        let baseNode = range.startContainer.childNodes[range.startOffset].nodeType === 1 ? range.startContainer.childNodes[range.startOffset].firstChild : range.startContainer.childNodes[range.startOffset];
+        let extentNode = range.startContainer.childNodes[range.endOffset - 1].nodeType === 1 ? range.startContainer.childNodes[range.endOffset - 1].firstChild : range.startContainer.childNodes[range.endOffset - 1];
+
+        selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
       }
+
       this.currentContainer.currentEditBox.setChange();
-      this.currentContainer.currentEditBox.checkStyle = true;
+      this.checkStyles();
     }
   }
 
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (this.currentContainer &&
+      this.currentContainer.currentEditBox &&
+      this.currentContainer.currentEditBox.inEditMode &&
+      (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+        event.code === 'ArrowRight' || event.code === 'ArrowDown' ||
+        event.code === 'Escape')) {
+      window.setTimeout(() => {
+        this.checkStyles();
+      }, 1);
+    }
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseUp() {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+      this.checkStyles();
+    }
+  }
+
+  checkStyles() {
+    if (this.currentContainer.currentEditBox.inEditMode) {
+      this.isBold = this.selectionHasStyle('fontWeight');
+      this.isItalic = this.selectionHasStyle('fontStyle');
+      this.isUnderline = this.selectionHasStyle('textDecoration');
+    } else {
+      this.isBold = false;
+      this.isItalic = false;
+      this.isUnderline = false;
+    }
+  }
 
 }
