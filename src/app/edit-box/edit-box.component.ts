@@ -1,6 +1,7 @@
 import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
+import { PropertiesService } from "../properties.service";
 
 @Component({
   selector: 'edit-box',
@@ -10,9 +11,10 @@ import { Rect } from '../rect';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
+  constructor(public propertiesService: PropertiesService) { }
+
   private isMousedown: boolean;
   private currentPosition: Vector2;
-
   public showTopLeftHandle: boolean;
   public showTopHandle: boolean;
   public showTopRightHandle: boolean;
@@ -267,6 +269,7 @@ export class EditBoxComponent {
     }
 
     this.parentContainer.currentEditBox = this;
+    this.propertiesService.setSelection();
   }
 
   setEditMode() {
@@ -280,6 +283,8 @@ export class EditBoxComponent {
     selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
     this.content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
+    this.content.focus();
+    this.propertiesService.setEditMode();
   }
 
   initialize(content: HTMLElement, size?: Vector2) {
@@ -321,6 +326,7 @@ export class EditBoxComponent {
       this.inEditMode = false;
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
+      this.propertiesService.unSelect();
     }
   }
 }

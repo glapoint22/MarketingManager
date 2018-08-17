@@ -30,12 +30,6 @@ export class TextBoxComponent extends EditBoxComponent {
     super.ngOnInit();
   }
 
-  
-  unSelect() {
-    this.clean();
-    super.unSelect();
-  }
-
   setChange() {
     if (this.height <= this.content.firstChild.getBoundingClientRect().height + this.padding) {
       this.setRect(() => {
@@ -47,47 +41,12 @@ export class TextBoxComponent extends EditBoxComponent {
 
   }
 
-  clean() {
-    let nodeList: any = this.content.firstChild.childNodes;
-
-    for (let i = 0; i < nodeList.length; i++) {
-      // Remove text with no data
-      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
-
-      // Remove a node with no text
-      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
-
-      // Combine two adjacent text nodes
-      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
-        nodeList[i].appendData(nodeList[i + 1].data);
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
-
-      // combine two adjacent nodes with the same style
-      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
-        nodeList[i].innerText += nodeList[i + 1].innerText;
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
-    }
-  }
-
   initialize(content: HTMLElement, size?: Vector2) {
     if (!size) {
       // Set style and HTML
-      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%;');
+      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%');
       content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
+      content.setAttribute('contenteditable', 'false');
       size = new Vector2(180, 44);
     }
 

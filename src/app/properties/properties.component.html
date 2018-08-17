@@ -31,13 +31,18 @@
     <span class="style-button" (click)="setStyle('textDecoration', 'underline')" title="Underline (Ctrl+U)" [ngClass]="{'style-button-activated': isUnderline}">
         <i class="fas fa-underline"></i>
     </span>
-    <div class="style-button" (click)="setColor('color')" title="Text color">
+
+    <div class="style-button" (click)="setColor('background-color')" title="Background color" style="position: relative;">
+        <div class="color-bar" [style.backgroundColor]="BackgroundColor"></div>
+        <i class="fas fa-fill"></i>
+    </div>
+
+    <div class="style-button" (click)="setColor('color')" title="Text color" style="position: relative;">
+        <div class="color-bar" [style.backgroundColor]="textColor"></div>
         <i class="fas fa-font"></i>
     </div>
 
-    <div class="style-button" (click)="setColor('background-color')" title="Background color">
-        <i class="fas fa-fill"></i>
-    </div>
+
 
 
     <!-- 

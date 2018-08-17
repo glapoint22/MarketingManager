@@ -18,6 +18,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       // Set the HTML and style
       content.innerHTML = '<span>Button</span>';
       content.setAttribute('style', 'outline: none; color: white; background: #c1c1c1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden;');
+      content.setAttribute('contenteditable', 'false');
       size = new Vector2(144, 42);
     }
 

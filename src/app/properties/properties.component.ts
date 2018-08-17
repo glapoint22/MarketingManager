@@ -1,25 +1,70 @@
-import { Component, Input, ComponentFactoryResolver, HostListener } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver, HostListener, OnInit } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
+import { PropertiesService } from "../properties.service";
 
 @Component({
   selector: 'properties',
   templateUrl: './properties.component.html',
   styleUrls: ['./properties.component.scss']
 })
-export class PropertiesComponent {
+export class PropertiesComponent implements OnInit {
   @Input() currentContainer;
   public isBold: boolean;
   public isItalic: boolean;
   public isUnderline: boolean;
+  public textColor: string = '#00000000';
+  public BackgroundColor: string = '#00000000';
   private copied: any = {};
 
-  constructor(private resolver: ComponentFactoryResolver) { }
+  constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
 
-  
+  ngOnInit() {
+    // OnSelection
+    this.propertiesService.onSelection.subscribe(() => {
+      this.textColor = this.getColor('color');
+      this.BackgroundColor = this.getColor('background-color');
+    });
+
+    // OnSetEditMode
+    this.propertiesService.onSetEditMode.subscribe(() => {
+      this.checkStyles();
+    });
+
+    // OnUnSelect
+    this.propertiesService.onUnSelect.subscribe(() => {
+      this.checkStyles();
+      this.cleanContent();
+      this.textColor = '';
+      this.BackgroundColor = '';
+    });
+  }
+
+  getColor(colorType: string): string {
+    let color: string;
+
+    if (!this.currentContainer.currentEditBox.inEditMode) {
+      color = this.currentContainer.currentEditBox.content.style[colorType];
+
+      let node = this.currentContainer.currentEditBox.content.firstChild;
+
+      for (let i = 0; i < node.childElementCount; i++) {
+        if (node.children[i].style[colorType].length > 0) {
+          if (node.children[i].style[colorType] !== color) {
+            color = '';
+            break;
+          }
+        }
+      }
+    }
+
+    return color;
+  }
+
+
   delete() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
       let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
@@ -73,6 +118,8 @@ export class PropertiesComponent {
         } else {
           this.currentContainer.currentEditBox.content.style[colorType] = event.path[0].value;
         }
+        this.BackgroundColor = colorType === 'background-color' ? event.path[0].value : this.BackgroundColor;
+        this.textColor = colorType === 'color' ? event.path[0].value : this.textColor;
       }
     }
   }
@@ -197,9 +244,16 @@ export class PropertiesComponent {
 
       // Single container
       if (range.startContainer === range.endContainer) {
-        // Has this style - remove this style
+        // Has this style
         if (range.startContainer.parentElement.style[style].length > 0) {
-          this.setSelectedText(range, style, null, contents, selection);
+          if (style === 'color' || style === 'background-color') {
+            // Change color
+            range.startContainer.parentElement.style[style] = styleValue;
+          } else {
+            // remove this style
+            this.setSelectedText(range, style, null, contents, selection);
+          }
+
           // Does not have this style
         } else {
           // No style at all - Add this style
@@ -239,9 +293,9 @@ export class PropertiesComponent {
 
         // Test to see if every node has this style
         if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) {
-          // Remove style
+          // Replace or remove style
           contents.childNodes.forEach((x, i, v) => {
-            x.style[style] = null;
+            x.style[style] = style === 'color' || style === 'background-color' ? styleValue : null;
             if (x.getAttribute('style').length === 0) {
               let text = x.innerText;
               x.remove();
@@ -282,8 +336,7 @@ export class PropertiesComponent {
       this.currentContainer.currentEditBox &&
       this.currentContainer.currentEditBox.inEditMode &&
       (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-        event.code === 'ArrowRight' || event.code === 'ArrowDown' ||
-        event.code === 'Escape')) {
+        event.code === 'ArrowRight' || event.code === 'ArrowDown')) {
       window.setTimeout(() => {
         this.checkStyles();
       }, 1);
@@ -306,6 +359,42 @@ export class PropertiesComponent {
       this.isBold = false;
       this.isItalic = false;
       this.isUnderline = false;
+    }
+  }
+
+  cleanContent() {
+    let nodeList: any = this.currentContainer.currentEditBox.content.firstChild.childNodes;
+
+    for (let i = 0; i < nodeList.length; i++) {
+      // Remove text with no data
+      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+      }
+
+      // Remove a node with no text
+      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
+        nodeList[i].remove();
+        i = -1;
+        continue;
+      }
+
+      // Combine two adjacent text nodes
+      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
+        nodeList[i].appendData(nodeList[i + 1].data);
+        nodeList[i + 1].remove();
+        i = -1;
+        continue;
+      }
+
+      // combine two adjacent nodes with the same style
+      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
+        nodeList[i].innerText += nodeList[i + 1].innerText;
+        nodeList[i + 1].remove();
+        i = -1;
+        continue;
+      }
     }
   }
 
