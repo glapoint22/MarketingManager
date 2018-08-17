@@ -16,8 +16,10 @@ export class PropertiesComponent implements OnInit {
   public isBold: boolean;
   public isItalic: boolean;
   public isUnderline: boolean;
-  public textColor: string = '#00000000';
-  public BackgroundColor: string = '#00000000';
+  public textColor: string;
+  public BackgroundColor: string;
+  public colorPalette: HTMLInputElement;
+  public colorType: string;
   private copied: any = {};
 
   constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
@@ -38,9 +40,45 @@ export class PropertiesComponent implements OnInit {
     this.propertiesService.onUnSelect.subscribe(() => {
       this.checkStyles();
       this.cleanContent();
-      this.textColor = '';
-      this.BackgroundColor = '';
     });
+
+    // Set the color palette
+    this.colorPalette = document.createElement('input');
+    this.colorPalette.type = 'color';
+    this.colorPalette.onchange = (event: any) => {
+      if (this.currentContainer.currentEditBox.inEditMode) {
+        this.setStyle(this.colorType, event.path[0].value);
+      } else {
+        this.currentContainer.currentEditBox.content.style[this.colorType] = event.path[0].value;
+      }
+      this.BackgroundColor = this.colorType === 'background-color' ? event.path[0].value : this.BackgroundColor;
+      this.textColor = this.colorType === 'color' ? event.path[0].value : this.textColor;
+    }
+  }
+
+  removeEmptyTextNodes(contents) {
+    for (let i = 0; i < contents.childNodes.length; i++) {
+      if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
+        contents.childNodes[i].remove();
+        i--;
+      }
+    }
+
+    return contents;
+  }
+
+  selectionHasStyle(style) {
+    let selection = document.getSelection();
+    let range: any = selection.getRangeAt(0);
+
+    if (range.startContainer === range.endContainer) {
+      if (range.startContainer.parentElement.style[style].length > 0) return true;
+    } else {
+      let contents = this.removeEmptyTextNodes(range.cloneContents());
+      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
+    }
+
+    return false;
   }
 
   getColor(colorType: string): string {
@@ -59,9 +97,42 @@ export class PropertiesComponent implements OnInit {
           }
         }
       }
+    } else {
+      let selection = document.getSelection();
+      let range: any = selection.getRangeAt(0);
+
+      if (range.startContainer === range.endContainer) {
+        color = range.startContainer.parentElement.style[colorType];
+        if (color === '') color = this.currentContainer.currentEditBox.content.style[colorType];
+        if (color === '') return '';
+      } else {
+        let contents = this.removeEmptyTextNodes(range.cloneContents());
+        color = contents.firstElementChild.style[colorType];
+        if (!Array.from(contents.childNodes).every((x: any) => x.style && x.style[colorType] === color)) {
+          return '';
+        }
+      }
     }
 
-    return color;
+    return this.rgbToHex(color);
+  }
+
+  rgbToHex(color) {
+    let colorArray = color.replace(/[^\d,]/g, '').split(',');
+    return "#" + this.componentToHex(parseInt(colorArray[0])) + this.componentToHex(parseInt(colorArray[1])) + this.componentToHex(parseInt(colorArray[2]));
+  }
+
+  componentToHex(c) {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  setColor(colorType: string) {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+      this.colorType = colorType;
+      this.colorPalette.value = this.getColor(colorType);
+      this.colorPalette.click();
+    }
   }
 
 
@@ -108,50 +179,7 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-  setColor(colorType: string) {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      let colorPalette = this.getColorPalette();
 
-      colorPalette.onchange = (event: any) => {
-        if (this.currentContainer.currentEditBox.inEditMode) {
-          this.setStyle(colorType, event.path[0].value);
-        } else {
-          this.currentContainer.currentEditBox.content.style[colorType] = event.path[0].value;
-        }
-        this.BackgroundColor = colorType === 'background-color' ? event.path[0].value : this.BackgroundColor;
-        this.textColor = colorType === 'color' ? event.path[0].value : this.textColor;
-      }
-    }
-  }
-
-  getColorPalette(): HTMLInputElement {
-    let input = document.createElement('input');
-    input.type = 'color';
-    input.click();
-
-    return input;
-  }
-
-
-  selectionHasStyle(style) {
-    let selection = document.getSelection();
-    let range: any = selection.getRangeAt(0);
-
-    if (range.startContainer === range.endContainer) {
-      if (range.startContainer.parentElement.style[style].length > 0) return true;
-    } else {
-      let contents = range.cloneContents();
-      for (let i = 0; i < contents.childNodes.length; i++) {
-        if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
-          contents.childNodes[i].remove();
-          i--;
-        }
-      }
-      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
-    }
-
-    return false;
-  }
 
   setWholeText(range, style, styleValue, contents) {
     range.startContainer.parentElement.style[style] = styleValue;
@@ -236,7 +264,7 @@ export class PropertiesComponent implements OnInit {
   }
 
 
-  setStyle(style: string, styleValue: string) {
+  setStyle(style: string, styleValue: string, toggle?: boolean) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
       let selection = document.getSelection();
       let range: any = selection.getRangeAt(0);
@@ -246,8 +274,8 @@ export class PropertiesComponent implements OnInit {
       if (range.startContainer === range.endContainer) {
         // Has this style
         if (range.startContainer.parentElement.style[style].length > 0) {
-          if (style === 'color' || style === 'background-color') {
-            // Change color
+          if (!toggle) {
+            // Change style
             range.startContainer.parentElement.style[style] = styleValue;
           } else {
             // remove this style
@@ -273,15 +301,7 @@ export class PropertiesComponent implements OnInit {
         }
         // Multiple containers
       } else {
-        contents = range.extractContents();
-
-        // Remove any text nodes with a length of zero
-        for (let i = 0; i < contents.childNodes.length; i++) {
-          if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
-            contents.childNodes[i].remove();
-            i--;
-          }
-        }
+        contents = this.removeEmptyTextNodes(range.extractContents());
 
         // Remove any empty nodes
         for (let i = 0; i < range.startContainer.childElementCount; i++) {
@@ -295,7 +315,7 @@ export class PropertiesComponent implements OnInit {
         if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) {
           // Replace or remove style
           contents.childNodes.forEach((x, i, v) => {
-            x.style[style] = style === 'color' || style === 'background-color' ? styleValue : null;
+            x.style[style] = toggle ? null : styleValue;
             if (x.getAttribute('style').length === 0) {
               let text = x.innerText;
               x.remove();
@@ -346,7 +366,9 @@ export class PropertiesComponent implements OnInit {
   @HostListener('document:mouseup', ['$event'])
   onMouseUp() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      this.checkStyles();
+      window.setTimeout(() => {
+        this.checkStyles();
+      }, 1);
     }
   }
 
@@ -355,10 +377,14 @@ export class PropertiesComponent implements OnInit {
       this.isBold = this.selectionHasStyle('fontWeight');
       this.isItalic = this.selectionHasStyle('fontStyle');
       this.isUnderline = this.selectionHasStyle('textDecoration');
+      this.textColor = this.getColor('color');
+      this.BackgroundColor = this.getColor('background-color');
     } else {
       this.isBold = false;
       this.isItalic = false;
       this.isUnderline = false;
+      this.textColor = '';
+      this.BackgroundColor = '';
     }
   }
 
@@ -397,5 +423,4 @@ export class PropertiesComponent implements OnInit {
       }
     }
   }
-
 }

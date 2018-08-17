@@ -20,15 +20,15 @@
 
 
 <div class="bar" style="background: #282828;">
-    <div class="style-button" (click)="setStyle('fontWeight', 'bold')" title="Bold (Ctrl+B)" [ngClass]="{'style-button-activated': isBold}">
+    <div class="style-button" (click)="setStyle('fontWeight', 'bold', true)" title="Bold (Ctrl+B)" [ngClass]="{'style-button-activated': isBold}">
         <i class="fas fa-bold"></i>
     </div>
 
-    <span class="style-button" (click)="setStyle('fontStyle', 'italic')" title="Italic (Ctrl+I)" [ngClass]="{'style-button-activated': isItalic}">
+    <span class="style-button" (click)="setStyle('fontStyle', 'italic', true)" title="Italic (Ctrl+I)" [ngClass]="{'style-button-activated': isItalic}">
         <i class="fas fa-italic"></i>
     </span>
 
-    <span class="style-button" (click)="setStyle('textDecoration', 'underline')" title="Underline (Ctrl+U)" [ngClass]="{'style-button-activated': isUnderline}">
+    <span class="style-button" (click)="setStyle('textDecoration', 'underline', true)" title="Underline (Ctrl+U)" [ngClass]="{'style-button-activated': isUnderline}">
         <i class="fas fa-underline"></i>
     </span>
 
