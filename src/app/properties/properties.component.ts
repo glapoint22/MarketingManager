@@ -20,15 +20,20 @@ export class PropertiesComponent implements OnInit {
   public BackgroundColor: string;
   public colorPalette: HTMLInputElement;
   public colorType: string;
+  public fontSizeSelect;
   private copied: any = {};
 
   constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
 
   ngOnInit() {
+    this.fontSizeSelect = document.getElementById('fontSizeSelect');
+    this.fontSizeSelect.value = '';
+
     // OnSelection
     this.propertiesService.onSelection.subscribe(() => {
-      this.textColor = this.getColor('color');
-      this.BackgroundColor = this.getColor('background-color');
+      this.textColor = this.getStyleValue('color');
+      this.BackgroundColor = this.getStyleValue('background-color');
+      this.getFontSize();
     });
 
     // OnSetEditMode
@@ -46,13 +51,22 @@ export class PropertiesComponent implements OnInit {
     this.colorPalette = document.createElement('input');
     this.colorPalette.type = 'color';
     this.colorPalette.onchange = (event: any) => {
-      if (this.currentContainer.currentEditBox.inEditMode) {
-        this.setStyle(this.colorType, event.path[0].value);
-      } else {
-        this.currentContainer.currentEditBox.content.style[this.colorType] = event.path[0].value;
+      this.setStyle(this.colorType, event.path[0].value);
+    }
+  }
+
+  getFontSize() {
+    let fontSize = this.getStyleValue('font-size');
+    if (fontSize === '') {
+      this.fontSizeSelect.value = '';
+      return;
+    }
+
+    for (let i = 0; i < this.fontSizeSelect.length; i++) {
+      if (this.fontSizeSelect.options[i].value === fontSize) {
+        this.fontSizeSelect.selectedIndex = i;
+        break;
       }
-      this.BackgroundColor = this.colorType === 'background-color' ? event.path[0].value : this.BackgroundColor;
-      this.textColor = this.colorType === 'color' ? event.path[0].value : this.textColor;
     }
   }
 
@@ -81,18 +95,18 @@ export class PropertiesComponent implements OnInit {
     return false;
   }
 
-  getColor(colorType: string): string {
-    let color: string;
+  getStyleValue(style: string): string {
+    let value: string;
 
     if (!this.currentContainer.currentEditBox.inEditMode) {
-      color = this.currentContainer.currentEditBox.content.style[colorType];
+      value = this.currentContainer.currentEditBox.content.style[style];
 
       let node = this.currentContainer.currentEditBox.content.firstChild;
 
       for (let i = 0; i < node.childElementCount; i++) {
-        if (node.children[i].style[colorType].length > 0) {
-          if (node.children[i].style[colorType] !== color) {
-            color = '';
+        if (node.children[i].style[style].length > 0) {
+          if (node.children[i].style[style] !== value) {
+            value = '';
             break;
           }
         }
@@ -102,19 +116,19 @@ export class PropertiesComponent implements OnInit {
       let range: any = selection.getRangeAt(0);
 
       if (range.startContainer === range.endContainer) {
-        color = range.startContainer.parentElement.style[colorType];
-        if (color === '') color = this.currentContainer.currentEditBox.content.style[colorType];
-        if (color === '') return '';
+        value = range.startContainer.parentElement.style[style];
+        if (value === '') value = this.currentContainer.currentEditBox.content.style[style];
+        if (value === '') return '';
       } else {
         let contents = this.removeEmptyTextNodes(range.cloneContents());
-        color = contents.firstElementChild.style[colorType];
-        if (!Array.from(contents.childNodes).every((x: any) => x.style && x.style[colorType] === color)) {
+        value = contents.firstElementChild.style[style];
+        if (!Array.from(contents.childNodes).every((x: any) => x.style && x.style[style] === value)) {
           return '';
         }
       }
     }
 
-    return this.rgbToHex(color);
+    return value;
   }
 
   rgbToHex(color) {
@@ -130,7 +144,7 @@ export class PropertiesComponent implements OnInit {
   setColor(colorType: string) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
       this.colorType = colorType;
-      this.colorPalette.value = this.getColor(colorType);
+      this.colorPalette.value = this.rgbToHex(this.getStyleValue(colorType));
       this.colorPalette.click();
     }
   }
@@ -344,10 +358,11 @@ export class PropertiesComponent implements OnInit {
 
         selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
       }
-
-      this.currentContainer.currentEditBox.setChange();
-      this.checkStyles();
+    } else {
+      if (!toggle) this.currentContainer.currentEditBox.content.style[style] = styleValue;
     }
+    this.currentContainer.currentEditBox.setChange();
+    this.checkStyles();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -377,14 +392,15 @@ export class PropertiesComponent implements OnInit {
       this.isBold = this.selectionHasStyle('fontWeight');
       this.isItalic = this.selectionHasStyle('fontStyle');
       this.isUnderline = this.selectionHasStyle('textDecoration');
-      this.textColor = this.getColor('color');
-      this.BackgroundColor = this.getColor('background-color');
+      this.textColor = this.getStyleValue('color');
+      this.BackgroundColor = this.getStyleValue('background-color');
     } else {
       this.isBold = false;
       this.isItalic = false;
       this.isUnderline = false;
       this.textColor = '';
       this.BackgroundColor = '';
+      this.fontSizeSelect.value = '';
     }
   }
 
@@ -423,4 +439,6 @@ export class PropertiesComponent implements OnInit {
       }
     }
   }
+
+
 }

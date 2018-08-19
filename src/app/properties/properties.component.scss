@@ -17,16 +17,17 @@ select {
     background: #424242;
     color: white;
     outline-color: #c7c7c7;
+    cursor: pointer;
 }
-input {
-    margin-left: 12px;
-    width: 30px;
-    border: none;
-    background-color: #424242;
-    color: white;
-    outline: #bfbfbf;
-    text-align: center;
-}
+// input {
+//     margin-left: 12px;
+//     width: 30px;
+//     border: none;
+//     background-color: #424242;
+//     color: white;
+//     outline: #bfbfbf;
+//     text-align: center;
+// }
 .style-button {
     color: #9a9a9a;
     margin-left: 8px;

@@ -41,8 +41,25 @@
         <div class="color-bar" [style.backgroundColor]="textColor"></div>
         <i class="fas fa-font"></i>
     </div>
-
-
+    <select id="fontSizeSelect" #fontSize (change)="setStyle('font-size', fontSize.value)" title="Font size">
+        <option value="8px">8</option>
+        <option value="9px">9</option>
+        <option value="10px">10</option>
+        <option value="11px">11</option>
+        <option value="12px">12</option>
+        <option value="14px">14</option>
+        <option value="16px">16</option>
+        <option value="18px">18</option>
+        <option value="24px">24</option>
+        <option value="30px">30</option>
+        <option value="36px">36</option>
+        <option value="48px">48</option>
+        <option value="60px">60</option>
+        <option value="72px">72</option>
+        <option value="96px">96</option>
+      </select>
+    
+    <!-- <input #fontSizeInput (keydown)="setFontSize($event, fontSizeInput)" [value]="fontSize"> -->
 
 
     <!-- 
