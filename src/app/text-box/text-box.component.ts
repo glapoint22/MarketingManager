@@ -10,7 +10,6 @@ import { Rect } from '../rect';
 })
 export class TextBoxComponent extends EditBoxComponent {
   private height: number = -Infinity;
-  private padding: number = 7;
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
@@ -31,9 +30,9 @@ export class TextBoxComponent extends EditBoxComponent {
   }
 
   setChange() {
-    if (this.height <= this.content.firstChild.getBoundingClientRect().height + this.padding) {
+    if (this.height <= this.getContentHeight()) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.firstChild.getBoundingClientRect().height + this.padding);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.getContentHeight());
       }, () => {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
       });
@@ -45,9 +44,9 @@ export class TextBoxComponent extends EditBoxComponent {
     if (!size) {
       // Set style and HTML
       content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%; font-size: 14px; background: #ffffff;');
-      content.innerHTML = '<span>This is a temporary paragraph. Double click to edit this text.</span>';
+      content.innerHTML = '<p style="margin: 0">This is a temporary paragraph. Double click to edit this text.</p>';
       content.setAttribute('contenteditable', 'false');
-      size = new Vector2(180, 44);
+      size = new Vector2(180, 32);
     }
 
     super.initialize(content, size);
@@ -56,7 +55,7 @@ export class TextBoxComponent extends EditBoxComponent {
   setRightHandle(deltaPosition: Vector2) {
     super.setRightHandle(deltaPosition);
     this.setRect(() => {
-      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.content.firstChild.getBoundingClientRect().height + this.padding));
+      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.getContentHeight()));
     }, (tempRect) => {
       return new Rect(tempRect.x, tempRect.y, tempRect.width - deltaPosition.x, tempRect.height);
     });
@@ -65,7 +64,7 @@ export class TextBoxComponent extends EditBoxComponent {
   setLeftHandle(deltaPosition: Vector2) {
     super.setLeftHandle(deltaPosition);
     this.setRect(() => {
-      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.content.firstChild.getBoundingClientRect().height + this.padding));
+      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.getContentHeight()));
     }, (tempRect) => {
       return new Rect(tempRect.x - deltaPosition.x, tempRect.y, tempRect.width + deltaPosition.x, tempRect.height);
     });
@@ -73,13 +72,23 @@ export class TextBoxComponent extends EditBoxComponent {
 
   setBottomHandle(deltaPosition: Vector2) {
     super.setBottomHandle(deltaPosition);
-    if (this.rect.height < this.content.firstChild.getBoundingClientRect().height + this.padding) {
+    if (this.rect.height < this.getContentHeight()) {
       this.height = -Infinity;
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.firstChild.getBoundingClientRect().height + this.padding);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.getContentHeight());
       });
     } else {
       this.height = this.rect.height;
     }
+  }
+
+  getContentHeight() {
+    let height = 0;
+
+    for (let i = 0; i < this.content.children.length; i++) {
+      height += this.content.children[i].getBoundingClientRect().height;
+    }
+
+    return height;
   }
 }

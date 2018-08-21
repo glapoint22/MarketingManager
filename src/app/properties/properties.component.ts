@@ -20,20 +20,28 @@ export class PropertiesComponent implements OnInit {
   public BackgroundColor: string;
   public colorPalette: HTMLInputElement;
   public colorType: string;
-  public fontSizeSelect;
+  public fontDropdown;
+  public fontSizeDropdown;
   private copied: any = {};
 
   constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
 
   ngOnInit() {
-    this.fontSizeSelect = document.getElementById('fontSizeSelect');
-    this.fontSizeSelect.value = '';
+    this.fontDropdown = document.getElementById('fontDropdown');
+    this.fontDropdown.value = '';
+
+    this.fontSizeDropdown = document.getElementById('fontSizeDropdown');
+    this.fontSizeDropdown.value = '';
 
     // OnSelection
     this.propertiesService.onSelection.subscribe(() => {
-      this.textColor = this.getStyleValue('color');
-      this.BackgroundColor = this.getStyleValue('background-color');
-      this.getFontSize();
+      if (this.currentContainer && this.currentContainer.currentEditBox && !this.currentContainer.currentEditBox.inEditMode) {
+        this.textColor = this.getStyleValue('color');
+        this.BackgroundColor = this.getStyleValue('background-color');
+        this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+        this.getDropdownOption(this.fontDropdown, 'font-family');
+      }
+
     });
 
     // OnSetEditMode
@@ -45,6 +53,10 @@ export class PropertiesComponent implements OnInit {
     this.propertiesService.onUnSelect.subscribe(() => {
       this.checkStyles();
       this.cleanContent();
+      this.textColor = '';
+      this.BackgroundColor = '';
+      this.fontSizeDropdown.value = '';
+      this.fontDropdown.value = '';
     });
 
     // Set the color palette
@@ -55,16 +67,16 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-  getFontSize() {
-    let fontSize = this.getStyleValue('font-size');
-    if (fontSize === '') {
-      this.fontSizeSelect.value = '';
+  getDropdownOption(dropdown, style) {
+    let option = this.getStyleValue(style);
+    if (option === '') {
+      dropdown.value = '';
       return;
     }
 
-    for (let i = 0; i < this.fontSizeSelect.length; i++) {
-      if (this.fontSizeSelect.options[i].value === fontSize) {
-        this.fontSizeSelect.selectedIndex = i;
+    for (let i = 0; i < dropdown.length; i++) {
+      if (dropdown.options[i].value === option) {
+        dropdown.selectedIndex = i;
         break;
       }
     }
@@ -394,13 +406,12 @@ export class PropertiesComponent implements OnInit {
       this.isUnderline = this.selectionHasStyle('textDecoration');
       this.textColor = this.getStyleValue('color');
       this.BackgroundColor = this.getStyleValue('background-color');
+      this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+      this.getDropdownOption(this.fontDropdown, 'font-family');
     } else {
       this.isBold = false;
       this.isItalic = false;
       this.isUnderline = false;
-      this.textColor = '';
-      this.BackgroundColor = '';
-      this.fontSizeSelect.value = '';
     }
   }
 
