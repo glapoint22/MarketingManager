@@ -43,10 +43,10 @@ export class TextBoxComponent extends EditBoxComponent {
   initialize(content: HTMLElement, size?: Vector2) {
     if (!size) {
       // Set style and HTML
-      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%; font-size: 14px; background: #ffffff;');
-      content.innerHTML = '<p style="margin: 0">This is a temporary paragraph. Double click to edit this text.</p>';
+      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%; font-size: 16px; background: #ffffff;');
+      content.innerHTML = '<div>This is a temporary paragraph. Double click to edit this text.</div>';
       content.setAttribute('contenteditable', 'false');
-      size = new Vector2(180, 32);
+      size = new Vector2(180, 54);
     }
 
     super.initialize(content, size);

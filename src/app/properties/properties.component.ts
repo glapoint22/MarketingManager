@@ -289,7 +289,6 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-
   setStyle(style: string, styleValue: string, toggle?: boolean) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
       let selection = document.getSelection();
@@ -451,5 +450,22 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
+  createList(listType: string) {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+      let selection = document.getSelection();
+      let range: any = selection.getRangeAt(0);
+      
+      
 
+      let list = document.createElement(listType);
+      list.style.marginLeft = '0.5em';
+      list.style.marginTop = '0';
+      list.style.paddingLeft = '1.3em';
+      let listItem = document.createElement('LI');
+      listItem.appendChild(range.extractContents());
+      list.appendChild(listItem);
+      
+      range.insertNode(list);
+    }
+  }
 }
