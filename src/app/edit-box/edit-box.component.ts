@@ -276,9 +276,9 @@ export class EditBoxComponent {
     this.content.setAttribute('contenteditable', 'true');
 
     let selection = document.getSelection(),
-      node: any = this.content.firstChild,
-      firstChild = node.firstChild.nodeType === 3 ? node.firstChild : node.firstChild.firstChild,
-      lastChild = node.lastChild.nodeType === 3 ? node.lastChild : node.lastChild.firstChild;
+      node: any = this.content,
+      firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
+      lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
 
     selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
     this.content.style.setProperty('cursor', 'text');

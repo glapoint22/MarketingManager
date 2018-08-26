@@ -41,20 +41,21 @@
     select:not(:first-child) {
         margin-left: 8px;
     }
+    .style-button:hover:not(.style-button-activated):not(.style-button-disabled) {
+        background: #414141;
+        color: #bebebe;
+    }
+    .style-button-activated {
+        background: #0066ff;
+        color: #ffffff;
+    }
+    .style-button-disabled {
+        background: #282828;
+        color: #3c3c3c;
+    }
 }
 
-.style-button:hover:not(.style-button-activated):not(.style-button-disabled) {
-    background: #414141;
-    color: #bebebe;
-}
-.style-button-activated {
-    background: #0066ff;
-    color: #ffffff;
-}
-.style-button-disabled {
-    background: #282828;
-    color: #3c3c3c;
-}
+
 .color-bar {
     position: absolute;
     width: 12px;

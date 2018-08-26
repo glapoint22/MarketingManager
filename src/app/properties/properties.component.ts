@@ -452,20 +452,59 @@ export class PropertiesComponent implements OnInit {
 
   createList(listType: string) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      let selection = document.getSelection();
-      let range: any = selection.getRangeAt(0);
-      
-      
+      let selection = document.getSelection(),
+        range: any = selection.getRangeAt(0),
+        list = document.createElement(listType);
 
-      let list = document.createElement(listType);
       list.style.marginLeft = '0.5em';
       list.style.marginTop = '0';
+      list.style.marginBottom = '0';
       list.style.paddingLeft = '1.3em';
-      let listItem = document.createElement('LI');
-      listItem.appendChild(range.extractContents());
-      list.appendChild(listItem);
-      
-      range.insertNode(list);
+
+      if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
+        // range.selectNodeContents(range.commonAncestorContainer);
+        let contents = this.removeEmptyTextNodes(range.extractContents());
+        let div = document.createElement('DIV');
+
+
+        for (let i = 0; i < contents.childElementCount; i++) {
+          let listItem = document.createElement('LI');
+
+          if (contents.children[i].childNodes[0].tagName === 'OL' || contents.children[i].childNodes[0].tagName === 'UL') {
+            for(let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++){
+              list.appendChild(contents.children[i].childNodes[0].children[j]);
+              j--;
+            }
+          } else {
+            while (contents.children[i].childNodes.length > 0) {
+              listItem.appendChild(contents.children[i].childNodes[0]);
+            }
+            list.appendChild(listItem);
+          }
+
+
+          
+        }
+        div.appendChild(list);
+        range.insertNode(div);
+      } else {
+        let node = range.commonAncestorContainer;
+        while (node.tagName !== 'DIV') {
+          node = node.parentElement;
+        }
+
+        range.selectNodeContents(node);
+
+
+        let listItem = document.createElement('LI');
+        listItem.appendChild(range.extractContents());
+        list.appendChild(listItem);
+
+        range.insertNode(list);
+      }
+
+
+
     }
   }
 }
