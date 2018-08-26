@@ -461,21 +461,29 @@ export class PropertiesComponent implements OnInit {
       list.style.marginBottom = '0';
       list.style.paddingLeft = '1.3em';
 
+      if(range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL' || range.commonAncestorContainer.parentElement.tagName === 'LI'){
+        let node = range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL' ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer.parentElement.parentElement.parentElement;
+        
+        
+        
+        let index = Array.from(node.parentElement.children).findIndex(x => x === node);
+        selection.setBaseAndExtent(node.parentElement, index, node.parentElement, index + 1);
+        range = selection.getRangeAt(0);
+      }
+
       if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
-        // range.selectNodeContents(range.commonAncestorContainer);
         let contents = this.removeEmptyTextNodes(range.extractContents());
         let div = document.createElement('DIV');
 
-
         for (let i = 0; i < contents.childElementCount; i++) {
-          let listItem = document.createElement('LI');
-
           if (contents.children[i].childNodes[0].tagName === 'OL' || contents.children[i].childNodes[0].tagName === 'UL') {
-            for(let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++){
+            for (let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++) {
               list.appendChild(contents.children[i].childNodes[0].children[j]);
               j--;
             }
           } else {
+            let listItem = document.createElement('LI');
+
             while (contents.children[i].childNodes.length > 0) {
               listItem.appendChild(contents.children[i].childNodes[0]);
             }
@@ -483,7 +491,7 @@ export class PropertiesComponent implements OnInit {
           }
 
 
-          
+
         }
         div.appendChild(list);
         range.insertNode(div);
@@ -503,8 +511,28 @@ export class PropertiesComponent implements OnInit {
         range.insertNode(list);
       }
 
+    }
 
+    this.removeEmptyChildren(this.currentContainer.currentEditBox.content);
+
+  }
+
+  removeEmptyChildren(node) {
+    for (let i = 0; i < node.childNodes.length; i++) {
+      if ((node.childNodes[i].nodeType === 1 && node.childNodes[i].childNodes.length === 0) || (node.childNodes[i].nodeType === 3 && node.childNodes[i].length === 0)) {
+        node.childNodes[i].parentElement.remove();
+        return true;
+      }
+      if (node.childNodes[i] && node.childNodes[i].childNodes.length > 0) {
+        if (this.removeEmptyChildren(node.childNodes[i])) {
+          i = -1;
+          if (node !== this.currentContainer.currentEditBox.content) return true;
+
+        }
+      }
 
     }
+    return false;
   }
+
 }
