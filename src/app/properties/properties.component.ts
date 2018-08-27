@@ -461,17 +461,39 @@ export class PropertiesComponent implements OnInit {
       list.style.marginBottom = '0';
       list.style.paddingLeft = '1.3em';
 
-      if(range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL' || range.commonAncestorContainer.parentElement.tagName === 'LI'){
-        let node = range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL' ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer.parentElement.parentElement.parentElement;
-        
-        
-        
+      // Test to see if a list is already selected
+      if ((range.commonAncestorContainer.tagName === 'OL'
+        || range.commonAncestorContainer.tagName === 'UL')
+        || (range.commonAncestorContainer.nodeType === 1 && (range.commonAncestorContainer.firstChild.tagName === 'OL' || range.commonAncestorContainer.firstChild.tagName === 'UL'))
+        || (range.commonAncestorContainer.parentElement.tagName === 'LI')) {
+
+        // Get the node that has the selection
+        let node;
+        if (range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL') {
+          node = range.commonAncestorContainer.parentElement;
+        } else if (range.commonAncestorContainer.parentElement.tagName === 'LI') {
+          node = range.commonAncestorContainer.parentElement.parentElement.parentElement
+        } else if (range.commonAncestorContainer.parentElement === this.currentContainer.currentEditBox.content) {
+          node = range.commonAncestorContainer;
+        }
+
+        if (node.firstChild.tagName === listType) {
+          this.removeList(node);
+          return;
+        }
+
+        // Select the contents of the node
         let index = Array.from(node.parentElement.children).findIndex(x => x === node);
         selection.setBaseAndExtent(node.parentElement, index, node.parentElement, index + 1);
         range = selection.getRangeAt(0);
       }
 
       if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
+        if (range.commonAncestorContainer.children[range.startOffset].firstChild.tagName === listType) {
+          this.removeList(range.commonAncestorContainer.children[range.startOffset]);
+          return;
+        }
+
         let contents = this.removeEmptyTextNodes(range.extractContents());
         let div = document.createElement('DIV');
 
@@ -509,12 +531,34 @@ export class PropertiesComponent implements OnInit {
         list.appendChild(listItem);
 
         range.insertNode(list);
+
       }
 
     }
 
     this.removeEmptyChildren(this.currentContainer.currentEditBox.content);
 
+  }
+
+  removeList(node) {
+    let selection = document.getSelection();
+    selection.selectAllChildren(node);
+    let range = selection.getRangeAt(0);
+    let contents: any = range.extractContents();
+    
+    let documentFragment = document.createDocumentFragment();
+    node.remove();
+
+      
+
+    for (let i = 0; i < contents.firstChild.childElementCount; i++) {
+      let div = document.createElement('DIV');
+      div.appendChild(contents.firstChild.children[i].firstChild);
+      documentFragment.appendChild(div);
+      
+    }
+    
+    range.insertNode(documentFragment);
   }
 
   removeEmptyChildren(node) {
