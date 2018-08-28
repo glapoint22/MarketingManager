@@ -87,6 +87,8 @@ export class PropertiesComponent implements OnInit {
       if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
         contents.childNodes[i].remove();
         i--;
+      } else {
+        this.removeEmptyTextNodes(contents.childNodes[i]);
       }
     }
 
@@ -450,6 +452,26 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
+  getListNode(node) {
+    if (node.nodeType === 1 && (node.firstChild.tagName === 'UL' || node.firstChild.tagName === 'OL')) return node;
+
+    while (node !== this.currentContainer.currentEditBox.content) {
+      if (node.tagName === 'UL' || node.tagName === 'OL') {
+        return node.parentElement;
+      } else {
+        node = node.parentElement;
+      }
+    }
+    return null;
+  }
+
+  getParentNode(node) {
+    while (node.tagName !== 'DIV') {
+      node = node.parentElement;
+    }
+    return node;
+  }
+
   createList(listType: string) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
       let selection = document.getSelection(),
@@ -461,38 +483,38 @@ export class PropertiesComponent implements OnInit {
       list.style.marginBottom = '0';
       list.style.paddingLeft = '1.3em';
 
+      let listNode = this.getListNode(range.commonAncestorContainer);
+
       // Test to see if a list is already selected
-      if ((range.commonAncestorContainer.tagName === 'OL'
-        || range.commonAncestorContainer.tagName === 'UL')
-        || (range.commonAncestorContainer.nodeType === 1 && (range.commonAncestorContainer.firstChild.tagName === 'OL' || range.commonAncestorContainer.firstChild.tagName === 'UL'))
-        || (range.commonAncestorContainer.parentElement.tagName === 'LI')) {
-
-        // Get the node that has the selection
-        let node;
-        if (range.commonAncestorContainer.tagName === 'OL' || range.commonAncestorContainer.tagName === 'UL') {
-          node = range.commonAncestorContainer.parentElement;
-        } else if (range.commonAncestorContainer.parentElement.tagName === 'LI') {
-          node = range.commonAncestorContainer.parentElement.parentElement.parentElement
-        } else if (range.commonAncestorContainer.parentElement === this.currentContainer.currentEditBox.content) {
-          node = range.commonAncestorContainer;
-        }
-
-        if (node.firstChild.tagName === listType) {
-          this.removeList(node);
+      if (listNode) {
+        if (listNode.firstChild.tagName === listType) {
+          this.removeList(listNode);
           return;
         }
 
         // Select the contents of the node
-        let index = Array.from(node.parentElement.children).findIndex(x => x === node);
-        selection.setBaseAndExtent(node.parentElement, index, node.parentElement, index + 1);
+        let index = Array.from(listNode.parentElement.children).findIndex(x => x === listNode);
+        selection.setBaseAndExtent(listNode.parentElement, index, listNode.parentElement, index + 1);
         range = selection.getRangeAt(0);
       }
 
+
       if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
-        if (range.commonAncestorContainer.children[range.startOffset].firstChild.tagName === listType) {
-          this.removeList(range.commonAncestorContainer.children[range.startOffset]);
-          return;
+        // if (range.commonAncestorContainer.children[range.startOffset].firstChild.tagName === listType) {
+        //   this.removeList(range.commonAncestorContainer.children[range.startOffset]);
+        //   return;
+        // }
+
+        // selection.setBaseAndExtent(range.startContainer,0, range.endContainer, range.endContainer.length);
+        // range = selection.getRangeAt(0);
+
+        if (range.startContainer.nodeType === 3) {
+          let startNode = this.getParentNode(range.startContainer);
+          let endNode = this.getParentNode(range.endContainer);
+          selection.setBaseAndExtent(startNode, 0, endNode, endNode.childNodes.length);
+          range = selection.getRangeAt(0);
         }
+
 
         let contents = this.removeEmptyTextNodes(range.extractContents());
         let div = document.createElement('DIV');
@@ -517,6 +539,7 @@ export class PropertiesComponent implements OnInit {
         }
         div.appendChild(list);
         range.insertNode(div);
+        range.selectNodeContents(range.commonAncestorContainer.children[range.startOffset]);
       } else {
         let node = range.commonAncestorContainer;
         while (node.tagName !== 'DIV') {
@@ -527,7 +550,7 @@ export class PropertiesComponent implements OnInit {
 
 
         let listItem = document.createElement('LI');
-        listItem.appendChild(range.extractContents());
+        listItem.appendChild(this.removeEmptyTextNodes(range.extractContents()));
         list.appendChild(listItem);
 
         range.insertNode(list);
@@ -545,26 +568,30 @@ export class PropertiesComponent implements OnInit {
     selection.selectAllChildren(node);
     let range = selection.getRangeAt(0);
     let contents: any = range.extractContents();
-    
+
     let documentFragment = document.createDocumentFragment();
     node.remove();
 
-      
+
 
     for (let i = 0; i < contents.firstChild.childElementCount; i++) {
       let div = document.createElement('DIV');
-      div.appendChild(contents.firstChild.children[i].firstChild);
+      for (let j = 0; j < contents.firstChild.children[i].childNodes.length; j++) {
+        div.appendChild(contents.firstChild.children[i].childNodes[j]);
+        j--;
+      }
+
       documentFragment.appendChild(div);
-      
+
     }
-    
+
     range.insertNode(documentFragment);
   }
 
   removeEmptyChildren(node) {
     for (let i = 0; i < node.childNodes.length; i++) {
       if ((node.childNodes[i].nodeType === 1 && node.childNodes[i].childNodes.length === 0) || (node.childNodes[i].nodeType === 3 && node.childNodes[i].length === 0)) {
-        node.childNodes[i].parentElement.remove();
+        node.childNodes[i].remove();
         return true;
       }
       if (node.childNodes[i] && node.childNodes[i].childNodes.length > 0) {
