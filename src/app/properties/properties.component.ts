@@ -59,6 +59,40 @@ export class PropertiesComponent implements OnInit {
       this.fontDropdown.value = '';
     });
 
+    this.propertiesService.onEnter.subscribe(() => {
+      window.setTimeout(() => {
+        let content = this.currentContainer.currentEditBox.content;
+        let contents = document.createDocumentFragment();
+        let node;
+        for (let i = 0; i < content.childElementCount; i++) {
+          for (let j = 0; j < content.children[i].childElementCount; j++) {
+            if (content.children[i].children[j].tagName === 'DIV') {
+              if (j === content.children[i].childElementCount - 1) {
+                contents.appendChild(content.children[i].children[j]);
+              } else {
+                contents.appendChild(content.children[i].children[j]);
+                let div = document.createElement('DIV');
+                div.appendChild(content.children[i].children[j])
+                contents.appendChild(div);
+              }
+
+              if(i === content.childElementCount - 1){
+                content.appendChild(contents);
+                node = content.lastChild;
+              }else{
+                content.insertBefore(contents, content.children[i + 1]);
+                node = content.children[i + 1];
+              }
+              
+              
+              let selection = document.getSelection();
+              selection.setPosition(node, 0);
+            }
+          }
+        }
+      }, 1);
+    });
+
     // Set the color palette
     this.colorPalette = document.createElement('input');
     this.colorPalette.type = 'color';
@@ -478,36 +512,30 @@ export class PropertiesComponent implements OnInit {
         range: any = selection.getRangeAt(0),
         list = document.createElement(listType);
 
+      // Set the style of the list
       list.style.marginLeft = '0.5em';
       list.style.marginTop = '0';
       list.style.marginBottom = '0';
       list.style.paddingLeft = '1.3em';
 
-      let listNode = this.getListNode(range.commonAncestorContainer);
-
       // Test to see if a list is already selected
+      let listNode = this.getListNode(range.commonAncestorContainer);
       if (listNode) {
+        // If list type is same as selected, remove list
         if (listNode.firstChild.tagName === listType) {
           this.removeList(listNode);
           return;
         }
 
-        // Select the contents of the node
+        // Select the contents of the list
         let index = Array.from(listNode.parentElement.children).findIndex(x => x === listNode);
         selection.setBaseAndExtent(listNode.parentElement, index, listNode.parentElement, index + 1);
         range = selection.getRangeAt(0);
       }
 
-
+      // commonAncestorContainer is the edit box content div
       if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
-        // if (range.commonAncestorContainer.children[range.startOffset].firstChild.tagName === listType) {
-        //   this.removeList(range.commonAncestorContainer.children[range.startOffset]);
-        //   return;
-        // }
-
-        // selection.setBaseAndExtent(range.startContainer,0, range.endContainer, range.endContainer.length);
-        // range = selection.getRangeAt(0);
-
+        // If text is selected, reselect their div parents
         if (range.startContainer.nodeType === 3) {
           let startNode = this.getParentNode(range.startContainer);
           let endNode = this.getParentNode(range.endContainer);
@@ -515,51 +543,59 @@ export class PropertiesComponent implements OnInit {
           range = selection.getRangeAt(0);
         }
 
-
-        let contents = this.removeEmptyTextNodes(range.extractContents());
-        let div = document.createElement('DIV');
+        // Extract the contents and create the parent div
+        let contents = this.removeEmptyTextNodes(range.extractContents()),
+          div = document.createElement('DIV');
 
         for (let i = 0; i < contents.childElementCount; i++) {
+          // If the contents are list items, append to the list
           if (contents.children[i].childNodes[0].tagName === 'OL' || contents.children[i].childNodes[0].tagName === 'UL') {
             for (let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++) {
               list.appendChild(contents.children[i].childNodes[0].children[j]);
               j--;
             }
           } else {
+            // Create a list element and append the contents
             let listItem = document.createElement('LI');
-
             while (contents.children[i].childNodes.length > 0) {
               listItem.appendChild(contents.children[i].childNodes[0]);
             }
             list.appendChild(listItem);
           }
-
-
-
         }
+
+        // Append the list to the div and insert the div
         div.appendChild(list);
         range.insertNode(div);
+
+        // Reselect
         range.selectNodeContents(range.commonAncestorContainer.children[range.startOffset]);
       } else {
+        // Make sure the parent div is selected
         let node = range.commonAncestorContainer;
         while (node.tagName !== 'DIV') {
           node = node.parentElement;
         }
-
         range.selectNodeContents(node);
 
-
+        // Put the contents into a list item
         let listItem = document.createElement('LI');
         listItem.appendChild(this.removeEmptyTextNodes(range.extractContents()));
+
+        // Append the list item into the list and insert the list into the editbox content
         list.appendChild(listItem);
-
         range.insertNode(list);
-
       }
-
     }
 
-    this.removeEmptyChildren(this.currentContainer.currentEditBox.content);
+    // Remove any empty nodes
+    for (let i = 0; i < this.currentContainer.currentEditBox.content.childElementCount; i++) {
+      if (this.currentContainer.currentEditBox.content.children[i].childNodes.length === 0) {
+        this.currentContainer.currentEditBox.content.children[i].remove();
+        i--;
+      }
+    }
+
 
   }
 
@@ -588,22 +624,6 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(documentFragment);
   }
 
-  removeEmptyChildren(node) {
-    for (let i = 0; i < node.childNodes.length; i++) {
-      if ((node.childNodes[i].nodeType === 1 && node.childNodes[i].childNodes.length === 0) || (node.childNodes[i].nodeType === 3 && node.childNodes[i].length === 0)) {
-        node.childNodes[i].remove();
-        return true;
-      }
-      if (node.childNodes[i] && node.childNodes[i].childNodes.length > 0) {
-        if (this.removeEmptyChildren(node.childNodes[i])) {
-          i = -1;
-          if (node !== this.currentContainer.currentEditBox.content) return true;
 
-        }
-      }
-
-    }
-    return false;
-  }
 
 }

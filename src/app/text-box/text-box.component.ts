@@ -19,6 +19,12 @@ export class TextBoxComponent extends EditBoxComponent {
       this.setChange();
     }
 
+    this.content.onkeydown = (event: KeyboardEvent) =>{
+      if(event.code === 'Enter' || event.code === 'NumpadEnter'){
+        this.propertiesService.checkEnter();
+      }
+    }
+
     this.content.onblur = () => {
       let selection = document.getSelection(),
         range = selection.getRangeAt(0);
