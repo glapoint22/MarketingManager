@@ -62,31 +62,42 @@ export class PropertiesComponent implements OnInit {
     this.propertiesService.onEnter.subscribe(() => {
       window.setTimeout(() => {
         let content = this.currentContainer.currentEditBox.content;
-        let contents = document.createDocumentFragment();
-        let node;
+
+        // Loop through the content to search for a break in a list
         for (let i = 0; i < content.childElementCount; i++) {
           for (let j = 0; j < content.children[i].childElementCount; j++) {
             if (content.children[i].children[j].tagName === 'DIV') {
-              if (j === content.children[i].childElementCount - 1) {
-                contents.appendChild(content.children[i].children[j]);
-              } else {
-                contents.appendChild(content.children[i].children[j]);
-                let div = document.createElement('DIV');
+              let div = document.createElement('DIV');
+              let documentFragment = document.createDocumentFragment();
+              let breakNode;
+
+              // Remove the div with the break and replace with a new one to prevent style carry over
+              content.children[i].children[j].remove();
+              div.appendChild(document.createElement('BR'));
+              documentFragment.appendChild(div);
+
+              // Take the remaining list elements and place them in a div
+              if (j !== content.children[i].childElementCount) {
+                div = document.createElement('DIV');
                 div.appendChild(content.children[i].children[j])
-                contents.appendChild(div);
+                documentFragment.appendChild(div);
               }
 
-              if(i === content.childElementCount - 1){
-                content.appendChild(contents);
-                node = content.lastChild;
-              }else{
-                content.insertBefore(contents, content.children[i + 1]);
-                node = content.children[i + 1];
+              // Assign the new break node
+              breakNode = documentFragment.children[0];
+
+              // Place the document fragment with the lists into the content
+              if (i === content.childElementCount - 1) {
+                content.appendChild(documentFragment);
+              } else {
+                content.insertBefore(documentFragment, content.children[i + 1]);
               }
-              
-              
+
+              // Select the break node
               let selection = document.getSelection();
-              selection.setPosition(node, 0);
+              selection.setPosition(breakNode, 0);
+
+              return;
             }
           }
         }
