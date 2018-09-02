@@ -253,89 +253,6 @@ export class PropertiesComponent implements OnInit {
   }
 
 
-
-  // setWholeText(range, style, styleValue, contents) {
-  //   range.startContainer.parentElement.style[style] = styleValue;
-
-  //   if (range.startContainer.parentElement.getAttribute('style').length === 0) {
-  //     contents = range.cloneContents();
-  //     range.startContainer.parentElement.remove();
-  //     range.insertNode(contents);
-
-  //     // Reset selection
-  //     range.selectNodeContents(range.startContainer.childNodes[range.startOffset]);
-  //   }
-  // }
-
-
-  // setBeginningOrEndText(range, style, styleValue, contents, selection, position) {
-  //   let node = range.startContainer.parentElement.cloneNode();
-  //   node.style[style] = styleValue;
-  //   contents = range.extractContents();
-
-  //   if (node.getAttribute('style').length > 0) {
-  //     node.appendChild(contents);
-  //     contents = node;
-  //   }
-
-  //   let index = Array.from(range.startContainer.parentElement.parentElement.childNodes).findIndex(x => x === range.startContainer.parentElement);
-  //   selection.setPosition(range.startContainer.parentElement.parentElement, index + position);
-  //   range = selection.getRangeAt(0);
-  //   range.insertNode(contents);
-
-  //   // Reset selection
-  //   node = range.startContainer.childNodes[range.startOffset].nodeType === 1 ? range.startContainer.childNodes[range.startOffset].firstChild : range.startContainer.childNodes[range.startOffset];
-  //   range.selectNodeContents(node);
-  // }
-
-  // setMidText(range, style, styleValue, contents) {
-  //   let startString = range.startContainer.substringData(0, range.startOffset),
-  //     endString = range.endContainer.substringData(range.endOffset, range.endContainer.length),
-  //     startSpan = document.createElement('span'), endSpan = document.createElement('span');
-
-  //   startSpan.setAttribute('style', range.startContainer.parentElement.getAttribute('style'));
-  //   startSpan.appendChild(document.createTextNode(startString));
-  //   endSpan.setAttribute('style', range.startContainer.parentElement.getAttribute('style'));
-  //   endSpan.appendChild(document.createTextNode(endString));
-
-  //   let node = range.startContainer.parentElement.cloneNode();
-  //   node.style[style] = styleValue;
-
-
-  //   contents = range.cloneContents();
-
-  //   if (node.getAttribute('style').length > 0) {
-  //     node.appendChild(contents);
-  //     contents = document.createDocumentFragment();
-  //     contents.appendChild(node);
-  //   }
-
-  //   range.startContainer.parentElement.remove();
-  //   contents.insertBefore(startSpan, contents.childNodes[0]);
-  //   contents.insertBefore(endSpan, contents.childNodes[1].nextSibling);
-  //   range.insertNode(contents);
-
-  //   // Reset selection
-  //   node = range.startContainer.childNodes[range.startOffset + 1].nodeType === 1 ? range.startContainer.childNodes[range.startOffset + 1].firstChild : range.startContainer.childNodes[range.startOffset + 1];
-  //   range.selectNodeContents(node);
-  // }
-
-  // setSelectedText(range, style, styleValue, contents, selection) {
-  //   // Whole text is selected
-  //   if (range.startOffset === 0 && range.endOffset === range.startContainer.length) {
-  //     this.setWholeText(range, style, styleValue, contents);
-  //     // Beginning text is selected
-  //   } else if (range.startOffset === 0 && range.endOffset < range.startContainer.length) {
-  //     this.setBeginningOrEndText(range, style, styleValue, contents, selection, 0);
-  //     // Mid text is selected
-  //   } else if (range.startOffset > 0 && range.endOffset < range.startContainer.length) {
-  //     this.setMidText(range, style, styleValue, contents);
-  //     // End text is selected
-  //   } else if (range.startOffset > 0 && range.endOffset === range.startContainer.length) {
-  //     this.setBeginningOrEndText(range, style, styleValue, contents, selection, 1);
-  //   }
-  // }
-
   createStyleNode(text: string, style, styleValue) {
     let span = document.createElement('SPAN');
     let textNode = document.createTextNode(text);
@@ -345,28 +262,31 @@ export class PropertiesComponent implements OnInit {
     return span;
   }
 
-  styleNode(node, offset, count, style, styleValue, removeStyle, isEndContainer?) {
+  copyEditStyleNode(node, data, style, styleValue) {
+    let newNode = node.cloneNode();
+    newNode.appendChild(document.createTextNode(data));
+    newNode.style[style] = styleValue;
+
+    if (newNode.getAttribute('style').length === 0) {
+      newNode = document.createTextNode(newNode.firstChild.data);
+    }
+
+    return newNode;
+  }
+
+  setNodeStyle(node, offset, count, style, styleValue, removeStyle) {
     // Beginning of node is selected
     if (offset === 0 && count < node.length) {
       if (removeStyle) {
         // Remove style
-        let clonedNode = node.parentElement.cloneNode(true);
-        clonedNode.firstChild.data = node.substringData(offset, count);
-        clonedNode.style[style] = null;
-
-        if (clonedNode.getAttribute('style').length === 0){
-          clonedNode = document.createTextNode(clonedNode.firstChild.data);
-        }
+        let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
 
         node.replaceData(offset, count, '');
-        node.parentElement.parentElement.insertBefore(clonedNode, node.parentElement);
+        node.parentElement.parentElement.insertBefore(newNode, node.parentElement);
       } else {
         // Copy the style node if a style is already applied
         if (node.parentElement.tagName === 'SPAN') {
-          let styleNode = node.parentElement.cloneNode(true);
-
-          styleNode.firstChild.data = styleNode.firstChild.substringData(offset, count);
-          styleNode.style[style] = styleValue;
+          let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
           node.replaceData(offset, count, '');
           node.parentElement.parentElement.insertBefore(styleNode, node.parentElement);
         } else {
@@ -389,14 +309,7 @@ export class PropertiesComponent implements OnInit {
           // Remove span if there is no style applied
           if (node.parentElement.getAttribute('style').length === 0) {
             let textNode = document.createTextNode(node.data);
-
-            // Replace a different way if we are on the end container to hold selection
-            if (isEndContainer) {
-              node.parentElement.parentElement.insertBefore(textNode, node.parentElement);
-              node.parentElement.remove();
-            } else {
-              node.parentElement.replaceWith(textNode);
-            }
+            node.parentElement.replaceWith(textNode);
           }
         } else {
           // Apply style
@@ -405,14 +318,7 @@ export class PropertiesComponent implements OnInit {
       } else {
         // Create style
         let styleNode = this.createStyleNode(node.data, style, styleValue);
-
-        // Replace a different way if we are on the end container to hold selection
-        if (isEndContainer) {
-          node.parentElement.insertBefore(styleNode, node);
-          node.remove();
-        } else {
-          node.replaceWith(styleNode);
-        }
+        node.replaceWith(styleNode);
       }
 
 
@@ -420,19 +326,17 @@ export class PropertiesComponent implements OnInit {
     } else if (offset > 0 && node.length - offset === count) {
       if (removeStyle) {
         // Remove style
-        let textNode = document.createTextNode(node.substringData(offset, count));
+        let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
 
         node.replaceData(offset, count, '');
-        node.parentElement.parentElement.insertBefore(textNode, node.nextSibling);
+        node.parentElement.parentElement.insertBefore(newNode, node.parentElement.nextSibling);
       } else {
         // Copy the style node if a style is already applied
         if (node.parentElement.tagName === 'SPAN') {
-          let styleNode = node.parentElement.cloneNode(true);
+          let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
 
-          styleNode.firstChild.data = styleNode.firstChild.substringData(offset, count);
-          styleNode.style[style] = styleValue;
           node.replaceData(offset, count, '');
-          node.parentElement.parentElement.insertBefore(styleNode, node.nextSibling);
+          node.parentElement.parentElement.insertBefore(styleNode, node.parentElement.nextSibling);
         } else {
           // Create style
           let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
@@ -440,53 +344,49 @@ export class PropertiesComponent implements OnInit {
           node.parentElement.insertBefore(styleNode, node.nextSibling);
         }
       }
+
+
+      // Middle of node is selected
     } else if (offset > 0 && count < node.length - offset) {
-      // Create style
-      let startTextNode = document.createTextNode(node.substringData(0, offset)),
-        endTextNode = document.createTextNode(node.substringData(offset + count, node.length - (offset + count))),
-        documentFragment = document.createDocumentFragment();
+      let documentFragment = document.createDocumentFragment(),
+        midNode,
+        startNode,
+        endNode,
+        newNode;
 
-      if (removeStyle) {
-        // Remove style
-        let textNode = document.createTextNode(node.substringData(offset, count));
-
-        node.replaceData(offset, count, '');
-        node.parentElement.parentElement.insertBefore(textNode, node.nextSibling);
+      if (node.parentElement.tagName === 'SPAN') {
+        newNode = node.parentElement;
+        startNode = newNode.cloneNode();
+        startNode.appendChild(document.createTextNode(node.substringData(0, offset)));
+        midNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, removeStyle ? null : styleValue);
+        endNode = newNode.cloneNode();
+        endNode.appendChild(document.createTextNode(node.substringData(offset + count, node.length - (offset + count))));
       } else {
-        // Copy the style node if a style is already applied
-        if (node.parentElement.tagName === 'SPAN') {
-          let styleNode = node.parentElement.cloneNode(true);
-
-          styleNode.firstChild.data = styleNode.firstChild.substringData(offset, count);
-          styleNode.style[style] = styleValue;
-          node.replaceData(offset, count, '');
-          node.parentElement.parentElement.insertBefore(styleNode, node.nextSibling);
-        } else {
-          // Create style
-          let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
-
-          documentFragment.appendChild(startTextNode);
-          documentFragment.appendChild(styleNode);
-          documentFragment.appendChild(endTextNode);
-          node.replaceWith(documentFragment);
-        }
+        newNode = node;
+        startNode = document.createTextNode(node.substringData(0, offset));
+        midNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
+        endNode = document.createTextNode(node.substringData(offset + count, node.length - (offset + count)));
       }
 
-
+      documentFragment.appendChild(startNode);
+      documentFragment.appendChild(midNode);
+      documentFragment.appendChild(endNode);
+      newNode.replaceWith(documentFragment);
     }
-
-
-
   }
 
   loopChildren(node, range, style, styleValue) {
-    node.childNodes.forEach(childNode => {
+    let clone = node.cloneNode(true);
+
+    clone.childNodes.forEach(cloneChild => {
+      let childNode: any = Array.from(node.childNodes).find((nodeChild: any) => cloneChild.nodeType === 1 ? nodeChild.outerHTML === cloneChild.outerHTML : nodeChild.data === cloneChild.data);
+
       if (childNode === range.startContainer) {
-        this.styleNode(childNode, range.startOffset, childNode.length - range.startOffset, style, styleValue, false);
+        this.setNodeStyle(childNode, range.startOffset, childNode.length - range.startOffset, style, styleValue, false);
       } else if (range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== range.endContainer) {
-        this.styleNode(childNode, 0, childNode.length, style, styleValue, false);
+        this.setNodeStyle(childNode, 0, childNode.length, style, styleValue, false);
       } else if (childNode === range.endContainer) {
-        this.styleNode(childNode, 0, range.endOffset, style, styleValue, false, true);
+        this.setNodeStyle(childNode, 0, range.endOffset, style, styleValue, false);
       }
 
       // Iterate through the children of this child node
@@ -503,7 +403,7 @@ export class PropertiesComponent implements OnInit {
 
       // Single container
       if (range.startContainer === range.endContainer) {
-        this.styleNode(range.startContainer, range.startOffset, range.endOffset - range.startOffset, style, styleValue, false);
+        this.setNodeStyle(range.startContainer, range.startOffset, range.endOffset - range.startOffset, style, styleValue, false);
         // Multiple containers
       } else {
         // Set the style to all children that are selected
