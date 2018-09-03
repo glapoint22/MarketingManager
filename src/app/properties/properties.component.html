@@ -1,217 +1,227 @@
-<div class="bar" style="background: #2d2d2d;">
+<div *ngIf="currentContainer && currentContainer.currentEditBox">
+    <div class="bar" style="background: #2d2d2d;">
 
-    <div class="group">
-        <div class="style-button" (click)="delete()" title="Delete (Del)">
-            <i class="fas fa-trash-alt"></i>
+        <div class="group">
+            <div class="style-button" (click)="delete()" title="Delete (Del)">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+
+            <div class="style-button" (click)="copy()" title="Copy (Ctrl+C)">
+                <i class="fas fa-copy"></i>
+            </div>
+
+            <div class="style-button" (click)="paste()" title="Paste (Ctrl+V)">
+                <i class="fas fa-paste"></i>
+            </div>
         </div>
 
-        <div class="style-button" (click)="copy()" title="Copy (Ctrl+C)">
-            <i class="fas fa-copy"></i>
+        <div class="group">
+            <div *ngFor="let style of currentContainer.currentEditBox.styles">
+                <div class="style-button" (click)="style.setStyle()" [title]="style.title">
+                    <i [class]="style.icon"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="style-button" (click)="paste()" title="Paste (Ctrl+V)">
-            <i class="fas fa-paste"></i>
+        <!-- <div class="group">
+            <div class="style-button" (click)="createList('OL')" title="Ordered list">
+                <i class="fas fa-list-ol"></i>
+            </div>
+    
+            <div class="style-button" (click)="createList('UL')" title="Unordered list">
+                <i class="fas fa-list-ul"></i>
+            </div>
         </div>
+    
+    
+        <div class="group">
+            <div class="style-button" (click)="alignText()" title="Align left">
+                <i class="fas fa-align-left"></i>
+            </div>
+    
+            <div class="style-button" (click)="alignText('center')" title="Align center">
+                <i class="fas fa-align-center"></i>
+            </div>
+    
+            <div class="style-button" (click)="alignText('right')" title="Align right">
+                <i class="fas fa-align-right"></i>
+            </div>
+    
+            <div class="style-button" (click)="alignText('justify')" title="Align justify">
+                <i class="fas fa-align-justify"></i>
+            </div>
+        </div>
+    
+        <div class="group">
+            <div class="style-button" title="Link">
+                <i class="fas fa-link"></i>
+            </div>
+        </div> -->
+
+
+
+
     </div>
 
-    <div class="group">
-        <div class="style-button" (click)="createList('OL')" title="Ordered list">
-            <i class="fas fa-list-ol"></i>
+
+    <div class="bar" style="background: #282828;">
+        <!-- <div class="group">
+            <div class="style-button" (click)="setStyle('fontWeight', 'bold', true)" title="Bold (Ctrl+B)" [ngClass]="{'style-button-activated': isBold}">
+                <i class="fas fa-bold"></i>
+            </div>
+    
+            <div class="style-button" (click)="setStyle('fontStyle', 'italic', true)" title="Italic (Ctrl+I)" [ngClass]="{'style-button-activated': isItalic}">
+                <i class="fas fa-italic"></i>
+            </div>
+    
+            <div class="style-button" (click)="setStyle('textDecoration', 'underline', true)" title="Underline (Ctrl+U)" [ngClass]="{'style-button-activated': isUnderline}">
+                <i class="fas fa-underline"></i>
+            </div>
         </div>
-
-        <div class="style-button" (click)="createList('UL')" title="Unordered list">
-            <i class="fas fa-list-ul"></i>
+    
+        <div class="group">
+            <div class="style-button" (click)="setColor('background-color')" title="Background color" style="position: relative;">
+                <div class="color-bar" [style.backgroundColor]="BackgroundColor"></div>
+                <i class="fas fa-fill"></i>
+            </div>
+    
+            <div class="style-button" (click)="setColor('color')" title="Text color" style="position: relative;">
+                <div class="color-bar" [style.backgroundColor]="textColor"></div>
+                <i class="fas fa-font"></i>
+            </div>
         </div>
-    </div>
+    
+        <div class="group">
+            <select id="fontDropdown" #font (change)="setStyle('font-family', font.value)" title="Font" style="width: 96px">
+                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                <option value='"Times New Roman", Times, serif'>Times New Roman</option>
+                <option value='"Courier New", Courier, monospace'>Courier New</option>
+                <option value="Verdana, Geneva, Tahoma, sans-serif">Verdana</option>
+                <option value='"Comic Sans MS", "Comic Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif'>Comic
+                    Sans MS
+                </option>
+                <option value='"Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif'>Trebuchet
+                    MS
+                </option>
+                <option value='Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif'>Impact</option>
+            </select>
+    
+            <select id="fontSizeDropdown" #fontSize (change)="setStyle('font-size', fontSize.value)" title="Font size">
+                <option value="8px">8</option>
+                <option value="9px">9</option>
+                <option value="10px">10</option>
+                <option value="11px">11</option>
+                <option value="12px">12</option>
+                <option value="14px">14</option>
+                <option value="16px">16</option>
+                <option value="18px">18</option>
+                <option value="24px">24</option>
+                <option value="30px">30</option>
+                <option value="36px">36</option>
+                <option value="48px">48</option>
+                <option value="60px">60</option>
+                <option value="72px">72</option>
+                <option value="96px">96</option>
+            </select>
+        </div> -->
 
 
-    <div class="group">
-        <div class="style-button" (click)="alignText()" title="Align left">
-            <i class="fas fa-align-left"></i>
-        </div>
-
-        <div class="style-button" (click)="alignText('center')" title="Align center">
-            <i class="fas fa-align-center"></i>
-        </div>
-
-        <div class="style-button" (click)="alignText('right')" title="Align right">
-            <i class="fas fa-align-right"></i>
-        </div>
-
-        <div class="style-button" (click)="alignText('justify')" title="Align justify">
-            <i class="fas fa-align-justify"></i>
-        </div>
-    </div>
-
-    <div class="group">
-        <div class="style-button" title="Link">
-            <i class="fas fa-link"></i>
-        </div>
-    </div>
 
 
 
+        <!-- <input #fontSizeInput (keydown)="setFontSize($event, fontSizeInput)" [value]="fontSize"> -->
 
-</div>
 
-
-<div class="bar" style="background: #282828;">
-    <div class="group">
-        <div class="style-button" (click)="setStyle('fontWeight', 'bold', true)" title="Bold (Ctrl+B)" [ngClass]="{'style-button-activated': isBold}">
-            <i class="fas fa-bold"></i>
-        </div>
-
-        <div class="style-button" (click)="setStyle('fontStyle', 'italic', true)" title="Italic (Ctrl+I)" [ngClass]="{'style-button-activated': isItalic}">
-            <i class="fas fa-italic"></i>
-        </div>
-
-        <div class="style-button" (click)="setStyle('textDecoration', 'underline', true)" title="Underline (Ctrl+U)" [ngClass]="{'style-button-activated': isUnderline}">
-            <i class="fas fa-underline"></i>
-        </div>
-    </div>
-
-    <div class="group">
-        <div class="style-button" (click)="setColor('background-color')" title="Background color" style="position: relative;">
-            <div class="color-bar" [style.backgroundColor]="BackgroundColor"></div>
-            <i class="fas fa-fill"></i>
-        </div>
-
-        <div class="style-button" (click)="setColor('color')" title="Text color" style="position: relative;">
-            <div class="color-bar" [style.backgroundColor]="textColor"></div>
-            <i class="fas fa-font"></i>
-        </div>
-    </div>
-
-    <div class="group">
-        <select id="fontDropdown" #font (change)="setStyle('font-family', font.value)" title="Font" style="width: 96px">
-            <option value="Arial, Helvetica, sans-serif">Arial</option>
-            <option value='"Times New Roman", Times, serif'>Times New Roman</option>
-            <option value='"Courier New", Courier, monospace'>Courier New</option>
-            <option value="Verdana, Geneva, Tahoma, sans-serif">Verdana</option>
-            <option value='"Comic Sans MS", "Comic Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif'>Comic
-                Sans MS
-            </option>
-            <option value='"Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif'>Trebuchet
-                MS
-            </option>
-            <option value='Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif'>Impact</option>
+        <!-- 
+    
+      
+    
+      
+    
+      
+    
+      <span style="color: #9a9a9a;margin-left: 12px; ">
+          <i class="fas fa-align-left"></i>
+      </span>
+    
+      <span style="color: #9a9a9a;margin-left: 12px; ">
+          <i class="fas fa-align-center"></i>
+      </span>
+    
+      <span style="color: #9a9a9a;margin-left: 12px; ">
+          <i class="fas fa-align-right"></i>
+      </span>
+    
+    
+      <span style="color: #9a9a9a;margin-left: 12px; ">
+          <i class="fas fa-list-ul"></i>
+      </span>
+      <span style="color: #9a9a9a;margin-left: 12px; ">
+          <i class="fas fa-list-ol"></i>
+      </span> -->
+        <!-- <select>
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
         </select>
-
-        <select id="fontSizeDropdown" #fontSize (change)="setStyle('font-size', fontSize.value)" title="Font size">
-            <option value="8px">8</option>
-            <option value="9px">9</option>
-            <option value="10px">10</option>
-            <option value="11px">11</option>
-            <option value="12px">12</option>
-            <option value="14px">14</option>
-            <option value="16px">16</option>
-            <option value="18px">18</option>
-            <option value="24px">24</option>
-            <option value="30px">30</option>
-            <option value="36px">36</option>
-            <option value="48px">48</option>
-            <option value="60px">60</option>
-            <option value="72px">72</option>
-            <option value="96px">96</option>
-        </select>
+        <input value="999"> -->
     </div>
 
+    <div style="width: 100%;
+    text-align: center;
+    margin-top: 28px;color: #d2d2d2;  ">
+
+        <div style="color: white; margin-top: 5px; margin-bottom: 5px">Position</div>
+        <span style="margin-right: 10px; font-size: 14px;">X:</span>
+        <input style="display: inline-block;
+          width: 35px;
+          text-align: center;
+          border: none;
+          border-radius: 5px;
+          outline: none;
+          color: #d2d2d2;
+          font-size: 14px;
+          background: #1e1e1e;" [value]="currentContainer && currentContainer.currentEditBox ? currentContainer.currentEditBox.rect.x : ''">
+        <br>
+
+        <span style="margin-right: 10px; font-size: 14px;">Y:</span>
+        <input style="display: inline-block;
+          width: 35px;
+          text-align: center;
+          border: none;
+          border-radius: 5px;
+          outline: none;
+          color: #d2d2d2;
+          font-size: 14px;
+          background: #1e1e1e;" value="999">
+
+
+        <div style="color: white; margin-top: 5px; margin-bottom: 5px">Size</div>
+        <span style="margin-right: 10px; font-size: 14px;">W:</span>
+        <input style="display: inline-block;
+          width: 35px;
+          text-align: center;
+          border: none;
+          border-radius: 5px;
+          outline: none;
+          color: #d2d2d2;
+          font-size: 14px;
+          background: #1e1e1e;" value="999">
+        <br>
+
+        <span style="margin-right: 10px; font-size: 14px;">H:</span>
+        <input style="display: inline-block;
+          width: 35px;
+          text-align: center;
+          border: none;
+          border-radius: 5px;
+          outline: none;
+          color: #d2d2d2;
+          font-size: 14px;
+          background: #1e1e1e;" value="999">
 
 
 
-
-    <!-- <input #fontSizeInput (keydown)="setFontSize($event, fontSizeInput)" [value]="fontSize"> -->
-
-
-    <!-- 
-
-  
-
-  
-
-  
-
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-align-left"></i>
-  </span>
-
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-align-center"></i>
-  </span>
-
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-align-right"></i>
-  </span>
-
-
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-list-ul"></i>
-  </span>
-  <span style="color: #9a9a9a;margin-left: 12px; ">
-      <i class="fas fa-list-ol"></i>
-  </span> -->
-    <!-- <select>
-      <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
-      <option value="mercedes">Mercedes</option>
-      <option value="audi">Audi</option>
-    </select>
-    <input value="999"> -->
-</div>
-
-<div style="width: 100%;
-text-align: center;
-margin-top: 28px;color: #d2d2d2;  ">
-
-    <div style="color: white; margin-top: 5px; margin-bottom: 5px">Position</div>
-    <span style="margin-right: 10px; font-size: 14px;">X:</span>
-    <input style="display: inline-block;
-      width: 35px;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-      color: #d2d2d2;
-      font-size: 14px;
-      background: #1e1e1e;" [value]="currentContainer && currentContainer.currentEditBox ? currentContainer.currentEditBox.rect.x : ''">
-    <br>
-
-    <span style="margin-right: 10px; font-size: 14px;">Y:</span>
-    <input style="display: inline-block;
-      width: 35px;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-      color: #d2d2d2;
-      font-size: 14px;
-      background: #1e1e1e;" value="999">
-
-
-    <div style="color: white; margin-top: 5px; margin-bottom: 5px">Size</div>
-    <span style="margin-right: 10px; font-size: 14px;">W:</span>
-    <input style="display: inline-block;
-      width: 35px;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-      color: #d2d2d2;
-      font-size: 14px;
-      background: #1e1e1e;" value="999">
-    <br>
-
-    <span style="margin-right: 10px; font-size: 14px;">H:</span>
-    <input style="display: inline-block;
-      width: 35px;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-      color: #d2d2d2;
-      font-size: 14px;
-      background: #1e1e1e;" value="999">
-
-
-
+    </div>
 </div>

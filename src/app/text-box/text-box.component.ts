@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { Rect } from '../rect';
+import { Bold } from '../bold';
 
 @Component({
   selector: 'text-box',
@@ -13,6 +14,8 @@ export class TextBoxComponent extends EditBoxComponent {
 
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
+
+    this.styles = [new Bold(this)]
 
     // Event when content changes
     this.content.oninput = () => {

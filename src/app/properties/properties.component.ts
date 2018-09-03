@@ -27,36 +27,36 @@ export class PropertiesComponent implements OnInit {
   constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
 
   ngOnInit() {
-    this.fontDropdown = document.getElementById('fontDropdown');
-    this.fontDropdown.value = '';
+    // this.fontDropdown = document.getElementById('fontDropdown');
+    // this.fontDropdown.value = '';
 
-    this.fontSizeDropdown = document.getElementById('fontSizeDropdown');
-    this.fontSizeDropdown.value = '';
+    // this.fontSizeDropdown = document.getElementById('fontSizeDropdown');
+    // this.fontSizeDropdown.value = '';
 
     // OnSelection
     this.propertiesService.onSelection.subscribe(() => {
       if (this.currentContainer && this.currentContainer.currentEditBox && !this.currentContainer.currentEditBox.inEditMode) {
         this.textColor = this.getStyleValue('color');
         this.BackgroundColor = this.getStyleValue('background-color');
-        this.getDropdownOption(this.fontSizeDropdown, 'font-size');
-        this.getDropdownOption(this.fontDropdown, 'font-family');
+        // this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+        // this.getDropdownOption(this.fontDropdown, 'font-family');
       }
 
     });
 
     // OnSetEditMode
     this.propertiesService.onSetEditMode.subscribe(() => {
-      this.checkStyles();
+      // this.checkStyles();
     });
 
     // OnUnSelect
     this.propertiesService.onUnSelect.subscribe(() => {
-      this.checkStyles();
-      this.cleanContent();
-      this.textColor = '';
-      this.BackgroundColor = '';
-      this.fontSizeDropdown.value = '';
-      this.fontDropdown.value = '';
+      // this.checkStyles();
+      // this.cleanContent();
+      // this.textColor = '';
+      // this.BackgroundColor = '';
+      // this.fontSizeDropdown.value = '';
+      // this.fontDropdown.value = '';
     });
 
     this.propertiesService.onEnter.subscribe(() => {
@@ -372,6 +372,11 @@ export class PropertiesComponent implements OnInit {
       documentFragment.appendChild(midNode);
       documentFragment.appendChild(endNode);
       newNode.replaceWith(documentFragment);
+      let selection = document.getSelection();
+      let range = selection.getRangeAt(0);
+      range.selectNodeContents(midNode);
+      // range.deleteContents();
+      // range.insertNode(midNode);
     }
   }
 
@@ -381,10 +386,15 @@ export class PropertiesComponent implements OnInit {
     clone.childNodes.forEach(cloneChild => {
       let childNode: any = Array.from(node.childNodes).find((nodeChild: any) => cloneChild.nodeType === 1 ? nodeChild.outerHTML === cloneChild.outerHTML : nodeChild.data === cloneChild.data);
 
+      // Start container
       if (childNode === range.startContainer) {
         this.setNodeStyle(childNode, range.startOffset, childNode.length - range.startOffset, style, styleValue, false);
+
+        // In range
       } else if (range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== range.endContainer) {
         this.setNodeStyle(childNode, 0, childNode.length, style, styleValue, false);
+
+        // End container
       } else if (childNode === range.endContainer) {
         this.setNodeStyle(childNode, 0, range.endOffset, style, styleValue, false);
       }
@@ -399,7 +409,7 @@ export class PropertiesComponent implements OnInit {
   setStyle(style: string, styleValue: string, toggle?: boolean) {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
       let selection = document.getSelection();
-      let range: any = selection.getRangeAt(0);
+      let range: Range = selection.getRangeAt(0);
 
       // Single container
       if (range.startContainer === range.endContainer) {
@@ -445,8 +455,8 @@ export class PropertiesComponent implements OnInit {
       this.isUnderline = this.selectionHasStyle('textDecoration');
       this.textColor = this.getStyleValue('color');
       this.BackgroundColor = this.getStyleValue('background-color');
-      this.getDropdownOption(this.fontSizeDropdown, 'font-size');
-      this.getDropdownOption(this.fontDropdown, 'font-family');
+      // this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+      // this.getDropdownOption(this.fontDropdown, 'font-family');
     } else {
       this.isBold = false;
       this.isItalic = false;

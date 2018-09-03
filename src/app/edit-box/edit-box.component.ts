@@ -2,6 +2,7 @@ import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { PropertiesService } from "../properties.service";
+import { Style } from '../style';
 
 @Component({
   selector: 'edit-box',
@@ -29,6 +30,7 @@ export class EditBoxComponent {
   public inEditMode: boolean;
   public content: any;
   public isSelected: boolean;
+  public styles: Array<Style>;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
