@@ -3,6 +3,8 @@ import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { Rect } from '../rect';
 import { Bold } from '../bold';
+import { Italic } from '../italic';
+import { Underline } from '../underline';
 
 @Component({
   selector: 'text-box',
@@ -15,15 +17,15 @@ export class TextBoxComponent extends EditBoxComponent {
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
-    this.styles = [new Bold(this)]
+    this.styles = [new Bold(this), new Italic(this), new Underline(this)];
 
     // Event when content changes
     this.content.oninput = () => {
       this.setChange();
     }
 
-    this.content.onkeydown = (event: KeyboardEvent) =>{
-      if(event.code === 'Enter' || event.code === 'NumpadEnter'){
+    this.content.onkeydown = (event: KeyboardEvent) => {
+      if (event.code === 'Enter' || event.code === 'NumpadEnter') {
         this.propertiesService.checkEnter();
       }
     }

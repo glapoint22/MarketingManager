@@ -1,15 +1,14 @@
 import { EditBoxComponent } from "./edit-box/edit-box.component";
 import { ToggleableStyle } from "./toggleable-style";
 
-export class Bold extends ToggleableStyle {
-
+export class Italic extends ToggleableStyle {
     constructor(editBox: EditBoxComponent) {
         super(editBox);
 
-        this.title = 'Bold (Ctrl+B)';
-        this.icon = 'fas fa-bold';
-        this.style = 'fontWeight';
-        this.styleValue = 'bold';
+        this.title = 'Italic (Ctrl+I)';
+        this.icon = 'fas fa-italic';
+        this.style = 'fontStyle';
+        this.styleValue = 'italic';
         this.group = 'toggle';
     }
 }

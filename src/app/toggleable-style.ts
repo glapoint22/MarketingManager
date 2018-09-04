@@ -6,13 +6,12 @@ export class ToggleableStyle extends Style {
 
     constructor(editBox: EditBoxComponent) { super(editBox); }
 
-    setStyle() {
-        if (this.editBox.inEditMode) {
-            this.selection = document.getSelection();
-            this.range = this.selection.getRangeAt(0);
-
+    setSelection() {
+        super.setSelection();
+        if (this.range.startContainer === this.range.endContainer) {
+            this.isRemoveStyle = this.range.startContainer.parentElement.style[this.style].length > 0;
+        } else {
             this.isRemoveStyle = this.selectionHasStyle(this.editBox.content);
-            super.setStyle();
         }
     }
 
@@ -22,22 +21,42 @@ export class ToggleableStyle extends Style {
 
             // Remove span if there is no style applied
             if (node.parentElement.getAttribute('style').length === 0) {
-                let textNode = document.createTextNode(node.data);
+                let textNode = document.createTextNode(node.data),
+                    isStartContainer = node === this.range.startContainer,
+                    isEndContainer = node === this.range.endContainer;
+
                 node.parentElement.replaceWith(textNode);
+
+                // Set selection
+                if (isStartContainer) {
+                    this.range.setStart(textNode, 0);
+                }
+
+                if (isEndContainer) {
+                    this.range.setEnd(textNode, textNode.length);
+                }
             }
         } else {
             super.setWholeSelection(node);
         }
     }
 
-    setBeginningEndSelection(node, offset, count, isEnd?) {
+    setBeginningEndSelection(node, offset, count, isEndSelected?) {
         if (this.isRemoveStyle) {
             let newNode = this.removeStyle(node.parentElement, node.substringData(offset, count));
 
             node.replaceData(offset, count, '');
-            node.parentElement.parentElement.insertBefore(newNode, isEnd ? node.parentElement.nextSibling : node.parentElement);
+            node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
+
+            // Set selection
+            if (node === this.range.startContainer) {
+                this.range.setStart(newNode.nodeType === 1 ? newNode.firstChild : newNode, 0);
+            } else {
+                newNode = newNode.nodeType === 1 ? newNode.firstChild : newNode;
+                this.range.setEnd(newNode, newNode.length);
+            }
         } else {
-            super.setBeginningEndSelection(node, offset, count, isEnd);
+            super.setBeginningEndSelection(node, offset, count, isEndSelected);
         }
     }
 

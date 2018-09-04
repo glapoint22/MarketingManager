@@ -3,17 +3,17 @@ import { EditBoxComponent } from "./edit-box/edit-box.component";
 export class Style {
     public title: string;
     public icon: string;
+    public group: string;
     public style: string;
     public styleValue: string;
     public selection: Selection;
-    public range: Range;
+    public range: any;
 
     constructor(public editBox: EditBoxComponent) { }
 
     setStyle() {
         if (this.editBox.inEditMode) {
-            this.selection = document.getSelection();
-            this.range = this.selection.getRangeAt(0);
+            this.setSelection();
 
             if (this.range.startContainer === this.range.endContainer) {
                 // The selection is within one node
@@ -30,37 +30,33 @@ export class Style {
         // this.checkStyles();
     }
 
+    setSelection() {
+        this.selection = document.getSelection();
+        this.range = this.selection.getRangeAt(0);
+    }
+
     selectionHasStyle(node) {
-        if (this.range.startContainer === this.range.endContainer) {
-            if (this.range.startContainer.parentElement.style[this.style].length === 0) {
-                return false;
+        for (let i = 0; i < node.childNodes.length; i++) {
+            let childNode = node.childNodes[i];
+
+            // This child node is at the start or within the selection
+            if ((childNode === this.range.startContainer) || (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer)) {
+                if (childNode.parentElement.style[this.style].length === 0) return false;
+
+                //This child node is at the end of the selection
+            } else if (childNode === this.range.endContainer) {
+                if (childNode.parentElement.style[this.style].length === 0) return false;
+                return true;
             }
-            return true;
-        } else {
-            for (let i = 0; i < node.childNodes.length; i++) {
-                let childNode = node.childNodes[i];
 
-                // This child node is at the start or within the selection
-                if ((childNode === this.range.startContainer) || (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer)) {
-                    if (childNode.parentElement.style[this.style].length === 0) return false;
-
-                    //This child node is at the end of the selection
-                } else if (childNode === this.range.endContainer) {
-                    if (childNode.parentElement.style[this.style].length === 0) return false;
-                    return true;
-                }
-
-                // Iterate through the children of this child node
-                if (childNode.firstChild) {
-                    let result = this.selectionHasStyle(childNode);
-                    if (result === true || result === false) {
-                        return result;
-                    }
+            // Iterate through the children of this child node
+            if (childNode.firstChild) {
+                let result = this.selectionHasStyle(childNode);
+                if (result === true || result === false) {
+                    return result;
                 }
             }
         }
-
-
     }
 
     setWholeSelection(node) {
@@ -69,29 +65,46 @@ export class Style {
             node.parentElement.style[this.style] = this.styleValue;
         } else {
             // Create style
-            let styleNode = this.createNode(node.data);
-            node.replaceWith(styleNode);
+            let isStartContainer = node === this.range.startContainer,
+                isEndContainer = node === this.range.endContainer,
+                newNode: any = this.createNode(node.data);
+
+            node.replaceWith(newNode);
+
+            // Set selection
+            if (isStartContainer) {
+                this.range.setStart(newNode.firstChild, 0);
+            }
+
+            if (isEndContainer) {
+                this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
+            }
         }
     }
 
-    setBeginningEndSelection(node, offset, count, isEnd?) {
+    setBeginningEndSelection(node, offset, count, isEndSelected?) {
         if (node.parentElement.tagName === 'SPAN') {
             // Apply style
             let newNode = this.applyStyle(node.parentElement, node.substringData(offset, count));
 
             node.replaceData(offset, count, '');
-            node.parentElement.parentElement.insertBefore(newNode, isEnd ? node.parentElement.nextSibling : node.parentElement);
+            node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
         } else {
             // Create style
-            let styleNode = this.createNode(node.substringData(offset, count));
+            let newNode: any = this.createNode(node.substringData(offset, count));
             node.replaceData(offset, count, '');
-            node.parentElement.insertBefore(styleNode, isEnd ? node.nextSibling : node);
+            node.parentElement.insertBefore(newNode, isEndSelected ? node.nextSibling : node);
+
+            // Set selection
+            if (node === this.range.startContainer) {
+                this.range.setStart(newNode.firstChild, 0);
+            } else {
+                this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
+            }
         }
     }
 
     setNodeStyle(node, offset, count) {
-        let removeStyle = false; // Temp!!!!!
-
         // Whole node is selected
         if (offset === 0 && count === node.length) {
             this.setWholeSelection(node);
@@ -129,6 +142,8 @@ export class Style {
             documentFragment.appendChild(midNode);
             documentFragment.appendChild(endNode);
             newNode.replaceWith(documentFragment);
+
+            this.range.selectNodeContents(midNode.nodeType === 1 ? midNode.firstChild : midNode);
         }
 
 
@@ -195,6 +210,8 @@ export class Style {
     applyStyle(node, newData) {
         let newNode = this.copyNodeWithNewData(node, newData);
         newNode.style[this.style] = this.styleValue;
+
+        return newNode;
     }
 
     createNode(data: string) {

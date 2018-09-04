@@ -40,6 +40,7 @@ import { TextBoxComponent } from './text-box/text-box.component';
 import { ButtonBoxComponent } from './button-box/button-box.component';
 import { ContainerBoxComponent } from './container-box/container-box.component';
 import { PropertiesComponent } from './properties/properties.component';
+import { GroupByPipe } from './group-by.pipe';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { PropertiesComponent } from './properties/properties.component';
     TextBoxComponent,
     ButtonBoxComponent,
     ContainerBoxComponent,
-    PropertiesComponent
+    PropertiesComponent,
+    GroupByPipe
   ],
   imports: [
     BrowserModule,
