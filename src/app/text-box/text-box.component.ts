@@ -24,12 +24,6 @@ export class TextBoxComponent extends EditBoxComponent {
       this.setChange();
     }
 
-    this.content.onkeydown = (event: KeyboardEvent) => {
-      if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-        this.propertiesService.checkEnter();
-      }
-    }
-
     this.content.onblur = () => {
       let selection = document.getSelection(),
         range = selection.getRangeAt(0);
@@ -53,10 +47,25 @@ export class TextBoxComponent extends EditBoxComponent {
 
   initialize(content: HTMLElement, size?: Vector2) {
     if (!size) {
-      // Set style and HTML
-      content.setAttribute('style', 'color: #414141; outline: none; word-wrap: break-word; overflow: hidden; height: 100%; font-size: 16px; background: #ffffff;');
-      content.innerHTML = '<div>This is a temporary paragraph. Double click to edit this text.</div>';
-      content.setAttribute('contenteditable', 'false');
+      // Set the content style
+      content.style.outline = 'none';
+      content.style.wordWrap = 'break-word';
+      content.style.overflow = 'hidden';
+      content.style.height = '100%';
+      content.style.backgroundColor = '#ffffff';
+      content.contentEditable = 'false';
+
+      // Set the default text and default style
+      let span = document.createElement('SPAN'),
+        text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.'),
+        div = document.createElement('DIV');
+
+      span.style.color = '#414141';
+      span.style.fontSize = '16px';
+      span.appendChild(text);
+      div.appendChild(span);
+      content.appendChild(div);
+
       size = new Vector2(180, 54);
     }
 

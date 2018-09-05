@@ -1,6 +1,7 @@
 <div *ngIf="currentContainer && currentContainer.currentEditBox">
     <div class="bar" style="background: #2d2d2d;">
 
+        <!-- Edit group -->
         <div class="group">
             <div class="style-button" (click)="delete()" title="Delete (Del)">
                 <i class="fas fa-trash-alt"></i>
@@ -15,8 +16,9 @@
             </div>
         </div>
 
+        <!-- Other groups and styles -->
         <div *ngFor="let group of currentContainer.currentEditBox.styles | groupBy" class="group">
-            <div *ngFor="let style of group.styles" class="style-button" (click)="style.setStyle()" [title]="style.title">
+            <div *ngFor="let style of group.styles" class="style-button" (click)="style.setStyle(); style.checkSelection()" [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected}">
                 <i [class]="style.icon"></i>
             </div>
         </div>

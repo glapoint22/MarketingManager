@@ -8,6 +8,7 @@ export class Style {
     public styleValue: string;
     public selection: Selection;
     public range: any;
+    public isSelected: boolean;
 
     constructor(public editBox: EditBoxComponent) { }
 
@@ -30,12 +31,25 @@ export class Style {
         // this.checkStyles();
     }
 
+    checkSelection() {
+        this.setSelection();
+        this.isSelected = this.selectionHasStyle();
+    }
+
     setSelection() {
         this.selection = document.getSelection();
         this.range = this.selection.getRangeAt(0);
     }
 
-    selectionHasStyle(node) {
+    selectionHasStyle() {
+        if (this.range.startContainer === this.range.endContainer) {
+            return this.range.startContainer.parentElement.style[this.style].length > 0;
+        } else {
+            return this.childNodeHasStyle(this.editBox.content);
+        }
+    }
+
+    childNodeHasStyle(node) {
         for (let i = 0; i < node.childNodes.length; i++) {
             let childNode = node.childNodes[i];
 
@@ -51,7 +65,7 @@ export class Style {
 
             // Iterate through the children of this child node
             if (childNode.firstChild) {
-                let result = this.selectionHasStyle(childNode);
+                let result = this.childNodeHasStyle(childNode);
                 if (result === true || result === false) {
                     return result;
                 }
@@ -60,47 +74,23 @@ export class Style {
     }
 
     setWholeSelection(node) {
-        if (node.parentElement.tagName === 'SPAN') {
-            // Apply style
-            node.parentElement.style[this.style] = this.styleValue;
-        } else {
-            // Create style
-            let isStartContainer = node === this.range.startContainer,
-                isEndContainer = node === this.range.endContainer,
-                newNode: any = this.createNode(node.data);
-
-            node.replaceWith(newNode);
-
-            // Set selection
-            if (isStartContainer) {
-                this.range.setStart(newNode.firstChild, 0);
-            }
-
-            if (isEndContainer) {
-                this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
-            }
-        }
+        // Apply style
+        node.parentElement.style[this.style] = this.styleValue;
     }
 
     setBeginningEndSelection(node, offset, count, isEndSelected?) {
-        if (node.parentElement.tagName === 'SPAN') {
-            // Apply style
-            let newNode = this.applyStyle(node.parentElement, node.substringData(offset, count));
+        let newNode = this.applyStyle(node.parentElement, node.substringData(offset, count));
 
-            node.replaceData(offset, count, '');
-            node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
+        node.replaceData(offset, count, '');
+        node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
+
+        // Set selection
+        if(this.range.startContainer === this.range.endContainer){
+            this.range.selectNodeContents(newNode.firstChild);
+        }else if (node === this.range.startContainer) {
+            this.range.setStart(newNode.firstChild, 0);
         } else {
-            // Create style
-            let newNode: any = this.createNode(node.substringData(offset, count));
-            node.replaceData(offset, count, '');
-            node.parentElement.insertBefore(newNode, isEndSelected ? node.nextSibling : node);
-
-            // Set selection
-            if (node === this.range.startContainer) {
-                this.range.setStart(newNode.firstChild, 0);
-            } else {
-                this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
-            }
+            this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
         }
     }
 
@@ -124,26 +114,19 @@ export class Style {
                 endNode,
                 newNode;
 
-            if (node.parentElement.tagName === 'SPAN') {
-                newNode = node.parentElement;
-                startNode = newNode.cloneNode();
-                startNode.appendChild(document.createTextNode(node.substringData(0, offset)));
-                midNode = this.setMidNodeStyle(node, offset, count);
-                endNode = newNode.cloneNode();
-                endNode.appendChild(document.createTextNode(node.substringData(offset + count, node.length - (offset + count))));
-            } else {
-                newNode = node;
-                startNode = document.createTextNode(node.substringData(0, offset));
-                midNode = this.createNode(node.substringData(offset, count));
-                endNode = document.createTextNode(node.substringData(offset + count, node.length - (offset + count)));
-            }
+            newNode = node.parentElement;
+            startNode = newNode.cloneNode();
+            startNode.appendChild(document.createTextNode(node.substringData(0, offset)));
+            midNode = this.setMidNodeStyle(node, offset, count);
+            endNode = newNode.cloneNode();
+            endNode.appendChild(document.createTextNode(node.substringData(offset + count, node.length - (offset + count))));
 
             documentFragment.appendChild(startNode);
             documentFragment.appendChild(midNode);
             documentFragment.appendChild(endNode);
             newNode.replaceWith(documentFragment);
 
-            this.range.selectNodeContents(midNode.nodeType === 1 ? midNode.firstChild : midNode);
+            this.range.selectNodeContents(midNode.firstChild);
         }
 
 
@@ -199,11 +182,6 @@ export class Style {
         let newNode = this.copyNodeWithNewData(node, newData);
 
         newNode.style[this.style] = null;
-
-        if (newNode.getAttribute('style').length === 0) {
-            newNode = document.createTextNode(newNode.firstChild.data);
-        }
-
         return newNode;
     }
 
@@ -212,14 +190,5 @@ export class Style {
         newNode.style[this.style] = this.styleValue;
 
         return newNode;
-    }
-
-    createNode(data: string) {
-        let span = document.createElement('SPAN');
-        let textNode = document.createTextNode(data);
-
-        span.style[this.style] = this.styleValue;
-        span.appendChild(textNode);
-        return span;
     }
 }

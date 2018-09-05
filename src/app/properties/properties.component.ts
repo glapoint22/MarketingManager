@@ -34,98 +34,98 @@ export class PropertiesComponent implements OnInit {
     // this.fontSizeDropdown.value = '';
 
     // OnSelection
-    this.propertiesService.onSelection.subscribe(() => {
-      if (this.currentContainer && this.currentContainer.currentEditBox && !this.currentContainer.currentEditBox.inEditMode) {
-        this.textColor = this.getStyleValue('color');
-        this.BackgroundColor = this.getStyleValue('background-color');
-        // this.getDropdownOption(this.fontSizeDropdown, 'font-size');
-        // this.getDropdownOption(this.fontDropdown, 'font-family');
-      }
+    // this.propertiesService.onSelection.subscribe(() => {
+    //   if (this.currentContainer && this.currentContainer.currentEditBox && !this.currentContainer.currentEditBox.inEditMode) {
+    //     this.textColor = this.getStyleValue('color');
+    //     this.BackgroundColor = this.getStyleValue('background-color');
+    //     this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+    //     this.getDropdownOption(this.fontDropdown, 'font-family');
+    //   }
 
-    });
+    // });
 
     // OnSetEditMode
-    this.propertiesService.onSetEditMode.subscribe(() => {
-      // this.checkStyles();
-    });
+    // this.propertiesService.onSetEditMode.subscribe(() => {
+    //   this.checkStyles();
+    // });
 
     // OnUnSelect
-    this.propertiesService.onUnSelect.subscribe(() => {
-      // this.checkStyles();
-      // this.cleanContent();
-      // this.textColor = '';
-      // this.BackgroundColor = '';
-      // this.fontSizeDropdown.value = '';
-      // this.fontDropdown.value = '';
-    });
+    // this.propertiesService.onUnSelect.subscribe(() => {
+    //   this.checkStyles();
+    //   this.cleanContent();
+    //   this.textColor = '';
+    //   this.BackgroundColor = '';
+    //   this.fontSizeDropdown.value = '';
+    //   this.fontDropdown.value = '';
+    // });
 
-    this.propertiesService.onEnter.subscribe(() => {
-      window.setTimeout(() => {
-        let content = this.currentContainer.currentEditBox.content;
+    // this.propertiesService.onEnter.subscribe(() => {
+    //   window.setTimeout(() => {
+    //     let content = this.currentContainer.currentEditBox.content;
 
-        // Loop through the content to search for a break in a list
-        for (let i = 0; i < content.childElementCount; i++) {
-          for (let j = 0; j < content.children[i].childElementCount; j++) {
-            if (content.children[i].children[j].tagName === 'DIV') {
-              let div = document.createElement('DIV');
-              let documentFragment = document.createDocumentFragment();
-              let breakNode;
+    //     // Loop through the content to search for a break in a list
+    //     for (let i = 0; i < content.childElementCount; i++) {
+    //       for (let j = 0; j < content.children[i].childElementCount; j++) {
+    //         if (content.children[i].children[j].tagName === 'DIV') {
+    //           let div = document.createElement('DIV');
+    //           let documentFragment = document.createDocumentFragment();
+    //           let breakNode;
 
-              // Remove the div with the break and replace with a new one to prevent style carry over
-              content.children[i].children[j].remove();
-              div.appendChild(document.createElement('BR'));
-              documentFragment.appendChild(div);
+    //           // Remove the div with the break and replace with a new one to prevent style carry over
+    //           content.children[i].children[j].remove();
+    //           div.appendChild(document.createElement('BR'));
+    //           documentFragment.appendChild(div);
 
-              // Take the remaining list elements and place them in a div
-              if (j !== content.children[i].childElementCount) {
-                div = document.createElement('DIV');
-                div.appendChild(content.children[i].children[j])
-                documentFragment.appendChild(div);
-              }
+    //           // Take the remaining list elements and place them in a div
+    //           if (j !== content.children[i].childElementCount) {
+    //             div = document.createElement('DIV');
+    //             div.appendChild(content.children[i].children[j])
+    //             documentFragment.appendChild(div);
+    //           }
 
-              // Assign the new break node
-              breakNode = documentFragment.children[0];
+    //           // Assign the new break node
+    //           breakNode = documentFragment.children[0];
 
-              // Place the document fragment with the lists into the content
-              if (i === content.childElementCount - 1) {
-                content.appendChild(documentFragment);
-              } else {
-                content.insertBefore(documentFragment, content.children[i + 1]);
-              }
+    //           // Place the document fragment with the lists into the content
+    //           if (i === content.childElementCount - 1) {
+    //             content.appendChild(documentFragment);
+    //           } else {
+    //             content.insertBefore(documentFragment, content.children[i + 1]);
+    //           }
 
-              // Select the break node
-              let selection = document.getSelection();
-              selection.setPosition(breakNode, 0);
+    //           // Select the break node
+    //           let selection = document.getSelection();
+    //           selection.setPosition(breakNode, 0);
 
-              return;
-            }
-          }
-        }
-      }, 1);
-    });
+    //           return;
+    //         }
+    //       }
+    //     }
+    //   }, 1);
+    // });
 
-    // Set the color palette
-    this.colorPalette = document.createElement('input');
-    this.colorPalette.type = 'color';
-    this.colorPalette.onchange = (event: any) => {
-      this.setStyle(this.colorType, event.path[0].value);
-    }
+    // // Set the color palette
+    // this.colorPalette = document.createElement('input');
+    // this.colorPalette.type = 'color';
+    // this.colorPalette.onchange = (event: any) => {
+    //   this.setStyle(this.colorType, event.path[0].value);
+    // }
   }
 
-  getDropdownOption(dropdown, style) {
-    let option = this.getStyleValue(style);
-    if (option === '') {
-      dropdown.value = '';
-      return;
-    }
+  // getDropdownOption(dropdown, style) {
+  //   let option = this.getStyleValue(style);
+  //   if (option === '') {
+  //     dropdown.value = '';
+  //     return;
+  //   }
 
-    for (let i = 0; i < dropdown.length; i++) {
-      if (dropdown.options[i].value === option) {
-        dropdown.selectedIndex = i;
-        break;
-      }
-    }
-  }
+  //   for (let i = 0; i < dropdown.length; i++) {
+  //     if (dropdown.options[i].value === option) {
+  //       dropdown.selectedIndex = i;
+  //       break;
+  //     }
+  //   }
+  // }
 
   removeEmptyTextNodes(contents) {
     for (let i = 0; i < contents.childNodes.length; i++) {
@@ -434,7 +434,7 @@ export class PropertiesComponent implements OnInit {
       (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
         event.code === 'ArrowRight' || event.code === 'ArrowDown')) {
       window.setTimeout(() => {
-        this.checkStyles();
+        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
       }, 1);
     }
   }
@@ -442,9 +442,7 @@ export class PropertiesComponent implements OnInit {
   @HostListener('document:mouseup', ['$event'])
   onMouseUp() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      window.setTimeout(() => {
-        this.checkStyles();
-      }, 1);
+      this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
     }
   }
 

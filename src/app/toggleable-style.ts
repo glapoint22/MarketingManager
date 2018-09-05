@@ -8,34 +8,12 @@ export class ToggleableStyle extends Style {
 
     setSelection() {
         super.setSelection();
-        if (this.range.startContainer === this.range.endContainer) {
-            this.isRemoveStyle = this.range.startContainer.parentElement.style[this.style].length > 0;
-        } else {
-            this.isRemoveStyle = this.selectionHasStyle(this.editBox.content);
-        }
+        this.isRemoveStyle = this.selectionHasStyle();
     }
 
     setWholeSelection(node) {
         if (this.isRemoveStyle) {
             node.parentElement.style[this.style] = null;
-
-            // Remove span if there is no style applied
-            if (node.parentElement.getAttribute('style').length === 0) {
-                let textNode = document.createTextNode(node.data),
-                    isStartContainer = node === this.range.startContainer,
-                    isEndContainer = node === this.range.endContainer;
-
-                node.parentElement.replaceWith(textNode);
-
-                // Set selection
-                if (isStartContainer) {
-                    this.range.setStart(textNode, 0);
-                }
-
-                if (isEndContainer) {
-                    this.range.setEnd(textNode, textNode.length);
-                }
-            }
         } else {
             super.setWholeSelection(node);
         }
@@ -50,10 +28,9 @@ export class ToggleableStyle extends Style {
 
             // Set selection
             if (node === this.range.startContainer) {
-                this.range.setStart(newNode.nodeType === 1 ? newNode.firstChild : newNode, 0);
+                this.range.setStart(newNode.firstChild, 0);
             } else {
-                newNode = newNode.nodeType === 1 ? newNode.firstChild : newNode;
-                this.range.setEnd(newNode, newNode.length);
+                this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
             }
         } else {
             super.setBeginningEndSelection(node, offset, count, isEndSelected);
