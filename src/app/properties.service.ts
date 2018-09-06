@@ -6,21 +6,21 @@ import { Subject } from 'rxjs';
 })
 export class PropertiesService {
   public onSelection = new Subject<any>();
-  public onSetEditMode = new Subject<any>();
-  public onUnSelect = new Subject<any>();
+  // public onSetEditMode = new Subject<any>();
+  // public onUnSelect = new Subject<any>();
   public onEnter = new Subject<any>();
 
   setSelection(){
     this.onSelection.next();
   }
 
-  setEditMode(){
-    this.onSetEditMode.next();
-  }
+  // setEditMode(){
+  //   this.onSetEditMode.next();
+  // }
 
-  unSelect(){
-    this.onUnSelect.next();
-  }
+  // unSelect(){
+  //   this.onUnSelect.next();
+  // }
 
   checkEnter(){
     this.onEnter.next();

@@ -6,6 +6,10 @@ export class ToggleableStyle extends Style {
 
     constructor(editBox: EditBoxComponent) { super(editBox); }
 
+    onClick() {
+        this.setStyle();
+    }
+
     setSelection() {
         super.setSelection();
         this.isRemoveStyle = this.selectionHasStyle();

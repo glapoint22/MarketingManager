@@ -12,9 +12,11 @@ export class Style {
 
     constructor(public editBox: EditBoxComponent) { }
 
+    onClick() { }
+
     setStyle() {
         if (this.editBox.inEditMode) {
-            this.setSelection();
+            // this.setSelection();
 
             if (this.range.startContainer === this.range.endContainer) {
                 // The selection is within one node
@@ -55,11 +57,11 @@ export class Style {
 
             // This child node is at the start or within the selection
             if ((childNode === this.range.startContainer) || (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer)) {
-                if (childNode.parentElement.style[this.style].length === 0) return false;
+                if (childNode.parentElement.style[this.style] !== this.styleValue) return false;
 
                 //This child node is at the end of the selection
             } else if (childNode === this.range.endContainer) {
-                if (childNode.parentElement.style[this.style].length === 0) return false;
+                if (childNode.parentElement.style[this.style] !== this.styleValue) return false;
                 return true;
             }
 
@@ -85,9 +87,9 @@ export class Style {
         node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
 
         // Set selection
-        if(this.range.startContainer === this.range.endContainer){
+        if (this.range.startContainer === this.range.endContainer) {
             this.range.selectNodeContents(newNode.firstChild);
-        }else if (node === this.range.startContainer) {
+        } else if (node === this.range.startContainer) {
             this.range.setStart(newNode.firstChild, 0);
         } else {
             this.range.setEnd(newNode.firstChild, newNode.firstChild.length);

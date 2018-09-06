@@ -286,7 +286,8 @@ export class EditBoxComponent {
     this.content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
     this.content.focus();
-    this.propertiesService.setEditMode();
+    // this.propertiesService.setEditMode();
+    this.styles.forEach(x => x.checkSelection());
   }
 
   initialize(content: HTMLElement, size?: Vector2) {
@@ -328,7 +329,8 @@ export class EditBoxComponent {
       this.inEditMode = false;
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
-      this.propertiesService.unSelect();
+      // this.propertiesService.unSelect();
+      this.styles.forEach(x => x.isSelected = false);
     }
   }
 }

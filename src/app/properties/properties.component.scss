@@ -17,6 +17,7 @@
     padding-left: 8px;
     padding-right: 8px;
     .style-button {
+        position: relative;
         color: #9a9a9a;
         background: #00000000;
         border-radius: 4px;
@@ -50,8 +51,8 @@
         color: #ffffff;
     }
     .style-button-disabled {
-        background: #282828;
-        color: #3c3c3c;
+        background: #00000000;
+        color: #555555;
     }
 }
 
