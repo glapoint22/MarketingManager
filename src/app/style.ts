@@ -12,25 +12,20 @@ export class Style {
 
     constructor(public editBox: EditBoxComponent) { }
 
-    onClick() { }
+    onClick() {
+        if (!this.editBox.inEditMode) return false;
+        return true;
+    }
 
     setStyle() {
-        if (this.editBox.inEditMode) {
-            // this.setSelection();
+        if (this.range.startContainer === this.range.endContainer) {
+            // The selection is within one node
+            this.setNodeStyle(this.range.startContainer, this.range.startOffset, this.range.endOffset - this.range.startOffset);
 
-            if (this.range.startContainer === this.range.endContainer) {
-                // The selection is within one node
-                this.setNodeStyle(this.range.startContainer, this.range.startOffset, this.range.endOffset - this.range.startOffset);
-
-            } else {
-                // The selection spans across multiple nodes
-                this.loopChildren(this.editBox.content);
-            }
         } else {
-            // if (!toggle) this.currentContainer.currentEditBox.content.style[style] = styleValue;
+            // The selection spans across multiple nodes
+            this.loopChildren(this.editBox.content);
         }
-        // this.currentContainer.currentEditBox.setChange();
-        // this.checkStyles();
     }
 
     checkSelection() {

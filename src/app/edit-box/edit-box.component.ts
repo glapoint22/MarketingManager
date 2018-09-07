@@ -1,7 +1,6 @@
 import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
-import { PropertiesService } from "../properties.service";
 import { Style } from '../style';
 
 @Component({
@@ -11,8 +10,6 @@ import { Style } from '../style';
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
-
-  constructor(public propertiesService: PropertiesService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -271,7 +268,6 @@ export class EditBoxComponent {
     }
 
     this.parentContainer.currentEditBox = this;
-    this.propertiesService.setSelection();
   }
 
   setEditMode() {
@@ -286,7 +282,6 @@ export class EditBoxComponent {
     this.content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
     this.content.focus();
-    // this.propertiesService.setEditMode();
     this.styles.forEach(x => x.checkSelection());
   }
 
@@ -329,7 +324,6 @@ export class EditBoxComponent {
       this.inEditMode = false;
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
-      // this.propertiesService.unSelect();
       this.styles.forEach(x => x.isSelected = false);
     }
   }

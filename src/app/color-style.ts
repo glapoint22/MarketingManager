@@ -16,8 +16,11 @@ export class ColorStyle extends Style {
     }
 
     onClick() {
-        this.colorPalette.value = this.rgbToHex(this.styleValue);
-        this.colorPalette.click();
+        if (super.onClick()) {
+            this.colorPalette.value = this.rgbToHex(this.styleValue);
+            this.colorPalette.click();
+        }
+        return true;
     }
 
     checkSelection() {

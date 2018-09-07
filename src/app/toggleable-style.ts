@@ -1,13 +1,11 @@
 import { Style } from "./style";
-import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class ToggleableStyle extends Style {
     private isRemoveStyle: boolean = false;
 
-    constructor(editBox: EditBoxComponent) { super(editBox); }
-
     onClick() {
-        this.setStyle();
+        if (super.onClick()) this.setStyle();
+        return true;
     }
 
     setSelection() {

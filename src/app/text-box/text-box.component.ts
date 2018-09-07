@@ -7,6 +7,8 @@ import { Italic } from '../italic';
 import { Underline } from '../underline';
 import { TextColor } from '../text-color';
 import { HighlightColor } from '../highlight-color';
+import { OrderedList } from '../ordered-list';
+import { UnorderedList } from '../unordered-list';
 
 @Component({
   selector: 'text-box',
@@ -19,7 +21,9 @@ export class TextBoxComponent extends EditBoxComponent {
   ngOnInit() {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
-    this.styles = [new Bold(this), new Italic(this), new Underline(this), new TextColor(this), new HighlightColor(this)];
+    this.styles = [new Bold(this), new Italic(this), new Underline(this),
+    new TextColor(this), new HighlightColor(this), new OrderedList(this),
+    new UnorderedList(this)];
 
     // Event when content changes
     this.content.oninput = () => {

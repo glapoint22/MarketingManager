@@ -4,7 +4,6 @@ import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
-import { PropertiesService } from "../properties.service";
 
 @Component({
   selector: 'properties',
@@ -24,7 +23,72 @@ export class PropertiesComponent implements OnInit {
   public fontSizeDropdown;
   private copied: any = {};
 
-  constructor(private resolver: ComponentFactoryResolver, private propertiesService: PropertiesService) { }
+  constructor(private resolver: ComponentFactoryResolver) { }
+
+
+  delete() {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+      let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
+      this.currentContainer.currentEditBox.isSelected = false;
+      this.currentContainer.remove(index);
+    }
+  }
+
+  copy() {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+      if (this.currentContainer.currentEditBox instanceof TextBoxComponent) {
+        this.copied.component = TextBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ImageBoxComponent) {
+        this.copied.component = ImageBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ButtonBoxComponent) {
+        this.copied.component = ButtonBoxComponent;
+      } else if (this.currentContainer.currentEditBox instanceof ContainerBoxComponent) {
+        this.copied.component = ContainerBoxComponent;
+      }
+
+      this.copied.nodeName = this.currentContainer.currentEditBox.content.nodeName;
+      this.copied.style = this.currentContainer.currentEditBox.content.getAttribute('style');
+      this.copied.innerHTML = this.currentContainer.currentEditBox.content.innerHTML;
+      this.copied.rect = JSON.parse(JSON.stringify(this.currentContainer.currentEditBox.rect));
+      this.copied.src = this.currentContainer.currentEditBox.content.src;
+    }
+  }
+
+  paste() {
+    if (this.copied) {
+      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component);
+      let content = document.createElement(this.copied.nodeName);
+      content.setAttribute('style', this.copied.style);
+      content.innerHTML = this.copied.innerHTML;
+      content.src = this.copied.src;
+
+      let box = this.currentContainer.createComponent(componentFactory, null, null, [[content]]);
+
+      box.instance.parentContainer = this.currentContainer;
+      box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
+    }
+  }
+
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (this.currentContainer &&
+      this.currentContainer.currentEditBox &&
+      this.currentContainer.currentEditBox.inEditMode &&
+      (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+        event.code === 'ArrowRight' || event.code === 'ArrowDown')) {
+      window.setTimeout(() => {
+        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
+      }, 1);
+    }
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseUp() {
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+      this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
+    }
+  }
 
   ngOnInit() {
     // this.fontDropdown = document.getElementById('fontDropdown');
@@ -127,376 +191,306 @@ export class PropertiesComponent implements OnInit {
   //   }
   // }
 
-  removeEmptyTextNodes(contents) {
-    for (let i = 0; i < contents.childNodes.length; i++) {
-      if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
-        contents.childNodes[i].remove();
-        i--;
-      } else {
-        this.removeEmptyTextNodes(contents.childNodes[i]);
-      }
-    }
-
-    return contents;
-  }
-
-  selectionHasStyle(style) {
-    let selection = document.getSelection();
-    let range: any = selection.getRangeAt(0);
-
-    if (range.startContainer === range.endContainer) {
-      if (range.startContainer.parentElement.style[style].length > 0) return true;
-    } else {
-      let contents = this.removeEmptyTextNodes(range.cloneContents());
-      if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
-    }
-
-    return false;
-  }
-
-  getStyleValue(style: string): string {
-    let value: string;
-
-    if (!this.currentContainer.currentEditBox.inEditMode) {
-      value = this.currentContainer.currentEditBox.content.style[style];
-
-      let node = this.currentContainer.currentEditBox.content.firstChild;
-
-      for (let i = 0; i < node.childElementCount; i++) {
-        if (node.children[i].style[style].length > 0) {
-          if (node.children[i].style[style] !== value) {
-            value = '';
-            break;
-          }
-        }
-      }
-    } else {
-      let selection = document.getSelection();
-      let range: any = selection.getRangeAt(0);
-
-      if (range.startContainer === range.endContainer) {
-        value = range.startContainer.parentElement.style[style];
-        if (value === '') value = this.currentContainer.currentEditBox.content.style[style];
-        if (value === '') return '';
-      } else {
-        let contents = this.removeEmptyTextNodes(range.cloneContents());
-        value = contents.firstElementChild.style[style];
-        if (!Array.from(contents.childNodes).every((x: any) => x.style && x.style[style] === value)) {
-          return '';
-        }
-      }
-    }
-
-    return value;
-  }
-
-  rgbToHex(color) {
-    let colorArray = color.replace(/[^\d,]/g, '').split(',');
-    return "#" + this.componentToHex(parseInt(colorArray[0])) + this.componentToHex(parseInt(colorArray[1])) + this.componentToHex(parseInt(colorArray[2]));
-  }
-
-  componentToHex(c) {
-    let hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-  }
-
-  setColor(colorType: string) {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      this.colorType = colorType;
-      this.colorPalette.value = this.rgbToHex(this.getStyleValue(colorType));
-      this.colorPalette.click();
-    }
-  }
 
 
-  delete() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
-      this.currentContainer.currentEditBox.isSelected = false;
-      this.currentContainer.remove(index);
-    }
-  }
+  // selectionHasStyle(style) {
+  //   let selection = document.getSelection();
+  //   let range: any = selection.getRangeAt(0);
 
-  copy() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      if (this.currentContainer.currentEditBox instanceof TextBoxComponent) {
-        this.copied.component = TextBoxComponent;
-      } else if (this.currentContainer.currentEditBox instanceof ImageBoxComponent) {
-        this.copied.component = ImageBoxComponent;
-      } else if (this.currentContainer.currentEditBox instanceof ButtonBoxComponent) {
-        this.copied.component = ButtonBoxComponent;
-      } else if (this.currentContainer.currentEditBox instanceof ContainerBoxComponent) {
-        this.copied.component = ContainerBoxComponent;
-      }
+  //   if (range.startContainer === range.endContainer) {
+  //     if (range.startContainer.parentElement.style[style].length > 0) return true;
+  //   } else {
+  //     let contents = this.removeEmptyTextNodes(range.cloneContents());
+  //     if (Array.from(contents.childNodes).every((x: any) => x.style && x.style[style].length > 0)) return true;
+  //   }
 
-      this.copied.nodeName = this.currentContainer.currentEditBox.content.nodeName;
-      this.copied.style = this.currentContainer.currentEditBox.content.getAttribute('style');
-      this.copied.innerHTML = this.currentContainer.currentEditBox.content.innerHTML;
-      this.copied.rect = JSON.parse(JSON.stringify(this.currentContainer.currentEditBox.rect));
-      this.copied.src = this.currentContainer.currentEditBox.content.src;
-    }
-  }
+  //   return false;
+  // }
 
-  paste() {
-    if (this.copied) {
-      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component);
-      let content = document.createElement(this.copied.nodeName);
-      content.setAttribute('style', this.copied.style);
-      content.innerHTML = this.copied.innerHTML;
-      content.src = this.copied.src;
+  // getStyleValue(style: string): string {
+  //   let value: string;
 
-      let box = this.currentContainer.createComponent(componentFactory, null, null, [[content]]);
+  //   if (!this.currentContainer.currentEditBox.inEditMode) {
+  //     value = this.currentContainer.currentEditBox.content.style[style];
 
-      box.instance.parentContainer = this.currentContainer;
-      box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
-    }
-  }
+  //     let node = this.currentContainer.currentEditBox.content.firstChild;
 
+  //     for (let i = 0; i < node.childElementCount; i++) {
+  //       if (node.children[i].style[style].length > 0) {
+  //         if (node.children[i].style[style] !== value) {
+  //           value = '';
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   } else {
+  //     let selection = document.getSelection();
+  //     let range: any = selection.getRangeAt(0);
 
-  createStyleNode(text: string, style, styleValue) {
-    let span = document.createElement('SPAN');
-    let textNode = document.createTextNode(text);
+  //     if (range.startContainer === range.endContainer) {
+  //       value = range.startContainer.parentElement.style[style];
+  //       if (value === '') value = this.currentContainer.currentEditBox.content.style[style];
+  //       if (value === '') return '';
+  //     } else {
+  //       let contents = this.removeEmptyTextNodes(range.cloneContents());
+  //       value = contents.firstElementChild.style[style];
+  //       if (!Array.from(contents.childNodes).every((x: any) => x.style && x.style[style] === value)) {
+  //         return '';
+  //       }
+  //     }
+  //   }
 
-    span.style[style] = styleValue;
-    span.appendChild(textNode);
-    return span;
-  }
+  //   return value;
+  // }
 
-  copyEditStyleNode(node, data, style, styleValue) {
-    let newNode = node.cloneNode();
-    newNode.appendChild(document.createTextNode(data));
-    newNode.style[style] = styleValue;
+  // rgbToHex(color) {
+  //   let colorArray = color.replace(/[^\d,]/g, '').split(',');
+  //   return "#" + this.componentToHex(parseInt(colorArray[0])) + this.componentToHex(parseInt(colorArray[1])) + this.componentToHex(parseInt(colorArray[2]));
+  // }
 
-    if (newNode.getAttribute('style').length === 0) {
-      newNode = document.createTextNode(newNode.firstChild.data);
-    }
+  // componentToHex(c) {
+  //   let hex = c.toString(16);
+  //   return hex.length == 1 ? "0" + hex : hex;
+  // }
 
-    return newNode;
-  }
-
-  setNodeStyle(node, offset, count, style, styleValue, removeStyle) {
-    // Beginning of node is selected
-    if (offset === 0 && count < node.length) {
-      if (removeStyle) {
-        // Remove style
-        let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
-
-        node.replaceData(offset, count, '');
-        node.parentElement.parentElement.insertBefore(newNode, node.parentElement);
-      } else {
-        // Copy the style node if a style is already applied
-        if (node.parentElement.tagName === 'SPAN') {
-          let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
-          node.replaceData(offset, count, '');
-          node.parentElement.parentElement.insertBefore(styleNode, node.parentElement);
-        } else {
-          // Create style
-          let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
-          node.replaceData(offset, count, '');
-          node.parentElement.insertBefore(styleNode, node);
-        }
-      }
+  // setColor(colorType: string) {
+  //   if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+  //     this.colorType = colorType;
+  //     this.colorPalette.value = this.rgbToHex(this.getStyleValue(colorType));
+  //     this.colorPalette.click();
+  //   }
+  // }
 
 
-      // Whole node is selected
-    } else if (offset === 0 && count === node.length) {
-      // There is a style already applied
-      if (node.parentElement.tagName === 'SPAN') {
-        // Remove style
-        if (removeStyle) {
-          node.parentElement.style[style] = null;
-
-          // Remove span if there is no style applied
-          if (node.parentElement.getAttribute('style').length === 0) {
-            let textNode = document.createTextNode(node.data);
-            node.parentElement.replaceWith(textNode);
-          }
-        } else {
-          // Apply style
-          node.parentElement.style[style] = styleValue;
-        }
-      } else {
-        // Create style
-        let styleNode = this.createStyleNode(node.data, style, styleValue);
-        node.replaceWith(styleNode);
-      }
 
 
-      // End of node is selected
-    } else if (offset > 0 && node.length - offset === count) {
-      if (removeStyle) {
-        // Remove style
-        let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
 
-        node.replaceData(offset, count, '');
-        node.parentElement.parentElement.insertBefore(newNode, node.parentElement.nextSibling);
-      } else {
-        // Copy the style node if a style is already applied
-        if (node.parentElement.tagName === 'SPAN') {
-          let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
+  // createStyleNode(text: string, style, styleValue) {
+  //   let span = document.createElement('SPAN');
+  //   let textNode = document.createTextNode(text);
 
-          node.replaceData(offset, count, '');
-          node.parentElement.parentElement.insertBefore(styleNode, node.parentElement.nextSibling);
-        } else {
-          // Create style
-          let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
-          node.replaceData(offset, count, '');
-          node.parentElement.insertBefore(styleNode, node.nextSibling);
-        }
-      }
+  //   span.style[style] = styleValue;
+  //   span.appendChild(textNode);
+  //   return span;
+  // }
+
+  // copyEditStyleNode(node, data, style, styleValue) {
+  //   let newNode = node.cloneNode();
+  //   newNode.appendChild(document.createTextNode(data));
+  //   newNode.style[style] = styleValue;
+
+  //   if (newNode.getAttribute('style').length === 0) {
+  //     newNode = document.createTextNode(newNode.firstChild.data);
+  //   }
+
+  //   return newNode;
+  // }
+
+  // setNodeStyle(node, offset, count, style, styleValue, removeStyle) {
+  //   // Beginning of node is selected
+  //   if (offset === 0 && count < node.length) {
+  //     if (removeStyle) {
+  //       // Remove style
+  //       let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
+
+  //       node.replaceData(offset, count, '');
+  //       node.parentElement.parentElement.insertBefore(newNode, node.parentElement);
+  //     } else {
+  //       // Copy the style node if a style is already applied
+  //       if (node.parentElement.tagName === 'SPAN') {
+  //         let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
+  //         node.replaceData(offset, count, '');
+  //         node.parentElement.parentElement.insertBefore(styleNode, node.parentElement);
+  //       } else {
+  //         // Create style
+  //         let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
+  //         node.replaceData(offset, count, '');
+  //         node.parentElement.insertBefore(styleNode, node);
+  //       }
+  //     }
 
 
-      // Middle of node is selected
-    } else if (offset > 0 && count < node.length - offset) {
-      let documentFragment = document.createDocumentFragment(),
-        midNode,
-        startNode,
-        endNode,
-        newNode;
+  //     // Whole node is selected
+  //   } else if (offset === 0 && count === node.length) {
+  //     // There is a style already applied
+  //     if (node.parentElement.tagName === 'SPAN') {
+  //       // Remove style
+  //       if (removeStyle) {
+  //         node.parentElement.style[style] = null;
 
-      if (node.parentElement.tagName === 'SPAN') {
-        newNode = node.parentElement;
-        startNode = newNode.cloneNode();
-        startNode.appendChild(document.createTextNode(node.substringData(0, offset)));
-        midNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, removeStyle ? null : styleValue);
-        endNode = newNode.cloneNode();
-        endNode.appendChild(document.createTextNode(node.substringData(offset + count, node.length - (offset + count))));
-      } else {
-        newNode = node;
-        startNode = document.createTextNode(node.substringData(0, offset));
-        midNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
-        endNode = document.createTextNode(node.substringData(offset + count, node.length - (offset + count)));
-      }
+  //         // Remove span if there is no style applied
+  //         if (node.parentElement.getAttribute('style').length === 0) {
+  //           let textNode = document.createTextNode(node.data);
+  //           node.parentElement.replaceWith(textNode);
+  //         }
+  //       } else {
+  //         // Apply style
+  //         node.parentElement.style[style] = styleValue;
+  //       }
+  //     } else {
+  //       // Create style
+  //       let styleNode = this.createStyleNode(node.data, style, styleValue);
+  //       node.replaceWith(styleNode);
+  //     }
 
-      documentFragment.appendChild(startNode);
-      documentFragment.appendChild(midNode);
-      documentFragment.appendChild(endNode);
-      newNode.replaceWith(documentFragment);
-      let selection = document.getSelection();
-      let range = selection.getRangeAt(0);
-      range.selectNodeContents(midNode);
-      // range.deleteContents();
-      // range.insertNode(midNode);
-    }
-  }
 
-  loopChildren(node, range, style, styleValue) {
-    let clone = node.cloneNode(true);
+  //     // End of node is selected
+  //   } else if (offset > 0 && node.length - offset === count) {
+  //     if (removeStyle) {
+  //       // Remove style
+  //       let newNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, null);
 
-    clone.childNodes.forEach(cloneChild => {
-      let childNode: any = Array.from(node.childNodes).find((nodeChild: any) => cloneChild.nodeType === 1 ? nodeChild.outerHTML === cloneChild.outerHTML : nodeChild.data === cloneChild.data);
+  //       node.replaceData(offset, count, '');
+  //       node.parentElement.parentElement.insertBefore(newNode, node.parentElement.nextSibling);
+  //     } else {
+  //       // Copy the style node if a style is already applied
+  //       if (node.parentElement.tagName === 'SPAN') {
+  //         let styleNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, styleValue);
 
-      // Start container
-      if (childNode === range.startContainer) {
-        this.setNodeStyle(childNode, range.startOffset, childNode.length - range.startOffset, style, styleValue, false);
+  //         node.replaceData(offset, count, '');
+  //         node.parentElement.parentElement.insertBefore(styleNode, node.parentElement.nextSibling);
+  //       } else {
+  //         // Create style
+  //         let styleNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
+  //         node.replaceData(offset, count, '');
+  //         node.parentElement.insertBefore(styleNode, node.nextSibling);
+  //       }
+  //     }
 
-        // In range
-      } else if (range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== range.endContainer) {
-        this.setNodeStyle(childNode, 0, childNode.length, style, styleValue, false);
 
-        // End container
-      } else if (childNode === range.endContainer) {
-        this.setNodeStyle(childNode, 0, range.endOffset, style, styleValue, false);
-      }
+  //     // Middle of node is selected
+  //   } else if (offset > 0 && count < node.length - offset) {
+  //     let documentFragment = document.createDocumentFragment(),
+  //       midNode,
+  //       startNode,
+  //       endNode,
+  //       newNode;
 
-      // Iterate through the children of this child node
-      if (childNode.firstChild) {
-        this.loopChildren(childNode, range, style, styleValue);
-      }
-    });
-  }
+  //     if (node.parentElement.tagName === 'SPAN') {
+  //       newNode = node.parentElement;
+  //       startNode = newNode.cloneNode();
+  //       startNode.appendChild(document.createTextNode(node.substringData(0, offset)));
+  //       midNode = this.copyEditStyleNode(node.parentElement, node.substringData(offset, count), style, removeStyle ? null : styleValue);
+  //       endNode = newNode.cloneNode();
+  //       endNode.appendChild(document.createTextNode(node.substringData(offset + count, node.length - (offset + count))));
+  //     } else {
+  //       newNode = node;
+  //       startNode = document.createTextNode(node.substringData(0, offset));
+  //       midNode = this.createStyleNode(node.substringData(offset, count), style, styleValue);
+  //       endNode = document.createTextNode(node.substringData(offset + count, node.length - (offset + count)));
+  //     }
 
-  setStyle(style: string, styleValue: string, toggle?: boolean) {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      let selection = document.getSelection();
-      let range: Range = selection.getRangeAt(0);
+  //     documentFragment.appendChild(startNode);
+  //     documentFragment.appendChild(midNode);
+  //     documentFragment.appendChild(endNode);
+  //     newNode.replaceWith(documentFragment);
+  //     let selection = document.getSelection();
+  //     let range = selection.getRangeAt(0);
+  //     range.selectNodeContents(midNode);
+  //     // range.deleteContents();
+  //     // range.insertNode(midNode);
+  //   }
+  // }
 
-      // Single container
-      if (range.startContainer === range.endContainer) {
-        this.setNodeStyle(range.startContainer, range.startOffset, range.endOffset - range.startOffset, style, styleValue, false);
-        // Multiple containers
-      } else {
-        // Set the style to all children that are selected
-        this.loopChildren(this.currentContainer.currentEditBox.content, range, style, styleValue);
-      }
-    } else {
-      if (!toggle) this.currentContainer.currentEditBox.content.style[style] = styleValue;
-    }
-    this.currentContainer.currentEditBox.setChange();
-    this.checkStyles();
-  }
+  // loopChildren(node, range, style, styleValue) {
+  //   let clone = node.cloneNode(true);
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if (this.currentContainer &&
-      this.currentContainer.currentEditBox &&
-      this.currentContainer.currentEditBox.inEditMode &&
-      (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-        event.code === 'ArrowRight' || event.code === 'ArrowDown')) {
-      window.setTimeout(() => {
-        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
-      }, 1);
-    }
-  }
+  //   clone.childNodes.forEach(cloneChild => {
+  //     let childNode: any = Array.from(node.childNodes).find((nodeChild: any) => cloneChild.nodeType === 1 ? nodeChild.outerHTML === cloneChild.outerHTML : nodeChild.data === cloneChild.data);
 
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
-    }
-  }
+  //     // Start container
+  //     if (childNode === range.startContainer) {
+  //       this.setNodeStyle(childNode, range.startOffset, childNode.length - range.startOffset, style, styleValue, false);
 
-  checkStyles() {
-    if (this.currentContainer.currentEditBox.inEditMode) {
-      this.isBold = this.selectionHasStyle('fontWeight');
-      this.isItalic = this.selectionHasStyle('fontStyle');
-      this.isUnderline = this.selectionHasStyle('textDecoration');
-      this.textColor = this.getStyleValue('color');
-      this.BackgroundColor = this.getStyleValue('background-color');
-      // this.getDropdownOption(this.fontSizeDropdown, 'font-size');
-      // this.getDropdownOption(this.fontDropdown, 'font-family');
-    } else {
-      this.isBold = false;
-      this.isItalic = false;
-      this.isUnderline = false;
-    }
-  }
+  //       // In range
+  //     } else if (range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== range.endContainer) {
+  //       this.setNodeStyle(childNode, 0, childNode.length, style, styleValue, false);
 
-  cleanContent() {
-    let nodeList: any = this.currentContainer.currentEditBox.content.firstChild.childNodes;
+  //       // End container
+  //     } else if (childNode === range.endContainer) {
+  //       this.setNodeStyle(childNode, 0, range.endOffset, style, styleValue, false);
+  //     }
 
-    for (let i = 0; i < nodeList.length; i++) {
-      // Remove text with no data
-      if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
+  //     // Iterate through the children of this child node
+  //     if (childNode.firstChild) {
+  //       this.loopChildren(childNode, range, style, styleValue);
+  //     }
+  //   });
+  // }
 
-      // Remove a node with no text
-      if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
-        nodeList[i].remove();
-        i = -1;
-        continue;
-      }
+  // setStyle(style: string, styleValue: string, toggle?: boolean) {
+  //   if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+  //     let selection = document.getSelection();
+  //     let range: Range = selection.getRangeAt(0);
 
-      // Combine two adjacent text nodes
-      if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
-        nodeList[i].appendData(nodeList[i + 1].data);
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
+  //     // Single container
+  //     if (range.startContainer === range.endContainer) {
+  //       this.setNodeStyle(range.startContainer, range.startOffset, range.endOffset - range.startOffset, style, styleValue, false);
+  //       // Multiple containers
+  //     } else {
+  //       // Set the style to all children that are selected
+  //       this.loopChildren(this.currentContainer.currentEditBox.content, range, style, styleValue);
+  //     }
+  //   } else {
+  //     if (!toggle) this.currentContainer.currentEditBox.content.style[style] = styleValue;
+  //   }
+  //   this.currentContainer.currentEditBox.setChange();
+  //   this.checkStyles();
+  // }
 
-      // combine two adjacent nodes with the same style
-      if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
-        nodeList[i].innerText += nodeList[i + 1].innerText;
-        nodeList[i + 1].remove();
-        i = -1;
-        continue;
-      }
-    }
-  }
+
+
+  // checkStyles() {
+  //   if (this.currentContainer.currentEditBox.inEditMode) {
+  //     this.isBold = this.selectionHasStyle('fontWeight');
+  //     this.isItalic = this.selectionHasStyle('fontStyle');
+  //     this.isUnderline = this.selectionHasStyle('textDecoration');
+  //     this.textColor = this.getStyleValue('color');
+  //     this.BackgroundColor = this.getStyleValue('background-color');
+  //     // this.getDropdownOption(this.fontSizeDropdown, 'font-size');
+  //     // this.getDropdownOption(this.fontDropdown, 'font-family');
+  //   } else {
+  //     this.isBold = false;
+  //     this.isItalic = false;
+  //     this.isUnderline = false;
+  //   }
+  // }
+
+  // cleanContent() {
+  //   let nodeList: any = this.currentContainer.currentEditBox.content.firstChild.childNodes;
+
+  //   for (let i = 0; i < nodeList.length; i++) {
+  //     // Remove text with no data
+  //     if (nodeList[i].nodeType === 3 && nodeList[i].data.length === 0) {
+  //       nodeList[i].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+
+  //     // Remove a node with no text
+  //     if (nodeList[i].nodeType === 1 && nodeList[i].innerText.length === 0) {
+  //       nodeList[i].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+
+  //     // Combine two adjacent text nodes
+  //     if (nodeList[i].nodeType === 3 && nodeList[i + 1] && nodeList[i + 1].nodeType === 3) {
+  //       nodeList[i].appendData(nodeList[i + 1].data);
+  //       nodeList[i + 1].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+
+  //     // combine two adjacent nodes with the same style
+  //     if (nodeList[i].nodeType === 1 && nodeList[i + 1] && nodeList[i + 1].nodeType === 1 && nodeList[i].getAttribute('style') === nodeList[i + 1].getAttribute('style') && nodeList[i + 1].innerText.length > 0) {
+  //       nodeList[i].innerText += nodeList[i + 1].innerText;
+  //       nodeList[i + 1].remove();
+  //       i = -1;
+  //       continue;
+  //     }
+  //   }
+  // }
 
   getListNode(node) {
     if (node.nodeType === 1 && (node.firstChild.tagName === 'UL' || node.firstChild.tagName === 'OL')) return node;
@@ -636,6 +630,17 @@ export class PropertiesComponent implements OnInit {
     range.insertNode(documentFragment);
   }
 
+  removeEmptyTextNodes(contents) {
+    for (let i = 0; i < contents.childNodes.length; i++) {
+      if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
+        contents.childNodes[i].remove();
+        i--;
+      } else {
+        this.removeEmptyTextNodes(contents.childNodes[i]);
+      }
+    }
 
+    return contents;
+  }
 
 }
