@@ -86,7 +86,9 @@ export class PropertiesComponent implements OnInit {
   @HostListener('document:mouseup', ['$event'])
   onMouseUp() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
+      window.setTimeout(() => {
+        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
+      }, 1);
     }
   }
 
@@ -492,155 +494,155 @@ export class PropertiesComponent implements OnInit {
   //   }
   // }
 
-  getListNode(node) {
-    if (node.nodeType === 1 && (node.firstChild.tagName === 'UL' || node.firstChild.tagName === 'OL')) return node;
+  // getListNode(node) {
+  //   if (node.nodeType === 1 && (node.firstChild.tagName === 'UL' || node.firstChild.tagName === 'OL')) return node;
 
-    while (node !== this.currentContainer.currentEditBox.content) {
-      if (node.tagName === 'UL' || node.tagName === 'OL') {
-        return node.parentElement;
-      } else {
-        node = node.parentElement;
-      }
-    }
-    return null;
-  }
+  //   while (node !== this.currentContainer.currentEditBox.content) {
+  //     if (node.tagName === 'UL' || node.tagName === 'OL') {
+  //       return node.parentElement;
+  //     } else {
+  //       node = node.parentElement;
+  //     }
+  //   }
+  //   return null;
+  // }
 
-  getParentNode(node) {
-    while (node.tagName !== 'DIV' && node.tagName !== 'LI') {
-      node = node.parentElement;
-    }
-    return node;
-  }
+  // getParentNode(node) {
+  //   while (node.tagName !== 'DIV' && node.tagName !== 'LI') {
+  //     node = node.parentElement;
+  //   }
+  //   return node;
+  // }
 
-  createList(listType: string) {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      let selection = document.getSelection(),
-        range: any = selection.getRangeAt(0),
-        list = document.createElement(listType);
+  // createList(listType: string) {
+  //   if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
+  //     let selection = document.getSelection(),
+  //       range: any = selection.getRangeAt(0),
+  //       list = document.createElement(listType);
 
-      // Set the style of the list
-      list.style.marginLeft = '0.5em';
-      list.style.marginTop = '0';
-      list.style.marginBottom = '0';
-      list.style.paddingLeft = '1.3em';
+  //     // Set the style of the list
+  //     list.style.marginLeft = '0.5em';
+  //     list.style.marginTop = '0';
+  //     list.style.marginBottom = '0';
+  //     list.style.paddingLeft = '1.3em';
 
-      // Test to see if a list is already selected
-      let listNode = this.getListNode(range.commonAncestorContainer);
-      if (listNode) {
-        // If list type is same as selected, remove list
-        if (listNode.firstChild.tagName === listType) {
-          this.removeList(listNode);
-          return;
-        }
+  //     // Test to see if a list is already selected
+  //     let listNode = this.getListNode(range.commonAncestorContainer);
+  //     if (listNode) {
+  //       // If list type is same as selected, remove list
+  //       if (listNode.firstChild.tagName === listType) {
+  //         this.removeList(listNode);
+  //         return;
+  //       }
 
-        // Select the contents of the list
-        let index = Array.from(listNode.parentElement.children).findIndex(x => x === listNode);
-        selection.setBaseAndExtent(listNode.parentElement, index, listNode.parentElement, index + 1);
-        range = selection.getRangeAt(0);
-      }
+  //       // Select the contents of the list
+  //       let index = Array.from(listNode.parentElement.children).findIndex(x => x === listNode);
+  //       selection.setBaseAndExtent(listNode.parentElement, index, listNode.parentElement, index + 1);
+  //       range = selection.getRangeAt(0);
+  //     }
 
-      // commonAncestorContainer is the edit box content div
-      if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
-        // If text is selected, reselect their div parents
-        if (range.startContainer.nodeType === 3) {
-          let startNode = this.getParentNode(range.startContainer);
-          let endNode = this.getParentNode(range.endContainer);
-          selection.setBaseAndExtent(startNode, 0, endNode, endNode.childNodes.length);
-          range = selection.getRangeAt(0);
-        }
+  //     // commonAncestorContainer is the edit box content div
+  //     if (range.commonAncestorContainer === this.currentContainer.currentEditBox.content) {
+  //       // If text is selected, reselect their div parents
+  //       if (range.startContainer.nodeType === 3) {
+  //         let startNode = this.getParentNode(range.startContainer);
+  //         let endNode = this.getParentNode(range.endContainer);
+  //         selection.setBaseAndExtent(startNode, 0, endNode, endNode.childNodes.length);
+  //         range = selection.getRangeAt(0);
+  //       }
 
-        // Extract the contents and create the parent div
-        let contents = this.removeEmptyTextNodes(range.extractContents()),
-          div = document.createElement('DIV');
+  //       // Extract the contents and create the parent div
+  //       let contents = this.removeEmptyTextNodes(range.extractContents()),
+  //         div = document.createElement('DIV');
 
-        for (let i = 0; i < contents.childElementCount; i++) {
-          // If the contents are list items, append to the list
-          if (contents.children[i].childNodes[0].tagName === 'OL' || contents.children[i].childNodes[0].tagName === 'UL') {
-            for (let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++) {
-              list.appendChild(contents.children[i].childNodes[0].children[j]);
-              j--;
-            }
-          } else {
-            // Create a list element and append the contents
-            let listItem = document.createElement('LI');
-            while (contents.children[i].childNodes.length > 0) {
-              listItem.appendChild(contents.children[i].childNodes[0]);
-            }
-            list.appendChild(listItem);
-          }
-        }
+  //       for (let i = 0; i < contents.childElementCount; i++) {
+  //         // If the contents are list items, append to the list
+  //         if (contents.children[i].childNodes[0].tagName === 'OL' || contents.children[i].childNodes[0].tagName === 'UL') {
+  //           for (let j = 0; j < contents.children[i].childNodes[0].childElementCount; j++) {
+  //             list.appendChild(contents.children[i].childNodes[0].children[j]);
+  //             j--;
+  //           }
+  //         } else {
+  //           // Create a list element and append the contents
+  //           let listItem = document.createElement('LI');
+  //           while (contents.children[i].childNodes.length > 0) {
+  //             listItem.appendChild(contents.children[i].childNodes[0]);
+  //           }
+  //           list.appendChild(listItem);
+  //         }
+  //       }
 
-        // Append the list to the div and insert the div
-        div.appendChild(list);
-        range.insertNode(div);
+  //       // Append the list to the div and insert the div
+  //       div.appendChild(list);
+  //       range.insertNode(div);
 
-        // Reselect
-        range.selectNodeContents(range.commonAncestorContainer.children[range.startOffset]);
-      } else {
-        // Make sure the parent div is selected
-        let node = range.commonAncestorContainer;
-        while (node.tagName !== 'DIV') {
-          node = node.parentElement;
-        }
-        range.selectNodeContents(node);
+  //       // Reselect
+  //       range.selectNodeContents(range.commonAncestorContainer.children[range.startOffset]);
+  //     } else {
+  //       // Make sure the parent div is selected
+  //       let node = range.commonAncestorContainer;
+  //       while (node.tagName !== 'DIV') {
+  //         node = node.parentElement;
+  //       }
+  //       range.selectNodeContents(node);
 
-        // Put the contents into a list item
-        let listItem = document.createElement('LI');
-        listItem.appendChild(this.removeEmptyTextNodes(range.extractContents()));
+  //       // Put the contents into a list item
+  //       let listItem = document.createElement('LI');
+  //       listItem.appendChild(this.removeEmptyTextNodes(range.extractContents()));
 
-        // Append the list item into the list and insert the list into the editbox content
-        list.appendChild(listItem);
-        range.insertNode(list);
-      }
-    }
+  //       // Append the list item into the list and insert the list into the editbox content
+  //       list.appendChild(listItem);
+  //       range.insertNode(list);
+  //     }
+  //   }
 
-    // Remove any empty nodes
-    for (let i = 0; i < this.currentContainer.currentEditBox.content.childElementCount; i++) {
-      if (this.currentContainer.currentEditBox.content.children[i].childNodes.length === 0) {
-        this.currentContainer.currentEditBox.content.children[i].remove();
-        i--;
-      }
-    }
-
-
-  }
-
-  removeList(node) {
-    let selection = document.getSelection();
-    selection.selectAllChildren(node);
-    let range = selection.getRangeAt(0);
-    let contents: any = range.extractContents();
-
-    let documentFragment = document.createDocumentFragment();
-    node.remove();
+  //   // Remove any empty nodes
+  //   for (let i = 0; i < this.currentContainer.currentEditBox.content.childElementCount; i++) {
+  //     if (this.currentContainer.currentEditBox.content.children[i].childNodes.length === 0) {
+  //       this.currentContainer.currentEditBox.content.children[i].remove();
+  //       i--;
+  //     }
+  //   }
 
 
+  // }
 
-    for (let i = 0; i < contents.firstChild.childElementCount; i++) {
-      let div = document.createElement('DIV');
-      for (let j = 0; j < contents.firstChild.children[i].childNodes.length; j++) {
-        div.appendChild(contents.firstChild.children[i].childNodes[j]);
-        j--;
-      }
+  // removeList(node) {
+  //   let selection = document.getSelection();
+  //   selection.selectAllChildren(node);
+  //   let range = selection.getRangeAt(0);
+  //   let contents: any = range.extractContents();
 
-      documentFragment.appendChild(div);
+  //   let documentFragment = document.createDocumentFragment();
+  //   node.remove();
 
-    }
 
-    range.insertNode(documentFragment);
-  }
 
-  removeEmptyTextNodes(contents) {
-    for (let i = 0; i < contents.childNodes.length; i++) {
-      if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
-        contents.childNodes[i].remove();
-        i--;
-      } else {
-        this.removeEmptyTextNodes(contents.childNodes[i]);
-      }
-    }
+  //   for (let i = 0; i < contents.firstChild.childElementCount; i++) {
+  //     let div = document.createElement('DIV');
+  //     for (let j = 0; j < contents.firstChild.children[i].childNodes.length; j++) {
+  //       div.appendChild(contents.firstChild.children[i].childNodes[j]);
+  //       j--;
+  //     }
 
-    return contents;
-  }
+  //     documentFragment.appendChild(div);
+
+  //   }
+
+  //   range.insertNode(documentFragment);
+  // }
+
+  // removeEmptyTextNodes(contents) {
+  //   for (let i = 0; i < contents.childNodes.length; i++) {
+  //     if (contents.childNodes[i].nodeType === 3 && contents.childNodes[i].length === 0) {
+  //       contents.childNodes[i].remove();
+  //       i--;
+  //     } else {
+  //       this.removeEmptyTextNodes(contents.childNodes[i]);
+  //     }
+  //   }
+
+  //   return contents;
+  // }
 
 }

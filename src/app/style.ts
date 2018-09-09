@@ -42,32 +42,36 @@ export class Style {
         if (this.range.startContainer === this.range.endContainer) {
             return this.range.startContainer.parentElement.style[this.style].length > 0;
         } else {
-            return this.childNodeHasStyle(this.editBox.content);
+            return this.childrenHasStyle(this.editBox.content);
         }
     }
 
-    childNodeHasStyle(node) {
+    childrenHasStyle(node) {
         for (let i = 0; i < node.childNodes.length; i++) {
             let childNode = node.childNodes[i];
 
             // This child node is at the start or within the selection
             if ((childNode === this.range.startContainer) || (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer)) {
-                if (childNode.parentElement.style[this.style] !== this.styleValue) return false;
+                if (!this.childNodeHasStyle(childNode)) return false;
 
                 //This child node is at the end of the selection
             } else if (childNode === this.range.endContainer) {
-                if (childNode.parentElement.style[this.style] !== this.styleValue) return false;
+                if (!this.childNodeHasStyle(childNode)) return false;
                 return true;
             }
 
             // Iterate through the children of this child node
             if (childNode.firstChild) {
-                let result = this.childNodeHasStyle(childNode);
+                let result = this.childrenHasStyle(childNode);
                 if (result === true || result === false) {
                     return result;
                 }
             }
         }
+    }
+
+    childNodeHasStyle(childNode){
+        return childNode.parentElement.style[this.style] === this.styleValue;
     }
 
     setWholeSelection(node) {
@@ -187,5 +191,22 @@ export class Style {
         newNode.style[this.style] = this.styleValue;
 
         return newNode;
+    }
+
+    getParentNode(node) {
+        while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL') {
+            node = node.parentElement;
+        }
+        return node;
+    }
+
+    selectParentNodes() {
+        let startParentNode = this.getParentNode(this.range.startContainer),
+            endParentNode = this.getParentNode(this.range.endContainer),
+            startContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === startParentNode),
+            endContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === endParentNode);
+
+        this.range.setStart(this.editBox.content, startContainerIndex);
+        this.range.setEnd(this.editBox.content, endContainerIndex + 1);
     }
 }
