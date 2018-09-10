@@ -40,8 +40,10 @@ export class Style {
 
     selectionHasStyle() {
         if (this.range.startContainer === this.range.endContainer) {
-            return this.range.startContainer.parentElement.style[this.style].length > 0;
+            // Single container is selected
+            return this.childNodeHasStyle(this.range.startContainer);
         } else {
+            // Multiple containers are selected
             return this.childrenHasStyle(this.editBox.content);
         }
     }
@@ -70,7 +72,7 @@ export class Style {
         }
     }
 
-    childNodeHasStyle(childNode){
+    childNodeHasStyle(childNode) {
         return childNode.parentElement.style[this.style] === this.styleValue;
     }
 
@@ -170,8 +172,6 @@ export class Style {
     }
 
 
-
-
     copyNodeWithNewData(node, newData) {
         let newNode = node.cloneNode();
         newNode.appendChild(document.createTextNode(newData));
@@ -201,12 +201,21 @@ export class Style {
     }
 
     selectParentNodes() {
+        let indices = this.getStartEndIndices();
+
+        this.range.setStart(this.editBox.content, indices.startContainerIndex);
+        this.range.setEnd(this.editBox.content, indices.endContainerIndex + 1);
+    }
+
+    getStartEndIndices() {
         let startParentNode = this.getParentNode(this.range.startContainer),
             endParentNode = this.getParentNode(this.range.endContainer),
             startContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === startParentNode),
             endContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === endParentNode);
 
-        this.range.setStart(this.editBox.content, startContainerIndex);
-        this.range.setEnd(this.editBox.content, endContainerIndex + 1);
+        return {
+            startContainerIndex: startContainerIndex,
+            endContainerIndex: endContainerIndex
+        }
     }
 }

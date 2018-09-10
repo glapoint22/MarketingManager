@@ -45,42 +45,42 @@ export class ListStyle extends Style {
     }
 
     removeList() {
-        let startParentNode = this.getParentNode(this.range.startContainer),
-            endParentNode = this.getParentNode(this.range.endContainer),
-            startContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === startParentNode),
-            endContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === endParentNode);
+        let indices = this.getStartEndIndices(),
+            documentFragment = document.createDocumentFragment(),
+            elementCount, baseNode, extentNode;
 
-            let documentFragment = document.createDocumentFragment();
+        // Loop through the selected parent elements
+        for (let i = indices.startContainerIndex; i < indices.endContainerIndex + 1; i++) {
 
-        for (let i = startContainerIndex; i < endContainerIndex + 1; i++) {
-            
-
-            for(let j = 0; j < this.editBox.content.children[i].childElementCount; j++){
+            // Loop through the list elements
+            for (let j = 0; j < this.editBox.content.children[i].childElementCount; j++) {
                 let div = document.createElement('DIV');
 
-                for(let k = 0; k < this.editBox.content.children[i].children[j].childElementCount; k++){
+                // Place the list contents into the new div element
+                for (let k = 0; k < this.editBox.content.children[i].children[j].childElementCount; k++) {
                     div.appendChild(this.editBox.content.children[i].children[j].children[k]);
                     k--;
                 }
 
+                // Place the new div element into the document fragment
                 documentFragment.appendChild(div);
             }
 
+            // Remove the remians
             this.editBox.content.children[i].remove();
             i--;
-            endContainerIndex --;
+            indices.endContainerIndex--;
         }
 
-        this.editBox.content.insertBefore(documentFragment, this.editBox.content.children[startContainerIndex]);
+        // Set selection
+        elementCount = documentFragment.childElementCount - 1;
+        this.editBox.content.insertBefore(documentFragment, this.editBox.content.children[indices.startContainerIndex]);
+        baseNode = this.editBox.content.children[indices.startContainerIndex].firstElementChild.firstChild;
+        extentNode = this.editBox.content.children[indices.startContainerIndex + elementCount].lastElementChild.firstChild;
+        this.selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
+        this.range = this.selection.getRangeAt(0);
     }
 
-    selectionHasStyle() {
-        if (this.range.startContainer === this.range.endContainer) {
-            return this.range.startContainer.parentElement.parentElement.parentElement.tagName === this.style;
-        } else {
-            return this.childrenHasStyle(this.editBox.content);
-        }
-    }
 
     setList() {
         if (!this.selectionHasStyle()) {
@@ -93,5 +93,4 @@ export class ListStyle extends Style {
     childNodeHasStyle(childNode) {
         return this.getParentNode(childNode).tagName === this.style;
     }
-
 }
