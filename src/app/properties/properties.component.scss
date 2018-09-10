@@ -1,14 +1,10 @@
 .bar {
     width: 100%;
-    height: 22px;
     font-size: 13px;
     line-height: 23px;
-    white-space: nowrap;
     border: 1px solid #3a3a3a;
+    background: #2d2d2d;
 }
-
-
-
 .group {
     height: 22px;
     display: inline-block;
@@ -33,7 +29,7 @@
     }
     select {
         height: 17px;
-        border: none;
+        border: 1px solid #383838;
         background: #424242;
         color: white;
         outline-color: #c7c7c7;

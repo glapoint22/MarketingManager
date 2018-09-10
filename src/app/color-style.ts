@@ -13,6 +13,7 @@ export class ColorStyle extends Style {
             this.styleValue = event.path[0].value;
             this.setStyle();
         }
+        this.group = 'color';
     }
 
     onClick() {

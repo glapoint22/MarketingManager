@@ -9,6 +9,5 @@ export class OrderedList extends ListStyle {
         this.title = 'Ordered list';
         this.icon = 'fas fa-list-ol';
         this.style = 'OL';
-        this.group = 'list';
     }
 }

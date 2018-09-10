@@ -9,6 +9,8 @@ import { TextColor } from '../text-color';
 import { HighlightColor } from '../highlight-color';
 import { OrderedList } from '../ordered-list';
 import { UnorderedList } from '../unordered-list';
+import { FontSize } from '../font-size';
+import { Font } from '../font';
 
 @Component({
   selector: 'text-box',
@@ -23,7 +25,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
     this.styles = [new Bold(this), new Italic(this), new Underline(this),
     new TextColor(this), new HighlightColor(this), new OrderedList(this),
-    new UnorderedList(this)];
+    new UnorderedList(this), new FontSize(this), new Font(this)];
 
     // Event when content changes
     this.content.oninput = () => {
@@ -68,6 +70,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
       span.style.color = '#414141';
       span.style.fontSize = '16px';
+      span.style.fontFamily = '"Times New Roman", Times, serif';
       span.appendChild(text);
       div.appendChild(span);
       content.appendChild(div);

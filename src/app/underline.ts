@@ -9,6 +9,5 @@ export class Underline extends ToggleableStyle{
         this.icon = 'fas fa-underline';
         this.style = 'textDecoration';
         this.styleValue = 'underline';
-        this.group = 'toggle';
     }
 }

@@ -10,6 +10,5 @@ export class Bold extends ToggleableStyle {
         this.icon = 'fas fa-bold';
         this.style = 'fontWeight';
         this.styleValue = 'bold';
-        this.group = 'toggle';
     }
 }

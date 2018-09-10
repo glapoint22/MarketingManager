@@ -8,6 +8,5 @@ export class HighlightColor extends ColorStyle {
         this.title = 'Highlight color';
         this.icon = 'fas fa-highlighter';
         this.style = 'backgroundColor';
-        this.group = 'color';
     }
 }

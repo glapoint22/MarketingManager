@@ -1,6 +1,12 @@
 import { Style } from "./style";
+import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class ListStyle extends Style {
+    constructor(editBox: EditBoxComponent) {
+        super(editBox);
+        this.group = 'list';
+    }
+
     onClick() {
         if (super.onClick()) this.setList();
         return true;

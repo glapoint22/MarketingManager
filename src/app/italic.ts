@@ -9,6 +9,5 @@ export class Italic extends ToggleableStyle {
         this.icon = 'fas fa-italic';
         this.style = 'fontStyle';
         this.styleValue = 'italic';
-        this.group = 'toggle';
     }
 }
