@@ -6,22 +6,20 @@ export class Style {
     public group: string;
     public style: string;
     public styleValue: string;
-    public selection: Selection;
-    public range: any;
+    public static selection: Selection;
+    public static range: any;
     public isSelected: boolean;
 
     constructor(public editBox: EditBoxComponent) { }
 
     onClick() {
-        if (!this.editBox.inEditMode) return false;
-        return true;
+        this.editBox.checkSelectionForStyles();
     }
 
     setStyle() {
-        if (this.range.startContainer === this.range.endContainer) {
+        if (Style.range.startContainer === Style.range.endContainer) {
             // The selection is within one node
-            this.setNodeStyle(this.range.startContainer, this.range.startOffset, this.range.endOffset - this.range.startOffset);
-
+            this.setNodeStyle(Style.range.startContainer, Style.range.startOffset, Style.range.endOffset - Style.range.startOffset);
         } else {
             // The selection spans across multiple nodes
             this.loopChildren(this.editBox.content);
@@ -29,19 +27,18 @@ export class Style {
     }
 
     checkSelection() {
-        this.setSelection();
         this.isSelected = this.selectionHasStyle();
     }
 
-    setSelection() {
-        this.selection = document.getSelection();
-        this.range = this.selection.getRangeAt(0);
+    static setSelection() {
+        Style.selection = document.getSelection();
+        Style.range = Style.selection.getRangeAt(0);
     }
 
     selectionHasStyle() {
-        if (this.range.startContainer === this.range.endContainer) {
+        if (Style.range.startContainer === Style.range.endContainer) {
             // Single container is selected
-            return this.childNodeHasStyle(this.range.startContainer);
+            return this.childNodeHasStyle(Style.range.startContainer);
         } else {
             // Multiple containers are selected
             return this.childrenHasStyle(this.editBox.content);
@@ -53,11 +50,11 @@ export class Style {
             let childNode = node.childNodes[i];
 
             // This child node is at the start or within the selection
-            if ((childNode === this.range.startContainer) || (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer)) {
+            if ((childNode === Style.range.startContainer) || (Style.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== Style.range.endContainer)) {
                 if (!this.childNodeHasStyle(childNode)) return false;
 
                 //This child node is at the end of the selection
-            } else if (childNode === this.range.endContainer) {
+            } else if (childNode === Style.range.endContainer) {
                 if (!this.childNodeHasStyle(childNode)) return false;
                 return true;
             }
@@ -88,12 +85,12 @@ export class Style {
         node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
 
         // Set selection
-        if (this.range.startContainer === this.range.endContainer) {
-            this.range.selectNodeContents(newNode.firstChild);
-        } else if (node === this.range.startContainer) {
-            this.range.setStart(newNode.firstChild, 0);
+        if (Style.range.startContainer === Style.range.endContainer) {
+            Style.range.selectNodeContents(newNode.firstChild);
+        } else if (node === Style.range.startContainer) {
+            Style.range.setStart(newNode.firstChild, 0);
         } else {
-            this.range.setEnd(newNode.firstChild, newNode.firstChild.length);
+            Style.range.setEnd(newNode.firstChild, newNode.firstChild.length);
         }
     }
 
@@ -129,7 +126,7 @@ export class Style {
             documentFragment.appendChild(endNode);
             newNode.replaceWith(documentFragment);
 
-            this.range.selectNodeContents(midNode.firstChild);
+            Style.range.selectNodeContents(midNode.firstChild);
         }
 
 
@@ -152,16 +149,16 @@ export class Style {
                 .find((nodeChild: any) => cloneChild.nodeType === 1 ? nodeChild.outerHTML === cloneChild.outerHTML : nodeChild.data === cloneChild.data);
 
             // This child node is at the start of the selection
-            if (childNode === this.range.startContainer) {
-                this.setNodeStyle(childNode, this.range.startOffset, childNode.length - this.range.startOffset);
+            if (childNode === Style.range.startContainer) {
+                this.setNodeStyle(childNode, Style.range.startOffset, childNode.length - Style.range.startOffset);
 
                 // This child node is within the selection
-            } else if (this.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== this.range.endContainer) {
+            } else if (Style.range.isPointInRange(childNode, 0) && childNode.nodeType === 3 && childNode !== Style.range.endContainer) {
                 this.setNodeStyle(childNode, 0, childNode.length);
 
                 //This child node is at the end of the selection
-            } else if (childNode === this.range.endContainer) {
-                this.setNodeStyle(childNode, 0, this.range.endOffset);
+            } else if (childNode === Style.range.endContainer) {
+                this.setNodeStyle(childNode, 0, Style.range.endOffset);
             }
 
             // Iterate through the children of this child node
@@ -203,13 +200,13 @@ export class Style {
     selectParentNodes() {
         let indices = this.getStartEndIndices();
 
-        this.range.setStart(this.editBox.content, indices.startContainerIndex);
-        this.range.setEnd(this.editBox.content, indices.endContainerIndex + 1);
+        Style.range.setStart(this.editBox.content, indices.startContainerIndex);
+        Style.range.setEnd(this.editBox.content, indices.endContainerIndex + 1);
     }
 
     getStartEndIndices() {
-        let startParentNode = this.getParentNode(this.range.startContainer),
-            endParentNode = this.getParentNode(this.range.endContainer),
+        let startParentNode = this.getParentNode(Style.range.startContainer),
+            endParentNode = this.getParentNode(Style.range.endContainer),
             startContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === startParentNode),
             endContainerIndex = Array.from(this.editBox.content.children).findIndex(x => x === endParentNode);
 

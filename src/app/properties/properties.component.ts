@@ -61,25 +61,11 @@ export class PropertiesComponent {
   }
 
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if (this.currentContainer &&
-      this.currentContainer.currentEditBox &&
-      this.currentContainer.currentEditBox.inEditMode &&
-      (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-        event.code === 'ArrowRight' || event.code === 'ArrowDown')) {
-      window.setTimeout(() => {
-        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
-      }, 1);
-    }
-  }
-
   @HostListener('document:mouseup', ['$event'])
   onMouseUp() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode) {
-      window.setTimeout(() => {
-        this.currentContainer.currentEditBox.styles.forEach(x => x.checkSelection());
-      }, 1);
+    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode && this.currentContainer.currentEditBox.mouseDown) {
+      this.currentContainer.currentEditBox.mouseDown = false;
+      this.currentContainer.currentEditBox.checkSelectionForStyles();
     }
   }
 }

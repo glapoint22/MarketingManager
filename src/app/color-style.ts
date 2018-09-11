@@ -17,25 +17,23 @@ export class ColorStyle extends Style {
     }
 
     onClick() {
-        if (super.onClick()) {
+        if (this.editBox.inEditMode) {
             this.colorPalette.value = this.rgbToHex(this.styleValue);
             this.colorPalette.click();
         }
-        return true;
     }
 
     checkSelection() {
-        this.setSelection();
         this.getColorValue();
     }
 
     getColorValue() {
-        let hasColor: boolean = this.range.startContainer.parentElement.style[this.style].length > 0;
+        let hasColor: boolean = Style.range.startContainer.parentElement.style[this.style].length > 0;
 
         if (!hasColor) {
             this.styleValue = '#00000000';
         } else {
-            this.styleValue = this.range.startContainer.parentElement.style[this.style];
+            this.styleValue = Style.range.startContainer.parentElement.style[this.style];
             if (!this.selectionHasStyle()) {
                 this.styleValue = '#00000000';
             }

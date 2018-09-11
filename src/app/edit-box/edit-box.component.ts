@@ -282,7 +282,7 @@ export class EditBoxComponent {
     this.content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
     this.content.focus();
-    this.styles.forEach(x => x.checkSelection());
+    this.checkSelectionForStyles();
   }
 
   initialize(content: HTMLElement, size?: Vector2) {
@@ -326,5 +326,12 @@ export class EditBoxComponent {
       this.content.style.setProperty('cursor', '');
       this.styles.forEach(x => x.isSelected = false);
     }
+  }
+
+  checkSelectionForStyles() {
+    window.setTimeout(() => {
+      Style.setSelection();
+      this.styles.forEach(x => x.checkSelection());
+    }, 1);
   }
 }

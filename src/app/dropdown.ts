@@ -10,16 +10,14 @@ export class Dropdown extends Style {
     }
 
     onClick(value?) {
-        if (super.onClick()) {
+        if (this.editBox.inEditMode) {
             this.styleValue = value;
             this.setStyle();
         }
-        return true;
     }
 
     checkSelection() {
-        this.setSelection();
-        this.styleValue = this.range.startContainer.parentElement.style[this.style];
+        this.styleValue = Style.range.startContainer.parentElement.style[this.style];
         if (!this.selectionHasStyle()) {
             this.styleValue = '';
         }

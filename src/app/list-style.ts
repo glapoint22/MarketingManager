@@ -8,8 +8,11 @@ export class ListStyle extends Style {
     }
 
     onClick() {
-        if (super.onClick()) this.setList();
-        return true;
+        if (this.editBox.inEditMode) {
+            Style.setSelection();
+            this.setList();
+            super.onClick();
+        }
     }
 
     createList() {
@@ -17,7 +20,7 @@ export class ListStyle extends Style {
 
         // Get the contents that will become the list
         this.selectParentNodes();
-        contents = this.range.extractContents();
+        contents = Style.range.extractContents();
 
         // Create the list element and style
         list = document.createElement(this.style);
@@ -41,13 +44,13 @@ export class ListStyle extends Style {
             if (listItem.childElementCount > 0) list.appendChild(listItem);
         }
 
-        this.range.insertNode(list);
+        Style.range.insertNode(list);
 
         // Set selection
-        startContainer = this.editBox.content.children[this.range.startOffset].firstElementChild.firstElementChild.firstChild;
-        endContainer = this.editBox.content.children[this.range.endOffset - 1].lastElementChild.lastElementChild.firstChild;
-        this.selection.setBaseAndExtent(startContainer, 0, endContainer, endContainer.length);
-        this.range = this.selection.getRangeAt(0);
+        startContainer = this.editBox.content.children[Style.range.startOffset].firstElementChild.firstElementChild.firstChild;
+        endContainer = this.editBox.content.children[Style.range.endOffset - 1].lastElementChild.lastElementChild.firstChild;
+        Style.selection.setBaseAndExtent(startContainer, 0, endContainer, endContainer.length);
+        Style.range = Style.selection.getRangeAt(0);
     }
 
     removeList() {
@@ -83,8 +86,8 @@ export class ListStyle extends Style {
         this.editBox.content.insertBefore(documentFragment, this.editBox.content.children[indices.startContainerIndex]);
         baseNode = this.editBox.content.children[indices.startContainerIndex].firstElementChild.firstChild;
         extentNode = this.editBox.content.children[indices.startContainerIndex + elementCount].lastElementChild.firstChild;
-        this.selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
-        this.range = this.selection.getRangeAt(0);
+        Style.selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
+        Style.range = Style.selection.getRangeAt(0);
     }
 
 
