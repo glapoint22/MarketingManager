@@ -28,6 +28,7 @@ export class ListStyle extends Style {
         list.style.marginTop = '0';
         list.style.marginBottom = '0';
         list.style.paddingLeft = '1.3em';
+        list.style.textAlign = contents.firstElementChild.style.textAlign;
 
         // Change the contents to a list
         for (let i = 0; i < contents.childElementCount; i++) {

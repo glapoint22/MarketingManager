@@ -12,6 +12,10 @@ import { UnorderedList } from '../unordered-list';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
 import { Style } from '../style';
+import { AlignLeft } from '../align-left';
+import { AlignCenter } from '../align-center';
+import { AlignRight } from '../align-right';
+import { AlignJustify } from '../align-justify';
 
 @Component({
   selector: 'text-box',
@@ -31,17 +35,23 @@ export class TextBoxComponent extends EditBoxComponent {
       orderedList: OrderedList = new OrderedList(this),
       unorderedList: UnorderedList = new UnorderedList(this),
       fontSize: FontSize = new FontSize(this),
-      font: Font = new Font(this);
+      font: Font = new Font(this),
+      alignLeft: AlignLeft = new AlignLeft(this),
+      alignCenter: AlignCenter = new AlignCenter(this),
+      alignRight: AlignRight = new AlignRight(this),
+      alignJustify: AlignJustify = new AlignJustify(this);
 
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
     this.styles = [bold, italic, underline,
       textColor, highlightColor, orderedList,
-      unorderedList, fontSize, font];
+      unorderedList, alignLeft,
+      alignCenter, alignRight, alignJustify, fontSize, font];
 
     // Event when content changes
     this.content.oninput = () => {
       this.setChange();
+      this.checkDiv();
     }
 
     this.content.onblur = () => {
@@ -59,8 +69,6 @@ export class TextBoxComponent extends EditBoxComponent {
       if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
         event.code === 'ArrowRight' || event.code === 'ArrowDown') {
         this.checkSelectionForStyles();
-      } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-        this.checkDiv();
       }
     }
 
@@ -71,21 +79,50 @@ export class TextBoxComponent extends EditBoxComponent {
     window.setTimeout(() => {
       let selection = document.getSelection();
       let range = selection.getRangeAt(0);
-      let node = range.startContainer as Element;
+      let node: any = range.startContainer;
+
+      if(node === this.content){
+        return;
+      }
 
       while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL') {
         node = node.parentElement;
       }
       if (node.firstElementChild.tagName === 'FONT') {
-        node.remove();
-        let span = this.createDefaultSpan(),
-          br = document.createElement('BR'),
-          div = document.createElement('DIV');
+        let color = node.firstElementChild.color;
+        let fontFamily = node.firstElementChild.face;
+        let child = node.firstElementChild.firstChild;
+        let span = document.createElement('SPAN');
 
-        span.appendChild(br);
-        div.appendChild(span);
-        range.insertNode(div);
-        range.selectNodeContents(br);
+        while (child.nodeType !== 3 && child.tagName !== 'BR') {
+          if (child.tagName === 'SPAN') {
+            span.setAttribute('style', child.getAttribute('style'));
+            span.style.color = color;
+            span.style.fontFamily = fontFamily;
+          } else if (child.tagName === 'B') {
+            span.style.fontWeight = 'bold';
+          } else if (child.tagName === 'I') {
+            span.style.fontStyle = 'italic';
+          } else if (child.tagName === 'U') {
+            span.style.textDecoration = 'underline';
+          }
+          child = child.firstChild;
+        }
+
+        if (child.nodeType === 3) {
+          span.appendChild(child);
+          node.firstElementChild.replaceWith(span);
+          selection.setPosition(child, child.length);
+          range = selection.getRangeAt(0)
+        } else if (child.tagName === 'BR') {
+          let br = document.createElement('BR');
+          span  = this.createDefaultSpan();
+          span.appendChild(br);
+          node.firstElementChild.replaceWith(span);
+          node.style.textAlign = 'left';
+          range.selectNodeContents(br);
+        }
+
         this.checkSelectionForStyles();
       }
     }, 1);
@@ -127,7 +164,7 @@ export class TextBoxComponent extends EditBoxComponent {
         text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.'),
         div = document.createElement('DIV');
 
-
+      div.style.textAlign = 'left';
       span.appendChild(text);
       div.appendChild(span);
       content.appendChild(div);
