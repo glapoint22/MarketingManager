@@ -22,7 +22,7 @@ export class Style {
             this.setNodeStyle(Style.range.startContainer, Style.range.startOffset, Style.range.endOffset - Style.range.startOffset);
         } else {
             // The selection spans across multiple nodes
-            this.loopChildren(this.editBox.content);
+            this.setMultipleNodesStyle(this.editBox.content);
         }
     }
 
@@ -140,7 +140,7 @@ export class Style {
         return this.applyStyle(node.parentElement, node.substringData(offset, count));
     }
 
-    loopChildren(node) {
+    setMultipleNodesStyle(node) {
         let clone = node.cloneNode(true);
 
         clone.childNodes.forEach(cloneChild => {
@@ -163,7 +163,7 @@ export class Style {
 
             // Iterate through the children of this child node
             if (childNode.firstChild) {
-                this.loopChildren(childNode);
+                this.setMultipleNodesStyle(childNode);
             }
         });
     }

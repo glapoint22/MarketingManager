@@ -6,7 +6,7 @@ export class FontSize extends Dropdown {
         super(editBox);
 
         this.title = 'Font size';
-        this.style = 'font-size';
+        this.style = 'fontSize';
         this.options = [
             { value: '8px', name: '8' },
             { value: '9px', name: '9' },

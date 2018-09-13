@@ -11,11 +11,11 @@ import { OrderedList } from '../ordered-list';
 import { UnorderedList } from '../unordered-list';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
-import { Style } from '../style';
 import { AlignLeft } from '../align-left';
 import { AlignCenter } from '../align-center';
 import { AlignRight } from '../align-right';
 import { AlignJustify } from '../align-justify';
+import { LinkStyle } from '../link-style';
 
 @Component({
   selector: 'text-box',
@@ -39,19 +39,21 @@ export class TextBoxComponent extends EditBoxComponent {
       alignLeft: AlignLeft = new AlignLeft(this),
       alignCenter: AlignCenter = new AlignCenter(this),
       alignRight: AlignRight = new AlignRight(this),
-      alignJustify: AlignJustify = new AlignJustify(this);
+      alignJustify: AlignJustify = new AlignJustify(this),
+      linkStyle: LinkStyle = new LinkStyle(this);
 
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
     this.styles = [bold, italic, underline,
       textColor, highlightColor, orderedList,
-      unorderedList, alignLeft,
-      alignCenter, alignRight, alignJustify, fontSize, font];
+      unorderedList, alignLeft, alignCenter, 
+      alignRight, alignJustify, fontSize, 
+      font, linkStyle];
 
     // Event when content changes
     this.content.oninput = () => {
       this.setChange();
-      this.checkDiv();
+      this.fixInvalidElements();
     }
 
     this.content.onblur = () => {
@@ -75,69 +77,56 @@ export class TextBoxComponent extends EditBoxComponent {
     super.ngOnInit();
   }
 
-  checkDiv() {
+  fixInvalidElements() {
     window.setTimeout(() => {
       let selection = document.getSelection();
-      let range = selection.getRangeAt(0);
-      let node: any = range.startContainer;
+      let range: any = selection.getRangeAt(0);
+      let startContainer: any = range.startContainer;
 
-      if(node === this.content){
-        return;
+      // Content has been deleted
+      if (range.startContainer === this.content) {
+        let div = document.createElement('DIV');
+
+        div.style.textAlign = 'left';
+        div.appendChild(document.createElement('BR'));
+        this.content.appendChild(div);
+        range.selectNodeContents(div);
       }
 
-      while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL') {
-        node = node.parentElement;
+      // Check to see if there is a font tag
+      while (startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
+        startContainer = startContainer.parentElement;
       }
-      if (node.firstElementChild.tagName === 'FONT') {
-        let color = node.firstElementChild.color;
-        let fontFamily = node.firstElementChild.face;
-        let child = node.firstElementChild.firstChild;
-        let span = document.createElement('SPAN');
 
-        while (child.nodeType !== 3 && child.tagName !== 'BR') {
-          if (child.tagName === 'SPAN') {
-            span.setAttribute('style', child.getAttribute('style'));
-            span.style.color = color;
-            span.style.fontFamily = fontFamily;
-          } else if (child.tagName === 'B') {
-            span.style.fontWeight = 'bold';
-          } else if (child.tagName === 'I') {
-            span.style.fontStyle = 'italic';
-          } else if (child.tagName === 'U') {
-            span.style.textDecoration = 'underline';
-          }
-          child = child.firstChild;
-        }
+      if (startContainer.firstElementChild.tagName === 'FONT') {
+        startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
+        startContainer.firstElementChild.replaceWith(document.createElement('BR'));
+      }
 
-        if (child.nodeType === 3) {
-          span.appendChild(child);
-          node.firstElementChild.replaceWith(span);
-          selection.setPosition(child, child.length);
-          range = selection.getRangeAt(0)
-        } else if (child.tagName === 'BR') {
-          let br = document.createElement('BR');
-          span  = this.createDefaultSpan();
-          span.appendChild(br);
-          node.firstElementChild.replaceWith(span);
-          node.style.textAlign = 'left';
-          range.selectNodeContents(br);
-        }
+      // Fix element if we have a break tag inside a div
+      if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {
+        let span = document.createElement('SPAN'),
+          br = document.createElement('BR');
 
+        span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+        span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+        span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+        span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+
+        let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
+        span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
+        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+
+        span.appendChild(br);
+        range.startContainer.firstElementChild.replaceWith(span);
+        range.selectNodeContents(br);
         this.checkSelectionForStyles();
       }
     }, 1);
   }
 
-  createDefaultSpan() {
-    let span = document.createElement('SPAN');
-
-    span.style.color = '#414141';
-    span.style.fontSize = '16px';
-    span.style.fontFamily = '"Times New Roman", Times, serif';
-
-    return span;
-  }
-
+  
   setChange() {
     if (this.height <= this.getContentHeight()) {
       this.setRect(() => {
@@ -160,10 +149,13 @@ export class TextBoxComponent extends EditBoxComponent {
       content.contentEditable = 'false';
 
       // Set the default text and default style
-      let span = this.createDefaultSpan(),
+      let span = document.createElement('SPAN'),
         text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.'),
         div = document.createElement('DIV');
 
+      span.style.color = '#414141';
+      span.style.fontSize = '16px';
+      span.style.fontFamily = '"Times New Roman", Times, serif';
       div.style.textAlign = 'left';
       span.appendChild(text);
       div.appendChild(span);
@@ -210,6 +202,10 @@ export class TextBoxComponent extends EditBoxComponent {
 
     for (let i = 0; i < this.content.children.length; i++) {
       height += this.content.children[i].getBoundingClientRect().height;
+    }
+
+    if(height === 0){
+      height = this.content.clientHeight;
     }
 
     return height;

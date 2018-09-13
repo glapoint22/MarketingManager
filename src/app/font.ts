@@ -6,7 +6,7 @@ export class Font extends Dropdown {
         super(editBox);
 
         this.title = 'Font';
-        this.style = 'font-family';
+        this.style = 'fontFamily';
         this.options = [
             { value: 'Arial, Helvetica, sans-serif', name: 'Arial' },
             { value: '"Times New Roman", Times, serif', name: 'Times New Roman' },
