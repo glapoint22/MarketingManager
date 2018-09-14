@@ -18,18 +18,35 @@
 
         <!-- Other groups and styles -->
         <div *ngFor="let group of currentContainer.currentEditBox.styles | groupBy" class="group">
-            <div *ngIf="group.group != 'dropdown'; else dropdownGroup">
-                <div *ngFor="let style of group.styles" class="style-button" (click)="style.onClick(); currentContainer.currentEditBox.setChange()" [title]="style.title"
-                    [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': !currentContainer.currentEditBox.inEditMode}">
+            <div *ngIf="group.group != 'dropdown'; else dropdownGroup" style="position:relative">
+
+
+                
+
+                    <div *ngIf="group.group === 'link' && group.styles[0].showLinkOptions"  style="position: absolute; width: 180px; background: blue; top: 24px;">
+                            
+                            <input type="radio" name="gender" value="male"> <iframe id="iframeLink" style="width: 169px; height: 17px; border: none; display: block; margin: auto; margin-top: 5px;" scrolling="no" srcdoc='<input autofocus id="link" style="position: absolute; left: 0; top: 0; border: none;">'></iframe><br>
+                            <input type="radio" name="gender" value="female"> Female<br>
+                            <input type="radio" name="gender" value="other"> Other<br>
+    
+                            <button (click)="group.styles[0].styleValue = group.styles[0].linkInput.value; group.styles[0].setStyle(); group.styles[0].showLinkOptions = false">Apply</button>
+                        </div>
+
+
+                <div *ngFor="let style of group.styles" class="style-button" (click)="style.onClick(); currentContainer.currentEditBox.setChange()"
+                    [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': !currentContainer.currentEditBox.inEditMode}">
+
+                    
+
                     <div *ngIf="style.group === 'color' && currentContainer.currentEditBox.inEditMode" class="color-bar"
                         [style.backgroundColor]="style.styleValue"></div>
                     <i [class]="style.icon"></i>
                 </div>
             </div>
             <ng-template #dropdownGroup>
-                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value); currentContainer.currentEditBox.setChange()" [title]="style.title"
-                    [value]="currentContainer.currentEditBox.inEditMode ? style.styleValue : ''" [disabled]="!currentContainer.currentEditBox.inEditMode"
-                    [ngClass]="{'style-button-disabled': !currentContainer.currentEditBox.inEditMode}">
+                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value); currentContainer.currentEditBox.setChange()"
+                    [title]="style.title" [value]="currentContainer.currentEditBox.inEditMode ? style.styleValue : ''"
+                    [disabled]="!currentContainer.currentEditBox.inEditMode" [ngClass]="{'style-button-disabled': !currentContainer.currentEditBox.inEditMode}">
                     <option *ngFor="let option of style.options" [value]="option.value">{{option.name}}</option>
                 </select>
             </ng-template>
