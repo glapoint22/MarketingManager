@@ -59,13 +59,13 @@ export class PropertiesComponent {
       box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
     }
   }
+  
 
-
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode && this.currentContainer.currentEditBox.mouseDown) {
-      this.currentContainer.currentEditBox.mouseDown = false;
-      this.currentContainer.currentEditBox.checkSelectionForStyles();
-    }
-  }
+  // @HostListener('document:mouseup', ['$event'])
+  // onMouseUp() {
+  //   if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode && this.currentContainer.currentEditBox.mouseDown) {
+  //     this.currentContainer.currentEditBox.mouseDown = false;
+  //     this.currentContainer.currentEditBox.checkSelectionForStyles();
+  //   }
+  // }
 }

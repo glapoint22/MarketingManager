@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, ApplicationRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
@@ -10,6 +10,8 @@ import { Style } from '../style';
 })
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
+
+  constructor(private app: ApplicationRef){}
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -28,6 +30,8 @@ export class EditBoxComponent {
   public content: any;
   public isSelected: boolean;
   public styles: Array<Style>;
+  public id: string;
+  public iframe;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -271,17 +275,19 @@ export class EditBoxComponent {
   }
 
   setEditMode() {
-    this.content.setAttribute('contenteditable', 'true');
+    let content = this.iframe.contentDocument.body.firstElementChild;
 
-    let selection = document.getSelection(),
-      node: any = this.content,
+    content.setAttribute('contenteditable', 'true');
+
+    let selection = this.iframe.contentDocument.getSelection(),
+      node: any = content,
       firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
       lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
 
     selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
-    this.content.style.setProperty('cursor', 'text');
+    content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
-    this.content.focus();
+    content.focus();
     this.checkSelectionForStyles();
   }
 
@@ -330,8 +336,9 @@ export class EditBoxComponent {
 
   checkSelectionForStyles() {
     window.setTimeout(() => {
-      Style.setSelection();
+      Style.setSelection(this.id);
       this.styles.forEach(x => x.checkSelection());
+      this.app.tick();
     }, 1);
   }
 }

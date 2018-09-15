@@ -30,8 +30,10 @@ export class Style {
         this.isSelected = this.selectionHasStyle();
     }
 
-    static setSelection() {
-        Style.selection = document.getSelection();
+    static setSelection(iframeId: string) {
+        let iframe: any = document.getElementById(iframeId);
+
+        Style.selection = iframe.contentDocument.getSelection();
         Style.range = Style.selection.getRangeAt(0);
     }
 

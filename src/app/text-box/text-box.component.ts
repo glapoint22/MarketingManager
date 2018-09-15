@@ -56,16 +56,16 @@ export class TextBoxComponent extends EditBoxComponent {
       this.fixInvalidElements();
     }
 
-    this.content.onblur = () => {
-      let selection = document.getSelection(),
-        range = selection.getRangeAt(0);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
+    // this.content.onblur = () => {
+    //   let selection = document.getSelection(),
+    //     range = selection.getRangeAt(0);
+    //   selection.removeAllRanges();
+    //   selection.addRange(range);
+    // }
 
-    this.content.onmousedown = () => {
-      this.mouseDown = true;
-    }
+    // this.content.onmousedown = () => {
+    //   this.mouseDown = true;
+    // }
 
     this.content.onkeydown = (event) => {
       if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
@@ -160,6 +160,15 @@ export class TextBoxComponent extends EditBoxComponent {
       span.appendChild(text);
       div.appendChild(span);
       content.appendChild(div);
+      this.iframe.srcdoc = content.outerHTML;
+     
+
+      window.setTimeout(() => {
+        this.iframe.contentDocument.onmouseup = ()=>{
+          this.checkSelectionForStyles();
+        }
+      }, 1000);
+      
 
       size = new Vector2(180, 54);
     }

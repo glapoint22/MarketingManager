@@ -10,7 +10,7 @@ export class AlignStyle extends Style {
 
     onClick() {
         if (this.editBox.inEditMode) {
-            Style.setSelection();
+            Style.setSelection(this.editBox.id);
             this.setStyle();
             super.onClick();
         }

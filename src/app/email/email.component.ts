@@ -86,8 +86,11 @@ export class EmailComponent implements OnInit {
     let componentFactory = this.resolver.resolveComponentFactory(component),
       container = this.emailContentContainerArray[this.currentEmailIndex],
       content = document.createElement(contentType),
-      box = container.createComponent(componentFactory, null, null, [[content]]);
+      iframe = document.createElement('iframe'),
+      box = container.createComponent(componentFactory, null, null, [[iframe]]);
 
+    box.instance.id = iframe.id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+    box.instance.iframe = iframe;
     box.instance.parentContainer = container;
     box.instance.initialize(content);
     return content;
