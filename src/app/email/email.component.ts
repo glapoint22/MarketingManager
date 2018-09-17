@@ -74,25 +74,23 @@ export class EmailComponent implements OnInit {
 
       this.dataService.post('/api/Image', formData)
         .subscribe((imageName: any) => {
-          let content: any = this.createBox(ImageBoxComponent, 'img');
+          // let content: any = this.createBox(ImageBoxComponent, 'img');
 
           // Assign the image name
-          content.src = 'Images/' + imageName;
+          // content.src = 'Images/' + imageName;
         });
     }
   }
 
-  createBox(component: Type<any>, contentType: string = 'div') {
+  createBox(component: Type<any>) {
     let componentFactory = this.resolver.resolveComponentFactory(component),
       container = this.emailContentContainerArray[this.currentEmailIndex],
-      content = document.createElement(contentType),
       iframe = document.createElement('iframe'),
       box = container.createComponent(componentFactory, null, null, [[iframe]]);
 
-    box.instance.id = iframe.id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+    // box.instance.id = iframe.id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
     box.instance.iframe = iframe;
     box.instance.parentContainer = container;
-    box.instance.initialize(content);
-    return content;
+    box.instance.initialize();
   }
 }

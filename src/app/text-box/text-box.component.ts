@@ -23,7 +23,7 @@ import { LinkStyle } from '../link-style';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class TextBoxComponent extends EditBoxComponent {
-  private height: number = -Infinity;
+  private fixedHeight: number = -Infinity;
   public mouseDown: boolean;
 
   ngOnInit() {
@@ -46,40 +46,16 @@ export class TextBoxComponent extends EditBoxComponent {
 
     this.styles = [bold, italic, underline,
       textColor, highlightColor, orderedList,
-      unorderedList, alignLeft, alignCenter, 
-      alignRight, alignJustify, fontSize, 
+      unorderedList, alignLeft, alignCenter,
+      alignRight, alignJustify, fontSize,
       font, linkStyle];
-
-    // Event when content changes
-    this.content.oninput = () => {
-      this.setChange();
-      this.fixInvalidElements();
-    }
-
-    // this.content.onblur = () => {
-    //   let selection = document.getSelection(),
-    //     range = selection.getRangeAt(0);
-    //   selection.removeAllRanges();
-    //   selection.addRange(range);
-    // }
-
-    // this.content.onmousedown = () => {
-    //   this.mouseDown = true;
-    // }
-
-    this.content.onkeydown = (event) => {
-      if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-        event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-        this.checkSelectionForStyles();
-      }
-    }
 
     super.ngOnInit();
   }
 
   fixInvalidElements() {
     window.setTimeout(() => {
-      let selection = document.getSelection();
+      let selection = this.content.ownerDocument.getSelection();
       let range: any = selection.getRangeAt(0);
       let startContainer: any = range.startContainer;
 
@@ -126,97 +102,122 @@ export class TextBoxComponent extends EditBoxComponent {
     }, 1);
   }
 
-  
-  setChange() {
-    if (this.height <= this.getContentHeight()) {
-      this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.getContentHeight());
-      }, () => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
-      });
-    }
 
+  setChange() {
+    if (this.fixedHeight <= this.content.clientHeight) {
+      this.handle = 'right';
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
+      });
+      this.iframe.height = this.rect.height;
+    }
   }
 
-  initialize(content: HTMLElement, size?: Vector2) {
+  initialize(size?: Vector2) {
     if (!size) {
-      // Set the content style
-      content.style.outline = 'none';
-      content.style.wordWrap = 'break-word';
-      content.style.overflow = 'hidden';
-      content.style.height = '100%';
-      content.style.backgroundColor = '#ffffff';
-      content.contentEditable = 'false';
+      // Set the default text
+      let div = document.createElement('DIV'),
+        span = document.createElement('SPAN'),
+        text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
 
-      // Set the default text and default style
-      let span = document.createElement('SPAN'),
-        text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.'),
-        div = document.createElement('DIV');
-
+      // Set the default style
       span.style.color = '#414141';
       span.style.fontSize = '16px';
       span.style.fontFamily = '"Times New Roman", Times, serif';
       div.style.textAlign = 'left';
+      div.style.outline = 'none';
       span.appendChild(text);
       div.appendChild(span);
-      content.appendChild(div);
-      this.iframe.srcdoc = content.outerHTML;
-     
 
-      window.setTimeout(() => {
-        this.iframe.contentDocument.onmouseup = ()=>{
+      // Set the iframe
+      this.iframe.srcdoc = div.outerHTML;
+      this.iframe.frameBorder = 0;
+
+      // Set the iframe's style and events
+      this.iframe.onload = () => {
+        this.content = this.iframe.contentDocument.body;
+
+        this.content.style.margin = 0;
+        this.content.style.outline = 'none';
+        this.content.style.wordWrap = 'break-word';
+        this.content.style.overflow = 'hidden';
+        this.content.style.backgroundColor = '#ffffff';
+        this.content.contentEditable = 'false';
+
+        // OnMouseUp
+        this.content.onmouseup = () => {
           this.checkSelectionForStyles();
         }
-      }, 1000);
-      
 
+        // OnInput
+        this.content.oninput = () => {
+          this.setChange();
+          this.fixInvalidElements();
+        }
+
+        // OnKeyDown
+        this.content.onkeydown = (event) => {
+          if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+            event.code === 'ArrowRight' || event.code === 'ArrowDown') {
+            this.checkSelectionForStyles();
+          }
+        }
+      }
+
+      // Set the default size
       size = new Vector2(180, 54);
+      this.iframe.width = size.x;
+      this.iframe.height = size.y;
     }
 
-    super.initialize(content, size);
+    super.initialize(size);
   }
 
   setRightHandle(deltaPosition: Vector2) {
+    let contentHeight = this.content.clientHeight;
+
     super.setRightHandle(deltaPosition);
-    this.setRect(() => {
-      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.getContentHeight()));
-    }, (tempRect) => {
-      return new Rect(tempRect.x, tempRect.y, tempRect.width - deltaPosition.x, tempRect.height);
-    });
+
+    window.setTimeout(() => {
+      if (this.content.clientHeight !== contentHeight) {
+        this.setRect(() => {
+          return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
+        });
+        this.iframe.height = this.rect.height;
+      }
+    }, 1);
+
+    this.iframe.width = this.rect.width;
   }
 
   setLeftHandle(deltaPosition: Vector2) {
+    let contentHeight = this.content.clientHeight;
+
     super.setLeftHandle(deltaPosition);
-    this.setRect(() => {
-      return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.height, this.getContentHeight()));
-    }, (tempRect) => {
-      return new Rect(tempRect.x - deltaPosition.x, tempRect.y, tempRect.width + deltaPosition.x, tempRect.height);
-    });
+
+
+    window.setTimeout(() => {
+      if (this.content.clientHeight !== contentHeight) {
+        this.setRect(() => {
+          return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
+        });
+        this.iframe.height = this.rect.height;
+      }
+    }, 1);
+
+    this.iframe.width = this.rect.width;
   }
 
   setBottomHandle(deltaPosition: Vector2) {
     super.setBottomHandle(deltaPosition);
-    if (this.rect.height < this.getContentHeight()) {
-      this.height = -Infinity;
+    if (this.rect.height < this.content.clientHeight) {
+      this.fixedHeight = -Infinity;
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.getContentHeight());
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.content.clientHeight);
       });
     } else {
-      this.height = this.rect.height;
+      this.fixedHeight = this.rect.height;
     }
-  }
-
-  getContentHeight() {
-    let height = 0;
-
-    for (let i = 0; i < this.content.children.length; i++) {
-      height += this.content.children[i].getBoundingClientRect().height;
-    }
-
-    if(height === 0){
-      height = this.content.clientHeight;
-    }
-
-    return height;
+    this.iframe.height = this.rect.height;
   }
 }

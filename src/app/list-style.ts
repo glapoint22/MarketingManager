@@ -9,7 +9,7 @@ export class ListStyle extends Style {
 
     onClick() {
         if (this.editBox.inEditMode) {
-            Style.setSelection(this.editBox.id);
+            Style.setSelection(this.editBox.content);
             this.setList();
             super.onClick();
         }
@@ -98,6 +98,7 @@ export class ListStyle extends Style {
         } else {
             this.removeList();
         }
+        this.editBox.content.focus();
     }
 
     childNodeHasStyle(childNode) {

@@ -10,7 +10,7 @@ export class AlignStyle extends Style {
 
     onClick() {
         if (this.editBox.inEditMode) {
-            Style.setSelection(this.editBox.id);
+            Style.setSelection(this.editBox.content);
             this.setStyle();
             super.onClick();
         }
@@ -22,6 +22,7 @@ export class AlignStyle extends Style {
         for (let i = indices.startContainerIndex; i < indices.endContainerIndex + 1; i++) {
             this.editBox.content.children[i].style[this.style] = this.styleValue;
         }
+        this.editBox.content.focus();
     }
 
     checkSelection() {

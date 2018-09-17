@@ -24,17 +24,16 @@ export class Style {
             // The selection spans across multiple nodes
             this.setMultipleNodesStyle(this.editBox.content);
         }
+        this.editBox.content.focus();
     }
 
     checkSelection() {
         this.isSelected = this.selectionHasStyle();
     }
 
-    static setSelection(iframeId: string) {
-        let iframe: any = document.getElementById(iframeId);
-
-        Style.selection = iframe.contentDocument.getSelection();
-        Style.range = Style.selection.getRangeAt(0);
+    static setSelection(content) {
+        Style.selection = content.ownerDocument.getSelection();
+        if (Style.selection.type !== 'None') Style.range = Style.selection.getRangeAt(0);
     }
 
     selectionHasStyle() {

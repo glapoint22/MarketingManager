@@ -30,7 +30,6 @@ export class EditBoxComponent {
   public content: any;
   public isSelected: boolean;
   public styles: Array<Style>;
-  public id: string;
   public iframe;
 
   ngOnInit() {
@@ -268,6 +267,7 @@ export class EditBoxComponent {
         this.parentContainer.currentEditBox.inEditMode = false;
         this.parentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
         this.parentContainer.currentEditBox.content.style.setProperty('cursor', '');
+        this.parentContainer.currentEditBox.content.ownerDocument.getSelection().empty();
       }
     }
 
@@ -275,27 +275,25 @@ export class EditBoxComponent {
   }
 
   setEditMode() {
-    let content = this.iframe.contentDocument.body.firstElementChild;
+    this.content.setAttribute('contenteditable', 'true');
 
-    content.setAttribute('contenteditable', 'true');
-
-    let selection = this.iframe.contentDocument.getSelection(),
-      node: any = content,
+    let selection = this.content.ownerDocument.getSelection(),
+      node: any = this.content,
       firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
       lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
 
     selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
-    content.style.setProperty('cursor', 'text');
+    this.content.style.setProperty('cursor', 'text');
     this.inEditMode = true;
-    content.focus();
+    this.content.focus();
     this.checkSelectionForStyles();
   }
 
-  initialize(content: HTMLElement, size?: Vector2) {
+  initialize(size?: Vector2) {
     let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
     let y = 0;
 
-    this.content = content;
+    // this.content = content;
     this.rect = new Rect(0, -Infinity, 0, 0);
 
     // Get an array of all rects from the container
@@ -328,6 +326,7 @@ export class EditBoxComponent {
     this.isSelected = false;
     if (this.content.getAttribute('contenteditable')) {
       this.inEditMode = false;
+      this.content.ownerDocument.getSelection().empty();
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
       this.styles.forEach(x => x.isSelected = false);
@@ -336,7 +335,7 @@ export class EditBoxComponent {
 
   checkSelectionForStyles() {
     window.setTimeout(() => {
-      Style.setSelection(this.id);
+      Style.setSelection(this.content);
       this.styles.forEach(x => x.checkSelection());
       this.app.tick();
     }, 1);

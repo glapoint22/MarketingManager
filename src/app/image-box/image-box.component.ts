@@ -13,24 +13,24 @@ export class ImageBoxComponent extends UniformBoxComponent {
     this.setVisibleHandles(true, false, true, false, false, true, false, true);
   }
 
-  initialize(content: HTMLElement, size?: Vector2) {
-    let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+  initialize(size?: Vector2) {
+    // let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
 
-    let interval = window.setInterval(() => {
-      if (content.clientWidth > 0) {
-        clearInterval(interval);
-        if (!size) {
-          // Set the style
-          content.setAttribute('style', 'display: block; max-width: ' + pageWidth + 'px;');
-          size = new Vector2(content.clientWidth, content.clientHeight);
-        }
+    // let interval = window.setInterval(() => {
+    //   if (content.clientWidth > 0) {
+    //     clearInterval(interval);
+    //     if (!size) {
+    //       // Set the style
+    //       content.setAttribute('style', 'display: block; max-width: ' + pageWidth + 'px;');
+    //       size = new Vector2(content.clientWidth, content.clientHeight);
+    //     }
 
-        super.initialize(content, size);
+    //     super.initialize(content, size);
 
-        content.style.width = '100%';
-        content.style.height = '100%';
-      }
-    }, 1);
+    //     content.style.width = '100%';
+    //     content.style.height = '100%';
+    //   }
+    // }, 1);
   }
 
   setEditMode() { }

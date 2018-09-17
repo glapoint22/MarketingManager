@@ -13,15 +13,15 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
   }
 
-  initialize(content: HTMLElement, size?: Vector2) {
-    if (!size) {
-      // Set the HTML and style
-      content.innerHTML = '<span>Button</span>';
-      content.setAttribute('style', 'outline: none; color: white; background: #c1c1c1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden;');
-      content.setAttribute('contenteditable', 'false');
-      size = new Vector2(144, 42);
-    }
+  initialize(size?: Vector2) {
+    // if (!size) {
+    //   // Set the HTML and style
+    //   content.innerHTML = '<span>Button</span>';
+    //   content.setAttribute('style', 'outline: none; color: white; background: #c1c1c1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden;');
+    //   content.setAttribute('contenteditable', 'false');
+    //   size = new Vector2(144, 42);
+    // }
 
-    super.initialize(content, size);
+    // super.initialize(content, size);
   }
 }

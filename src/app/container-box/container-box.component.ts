@@ -13,16 +13,16 @@ export class ContainerBoxComponent extends EditBoxComponent {
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
   }
 
-  initialize(content: HTMLElement, size?: Vector2) {
-    if (!size) {
-      // Set the HTML and style
-      content.style.width = '100%';
-      content.style.height = '100%';
-      content.style.backgroundColor = '#767676';
-      size = new Vector2(560, 250);
-    }
+  initialize(size?: Vector2) {
+    // if (!size) {
+    //   // Set the HTML and style
+    //   content.style.width = '100%';
+    //   content.style.height = '100%';
+    //   content.style.backgroundColor = '#767676';
+    //   size = new Vector2(560, 250);
+    // }
 
-    super.initialize(content, size);
+    // super.initialize(content, size);
   }
 
   setEditMode() { }
