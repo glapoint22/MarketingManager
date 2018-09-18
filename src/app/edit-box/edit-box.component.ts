@@ -187,7 +187,7 @@ export class EditBoxComponent {
     for (let i = 0; i < this.parentContainer.length; i++) {
       let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
 
-      if (this.rect !== otherRect) {
+      if (otherRect && this.rect !== otherRect) {
         if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
           +(tempRect.yMax.toFixed(2)) > +(otherRect.y.toFixed(2)) && +(tempRect.y.toFixed(2)) < +(otherRect.yMax.toFixed(2))) {
 

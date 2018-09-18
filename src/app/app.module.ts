@@ -41,6 +41,7 @@ import { ButtonBoxComponent } from './button-box/button-box.component';
 import { ContainerBoxComponent } from './container-box/container-box.component';
 import { PropertiesComponent } from './properties/properties.component';
 import { GroupByPipe } from './group-by.pipe';
+import { LinkFormComponent } from './link-form/link-form.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { GroupByPipe } from './group-by.pipe';
     ButtonBoxComponent,
     ContainerBoxComponent,
     PropertiesComponent,
-    GroupByPipe
+    GroupByPipe,
+    LinkFormComponent
   ],
   imports: [
     BrowserModule,
@@ -83,6 +85,6 @@ import { GroupByPipe } from './group-by.pipe';
     FormsModule
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ImageBoxComponent, TextBoxComponent, ButtonBoxComponent, ContainerBoxComponent]
+  entryComponents: [ImageBoxComponent, TextBoxComponent, ButtonBoxComponent, ContainerBoxComponent, LinkFormComponent]
 })
 export class AppModule { }

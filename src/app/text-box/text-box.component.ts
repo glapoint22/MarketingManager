@@ -70,7 +70,7 @@ export class TextBoxComponent extends EditBoxComponent {
       }
 
       // Check to see if there is a font tag
-      while (startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
+      while (startContainer.tagName !== 'BODY' && startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
         startContainer = startContainer.parentElement;
       }
 
@@ -145,7 +145,7 @@ export class TextBoxComponent extends EditBoxComponent {
         this.content.contentEditable = 'false';
 
         // OnMouseUp
-        this.content.onmouseup = () => {
+        this.content.ownerDocument.onmouseup = () => {
           this.checkSelectionForStyles();
         }
 

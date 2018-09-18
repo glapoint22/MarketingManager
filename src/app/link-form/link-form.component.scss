@@ -1,0 +1,90 @@
+@import 'theme';
+
+.container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.link-form {
+    background: #424141;
+    width: 300px;
+    border-radius: 10px;
+    border: 1px solid #656565;
+    position: relative;
+    font-size: 16px;
+    @include shadow();
+}
+.caption {
+    color: #dbdbdb;
+    margin: 5px 5px 5px 10px;
+}
+.close {
+    color: #bbbbbb;;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    right: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+.close:hover {
+    color: white;
+}
+.close:active {
+    color: #868686
+}
+.content-container {
+    background: #333333;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #585858;
+}
+.content {
+    color: #dedede;
+    padding: 5px;
+}
+.buttons-container {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #787878;
+}
+button {
+    margin-right: 20px;
+    cursor: pointer;
+    background: #616161;
+    border: none;
+    border-radius: 5px;
+    color: #d6d6d6;
+    padding: 4px;
+    outline: none;
+    border: 1px solid #868686;
+}
+button:hover {
+    background: #727272;
+    color: white;
+}
+button:active {
+    background: #515151;
+    border: 1px solid #656565;
+    color: #b3b3b3;
+}
+input[type=text] {
+    border-radius: 100px;
+    width: 235px;
+    height: 20px;
+    background: #3a3a3a;
+    border: 1px solid #4f4f4f;
+    outline: none;
+    color: #d7d7d7;
+    font-size: 14px;
+    padding-left: 10px;
+    margin: 5px 0 5px 5px;
+}

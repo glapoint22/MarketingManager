@@ -33,7 +33,12 @@ export class Style {
 
     static setSelection(content) {
         Style.selection = content.ownerDocument.getSelection();
-        if (Style.selection.type !== 'None') Style.range = Style.selection.getRangeAt(0);
+        if (Style.selection.type !== 'None') {
+            Style.range = Style.selection.getRangeAt(0);
+            if(Style.range.collapsed && Style.range.startContainer.firstChild && Style.range.startContainer.firstChild.tagName === 'BR'){
+                Style.range.selectNodeContents(Style.range.startContainer.firstChild);
+            }
+        }
     }
 
     selectionHasStyle() {

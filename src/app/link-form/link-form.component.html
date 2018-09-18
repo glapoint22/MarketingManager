@@ -1,0 +1,33 @@
+<div class="container" (mousedown)="$event.stopPropagation()">
+  <div class="link-form">
+    <div class="caption">Choose what to link to...</div>
+    <div class="close" (click)="promptService.show = false">
+      <i class="far fa-window-close"></i>
+    </div>
+    <div class="content-container">
+      <div class="content">
+        
+         
+        
+          
+
+        <input type="radio" name="option" [value]="'custom'" [checked]="true"> <input type="text" placeholder="Custom link" autofocus><br>
+        <input type="radio" name="option" [value]="'emailPreferences'" >  Email Preferences<br>
+        <input type="radio" name="option" [value]="'email'" > This Email<br>
+        <input type="radio" name="option" [value]="'leadMagnet'" > Lead Magnet<br>
+        <input type="radio" name="option" [value]="'hopLink'" > Hoplink<br>
+        <input type="radio" name="option" [value]="'home'" > Home<br>
+        <input type="radio" name="option" [value]="'none'" > None<br>
+
+
+        
+
+      </div>
+      <div class="buttons-container">
+        <button>Cancel</button>
+        <button>Done</button>
+      </div>
+    </div>
+
+  </div>
+</div>

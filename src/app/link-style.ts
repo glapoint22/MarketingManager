@@ -2,8 +2,6 @@ import { Style } from "./style";
 import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class LinkStyle extends Style {
-    public showLinkOptions: boolean = false;
-    private linkInput;
 
     constructor(editBox: EditBoxComponent) {
         super(editBox);
@@ -15,26 +13,8 @@ export class LinkStyle extends Style {
 
     onClick() {
         if (this.editBox.inEditMode) {
-            // this.setStyle();
-            // super.onClick();
-            this.showLinkOptions = true;
-
-            
-
-            window.setTimeout(() => {
-                let iframeLink: any = document.getElementById('iframeLink');
-
-                let interval = window.setInterval(() => {
-                    if(iframeLink.contentDocument.childElementCount > 0){
-                        window.clearInterval(interval);
-                        this.linkInput = iframeLink.contentDocument.getElementById('link');
-                    }
-                    
-                  }, 1);
-
-                
-              }, 1);
-            
+            this.setStyle();
+            super.onClick();
         }
     }
 

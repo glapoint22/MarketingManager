@@ -1,9 +1,10 @@
-import { Component, Input, ComponentFactoryResolver, HostListener } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
+import { LinkFormComponent } from '../link-form/link-form.component';
 
 @Component({
   selector: 'properties',
@@ -59,13 +60,11 @@ export class PropertiesComponent {
       box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
     }
   }
-  
 
-  // @HostListener('document:mouseup', ['$event'])
-  // onMouseUp() {
-  //   if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.inEditMode && this.currentContainer.currentEditBox.mouseDown) {
-  //     this.currentContainer.currentEditBox.mouseDown = false;
-  //     this.currentContainer.currentEditBox.checkSelectionForStyles();
-  //   }
-  // }
+  showLinkForm(style){
+    let componentFactory = this.resolver.resolveComponentFactory(LinkFormComponent),
+      linkForm = this.currentContainer.createComponent(componentFactory);
+
+    
+  }
 }
