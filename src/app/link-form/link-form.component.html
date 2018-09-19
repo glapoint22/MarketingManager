@@ -1,33 +1,27 @@
-<div class="container" (mousedown)="$event.stopPropagation()">
-  <div class="link-form">
+<div class="container" (mousedown)="linkService.show = false">
+  <form (ngSubmit)="linkService.applyLink()" #form="ngForm" (mousedown)="$event.stopPropagation()">
     <div class="caption">Choose what to link to...</div>
-    <div class="close" (click)="promptService.show = false">
+    <div class="close" (click)="linkService.show = false">
       <i class="far fa-window-close"></i>
     </div>
     <div class="content-container">
       <div class="content">
-        
-         
-        
-          
-
-        <input type="radio" name="option" [value]="'custom'" [checked]="true"> <input type="text" placeholder="Custom link" autofocus><br>
-        <input type="radio" name="option" [value]="'emailPreferences'" >  Email Preferences<br>
-        <input type="radio" name="option" [value]="'email'" > This Email<br>
-        <input type="radio" name="option" [value]="'leadMagnet'" > Lead Magnet<br>
-        <input type="radio" name="option" [value]="'hopLink'" > Hoplink<br>
-        <input type="radio" name="option" [value]="'home'" > Home<br>
-        <input type="radio" name="option" [value]="'none'" > None<br>
 
 
-        
-
+        <label *ngFor="let linkOption of linkService.linkOptions; let i = index">
+          <input type="radio" name="option" [value]="linkOption" [(ngModel)]="linkService.selectedOption">
+          <span *ngIf="i > 0; else custom">
+            {{linkOption.name}}
+          </span>
+          <ng-template #custom>
+            <input #customLink type="text" placeholder="Custom link" name="custom" [value]="linkOption.value" [(ngModel)]="linkOption.value" autofocus>
+          </ng-template>
+        </label>
       </div>
       <div class="buttons-container">
-        <button>Cancel</button>
-        <button>Done</button>
+        <button type="button" (click)="linkService.show = false">Cancel</button>
+        <button type="submit" [disabled]="linkService.selectedOption.name === 'Custom' && form.form.controls.custom && form.form.controls.custom.value === ''">Done</button>
       </div>
     </div>
-
-  </div>
+  </form>
 </div>

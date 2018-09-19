@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SaveService } from "./save.service";
 import { PromptService } from "./prompt.service";
+import { LinkService } from './link.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ import { PromptService } from "./prompt.service";
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService, public promptService: PromptService) { }
+  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService) { }
 
   ngAfterContentChecked() {
     if (this.promptService.show) this.saveService.isSaving = false;

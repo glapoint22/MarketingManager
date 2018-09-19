@@ -85,6 +85,6 @@ import { LinkFormComponent } from './link-form/link-form.component';
     FormsModule
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ImageBoxComponent, TextBoxComponent, ButtonBoxComponent, ContainerBoxComponent, LinkFormComponent]
+  entryComponents: [ImageBoxComponent, TextBoxComponent, ButtonBoxComponent, ContainerBoxComponent]
 })
 export class AppModule { }

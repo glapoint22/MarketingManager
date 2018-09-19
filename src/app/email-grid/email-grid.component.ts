@@ -78,6 +78,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
             id: z.id,
             tierIndex: 2,
             emails: z.emails,
+            hoplink: z.hoplink,
             data: [
               {
                 value: z.name

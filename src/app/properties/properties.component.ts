@@ -1,10 +1,10 @@
-import { Component, Input, ComponentFactoryResolver } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver, HostListener } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
-import { LinkFormComponent } from '../link-form/link-form.component';
+import { LinkService } from '../link.service';
 
 @Component({
   selector: 'properties',
@@ -14,8 +14,9 @@ import { LinkFormComponent } from '../link-form/link-form.component';
 export class PropertiesComponent {
   @Input() currentContainer;
   public copied: any = {};
+  public gridItem;
 
-  constructor(private resolver: ComponentFactoryResolver) { }
+  constructor(private resolver: ComponentFactoryResolver, private linkService: LinkService) { }
 
 
   delete() {
@@ -61,10 +62,22 @@ export class PropertiesComponent {
     }
   }
 
-  showLinkForm(style){
-    let componentFactory = this.resolver.resolveComponentFactory(LinkFormComponent),
-      linkForm = this.currentContainer.createComponent(componentFactory);
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape') {
+      if (this.linkService.show) {
+        this.linkService.show = false;
+      } else {
+        this.currentContainer.currentEditBox.unSelect();
+      }
 
-    
+    }
+  }
+
+  showLinkForm(style) {
+    if (this.currentContainer.currentEditBox.inEditMode) {
+      this.linkService.showForm(style, this.gridItem);
+    }
   }
 }

@@ -160,6 +160,8 @@ export class TextBoxComponent extends EditBoxComponent {
           if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
             event.code === 'ArrowRight' || event.code === 'ArrowDown') {
             this.checkSelectionForStyles();
+          }else if(event.code === 'Escape'){
+            this.unSelect();
           }
         }
       }

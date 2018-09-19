@@ -2,7 +2,7 @@
     <div style="width: 345px;height: 100%;background: #151515;float: right;max-width: 1600px;">
         <div resizable class="divider"></div>
         <editor [name]="'Properties'">
-            <properties [currentContainer]="currentEmailIndex >= 0 ? emailContentContainerArray[currentEmailIndex]: null"></properties>
+            <properties #properties [currentContainer]="currentEmailIndex >= 0 ? emailContentContainerArray[currentEmailIndex]: null"></properties>
         </editor>
     </div>
     <div resizable class="divider"></div>
@@ -26,7 +26,6 @@
             </span>
             <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
             <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0" (mousedown)="emailContentContainerArray[currentEmailIndex].currentEditBox ? emailContentContainerArray[currentEmailIndex].currentEditBox.unSelect() : null">
-                <!-- <div [innerHTML]="email.body"></div> -->
                 <div [style.width.px]="pageWidth" style="height: 600px; background: #e4e4e4; margin: auto; position: relative; top: 10px">
                     <ng-template #emailContentContainer></ng-template>
                 </div>
@@ -76,5 +75,5 @@
 </div>
 
 <div style="width: auto; height: 100%; background: #1e1e1e; overflow-x: hidden;">
-    <email-grid (onItemClick)="onItemClick($event)"></email-grid>
+    <email-grid (onItemClick)="onItemClick($event); properties.gridItem = $event"></email-grid>
 </div>
