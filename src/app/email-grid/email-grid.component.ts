@@ -49,6 +49,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           id: y.id,
           tierIndex: 1,
           emails: y.emails,
+          leadMagnet: y.leadMagnet,
           data: [
             {
               value: y.name

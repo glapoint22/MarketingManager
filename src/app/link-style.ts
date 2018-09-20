@@ -52,7 +52,12 @@ export class LinkStyle extends Style {
 
         anchor.setAttribute('href', this.styleValue);
         anchor.setAttribute('style', node.getAttribute('style'));
+        anchor.title = this.styleValue;
         anchor.appendChild(document.createTextNode(data));
         return anchor;
+    }
+
+    childNodeHasStyle(childNode) {
+        return childNode.parentElement.tagName === 'A';
     }
 }

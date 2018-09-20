@@ -12,7 +12,7 @@ export class LinkService {
 
   constructor() { }
 
-  showForm(style: Style, gridItem){
+  showForm(style: Style, gridItem) {
     this.style = style;
 
     this.linkOptions = [
@@ -34,12 +34,23 @@ export class LinkService {
       },
     ];
 
-    this.selectedOption = this.linkOptions[0]
+    if (gridItem.hoplink) {
+      this.linkOptions.push({
+        name: 'Hoplink',
+        value: gridItem.hoplink + '?tid={2}{3}'
+      });
+    } else if (gridItem.leadMagnet) {
+      this.linkOptions.push({
+        name: 'Lead Magnet',
+        value: 'https://www.nicheshack.com/Downloads/' + gridItem.leadMagnet
+      });
+    }
 
+    this.selectedOption = this.linkOptions[0]
     this.show = true;
   }
 
-  applyLink(){
+  applyLink() {
     this.style.styleValue = this.selectedOption.value;
     this.style.onClick();
     this.show = false;
