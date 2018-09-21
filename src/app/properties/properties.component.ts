@@ -22,7 +22,7 @@ export class PropertiesComponent {
   delete() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
       let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
-      this.currentContainer.currentEditBox.isSelected = false;
+      this.currentContainer.currentEditBox = null;
       this.currentContainer.remove(index);
     }
   }

@@ -16,6 +16,7 @@ import { AlignCenter } from '../align-center';
 import { AlignRight } from '../align-right';
 import { AlignJustify } from '../align-justify';
 import { LinkStyle } from '../link-style';
+import { BackgroundColor } from '../background-color';
 
 @Component({
   selector: 'text-box',
@@ -24,33 +25,95 @@ import { LinkStyle } from '../link-style';
 })
 export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
-  public mouseDown: boolean;
 
-  ngOnInit() {
-    let bold: Bold = new Bold(this),
-      italic: Italic = new Italic(this),
-      underline: Underline = new Underline(this),
-      textColor: TextColor = new TextColor(this),
-      highlightColor: HighlightColor = new HighlightColor(this),
-      orderedList: OrderedList = new OrderedList(this),
-      unorderedList: UnorderedList = new UnorderedList(this),
-      fontSize: FontSize = new FontSize(this),
-      font: Font = new Font(this),
-      alignLeft: AlignLeft = new AlignLeft(this),
-      alignCenter: AlignCenter = new AlignCenter(this),
-      alignRight: AlignRight = new AlignRight(this),
-      alignJustify: AlignJustify = new AlignJustify(this),
-      linkStyle: LinkStyle = new LinkStyle(this);
+  initialize(size?: Vector2) {
+    if (!size) {
+      // Declare the styles
+      let backgroundColor: BackgroundColor = new BackgroundColor(this),
+        bold: Bold = new Bold(this),
+        italic: Italic = new Italic(this),
+        underline: Underline = new Underline(this),
+        textColor: TextColor = new TextColor(this),
+        highlightColor: HighlightColor = new HighlightColor(this),
+        orderedList: OrderedList = new OrderedList(this),
+        unorderedList: UnorderedList = new UnorderedList(this),
+        fontSize: FontSize = new FontSize(this),
+        font: Font = new Font(this),
+        alignLeft: AlignLeft = new AlignLeft(this),
+        alignCenter: AlignCenter = new AlignCenter(this),
+        alignRight: AlignRight = new AlignRight(this),
+        alignJustify: AlignJustify = new AlignJustify(this),
+        linkStyle: LinkStyle = new LinkStyle(this),
 
-    this.setVisibleHandles(false, false, false, true, true, false, true, false);
+        // Set the default text
+        div = document.createElement('DIV'),
+        span = document.createElement('SPAN'),
+        text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
 
-    this.styles = [bold, italic, underline,
-      textColor, highlightColor, orderedList,
-      unorderedList, alignLeft, alignCenter,
-      alignRight, alignJustify, fontSize,
-      font, linkStyle];
+      //set the handles 
+      this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
-    super.ngOnInit();
+      // Assign the styles
+      this.styles = [backgroundColor, bold, italic, underline,
+        textColor, highlightColor, orderedList,
+        unorderedList, alignLeft, alignCenter,
+        alignRight, alignJustify, fontSize,
+        font, linkStyle];
+
+        this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#00000000';
+
+      // Set the default style
+      span.style.color = '#414141';
+      span.style.fontSize = '16px';
+      span.style.fontFamily = '"Times New Roman", Times, serif';
+      div.style.textAlign = 'left';
+      div.style.outline = 'none';
+      span.appendChild(text);
+      div.appendChild(span);
+
+      // Set the iframe
+      this.iframe.srcdoc = div.outerHTML;
+      this.iframe.frameBorder = 0;
+
+      // Set the iframe's style and events
+      this.iframe.onload = () => {
+        this.content = this.iframe.contentDocument.body;
+
+        this.content.style.margin = 0;
+        this.content.style.outline = 'none';
+        this.content.style.wordWrap = 'break-word';
+        this.content.style.overflow = 'hidden';
+        this.content.contentEditable = 'false';
+
+        // OnMouseUp
+        this.content.ownerDocument.onmouseup = () => {
+          this.checkSelectionForStyles();
+        }
+
+        // OnInput
+        this.content.oninput = () => {
+          this.setChange();
+          this.fixInvalidElements();
+        }
+
+        // OnKeyDown
+        this.content.onkeydown = (event) => {
+          if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+            event.code === 'ArrowRight' || event.code === 'ArrowDown') {
+            this.checkSelectionForStyles();
+          } else if (event.code === 'Escape') {
+            this.unSelect();
+          }
+        }
+      }
+
+      // Set the default size
+      size = new Vector2(180, 54);
+      this.iframe.width = size.x;
+      this.iframe.height = size.y;
+    }
+
+    super.initialize(size);
   }
 
   fixInvalidElements() {
@@ -111,68 +174,6 @@ export class TextBoxComponent extends EditBoxComponent {
       });
       this.iframe.height = this.rect.height;
     }
-  }
-
-  initialize(size?: Vector2) {
-    if (!size) {
-      // Set the default text
-      let div = document.createElement('DIV'),
-        span = document.createElement('SPAN'),
-        text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
-
-      // Set the default style
-      span.style.color = '#414141';
-      span.style.fontSize = '16px';
-      span.style.fontFamily = '"Times New Roman", Times, serif';
-      div.style.textAlign = 'left';
-      div.style.outline = 'none';
-      span.appendChild(text);
-      div.appendChild(span);
-
-      // Set the iframe
-      this.iframe.srcdoc = div.outerHTML;
-      this.iframe.frameBorder = 0;
-
-      // Set the iframe's style and events
-      this.iframe.onload = () => {
-        this.content = this.iframe.contentDocument.body;
-
-        this.content.style.margin = 0;
-        this.content.style.outline = 'none';
-        this.content.style.wordWrap = 'break-word';
-        this.content.style.overflow = 'hidden';
-        this.content.style.backgroundColor = '#ffffff';
-        this.content.contentEditable = 'false';
-
-        // OnMouseUp
-        this.content.ownerDocument.onmouseup = () => {
-          this.checkSelectionForStyles();
-        }
-
-        // OnInput
-        this.content.oninput = () => {
-          this.setChange();
-          this.fixInvalidElements();
-        }
-
-        // OnKeyDown
-        this.content.onkeydown = (event) => {
-          if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-            event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-            this.checkSelectionForStyles();
-          }else if(event.code === 'Escape'){
-            this.unSelect();
-          }
-        }
-      }
-
-      // Set the default size
-      size = new Vector2(180, 54);
-      this.iframe.width = size.x;
-      this.iframe.height = size.y;
-    }
-
-    super.initialize(size);
   }
 
   setRightHandle(deltaPosition: Vector2) {
