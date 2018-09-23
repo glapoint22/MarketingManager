@@ -92,7 +92,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
         // OnInput
         this.content.oninput = () => {
-          this.setChange();
+          this.onContentChange();
           this.fixInvalidElements();
         }
 
@@ -166,9 +166,9 @@ export class TextBoxComponent extends EditBoxComponent {
   }
 
 
-  setChange() {
+  onContentChange() {
     if (this.fixedHeight <= this.content.clientHeight) {
-      this.handle = 'right';
+      this.handle = '';
       this.setRect(() => {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
       });

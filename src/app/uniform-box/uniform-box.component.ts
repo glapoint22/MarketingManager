@@ -85,34 +85,33 @@ export class UniformBoxComponent extends EditBoxComponent {
 
 
   setRightCollision(tempRect: Rect, otherRect: Rect) {
-    if (this.handle === 'center') {
-      super.setRightCollision(tempRect, otherRect);
-    } else {
+    super.setRightCollision(tempRect, otherRect);
+
+    if (this.handle !== 'center') {
       this.resetScale(otherRect.xMax - tempRect.x, tempRect.width, this.width);
     }
-
   }
 
   setTopCollision(tempRect: Rect, otherRect: Rect) {
-    if (this.handle === 'center') {
-      super.setTopCollision(tempRect, otherRect);
-    } else {
+    super.setTopCollision(tempRect, otherRect);
+
+    if (this.handle !== 'center') {
       this.resetScale(tempRect.yMax - otherRect.y, tempRect.height, this.height);
     }
   }
 
   setBottomCollision(tempRect: Rect, otherRect: Rect) {
-    if (this.handle === 'center') {
-      super.setBottomCollision(tempRect, otherRect);
-    } else {
+    super.setBottomCollision(tempRect, otherRect);
+
+    if (this.handle !== 'center') {
       this.resetScale(otherRect.yMax - tempRect.y, tempRect.height, this.height);
     }
   }
 
   setLeftCollision(tempRect: Rect, otherRect: Rect) {
-    if (this.handle === 'center') {
-      super.setLeftCollision(tempRect, otherRect);
-    } else {
+    super.setLeftCollision(tempRect, otherRect);
+
+    if (this.handle !== 'center') {
       this.resetScale(tempRect.xMax - otherRect.x, tempRect.width, this.width);
     }
   }

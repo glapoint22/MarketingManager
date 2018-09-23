@@ -10,6 +10,7 @@ import { HighlightColor } from '../highlight-color';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
 import { LinkStyle } from '../link-style';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'button-box',
@@ -23,17 +24,6 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   }
 
   initialize(size?: Vector2) {
-    // if (!size) {
-    //   // Set the HTML and style
-    //   content.innerHTML = '<span>Button</span>';
-    //   content.setAttribute('style', 'outline: none; color: white; background: #c1c1c1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden;');
-    //   content.setAttribute('contenteditable', 'false');
-    //   size = new Vector2(144, 42);
-    // }
-
-    // super.initialize(content, size);
-
-
     if (!size) {
       // Declare the styles
       let backgroundColor: BackgroundColor = new BackgroundColor(this),
@@ -47,7 +37,6 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         linkStyle: LinkStyle = new LinkStyle(this),
 
         // Set the default text
-        div = document.createElement('DIV'),
         span = document.createElement('SPAN'),
         text = document.createTextNode('Button');
 
@@ -59,34 +48,34 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         textColor, highlightColor, fontSize,
         font, linkStyle];
 
-        this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
+      this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
 
       // Set the default style
       span.style.color = '#ffffff';
       span.style.fontSize = '16px';
       span.style.fontFamily = '"Times New Roman", Times, serif';
-      div.style.outline = 'none';
-      div.style.display = 'flex';
-      div.style.alignItems = 'center';
-      div.style.justifyContent = 'center';
-      div.style.width = '-webkit-fill-available';
-      div.style.height = '-webkit-fill-available';
       span.appendChild(text);
-      div.appendChild(span);
 
       // Set the iframe
-      this.iframe.srcdoc = div.outerHTML;
+      this.iframe.srcdoc = span.outerHTML;
       this.iframe.frameBorder = 0;
+
+      // Set the default size
+      size = new Vector2(144, 42);
+      this.iframe.width = size.x;
+      this.iframe.height = size.y;
 
       // Set the iframe's style and events
       this.iframe.onload = () => {
         this.content = this.iframe.contentDocument.body;
-
         this.content.style.margin = 0;
-        this.content.style.outline = 'none';
-        this.content.style.wordWrap = 'break-word';
+        this.content.style.width = size.x + 'px';
+        this.content.style.height = size.y + 'px';
+        this.content.style.lineHeight = size.y + 'px';
+        this.content.style.textAlign = 'center';
+        this.content.style.whiteSpace = 'nowrap';
         this.content.style.overflow = 'hidden';
-        this.content.contentEditable = 'false';
+
 
         // OnMouseUp
         this.content.ownerDocument.onmouseup = () => {
@@ -95,7 +84,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
         // OnInput
         this.content.oninput = () => {
-          // this.setChange();
+          // this.onContentChange();
           // this.fixInvalidElements();
         }
 
@@ -110,15 +99,78 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         }
       }
 
-      // Set the default size
-      size = new Vector2(144, 42);
-      this.iframe.width = size.x;
-      this.iframe.height = size.y;
+
     }
 
     super.initialize(size);
-
-
-
   }
+
+
+  setRightHandle(deltaPosition: Vector2) {
+    super.setRightHandle(deltaPosition);
+    this.setWidth();
+  }
+
+  setLeftHandle(deltaPosition: Vector2) {
+    super.setLeftHandle(deltaPosition);
+    this.setWidth();
+  }
+
+  setBottomHandle(deltaPosition: Vector2) {
+    super.setBottomHandle(deltaPosition);
+    this.setHeight();
+  }
+
+  setTopHandle(deltaPosition: Vector2) {
+    super.setTopHandle(deltaPosition);
+    this.setHeight();
+  }
+
+  setTopLeftHandle(deltaPosition: Vector2){
+    super.setTopLeftHandle(deltaPosition);
+    this.setWidth();
+    this.setHeight();
+  }
+
+  setTopRightHandle(deltaPosition: Vector2){
+    super.setTopRightHandle(deltaPosition);
+    this.setWidth();
+    this.setHeight();
+  }
+
+  setBottomLeftHandle(deltaPosition: Vector2){
+    super.setBottomLeftHandle(deltaPosition);
+    this.setWidth();
+    this.setHeight();
+  }
+
+  setBottomRightHandle(deltaPosition: Vector2){
+    super.setBottomRightHandle(deltaPosition);
+    this.setWidth();
+    this.setHeight();
+  }
+
+  setWidth(){
+    this.iframe.width = this.rect.width;
+    this.content.style.width = this.rect.width + 'px';
+  }
+
+  setHeight(){
+    this.iframe.height = this.rect.height;
+    this.content.style.height = this.rect.height + 'px';
+    this.content.style.lineHeight = this.rect.height + 'px';
+  }
+
+  onContentChange(){
+    if(this.content.firstElementChild.offsetWidth > this.rect.width || this.content.firstElementChild.offsetHeight > this.rect.height){
+      this.handle = '';
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, Math.max(this.content.firstElementChild.offsetWidth + 1, this.rect.width), Math.max(this.content.firstElementChild.offsetHeight + 1, this.rect.height));
+      });
+      this.setWidth();
+      this.setHeight();
+    }
+  }
+
+
 }
