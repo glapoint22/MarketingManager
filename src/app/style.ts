@@ -41,6 +41,10 @@ export class Style {
         }
     }
 
+    setSelectedFalse(){
+        this.isSelected = false;
+    }
+
     selectionHasStyle() {
         if (Style.range.startContainer === Style.range.endContainer) {
             // Single container is selected

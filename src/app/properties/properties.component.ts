@@ -76,7 +76,7 @@ export class PropertiesComponent {
   }
 
   showLinkForm(style) {
-    if (this.currentContainer.currentEditBox.inEditMode) {
+    if (this.currentContainer.currentEditBox.inEditMode || style.group === 'editBoxLink') {
       this.linkService.showForm(style, this.gridItem);
     }
   }

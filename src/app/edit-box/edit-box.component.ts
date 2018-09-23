@@ -31,6 +31,7 @@ export class EditBoxComponent {
   public isSelected: boolean;
   public styles: Array<Style>;
   public iframe;
+  public link: string;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -321,7 +322,7 @@ export class EditBoxComponent {
       this.content.ownerDocument.getSelection().empty();
       this.content.setAttribute('contenteditable', 'false');
       this.content.style.setProperty('cursor', '');
-      this.styles.forEach(x => x.isSelected = false);
+      this.styles.forEach(x => x.setSelectedFalse());
       this.app.tick();
       this.editBox.nativeElement.focus();
     }else{

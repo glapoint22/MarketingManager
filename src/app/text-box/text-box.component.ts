@@ -25,6 +25,7 @@ import { BackgroundColor } from '../background-color';
 })
 export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
+  private minWidth: number = 8;
 
   initialize(size?: Vector2) {
     if (!size) {
@@ -190,6 +191,13 @@ export class TextBoxComponent extends EditBoxComponent {
       }
     }, 1);
 
+
+    if(this.rect.width < this.minWidth){
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.minWidth, this.rect.height);
+      });
+    }
+
     this.iframe.width = this.rect.width;
   }
 
@@ -207,6 +215,12 @@ export class TextBoxComponent extends EditBoxComponent {
         this.iframe.height = this.rect.height;
       }
     }, 1);
+
+    if(this.rect.width < this.minWidth){
+      this.setRect(() => {
+        return new Rect(this.rect.x - (this.minWidth - this.rect.width), this.rect.y, this.minWidth, this.rect.height);
+      });
+    }
 
     this.iframe.width = this.rect.width;
   }

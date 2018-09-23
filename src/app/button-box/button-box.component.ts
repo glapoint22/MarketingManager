@@ -9,8 +9,8 @@ import { TextColor } from '../text-color';
 import { HighlightColor } from '../highlight-color';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
-import { LinkStyle } from '../link-style';
 import { Rect } from '../rect';
+import { EditBoxLink } from '../edit-box-link';
 
 @Component({
   selector: 'button-box',
@@ -18,15 +18,14 @@ import { Rect } from '../rect';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class ButtonBoxComponent extends UniformBoxComponent {
-
-  ngOnInit() {
-    this.setVisibleHandles(true, true, true, true, true, true, true, true);
-  }
+  private fixedWidth: number;
+  private fixedHeight: number;
 
   initialize(size?: Vector2) {
     if (!size) {
       // Declare the styles
       let backgroundColor: BackgroundColor = new BackgroundColor(this),
+        editBoxLink: EditBoxLink = new EditBoxLink(this),
         bold: Bold = new Bold(this),
         italic: Italic = new Italic(this),
         underline: Underline = new Underline(this),
@@ -34,19 +33,18 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         highlightColor: HighlightColor = new HighlightColor(this),
         fontSize: FontSize = new FontSize(this),
         font: Font = new Font(this),
-        linkStyle: LinkStyle = new LinkStyle(this),
 
         // Set the default text
         span = document.createElement('SPAN'),
         text = document.createTextNode('Button');
 
       //set the handles 
-      this.setVisibleHandles(false, false, false, true, true, false, true, false);
+      this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
       // Assign the styles
-      this.styles = [backgroundColor, bold, italic, underline,
+      this.styles = [backgroundColor, editBoxLink, bold, italic, underline,
         textColor, highlightColor, fontSize,
-        font, linkStyle];
+        font];
 
       this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
 
@@ -62,8 +60,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
       // Set the default size
       size = new Vector2(144, 42);
-      this.iframe.width = size.x;
-      this.iframe.height = size.y;
+      this.fixedWidth = this.iframe.width = size.x;
+      this.fixedHeight = this.iframe.height = size.y;
 
       // Set the iframe's style and events
       this.iframe.onload = () => {
@@ -84,8 +82,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
         // OnInput
         this.content.oninput = () => {
-          // this.onContentChange();
-          // this.fixInvalidElements();
+          this.onContentChange();
+          this.fixInvalidElements();
         }
 
         // OnKeyDown
@@ -95,6 +93,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
             this.checkSelectionForStyles();
           } else if (event.code === 'Escape') {
             this.unSelect();
+          } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+            event.preventDefault();
           }
         }
       }
@@ -107,70 +107,196 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
 
   setRightHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setRightHandle(deltaPosition);
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, size.x, this.rect.height);
+      });
+    }
+
     this.setWidth();
   }
 
   setLeftHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setLeftHandle(deltaPosition);
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (size.x - this.rect.width), this.rect.y, size.x, this.rect.height);
+      });
+    }
+
     this.setWidth();
   }
 
   setBottomHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setBottomHandle(deltaPosition);
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, size.y);
+      });
+    }
     this.setHeight();
   }
 
   setTopHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setTopHandle(deltaPosition);
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (size.y - this.rect.height), this.rect.width, size.y);
+      });
+    }
     this.setHeight();
   }
 
-  setTopLeftHandle(deltaPosition: Vector2){
+  setTopLeftHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
     super.setTopLeftHandle(deltaPosition);
+
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (size.x - this.rect.width), this.rect.y, size.x, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (size.y - this.rect.height), this.rect.width, size.y);
+      });
+    }
     this.setWidth();
     this.setHeight();
   }
 
-  setTopRightHandle(deltaPosition: Vector2){
+  setTopRightHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setTopRightHandle(deltaPosition);
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, size.x, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (size.y - this.rect.height), this.rect.width, size.y);
+      });
+    }
     this.setWidth();
     this.setHeight();
   }
 
-  setBottomLeftHandle(deltaPosition: Vector2){
+  setBottomLeftHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setBottomLeftHandle(deltaPosition);
+
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (size.x - this.rect.width), this.rect.y, size.x, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, size.y);
+      });
+    }
+
     this.setWidth();
     this.setHeight();
   }
 
-  setBottomRightHandle(deltaPosition: Vector2){
+  setBottomRightHandle(deltaPosition: Vector2) {
+    let size = this.getContentSize();
+
     super.setBottomRightHandle(deltaPosition);
+    if (this.rect.width < size.x) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, size.x, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < size.y) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, size.y);
+      });
+    }
     this.setWidth();
     this.setHeight();
   }
 
-  setWidth(){
+  setWidth(fixedUpdate: boolean = true) {
     this.iframe.width = this.rect.width;
     this.content.style.width = this.rect.width + 'px';
+    if (fixedUpdate) this.fixedWidth = this.rect.width;
   }
 
-  setHeight(){
+  setHeight(fixedUpdate: boolean = true) {
     this.iframe.height = this.rect.height;
     this.content.style.height = this.rect.height + 'px';
     this.content.style.lineHeight = this.rect.height + 'px';
+    if (fixedUpdate) this.fixedHeight = this.rect.height;
   }
 
-  onContentChange(){
-    if(this.content.firstElementChild.offsetWidth > this.rect.width || this.content.firstElementChild.offsetHeight > this.rect.height){
-      this.handle = '';
-      this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, Math.max(this.content.firstElementChild.offsetWidth + 1, this.rect.width), Math.max(this.content.firstElementChild.offsetHeight + 1, this.rect.height));
-      });
-      this.setWidth();
-      this.setHeight();
-    }
+  onContentChange() {
+    let size = this.getContentSize();
+
+    this.handle = '';
+    this.setRect(() => {
+      return new Rect(this.rect.x, this.rect.y, Math.max(size.x, this.fixedWidth), Math.max(size.y, this.fixedHeight));
+    });
+    this.setWidth(false);
+    this.setHeight(false);
   }
 
+  getContentSize() {
+    let children = Array.from(this.content.children);
 
+    // Get the width
+    let x = 0;
+    children.forEach((z: any) => x += z.offsetWidth)
+
+    // Get the height
+    let y = Math.max(...children.map((x: any) => x.offsetHeight));
+
+    return { x: x, y: y }
+  }
+
+  fixInvalidElements() {
+    window.setTimeout(() => {
+      let selection = this.content.ownerDocument.getSelection();
+      let range: any = selection.getRangeAt(0);
+
+      // Content has been deleted
+      if (range.startContainer === this.content) {
+        let span = document.createElement('SPAN'),
+          br = document.createElement('BR');
+
+        span.appendChild(br);
+        span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+        span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+        span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+        span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+
+        let backgroundColor = this.styles.find(x => x.style === 'backgroundColor' && x.group !== 'editBoxColor').styleValue;
+        span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
+        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+
+        range.startContainer.firstElementChild.replaceWith(span);
+        range.selectNodeContents(br);
+        this.checkSelectionForStyles();
+      }
+
+    }, 1);
+  }
 }
