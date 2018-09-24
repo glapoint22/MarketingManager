@@ -54,18 +54,18 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       span.style.fontFamily = '"Times New Roman", Times, serif';
       span.appendChild(text);
 
-      // Set the iframe
-      this.iframe.srcdoc = span.outerHTML;
-      this.iframe.frameBorder = 0;
+      // Set the content container
+      this.contentContainer.srcdoc = span.outerHTML;
+      this.contentContainer.frameBorder = 0;
 
       // Set the default size
       size = new Vector2(144, 42);
-      this.fixedWidth = this.iframe.width = size.x;
-      this.fixedHeight = this.iframe.height = size.y;
+      this.fixedWidth = this.contentContainer.width = size.x;
+      this.fixedHeight = this.contentContainer.height = size.y;
 
-      // Set the iframe's style and events
-      this.iframe.onload = () => {
-        this.content = this.iframe.contentDocument.body;
+      // Set the content container's style and events
+      this.contentContainer.onload = () => {
+        this.content = this.contentContainer.contentDocument.body;
         this.content.style.margin = 0;
         this.content.style.width = size.x + 'px';
         this.content.style.height = size.y + 'px';
@@ -235,13 +235,13 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   }
 
   setWidth(fixedUpdate: boolean = true) {
-    this.iframe.width = this.rect.width;
+    this.contentContainer.width = this.rect.width;
     this.content.style.width = this.rect.width + 'px';
     if (fixedUpdate) this.fixedWidth = this.rect.width;
   }
 
   setHeight(fixedUpdate: boolean = true) {
-    this.iframe.height = this.rect.height;
+    this.contentContainer.height = this.rect.height;
     this.content.style.height = this.rect.height + 'px';
     this.content.style.lineHeight = this.rect.height + 'px';
     if (fixedUpdate) this.fixedHeight = this.rect.height;

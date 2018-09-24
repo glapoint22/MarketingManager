@@ -17,6 +17,7 @@ export class EmailComponent implements OnInit {
   public pageWidth: number = 600;
   private currentEmailIndex: number = -1;
   private emailContentContainerArray: Array<any>;
+  public fileInput = document.createElement('input');
 
   public textBoxComponent = TextBoxComponent;
   public buttonBoxComponent = ButtonBoxComponent;
@@ -26,6 +27,11 @@ export class EmailComponent implements OnInit {
 
   ngOnInit() {
     this.setHeight();
+
+    this.fileInput.type = 'file';
+    this.fileInput.onchange = (event) => {
+      this.createImageBox(event);
+    }
   }
 
   ngAfterViewInit() {
@@ -74,22 +80,28 @@ export class EmailComponent implements OnInit {
 
       this.dataService.post('/api/Image', formData)
         .subscribe((imageName: any) => {
-          // let content: any = this.createBox(ImageBoxComponent, 'img');
+          let imageBox = this.createBox(ImageBoxComponent, 'img');
 
-          // Assign the image name
-          // content.src = 'Images/' + imageName;
+          imageBox.instance.contentContainer.src = 'Images/' + imageName;
+          imageBox.instance.contentContainer.onload = () => {
+            imageBox.instance.initialize();
+          }
         });
     }
   }
 
-  createBox(component: Type<any>) {
+  createBox(component: Type<any>, contentContainerType) {
     let componentFactory = this.resolver.resolveComponentFactory(component),
       container = this.emailContentContainerArray[this.currentEmailIndex],
-      iframe = document.createElement('iframe'),
-      box = container.createComponent(componentFactory, null, null, [[iframe]]);
+      contentContainer = document.createElement(contentContainerType),
+      box = container.createComponent(componentFactory, null, null, [[contentContainer]]);
 
-    box.instance.iframe = iframe;
+    box.instance.contentContainer = contentContainer;
     box.instance.parentContainer = container;
-    box.instance.initialize();
+    return box;
+  }
+
+  getBox(component: Type<any>, contentContainerType) {
+    this.createBox(component, contentContainerType).instance.initialize();
   }
 }

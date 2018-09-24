@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
 import { Vector2 } from '../vector2';
+import { EditBoxLink } from '../edit-box-link';
 
 @Component({
   selector: 'image-box',
@@ -9,28 +10,33 @@ import { Vector2 } from '../vector2';
 })
 export class ImageBoxComponent extends UniformBoxComponent {
 
-  ngOnInit() {
-    this.setVisibleHandles(true, false, true, false, false, true, false, true);
+  initialize(size?: Vector2) {
+    if (!size) {
+      let editBoxLink: EditBoxLink = new EditBoxLink(this);
+
+      this.styles = [editBoxLink];
+
+      this.setVisibleHandles(true, false, true, false, false, true, false, true);
+
+      // Set the style
+      this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
+      size = new Vector2(this.contentContainer.clientWidth, this.contentContainer.clientHeight);
+    }
+
+    super.initialize(size);
+
+    this.contentContainer.style.width = '100%';
+    this.contentContainer.style.height = '100%';
   }
 
-  initialize(size?: Vector2) {
-    // let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+  setRightHandle(deltaPosition: Vector2){
+    deltaPosition.y = deltaPosition.x;
+    this.setBottomRightHandle(deltaPosition);
+  }
 
-    // let interval = window.setInterval(() => {
-    //   if (content.clientWidth > 0) {
-    //     clearInterval(interval);
-    //     if (!size) {
-    //       // Set the style
-    //       content.setAttribute('style', 'display: block; max-width: ' + pageWidth + 'px;');
-    //       size = new Vector2(content.clientWidth, content.clientHeight);
-    //     }
-
-    //     super.initialize(content, size);
-
-    //     content.style.width = '100%';
-    //     content.style.height = '100%';
-    //   }
-    // }, 1);
+  setBottomHandle(deltaPosition: Vector2){
+    deltaPosition.x = deltaPosition.y;
+    this.setBottomRightHandle(deltaPosition);
   }
 
   setEditMode() { }

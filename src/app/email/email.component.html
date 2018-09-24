@@ -12,11 +12,10 @@
 
     <!-- <ng-template #emailTemplate> -->
     <div class="header">
-        <input #fileInput (change)="createImageBox($event)" type="file" style="display: none">
         <button (click)="fileInput.click()">Image</button>
-        <button (click)="createBox(textBoxComponent)">Text</button>
-        <button (click)="createBox(buttonBoxComponent)">Button</button>
-        <button (click)="createBox(containerBoxComponent)">Container</button>
+        <button (click)="getBox(textBoxComponent, 'iframe')">Text</button>
+        <button (click)="getBox(buttonBoxComponent, 'iframe')">Button</button>
+        <button (click)="getBox(containerBoxComponent, 'div')">Container</button>
     </div>
     <div class="emails-container" [style.height.px]="height">
         <div *ngFor="let email of emails; let i = index" class="row">

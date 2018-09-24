@@ -72,13 +72,13 @@ export class TextBoxComponent extends EditBoxComponent {
       span.appendChild(text);
       div.appendChild(span);
 
-      // Set the iframe
-      this.iframe.srcdoc = div.outerHTML;
-      this.iframe.frameBorder = 0;
+      // Set the content container
+      this.contentContainer.srcdoc = div.outerHTML;
+      this.contentContainer.frameBorder = 0;
 
-      // Set the iframe's style and events
-      this.iframe.onload = () => {
-        this.content = this.iframe.contentDocument.body;
+      // Set the content container's style and events
+      this.contentContainer.onload = () => {
+        this.content = this.contentContainer.contentDocument.body;
 
         this.content.style.margin = 0;
         this.content.style.outline = 'none';
@@ -110,8 +110,8 @@ export class TextBoxComponent extends EditBoxComponent {
 
       // Set the default size
       size = new Vector2(180, 54);
-      this.iframe.width = size.x;
-      this.iframe.height = size.y;
+      this.contentContainer.width = size.x;
+      this.contentContainer.height = size.y;
     }
 
     super.initialize(size);
@@ -173,7 +173,7 @@ export class TextBoxComponent extends EditBoxComponent {
       this.setRect(() => {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
       });
-      this.iframe.height = this.rect.height;
+      this.contentContainer.height = this.rect.height;
     }
   }
 
@@ -187,7 +187,7 @@ export class TextBoxComponent extends EditBoxComponent {
         this.setRect(() => {
           return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
         });
-        this.iframe.height = this.rect.height;
+        this.contentContainer.height = this.rect.height;
       }
     }, 1);
 
@@ -198,7 +198,7 @@ export class TextBoxComponent extends EditBoxComponent {
       });
     }
 
-    this.iframe.width = this.rect.width;
+    this.contentContainer.width = this.rect.width;
   }
 
   setLeftHandle(deltaPosition: Vector2) {
@@ -212,7 +212,7 @@ export class TextBoxComponent extends EditBoxComponent {
         this.setRect(() => {
           return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
         });
-        this.iframe.height = this.rect.height;
+        this.contentContainer.height = this.rect.height;
       }
     }, 1);
 
@@ -222,7 +222,7 @@ export class TextBoxComponent extends EditBoxComponent {
       });
     }
 
-    this.iframe.width = this.rect.width;
+    this.contentContainer.width = this.rect.width;
   }
 
   setBottomHandle(deltaPosition: Vector2) {
@@ -235,6 +235,6 @@ export class TextBoxComponent extends EditBoxComponent {
     } else {
       this.fixedHeight = this.rect.height;
     }
-    this.iframe.height = this.rect.height;
+    this.contentContainer.height = this.rect.height;
   }
 }

@@ -22,8 +22,8 @@
                 <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick(); currentContainer.currentEditBox.onContentChange()"
                     [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !currentContainer.currentEditBox.inEditMode}">
 
-                    <div *ngIf="(style.group === 'color' && currentContainer.currentEditBox.inEditMode) || style.group === 'editBoxColor'" class="color-bar"
-                        [style.backgroundColor]="style.styleValue"></div>
+                    <div *ngIf="(style.group === 'color' && currentContainer.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
+                        class="color-bar" [style.backgroundColor]="style.styleValue"></div>
                     <i [class]="style.icon"></i>
                 </div>
             </div>
@@ -38,67 +38,25 @@
 
     </div>
 
+    <!-- Transform properties -->
+    <div class="transform-container">
+        <div>
+            <div class="property-title">Position</div>
+            <span class="property">X:</span>
+            <input #x type="number" [value]="currentContainer.currentEditBox.rect.x" (input)="setX(x)" min="0">
+            <br>
+
+            <span class="property">Y:</span>
+            <input #y type="number" [value]="currentContainer.currentEditBox.rect.y" (input)="setY(y)">
 
 
+            <div class="property-title">Size</div>
+            <span class="property">W:</span>
+            <input #width type="number" [value]="Math.round(currentContainer.currentEditBox.rect.width)" (keydown)="width.oldValue = width.valueAsNumber" (input)="setWidth(width)">
+            <br>
 
-    <div style="width: 100%;
-    text-align: center;
-    margin-top: 28px;color: #d2d2d2;  ">
-
-        <div style="color: white; margin-top: 5px; margin-bottom: 5px">Position</div>
-        <span style="margin-right: 10px; font-size: 14px;">X:</span>
-        <input style="display: inline-block;
-          width: 35px;
-          text-align: center;
-          border: none;
-          border-radius: 5px;
-          outline: none;
-          color: #d2d2d2;
-          font-size: 14px;
-          background: #1e1e1e;"
-            [value]="currentContainer && currentContainer.currentEditBox ? currentContainer.currentEditBox.rect.x : ''">
-        <br>
-
-        <span style="margin-right: 10px; font-size: 14px;">Y:</span>
-        <input style="display: inline-block;
-          width: 35px;
-          text-align: center;
-          border: none;
-          border-radius: 5px;
-          outline: none;
-          color: #d2d2d2;
-          font-size: 14px;
-          background: #1e1e1e;"
-            value="999">
-
-
-        <div style="color: white; margin-top: 5px; margin-bottom: 5px">Size</div>
-        <span style="margin-right: 10px; font-size: 14px;">W:</span>
-        <input style="display: inline-block;
-          width: 35px;
-          text-align: center;
-          border: none;
-          border-radius: 5px;
-          outline: none;
-          color: #d2d2d2;
-          font-size: 14px;
-          background: #1e1e1e;"
-            value="999">
-        <br>
-
-        <span style="margin-right: 10px; font-size: 14px;">H:</span>
-        <input style="display: inline-block;
-          width: 35px;
-          text-align: center;
-          border: none;
-          border-radius: 5px;
-          outline: none;
-          color: #d2d2d2;
-          font-size: 14px;
-          background: #1e1e1e;"
-            value="999">
-
-
-
+            <span class="property">H:</span>
+            <input #height type="number" [value]="Math.round(currentContainer.currentEditBox.rect.height)" (keydown)="height.oldValue = height.valueAsNumber" (input)="setHeight(height)">
+        </div>
     </div>
 </div>

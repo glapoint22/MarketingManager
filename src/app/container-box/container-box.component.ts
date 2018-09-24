@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
+import { BackgroundColor } from '../background-color';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'container-box',
@@ -9,21 +11,33 @@ import { Vector2 } from '../vector2';
 })
 export class ContainerBoxComponent extends EditBoxComponent {
 
-  ngOnInit() {
-    this.setVisibleHandles(true, true, true, true, true, true, true, true);
-  }
-
   initialize(size?: Vector2) {
-    // if (!size) {
-    //   // Set the HTML and style
-    //   content.style.width = '100%';
-    //   content.style.height = '100%';
-    //   content.style.backgroundColor = '#767676';
-    //   size = new Vector2(560, 250);
-    // }
+    if (!size) {
+      this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
-    // super.initialize(content, size);
+      // Declare the style
+      let backgroundColor: BackgroundColor = new BackgroundColor(this);
+
+      // Assign the style
+      this.styles = [backgroundColor];
+
+      // Set the content container style
+      this.contentContainer.style.width = '100%';
+      this.contentContainer.style.height = '100%';
+      this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
+      size = new Vector2(600, 150);
+    }
+
+    super.initialize(size);
   }
 
-  setEditMode() { }
+  setRightHandle(deltaPosition: Vector2) {
+    super.setRightHandle(deltaPosition);
+
+    if (this.rect.width < 8) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, 8, this.rect.height);
+      });
+    }
+  }
 }

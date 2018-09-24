@@ -5,6 +5,7 @@ import { ButtonBoxComponent } from '../button-box/button-box.component';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
 import { LinkService } from '../link.service';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'properties',
@@ -15,6 +16,7 @@ export class PropertiesComponent {
   @Input() currentContainer;
   public copied: any = {};
   public gridItem;
+  public Math = Math;
 
   constructor(private resolver: ComponentFactoryResolver, private linkService: LinkService) { }
 
@@ -79,5 +81,43 @@ export class PropertiesComponent {
     if (this.currentContainer.currentEditBox.inEditMode || style.group === 'editBoxLink') {
       this.linkService.showForm(style, this.gridItem);
     }
+  }
+
+  setX(input) {
+    let editBox = this.currentContainer.currentEditBox;
+
+    editBox.setRect(() => {
+      return new Rect(input.valueAsNumber, editBox.rect.y, editBox.rect.width, editBox.rect.height);
+    }, () => {
+      input.value = editBox.rect.x;
+      return new Rect(editBox.rect.x, editBox.rect.y, editBox.rect.width, editBox.rect.height);
+    });
+  }
+
+  setY(input) {
+    let editBox = this.currentContainer.currentEditBox;
+
+    editBox.setRect(() => {
+      return new Rect(editBox.rect.x, input.valueAsNumber, editBox.rect.width, editBox.rect.height);
+    }, () => {
+      input.value = editBox.rect.y;
+      return new Rect(editBox.rect.x, editBox.rect.y, editBox.rect.width, editBox.rect.height);
+    });
+  }
+
+  setWidth(input) {
+    let editBox = this.currentContainer.currentEditBox;
+
+    editBox.handle = 'right';
+    editBox.setRightHandle(new Vector2(input.valueAsNumber - input.oldValue, 0));
+    if(editBox.rect.width !== input.valueAsNumber)input.value = editBox.rect.width;
+  }
+
+  setHeight(input) {
+    let editBox = this.currentContainer.currentEditBox;
+
+    editBox.handle = 'bottom';
+    editBox.setBottomHandle(new Vector2(0, input.valueAsNumber - input.oldValue));
+    if(editBox.rect.height !== input.valueAsNumber)input.value = editBox.rect.height;
   }
 }

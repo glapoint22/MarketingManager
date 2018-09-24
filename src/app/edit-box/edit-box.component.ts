@@ -11,7 +11,7 @@ import { Style } from '../style';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(private app: ApplicationRef){}
+  constructor(private app: ApplicationRef) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -30,7 +30,7 @@ export class EditBoxComponent {
   public content: any;
   public isSelected: boolean;
   public styles: Array<Style>;
-  public iframe;
+  public contentContainer;
   public link: string;
 
   ngOnInit() {
@@ -166,23 +166,23 @@ export class EditBoxComponent {
       pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
 
     // Set rect with page
-    if (this.handle === 'center') {
-      tempRect.x = Math.min(pageWidth - tempRect.width, Math.max(0, tempRect.x));
-      tempRect.y = Math.max(0, tempRect.y);
-    } else {
-      if (tempRect.x < 0) {
-        this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
-        if (response) tempRect = response();
-      }
-      if (tempRect.xMax > pageWidth) {
-        this.setLeftCollision(tempRect, new Rect(pageWidth, 0, 0, 0));
-        if (response) tempRect = response();
-      }
-      if (tempRect.y < 0) {
-        this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
-        if (response) tempRect = response();
-      }
+    // if (this.handle === 'center') {
+    //   tempRect.x = Math.min(pageWidth - tempRect.width, Math.max(0, tempRect.x));
+    //   tempRect.y = Math.max(0, tempRect.y);
+    // } else {
+    if (tempRect.x < 0) {
+      this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
+      if (response) tempRect = response();
     }
+    if (tempRect.xMax > pageWidth) {
+      this.setLeftCollision(tempRect, new Rect(pageWidth, 0, 0, 0));
+      if (response) tempRect = response();
+    }
+    if (tempRect.y < 0) {
+      this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
+      if (response) tempRect = response();
+    }
+    // }
 
     // Set rect with other rects
     for (let i = 0; i < this.parentContainer.length; i++) {
@@ -264,7 +264,7 @@ export class EditBoxComponent {
     this.isSelected = true;
     if (this.parentContainer.currentEditBox && this.parentContainer.currentEditBox !== this) {
       this.parentContainer.currentEditBox.isSelected = false;
-      if (this.parentContainer.currentEditBox.content.getAttribute('contenteditable')) {
+      if (this.parentContainer.currentEditBox.content) {
         this.parentContainer.currentEditBox.inEditMode = false;
         this.parentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
         this.parentContainer.currentEditBox.content.style.setProperty('cursor', '');
@@ -276,25 +276,27 @@ export class EditBoxComponent {
   }
 
   setEditMode() {
-    this.content.setAttribute('contenteditable', 'true');
+    if (this.content) {
+      this.content.setAttribute('contenteditable', 'true');
 
-    let selection = this.content.ownerDocument.getSelection(),
-      node: any = this.content,
-      firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
-      lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
+      let selection = this.content.ownerDocument.getSelection(),
+        node: any = this.content,
+        firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
+        lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
 
-    selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
-    this.content.style.setProperty('cursor', 'text');
-    this.inEditMode = true;
-    this.content.focus();
-    this.checkSelectionForStyles();
+      selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
+      this.content.style.setProperty('cursor', 'text');
+      this.inEditMode = true;
+      this.content.focus();
+      this.checkSelectionForStyles();
+    }
+
   }
 
   initialize(size?: Vector2) {
     let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
     let y = 0;
 
-    // this.content = content;
     this.rect = new Rect(0, -Infinity, 0, 0);
 
     // Get an array of all rects from the container
@@ -317,7 +319,7 @@ export class EditBoxComponent {
 
 
   unSelect() {
-    if (this.content.getAttribute('contenteditable') && this.inEditMode) {
+    if (this.content && this.inEditMode) {
       this.inEditMode = false;
       this.content.ownerDocument.getSelection().empty();
       this.content.setAttribute('contenteditable', 'false');
@@ -325,7 +327,7 @@ export class EditBoxComponent {
       this.styles.forEach(x => x.setSelectedFalse());
       this.app.tick();
       this.editBox.nativeElement.focus();
-    }else{
+    } else {
       this.isSelected = false;
     }
   }
@@ -337,4 +339,6 @@ export class EditBoxComponent {
       this.app.tick();
     }, 1);
   }
+
+  onContentChange() { }
 }
