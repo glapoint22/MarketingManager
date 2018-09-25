@@ -10,6 +10,7 @@ import { Rect } from '../rect';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class ContainerBoxComponent extends EditBoxComponent {
+  private minSize: number = 8;
 
   initialize(size?: Vector2) {
     if (!size) {
@@ -34,9 +35,103 @@ export class ContainerBoxComponent extends EditBoxComponent {
   setRightHandle(deltaPosition: Vector2) {
     super.setRightHandle(deltaPosition);
 
-    if (this.rect.width < 8) {
+    if (this.rect.width < this.minSize) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, 8, this.rect.height);
+        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+  }
+
+  setLeftHandle(deltaPosition: Vector2) {
+    super.setLeftHandle(deltaPosition);
+
+    if (this.rect.width < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+  }
+
+  setBottomHandle(deltaPosition: Vector2) {
+    super.setBottomHandle(deltaPosition);
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
+      });
+    }
+  }
+
+  setTopHandle(deltaPosition: Vector2) {
+    super.setTopHandle(deltaPosition);
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+      });
+    }
+  }
+
+  setTopLeftHandle(deltaPosition: Vector2) {
+    super.setTopLeftHandle(deltaPosition);
+
+    if (this.rect.width < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+      });
+    }
+  }
+
+  setTopRightHandle(deltaPosition: Vector2) {
+    super.setTopRightHandle(deltaPosition);
+
+    if (this.rect.width < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+      });
+    }
+  }
+
+  setBottomLeftHandle(deltaPosition: Vector2) {
+    super.setBottomLeftHandle(deltaPosition);
+
+    if (this.rect.width < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
+      });
+    }
+  }
+
+  setBottomRightHandle(deltaPosition: Vector2) {
+    super.setBottomRightHandle(deltaPosition);
+
+    if (this.rect.width < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+      });
+    }
+
+    if (this.rect.height < this.minSize) {
+      this.setRect(() => {
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
   }

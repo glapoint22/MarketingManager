@@ -43,20 +43,20 @@
         <div>
             <div class="property-title">Position</div>
             <span class="property">X:</span>
-            <input #x type="number" [value]="currentContainer.currentEditBox.rect.x" (input)="setX(x)" min="0">
+            <input #x type="number" [value]="currentContainer.currentEditBox.rect.x" (change)="setX(x)" onfocus="this.select()">
             <br>
 
             <span class="property">Y:</span>
-            <input #y type="number" [value]="currentContainer.currentEditBox.rect.y" (input)="setY(y)">
+            <input #y type="number" [value]="currentContainer.currentEditBox.rect.y" (change)="setY(y)" onfocus="this.select()">
 
 
             <div class="property-title">Size</div>
             <span class="property">W:</span>
-            <input #width type="number" [value]="Math.round(currentContainer.currentEditBox.rect.width)" (keydown)="width.oldValue = width.valueAsNumber" (input)="setWidth(width)">
+            <input #width type="number" [value]="Math.round(currentContainer.currentEditBox.rect.width)" (change)="width.oldValue = currentContainer.currentEditBox.rect.width; setWidth(width)" onfocus="this.select()">
             <br>
 
             <span class="property">H:</span>
-            <input #height type="number" [value]="Math.round(currentContainer.currentEditBox.rect.height)" (keydown)="height.oldValue = height.valueAsNumber" (input)="setHeight(height)">
+            <input #height type="number" [value]="Math.round(currentContainer.currentEditBox.rect.height)" (change)="height.oldValue = currentContainer.currentEditBox.rect.height; setHeight(height)" onfocus="this.select()">
         </div>
     </div>
 </div>

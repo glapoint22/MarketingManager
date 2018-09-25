@@ -86,6 +86,9 @@ export class PropertiesComponent {
   setX(input) {
     let editBox = this.currentContainer.currentEditBox;
 
+    if (input.value === '') input.value = 0;
+
+
     editBox.setRect(() => {
       return new Rect(input.valueAsNumber, editBox.rect.y, editBox.rect.width, editBox.rect.height);
     }, () => {
@@ -96,6 +99,8 @@ export class PropertiesComponent {
 
   setY(input) {
     let editBox = this.currentContainer.currentEditBox;
+
+    if (input.value === '') input.value = 0;
 
     editBox.setRect(() => {
       return new Rect(editBox.rect.x, input.valueAsNumber, editBox.rect.width, editBox.rect.height);
@@ -108,16 +113,20 @@ export class PropertiesComponent {
   setWidth(input) {
     let editBox = this.currentContainer.currentEditBox;
 
+    if (input.value === '') input.value = 0;
+
     editBox.handle = 'right';
     editBox.setRightHandle(new Vector2(input.valueAsNumber - input.oldValue, 0));
-    if(editBox.rect.width !== input.valueAsNumber)input.value = editBox.rect.width;
+    if (editBox.rect.width !== input.valueAsNumber) input.value = editBox.rect.width;
   }
 
   setHeight(input) {
     let editBox = this.currentContainer.currentEditBox;
 
+    if (input.value === '') input.value = 0;
+
     editBox.handle = 'bottom';
     editBox.setBottomHandle(new Vector2(0, input.valueAsNumber - input.oldValue));
-    if(editBox.rect.height !== input.valueAsNumber)input.value = editBox.rect.height;
+    if (editBox.rect.height !== input.valueAsNumber) input.value = editBox.rect.height;
   }
 }
