@@ -12,22 +12,30 @@ import { Rect } from '../rect';
 export class ContainerBoxComponent extends EditBoxComponent {
   private minSize: number = 8;
 
-  initialize(size?: Vector2) {
-    if (!size) {
-      this.setVisibleHandles(true, true, true, true, true, true, true, true);
+  initialize(copy) {
+    let backgroundColor: BackgroundColor = new BackgroundColor(this),
+      bgColor,
+      size;
 
-      // Declare the style
-      let backgroundColor: BackgroundColor = new BackgroundColor(this);
+    // Assign the style
+    this.styles = [backgroundColor];
 
-      // Assign the style
-      this.styles = [backgroundColor];
+    //set the handles
+    this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
-      // Set the content container style
-      this.contentContainer.style.width = '100%';
-      this.contentContainer.style.height = '100%';
-      this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
+    // Set copy or default
+    if (copy) {
+      size = copy.size;
+      bgColor = copy.backgroundColor;
+    } else {
       size = new Vector2(600, 150);
+      bgColor = '#c1c1c1';
     }
+
+    // Set the content container style
+    this.contentContainer.style.width = '100%';
+    this.contentContainer.style.height = '100%';
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
 
     super.initialize(size);
   }

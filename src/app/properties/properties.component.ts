@@ -31,36 +31,53 @@ export class PropertiesComponent {
 
   copy() {
     if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+      // Text
       if (this.currentContainer.currentEditBox instanceof TextBoxComponent) {
         this.copied.component = TextBoxComponent;
+        this.copied.contentContainerType = 'iframe';
+
+        // Image
       } else if (this.currentContainer.currentEditBox instanceof ImageBoxComponent) {
         this.copied.component = ImageBoxComponent;
+        this.copied.contentContainerType = 'img';
+        this.copied.src = this.currentContainer.currentEditBox.contentContainer.src;
+        this.copied.link = this.currentContainer.currentEditBox.link;
+
+        // Button
       } else if (this.currentContainer.currentEditBox instanceof ButtonBoxComponent) {
         this.copied.component = ButtonBoxComponent;
+        this.copied.contentContainerType = 'iframe';
+        this.copied.link = this.currentContainer.currentEditBox.link;
+
+        // Container
       } else if (this.currentContainer.currentEditBox instanceof ContainerBoxComponent) {
         this.copied.component = ContainerBoxComponent;
+        this.copied.contentContainerType = 'div';
       }
 
-      this.copied.nodeName = this.currentContainer.currentEditBox.content.nodeName;
-      this.copied.style = this.currentContainer.currentEditBox.content.getAttribute('style');
-      this.copied.innerHTML = this.currentContainer.currentEditBox.content.innerHTML;
-      this.copied.rect = JSON.parse(JSON.stringify(this.currentContainer.currentEditBox.rect));
-      this.copied.src = this.currentContainer.currentEditBox.content.src;
+      this.copied.backgroundColor = this.currentContainer.currentEditBox.editBox.nativeElement.style.backgroundColor;
+      this.copied.content = this.currentContainer.currentEditBox.content ? this.currentContainer.currentEditBox.content.innerHTML : null;
+      this.copied.size = new Vector2(this.currentContainer.currentEditBox.rect.width, this.currentContainer.currentEditBox.rect.height);
     }
   }
 
   paste() {
     if (this.copied.component) {
-      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component);
-      let content = document.createElement(this.copied.nodeName);
-      content.setAttribute('style', this.copied.style);
-      content.innerHTML = this.copied.innerHTML;
-      content.src = this.copied.src;
+      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component),
+        contentContainer = document.createElement(this.copied.contentContainerType),
+        box = this.currentContainer.createComponent(componentFactory, null, null, [[contentContainer]]);
 
-      let box = this.currentContainer.createComponent(componentFactory, null, null, [[content]]);
-
+      box.instance.contentContainer = contentContainer;
       box.instance.parentContainer = this.currentContainer;
-      box.instance.initialize(content, new Vector2(this.copied.rect.width, this.copied.rect.height));
+
+      if (this.copied.contentContainerType === 'img') {
+        box.instance.contentContainer.src = this.copied.src;
+        box.instance.contentContainer.onload = () => {
+          box.instance.initialize(this.copied);
+        }
+      } else {
+        box.instance.initialize(this.copied);
+      }
     }
   }
 

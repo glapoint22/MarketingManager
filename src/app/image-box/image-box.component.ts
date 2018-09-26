@@ -10,18 +10,24 @@ import { EditBoxLink } from '../edit-box-link';
 })
 export class ImageBoxComponent extends UniformBoxComponent {
 
-  initialize(size?: Vector2) {
-    if (!size) {
-      let editBoxLink: EditBoxLink = new EditBoxLink(this);
+  initialize(copy) {
+    let editBoxLink: EditBoxLink = new EditBoxLink(this), size;
 
-      this.styles = [editBoxLink];
+    this.styles = [editBoxLink];
 
-      this.setVisibleHandles(true, false, true, false, false, true, false, true);
+    this.setVisibleHandles(true, false, true, false, false, true, false, true);
 
-      // Set the style
-      this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
-      size = new Vector2(this.contentContainer.clientWidth, this.contentContainer.clientHeight);
+    // Set the style
+    this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
+    
+    size = copy ? copy.size : new Vector2(this.contentContainer.clientWidth, this.contentContainer.clientHeight);
+
+    if (copy) {
+      this.link = copy.link;
+      editBoxLink.isSelected = this.link ? true : false;
+      if (this.link) this.editBox.nativeElement.title = this.link;
     }
+
 
     super.initialize(size);
 
@@ -29,12 +35,12 @@ export class ImageBoxComponent extends UniformBoxComponent {
     this.contentContainer.style.height = '100%';
   }
 
-  setRightHandle(deltaPosition: Vector2){
+  setRightHandle(deltaPosition: Vector2) {
     deltaPosition.y = deltaPosition.x;
     this.setBottomRightHandle(deltaPosition);
   }
 
-  setBottomHandle(deltaPosition: Vector2){
+  setBottomHandle(deltaPosition: Vector2) {
     deltaPosition.x = deltaPosition.y;
     this.setBottomRightHandle(deltaPosition);
   }

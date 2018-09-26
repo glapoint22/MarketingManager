@@ -27,41 +27,47 @@ export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
   private minWidth: number = 8;
 
-  initialize(size?: Vector2) {
-    if (!size) {
-      // Declare the styles
-      let backgroundColor: BackgroundColor = new BackgroundColor(this),
-        bold: Bold = new Bold(this),
-        italic: Italic = new Italic(this),
-        underline: Underline = new Underline(this),
-        textColor: TextColor = new TextColor(this),
-        highlightColor: HighlightColor = new HighlightColor(this),
-        orderedList: OrderedList = new OrderedList(this),
-        unorderedList: UnorderedList = new UnorderedList(this),
-        fontSize: FontSize = new FontSize(this),
-        font: Font = new Font(this),
-        alignLeft: AlignLeft = new AlignLeft(this),
-        alignCenter: AlignCenter = new AlignCenter(this),
-        alignRight: AlignRight = new AlignRight(this),
-        alignJustify: AlignJustify = new AlignJustify(this),
-        linkStyle: LinkStyle = new LinkStyle(this),
+  initialize(copy) {
+    let backgroundColor: BackgroundColor = new BackgroundColor(this),
+      bold: Bold = new Bold(this),
+      italic: Italic = new Italic(this),
+      underline: Underline = new Underline(this),
+      textColor: TextColor = new TextColor(this),
+      highlightColor: HighlightColor = new HighlightColor(this),
+      orderedList: OrderedList = new OrderedList(this),
+      unorderedList: UnorderedList = new UnorderedList(this),
+      fontSize: FontSize = new FontSize(this),
+      font: Font = new Font(this),
+      alignLeft: AlignLeft = new AlignLeft(this),
+      alignCenter: AlignCenter = new AlignCenter(this),
+      alignRight: AlignRight = new AlignRight(this),
+      alignJustify: AlignJustify = new AlignJustify(this),
+      linkStyle: LinkStyle = new LinkStyle(this),
+      bgColor,
+      size,
+      srcdoc;
 
-        // Set the default text
-        div = document.createElement('DIV'),
+    // Assign the styles
+    this.styles = [backgroundColor, bold, italic, underline,
+      textColor, highlightColor, orderedList,
+      unorderedList, alignLeft, alignCenter,
+      alignRight, alignJustify, fontSize,
+      font, linkStyle];
+
+    //set the handles 
+    this.setVisibleHandles(false, false, false, true, true, false, true, false);
+
+
+    // Set copy or default
+    if (copy) {
+      srcdoc = copy.content;
+      bgColor = copy.backgroundColor;
+      size = copy.size;
+    } else {
+      // Set the default text
+      let div = document.createElement('DIV'),
         span = document.createElement('SPAN'),
         text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
-
-      //set the handles 
-      this.setVisibleHandles(false, false, false, true, true, false, true, false);
-
-      // Assign the styles
-      this.styles = [backgroundColor, bold, italic, underline,
-        textColor, highlightColor, orderedList,
-        unorderedList, alignLeft, alignCenter,
-        alignRight, alignJustify, fontSize,
-        font, linkStyle];
-
-        this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#00000000';
 
       // Set the default style
       span.style.color = '#414141';
@@ -71,49 +77,57 @@ export class TextBoxComponent extends EditBoxComponent {
       div.style.outline = 'none';
       span.appendChild(text);
       div.appendChild(span);
-
-      // Set the content container
-      this.contentContainer.srcdoc = div.outerHTML;
-      this.contentContainer.frameBorder = 0;
-
-      // Set the content container's style and events
-      this.contentContainer.onload = () => {
-        this.content = this.contentContainer.contentDocument.body;
-
-        this.content.style.margin = 0;
-        this.content.style.outline = 'none';
-        this.content.style.wordWrap = 'break-word';
-        this.content.style.overflow = 'hidden';
-        this.content.contentEditable = 'false';
-
-        // OnMouseUp
-        this.content.ownerDocument.onmouseup = () => {
-          this.checkSelectionForStyles();
-        }
-
-        // OnInput
-        this.content.oninput = () => {
-          this.onContentChange();
-          this.fixInvalidElements();
-        }
-
-        // OnKeyDown
-        this.content.onkeydown = (event) => {
-          if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-            event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-            this.checkSelectionForStyles();
-          } else if (event.code === 'Escape') {
-            this.unSelect();
-          }
-        }
-      }
+      srcdoc = div.outerHTML;
+      bgColor = '#00000000';
 
       // Set the default size
       size = new Vector2(180, 54);
-      this.contentContainer.width = size.x;
-      this.contentContainer.height = size.y;
     }
 
+    // Set the background color
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
+
+    // Set the content container
+    this.contentContainer.srcdoc = srcdoc;
+    this.contentContainer.frameBorder = 0;
+
+    // Set the content container's style and events
+    this.contentContainer.onload = () => {
+      this.content = this.contentContainer.contentDocument.body;
+
+      this.content.style.margin = 0;
+      this.content.style.outline = 'none';
+      this.content.style.wordWrap = 'break-word';
+      this.content.style.overflow = 'hidden';
+      this.content.contentEditable = 'false';
+
+      // OnMouseUp
+      this.content.ownerDocument.onmouseup = () => {
+        this.checkSelectionForStyles();
+      }
+
+      // OnInput
+      this.content.oninput = () => {
+        this.onContentChange();
+        this.fixInvalidElements();
+      }
+
+      // OnKeyDown
+      this.content.onkeydown = (event) => {
+        if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+          event.code === 'ArrowRight' || event.code === 'ArrowDown') {
+          this.checkSelectionForStyles();
+        } else if (event.code === 'Escape') {
+          this.unSelect();
+        }
+      }
+    }
+
+    // Set the size
+    this.contentContainer.width = size.x;
+    this.contentContainer.height = size.y;
+
+    // Initialize
     super.initialize(size);
   }
 
@@ -192,7 +206,7 @@ export class TextBoxComponent extends EditBoxComponent {
     }, 1);
 
 
-    if(this.rect.width < this.minWidth){
+    if (this.rect.width < this.minWidth) {
       this.setRect(() => {
         return new Rect(this.rect.x, this.rect.y, this.minWidth, this.rect.height);
       });
@@ -216,7 +230,7 @@ export class TextBoxComponent extends EditBoxComponent {
       }
     }, 1);
 
-    if(this.rect.width < this.minWidth){
+    if (this.rect.width < this.minWidth) {
       this.setRect(() => {
         return new Rect(this.rect.x - (this.minWidth - this.rect.width), this.rect.y, this.minWidth, this.rect.height);
       });

@@ -21,85 +21,98 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   private fixedWidth: number;
   private fixedHeight: number;
 
-  initialize(size?: Vector2) {
-    if (!size) {
-      // Declare the styles
-      let backgroundColor: BackgroundColor = new BackgroundColor(this),
-        editBoxLink: EditBoxLink = new EditBoxLink(this),
-        bold: Bold = new Bold(this),
-        italic: Italic = new Italic(this),
-        underline: Underline = new Underline(this),
-        textColor: TextColor = new TextColor(this),
-        highlightColor: HighlightColor = new HighlightColor(this),
-        fontSize: FontSize = new FontSize(this),
-        font: Font = new Font(this),
+  initialize(copy) {
+    let backgroundColor: BackgroundColor = new BackgroundColor(this),
+      editBoxLink: EditBoxLink = new EditBoxLink(this),
+      bold: Bold = new Bold(this),
+      italic: Italic = new Italic(this),
+      underline: Underline = new Underline(this),
+      textColor: TextColor = new TextColor(this),
+      highlightColor: HighlightColor = new HighlightColor(this),
+      fontSize: FontSize = new FontSize(this),
+      font: Font = new Font(this),
+      bgColor,
+      size,
+      srcdoc;
 
-        // Set the default text
-        span = document.createElement('SPAN'),
+    // Assign the styles
+    this.styles = [backgroundColor, editBoxLink, bold, italic, underline,
+      textColor, highlightColor, fontSize,
+      font];
+
+    //set the handles 
+    this.setVisibleHandles(true, true, true, true, true, true, true, true);
+
+    // Set copy or default
+    if (copy) {
+      srcdoc = copy.content;
+      bgColor = copy.backgroundColor;
+      size = copy.size;
+      this.link = copy.link;
+      editBoxLink.isSelected = this.link ? true : false;
+      if (this.link) this.editBox.nativeElement.title = this.link;
+    } else {
+      // Set the default text
+      let span = document.createElement('SPAN'),
         text = document.createTextNode('Button');
-
-      //set the handles 
-      this.setVisibleHandles(true, true, true, true, true, true, true, true);
-
-      // Assign the styles
-      this.styles = [backgroundColor, editBoxLink, bold, italic, underline,
-        textColor, highlightColor, fontSize,
-        font];
-
-      this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = '#c1c1c1';
 
       // Set the default style
       span.style.color = '#ffffff';
       span.style.fontSize = '16px';
       span.style.fontFamily = '"Times New Roman", Times, serif';
       span.appendChild(text);
-
-      // Set the content container
-      this.contentContainer.srcdoc = span.outerHTML;
-      this.contentContainer.frameBorder = 0;
+      srcdoc = span.outerHTML;
+      bgColor = '#c1c1c1';
 
       // Set the default size
       size = new Vector2(144, 42);
-      this.fixedWidth = this.contentContainer.width = size.x;
-      this.fixedHeight = this.contentContainer.height = size.y;
+    }
 
-      // Set the content container's style and events
-      this.contentContainer.onload = () => {
-        this.content = this.contentContainer.contentDocument.body;
-        this.content.style.margin = 0;
-        this.content.style.width = size.x + 'px';
-        this.content.style.height = size.y + 'px';
-        this.content.style.lineHeight = size.y + 'px';
-        this.content.style.textAlign = 'center';
-        this.content.style.whiteSpace = 'nowrap';
-        this.content.style.overflow = 'hidden';
+    // Set the background color
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
+
+    // Set the content container
+    this.contentContainer.srcdoc = srcdoc;
+    this.contentContainer.frameBorder = 0;
+
+    // Set the fixed size
+    this.fixedWidth = this.contentContainer.width = size.x;
+    this.fixedHeight = this.contentContainer.height = size.y;
+
+    // Set the content container's style and events
+    this.contentContainer.onload = () => {
+      this.content = this.contentContainer.contentDocument.body;
+      this.content.style.margin = 0;
+      this.content.style.width = size.x + 'px';
+      this.content.style.height = size.y + 'px';
+      this.content.style.lineHeight = size.y + 'px';
+      this.content.style.textAlign = 'center';
+      this.content.style.whiteSpace = 'nowrap';
+      this.content.style.overflow = 'hidden';
 
 
-        // OnMouseUp
-        this.content.ownerDocument.onmouseup = () => {
-          this.checkSelectionForStyles();
-        }
-
-        // OnInput
-        this.content.oninput = () => {
-          this.onContentChange();
-          this.fixInvalidElements();
-        }
-
-        // OnKeyDown
-        this.content.onkeydown = (event) => {
-          if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-            event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-            this.checkSelectionForStyles();
-          } else if (event.code === 'Escape') {
-            this.unSelect();
-          } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-            event.preventDefault();
-          }
-        }
+      // OnMouseUp
+      this.content.ownerDocument.onmouseup = () => {
+        this.checkSelectionForStyles();
       }
 
+      // OnInput
+      this.content.oninput = () => {
+        this.onContentChange();
+        this.fixInvalidElements();
+      }
 
+      // OnKeyDown
+      this.content.onkeydown = (event) => {
+        if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
+          event.code === 'ArrowRight' || event.code === 'ArrowDown') {
+          this.checkSelectionForStyles();
+        } else if (event.code === 'Escape') {
+          this.unSelect();
+        } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+          event.preventDefault();
+        }
+      }
     }
 
     super.initialize(size);
