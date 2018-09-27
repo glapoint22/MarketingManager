@@ -15,13 +15,14 @@ export class EmailComponent implements OnInit {
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
-  private currentEmailIndex: number = -1;
+  // private currentEmailIndex: number = -1;
   private emailContentContainerArray: Array<any>;
   public fileInput = document.createElement('input');
 
   public textBoxComponent = TextBoxComponent;
   public buttonBoxComponent = ButtonBoxComponent;
   public containerBoxComponent = ContainerBoxComponent;
+  public currentContainer;
 
   constructor(private resolver: ComponentFactoryResolver, private dataService: DataService) { }
 
@@ -47,10 +48,12 @@ export class EmailComponent implements OnInit {
   onToggleButtonClick(input, index) {
     if (input.checked) {
       input.checked = false;
-      this.currentEmailIndex = -1;
+      // this.currentEmailIndex = -1;
+      this.currentContainer = null;
     } else {
       input.checked = true;
-      this.currentEmailIndex = index;
+      // this.currentEmailIndex = index;
+      this.currentContainer = this.emailContentContainerArray[index]
     }
   }
 
@@ -92,12 +95,17 @@ export class EmailComponent implements OnInit {
 
   createBox(component: Type<any>, contentContainerType) {
     let componentFactory = this.resolver.resolveComponentFactory(component),
-      container = this.emailContentContainerArray[this.currentEmailIndex],
+      // container = this.currentContainer,
       contentContainer = document.createElement(contentContainerType),
-      box = container.createComponent(componentFactory, null, null, [[contentContainer]]);
+      box = this.currentContainer.createComponent(componentFactory, null, null, contentContainerType ? [[contentContainer]] : null);
+
+    
+    if (!this.currentContainer.components) this.currentContainer.components = [];
+    this.currentContainer.components.push(box.instance);
+
 
     box.instance.contentContainer = contentContainer;
-    box.instance.parentContainer = container;
+    box.instance.parentContainer = this.currentContainer;
     return box;
   }
 

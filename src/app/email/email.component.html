@@ -2,7 +2,7 @@
     <div style="width: 379px;height: 100%;background: #151515;float: right;max-width: 1600px;">
         <div resizable class="divider"></div>
         <editor [name]="'Properties'">
-            <properties #properties [currentContainer]="currentEmailIndex >= 0 ? emailContentContainerArray[currentEmailIndex]: null"></properties>
+            <properties #properties [currentContainer]="currentContainer"></properties>
         </editor>
     </div>
     <div resizable class="divider"></div>
@@ -15,7 +15,7 @@
         <button (click)="fileInput.click()">Image</button>
         <button (click)="getBox(textBoxComponent, 'iframe')">Text</button>
         <button (click)="getBox(buttonBoxComponent, 'iframe')">Button</button>
-        <button (click)="getBox(containerBoxComponent, 'div')">Container</button>
+        <button (click)="getBox(containerBoxComponent)">Container</button>
     </div>
     <div class="emails-container" [style.height.px]="height">
         <div *ngFor="let email of emails; let i = index" class="row">
@@ -24,7 +24,7 @@
                 <label class="toggle-button" [for]="email.id" (click)="onToggleButtonClick(inputToggle, i); $event.preventDefault()"></label>
             </span>
             <div class="bar subject" style="margin-left: 23px;">{{email.subject}}</div>
-            <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0" (mousedown)="emailContentContainerArray[currentEmailIndex].currentEditBox ? emailContentContainerArray[currentEmailIndex].currentEditBox.unSelect() : null">
+            <div class="email-content-container" [style.maxHeight.px]="inputToggle.checked ? 800 : 0" (mousedown)="currentContainer ? currentContainer.currentEditBox.unSelect() : null">
                 <div [style.width.px]="pageWidth" style="height: 600px; background: #e4e4e4; margin: auto; position: relative; top: 10px">
                     <ng-template #emailContentContainer></ng-template>
                 </div>

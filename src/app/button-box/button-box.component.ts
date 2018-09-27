@@ -62,7 +62,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       span.style.fontFamily = '"Times New Roman", Times, serif';
       span.appendChild(text);
       srcdoc = span.outerHTML;
-      bgColor = '#c1c1c1';
+      bgColor = '#b0b0b0';
 
       // Set the default size
       size = new Vector2(144, 42);

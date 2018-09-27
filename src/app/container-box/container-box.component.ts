@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { BackgroundColor } from '../background-color';
@@ -10,6 +10,7 @@ import { Rect } from '../rect';
   styleUrls: ['../edit-box/edit-box.component.scss']
 })
 export class ContainerBoxComponent extends EditBoxComponent {
+  @ViewChild('container', { read: ViewContainerRef }) container: any;
   private minSize: number = 8;
 
   initialize(copy) {
@@ -33,8 +34,6 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
 
     // Set the content container style
-    this.contentContainer.style.width = '100%';
-    this.contentContainer.style.height = '100%';
     this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
 
     super.initialize(size);
@@ -142,5 +141,11 @@ export class ContainerBoxComponent extends EditBoxComponent {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
+  }
+
+  setCurrentContainer(){
+    let mainComponent =  this.getMainComponent();
+    mainComponent.currentContainer = this.container;
+    return mainComponent;
   }
 }

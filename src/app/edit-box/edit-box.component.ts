@@ -42,7 +42,7 @@ export class EditBoxComponent {
     this.isMousedown = true;
     this.handle = handle;
     this.currentPosition = new Vector2(event.clientX, event.clientY);
-    this.setSelection();
+    // this.setSelection();
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -182,11 +182,16 @@ export class EditBoxComponent {
       this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
+    if (tempRect.yMax > this.parentContainer.element.nativeElement.parentElement.clientHeight) {
+      // this.setTopCollision(tempRect, new Rect(0, 0, 0, this.parentContainer.element.nativeElement.parentElement.clientHeight));
+      // if (response) tempRect = response();
+      tempRect.y = this.parentContainer.element.nativeElement.parentElement.clientHeight - tempRect.height;
+    }
     // }
 
     // Set rect with other rects
-    for (let i = 0; i < this.parentContainer.length; i++) {
-      let otherRect = this.parentContainer._embeddedViews[i].nodes[1].instance.rect;
+    for (let i = 0; i < this.parentContainer.components.length; i++) {
+      let otherRect = this.parentContainer.components[i].rect;
 
       if (this.rect !== otherRect) {
         if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
@@ -261,18 +266,38 @@ export class EditBoxComponent {
   }
 
   setSelection() {
+    let mainComponent = this.setCurrentContainer();
     this.isSelected = true;
-    if (this.parentContainer.currentEditBox && this.parentContainer.currentEditBox !== this) {
-      this.parentContainer.currentEditBox.isSelected = false;
-      if (this.parentContainer.currentEditBox.content) {
-        this.parentContainer.currentEditBox.inEditMode = false;
-        this.parentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
-        this.parentContainer.currentEditBox.content.style.setProperty('cursor', '');
-        this.parentContainer.currentEditBox.content.ownerDocument.getSelection().empty();
+    if (mainComponent.currentContainer.currentEditBox && mainComponent.currentContainer.currentEditBox !== this) {
+      mainComponent.currentContainer.currentEditBox.isSelected = false;
+      if (mainComponent.currentContainer.currentEditBox.content) {
+        mainComponent.currentContainer.currentEditBox.inEditMode = false;
+        mainComponent.currentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
+        mainComponent.currentContainer.currentEditBox.content.style.setProperty('cursor', '');
+        mainComponent.currentContainer.currentEditBox.content.ownerDocument.getSelection().empty();
+      }
+    }
+    mainComponent.currentContainer.currentEditBox = this;
+  }
+
+  setCurrentContainer() {
+    let mainComponent = this.getMainComponent();
+    mainComponent.currentContainer = this.parentContainer;
+    return mainComponent;
+  }
+
+  getMainComponent() {
+    let mainComponent = this.parentContainer;
+
+    while (true) {
+      if (!mainComponent.injector.view.component.currentContainer) {
+        mainComponent = mainComponent.injector.view.component.parentContainer;
+      } else {
+        break;
       }
     }
 
-    this.parentContainer.currentEditBox = this;
+    return mainComponent.injector.view.component;
   }
 
   setEditMode() {
