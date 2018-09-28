@@ -1,8 +1,4 @@
 import { Component, HostListener } from '@angular/core';
-import { TextBoxComponent } from '../text-box/text-box.component';
-import { ImageBoxComponent } from '../image-box/image-box.component';
-import { ButtonBoxComponent } from '../button-box/button-box.component';
-import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { Vector2 } from '../vector2';
 import { LinkService } from '../link.service';
 import { Rect } from '../rect';
@@ -15,73 +11,11 @@ import { EditBoxService } from '../edit-box.service';
   styleUrls: ['./properties.component.scss']
 })
 export class PropertiesComponent {
-  public copied: any = {};
   public gridItem;
   public Math = Math;
   public editBox = EditBoxComponent;
 
-  constructor(private linkService: LinkService, private editBoxService: EditBoxService) { }
-
-
-  delete() {
-    if (this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
-      if(this.editBox.currentEditBox instanceof ContainerBoxComponent){
-        this.editBox.currentContainer = this.editBox.currentEditBox.parentContainer;
-      }
-
-      let index = this.editBox.currentContainer.components.findIndex(x => x === this.editBox.currentEditBox);
-      this.editBox.currentEditBox = null;
-      this.editBox.currentContainer.remove(index);
-      this.editBox.currentContainer.components.splice(index, 1);
-    }
-  }
-
-  copy() {
-    if (this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
-      // Text
-      if (this.editBox.currentEditBox instanceof TextBoxComponent) {
-        this.copied.component = TextBoxComponent;
-        this.copied.contentContainerType = 'iframe';
-
-        // Image
-      } else if (this.editBox.currentEditBox instanceof ImageBoxComponent) {
-        this.copied.component = ImageBoxComponent;
-        this.copied.contentContainerType = 'img';
-        this.copied.src = this.editBox.currentEditBox.contentContainer.src;
-        this.copied.link = this.editBox.currentEditBox.link;
-
-        // Button
-      } else if (this.editBox.currentEditBox instanceof ButtonBoxComponent) {
-        this.copied.component = ButtonBoxComponent;
-        this.copied.contentContainerType = 'iframe';
-        this.copied.link = this.editBox.currentEditBox.link;
-
-        // Container
-      } else if (this.editBox.currentEditBox instanceof ContainerBoxComponent) {
-        this.copied.component = ContainerBoxComponent;
-        this.copied.contentContainerType = null;
-      }
-
-      this.copied.backgroundColor = this.editBox.currentEditBox.editBox.nativeElement.style.backgroundColor;
-      this.copied.content = this.editBox.currentEditBox.content ? this.editBox.currentEditBox.content.innerHTML : null;
-      this.copied.size = new Vector2(this.editBox.currentEditBox.rect.width, this.editBox.currentEditBox.rect.height);
-    }
-  }
-
-  paste() {
-    if (this.copied.component) {
-      let box = this.editBoxService.createBox(this.copied.component, this.copied.contentContainerType);
-
-      if (this.copied.contentContainerType === 'img') {
-        box.instance.contentContainer.src = this.copied.src;
-        box.instance.contentContainer.onload = () => {
-          box.instance.initialize(this.copied);
-        }
-      } else {
-        box.instance.initialize(this.copied);
-      }
-    }
-  }
+  constructor(private linkService: LinkService, public editBoxService: EditBoxService) { }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

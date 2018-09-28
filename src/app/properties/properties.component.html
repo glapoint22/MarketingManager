@@ -2,15 +2,15 @@
 <div class="bar">
     <!-- Edit group -->
     <div class="group">
-        <div class="style-button" (click)="delete()" title="Delete (Del)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+        <div class="style-button" (click)="editBoxService.delete()" title="Delete (Del)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
             <i class="fas fa-trash-alt"></i>
         </div>
 
-        <div class="style-button" (click)="copy()" title="Copy (Ctrl+C)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+        <div class="style-button" (click)="editBoxService.copy()" title="Copy (Ctrl+C)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
             <i class="fas fa-copy"></i>
         </div>
 
-        <div class="style-button" (click)="paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !copied.component}">
+        <div class="style-button" (click)="editBoxService.paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !editBoxService.copied.component}">
             <i class="fas fa-paste"></i>
         </div>
     </div>
