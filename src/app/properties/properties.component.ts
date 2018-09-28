@@ -1,4 +1,4 @@
-import { Component, Input, ComponentFactoryResolver, HostListener } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { TextBoxComponent } from '../text-box/text-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
 import { ButtonBoxComponent } from '../button-box/button-box.component';
@@ -6,6 +6,8 @@ import { ContainerBoxComponent } from '../container-box/container-box.component'
 import { Vector2 } from '../vector2';
 import { LinkService } from '../link.service';
 import { Rect } from '../rect';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { EditBoxService } from '../edit-box.service';
 
 @Component({
   selector: 'properties',
@@ -13,62 +15,62 @@ import { Rect } from '../rect';
   styleUrls: ['./properties.component.scss']
 })
 export class PropertiesComponent {
-  @Input() currentContainer;
   public copied: any = {};
   public gridItem;
   public Math = Math;
+  public editBox = EditBoxComponent;
 
-  constructor(private resolver: ComponentFactoryResolver, private linkService: LinkService) { }
+  constructor(private linkService: LinkService, private editBoxService: EditBoxService) { }
 
 
   delete() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
-      let index = this.currentContainer._embeddedViews.findIndex(x => x.nodes[1].instance === this.currentContainer.currentEditBox);
-      this.currentContainer.currentEditBox = null;
-      this.currentContainer.remove(index);
+    if (this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
+      if(this.editBox.currentEditBox instanceof ContainerBoxComponent){
+        this.editBox.currentContainer = this.editBox.currentEditBox.parentContainer;
+      }
+
+      let index = this.editBox.currentContainer.components.findIndex(x => x === this.editBox.currentEditBox);
+      this.editBox.currentEditBox = null;
+      this.editBox.currentContainer.remove(index);
+      this.editBox.currentContainer.components.splice(index, 1);
     }
   }
 
   copy() {
-    if (this.currentContainer && this.currentContainer.currentEditBox && this.currentContainer.currentEditBox.isSelected) {
+    if (this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
       // Text
-      if (this.currentContainer.currentEditBox instanceof TextBoxComponent) {
+      if (this.editBox.currentEditBox instanceof TextBoxComponent) {
         this.copied.component = TextBoxComponent;
         this.copied.contentContainerType = 'iframe';
 
         // Image
-      } else if (this.currentContainer.currentEditBox instanceof ImageBoxComponent) {
+      } else if (this.editBox.currentEditBox instanceof ImageBoxComponent) {
         this.copied.component = ImageBoxComponent;
         this.copied.contentContainerType = 'img';
-        this.copied.src = this.currentContainer.currentEditBox.contentContainer.src;
-        this.copied.link = this.currentContainer.currentEditBox.link;
+        this.copied.src = this.editBox.currentEditBox.contentContainer.src;
+        this.copied.link = this.editBox.currentEditBox.link;
 
         // Button
-      } else if (this.currentContainer.currentEditBox instanceof ButtonBoxComponent) {
+      } else if (this.editBox.currentEditBox instanceof ButtonBoxComponent) {
         this.copied.component = ButtonBoxComponent;
         this.copied.contentContainerType = 'iframe';
-        this.copied.link = this.currentContainer.currentEditBox.link;
+        this.copied.link = this.editBox.currentEditBox.link;
 
         // Container
-      } else if (this.currentContainer.currentEditBox instanceof ContainerBoxComponent) {
+      } else if (this.editBox.currentEditBox instanceof ContainerBoxComponent) {
         this.copied.component = ContainerBoxComponent;
-        this.copied.contentContainerType = 'div';
+        this.copied.contentContainerType = null;
       }
 
-      this.copied.backgroundColor = this.currentContainer.currentEditBox.editBox.nativeElement.style.backgroundColor;
-      this.copied.content = this.currentContainer.currentEditBox.content ? this.currentContainer.currentEditBox.content.innerHTML : null;
-      this.copied.size = new Vector2(this.currentContainer.currentEditBox.rect.width, this.currentContainer.currentEditBox.rect.height);
+      this.copied.backgroundColor = this.editBox.currentEditBox.editBox.nativeElement.style.backgroundColor;
+      this.copied.content = this.editBox.currentEditBox.content ? this.editBox.currentEditBox.content.innerHTML : null;
+      this.copied.size = new Vector2(this.editBox.currentEditBox.rect.width, this.editBox.currentEditBox.rect.height);
     }
   }
 
   paste() {
     if (this.copied.component) {
-      let componentFactory = this.resolver.resolveComponentFactory(this.copied.component),
-        contentContainer = document.createElement(this.copied.contentContainerType),
-        box = this.currentContainer.createComponent(componentFactory, null, null, [[contentContainer]]);
-
-      box.instance.contentContainer = contentContainer;
-      box.instance.parentContainer = this.currentContainer;
+      let box = this.editBoxService.createBox(this.copied.component, this.copied.contentContainerType);
 
       if (this.copied.contentContainerType === 'img') {
         box.instance.contentContainer.src = this.copied.src;
@@ -88,20 +90,20 @@ export class PropertiesComponent {
       if (this.linkService.show) {
         this.linkService.show = false;
       } else {
-        this.currentContainer.currentEditBox.unSelect();
+        this.editBox.currentEditBox.unSelect();
       }
 
     }
   }
 
   showLinkForm(style) {
-    if (this.currentContainer.currentEditBox.inEditMode || style.group === 'editBoxLink') {
+    if (this.editBox.currentEditBox.inEditMode || style.group === 'editBoxLink') {
       this.linkService.showForm(style, this.gridItem);
     }
   }
 
   setX(input) {
-    let editBox = this.currentContainer.currentEditBox;
+    let editBox = this.editBox.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -115,7 +117,7 @@ export class PropertiesComponent {
   }
 
   setY(input) {
-    let editBox = this.currentContainer.currentEditBox;
+    let editBox = this.editBox.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -128,7 +130,7 @@ export class PropertiesComponent {
   }
 
   setWidth(input) {
-    let editBox = this.currentContainer.currentEditBox;
+    let editBox = this.editBox.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -138,7 +140,7 @@ export class PropertiesComponent {
   }
 
   setHeight(input) {
-    let editBox = this.currentContainer.currentEditBox;
+    let editBox = this.editBox.currentEditBox;
 
     if (input.value === '') input.value = 0;
 

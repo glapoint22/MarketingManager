@@ -32,6 +32,9 @@ export class EditBoxComponent {
   public styles: Array<Style>;
   public contentContainer;
   public link: string;
+  public static currentEditBox: EditBoxComponent;
+  public static currentContainer: any;
+  public static mainContainer: any;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -163,31 +166,20 @@ export class EditBoxComponent {
 
   setRect(action, response?) {
     let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center),
-      pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+      parentContainerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
 
-    // Set rect with page
-    // if (this.handle === 'center') {
-    //   tempRect.x = Math.min(pageWidth - tempRect.width, Math.max(0, tempRect.x));
-    //   tempRect.y = Math.max(0, tempRect.y);
-    // } else {
     if (tempRect.x < 0) {
       this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    if (tempRect.xMax > pageWidth) {
-      this.setLeftCollision(tempRect, new Rect(pageWidth, 0, 0, 0));
+    if (tempRect.xMax > parentContainerWidth) {
+      this.setLeftCollision(tempRect, new Rect(parentContainerWidth, 0, 0, 0));
       if (response) tempRect = response();
     }
     if (tempRect.y < 0) {
       this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    if (tempRect.yMax > this.parentContainer.element.nativeElement.parentElement.clientHeight) {
-      // this.setTopCollision(tempRect, new Rect(0, 0, 0, this.parentContainer.element.nativeElement.parentElement.clientHeight));
-      // if (response) tempRect = response();
-      tempRect.y = this.parentContainer.element.nativeElement.parentElement.clientHeight - tempRect.height;
-    }
-    // }
 
     // Set rect with other rects
     for (let i = 0; i < this.parentContainer.components.length; i++) {
@@ -266,39 +258,24 @@ export class EditBoxComponent {
   }
 
   setSelection() {
-    let mainComponent = this.setCurrentContainer();
     this.isSelected = true;
-    if (mainComponent.currentContainer.currentEditBox && mainComponent.currentContainer.currentEditBox !== this) {
-      mainComponent.currentContainer.currentEditBox.isSelected = false;
-      if (mainComponent.currentContainer.currentEditBox.content) {
-        mainComponent.currentContainer.currentEditBox.inEditMode = false;
-        mainComponent.currentContainer.currentEditBox.content.setAttribute('contenteditable', 'false');
-        mainComponent.currentContainer.currentEditBox.content.style.setProperty('cursor', '');
-        mainComponent.currentContainer.currentEditBox.content.ownerDocument.getSelection().empty();
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox !== this) {
+      EditBoxComponent.currentEditBox.isSelected = false;
+      if (EditBoxComponent.currentEditBox.inEditMode && EditBoxComponent.currentEditBox.content) {
+        EditBoxComponent.currentEditBox.inEditMode = false;
+        EditBoxComponent.currentEditBox.content.setAttribute('contenteditable', 'false');
+        EditBoxComponent.currentEditBox.content.style.setProperty('cursor', '');
+        EditBoxComponent.currentEditBox.content.ownerDocument.getSelection().empty();
       }
     }
-    mainComponent.currentContainer.currentEditBox = this;
+    EditBoxComponent.currentEditBox = this;
+    this.setCurrentContainer();
   }
 
   setCurrentContainer() {
-    let mainComponent = this.getMainComponent();
-    mainComponent.currentContainer = this.parentContainer;
-    return mainComponent;
+    EditBoxComponent.currentContainer = this.parentContainer;
   }
 
-  getMainComponent() {
-    let mainComponent = this.parentContainer;
-
-    while (true) {
-      if (!mainComponent.injector.view.component.currentContainer) {
-        mainComponent = mainComponent.injector.view.component.parentContainer;
-      } else {
-        break;
-      }
-    }
-
-    return mainComponent.injector.view.component;
-  }
 
   setEditMode() {
     if (this.content) {
@@ -354,6 +331,7 @@ export class EditBoxComponent {
       this.editBox.nativeElement.focus();
     } else {
       this.isSelected = false;
+      EditBoxComponent.currentContainer = EditBoxComponent.mainContainer;
     }
   }
 

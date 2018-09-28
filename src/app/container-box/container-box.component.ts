@@ -29,7 +29,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       size = copy.size;
       bgColor = copy.backgroundColor;
     } else {
-      size = new Vector2(600, 150);
+      size = new Vector2(350, 150);
       bgColor = '#c1c1c1';
     }
 
@@ -143,9 +143,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
   }
 
-  setCurrentContainer(){
-    let mainComponent =  this.getMainComponent();
-    mainComponent.currentContainer = this.container;
-    return mainComponent;
+  setCurrentContainer() {
+    EditBoxComponent.currentContainer = this.container;
   }
 }

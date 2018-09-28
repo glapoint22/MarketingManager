@@ -1,62 +1,63 @@
-<div *ngIf="currentContainer && currentContainer.currentEditBox && currentContainer.currentEditBox.isSelected">
-    <div class="bar">
-
-        <!-- Edit group -->
-        <div class="group">
-            <div class="style-button" (click)="delete()" title="Delete (Del)">
-                <i class="fas fa-trash-alt"></i>
-            </div>
-
-            <div class="style-button" (click)="copy()" title="Copy (Ctrl+C)">
-                <i class="fas fa-copy"></i>
-            </div>
-
-            <div class="style-button" (click)="paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !copied.component}">
-                <i class="fas fa-paste"></i>
-            </div>
+<!-- Button bar -->
+<div class="bar">
+    <!-- Edit group -->
+    <div class="group">
+        <div class="style-button" (click)="delete()" title="Delete (Del)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+            <i class="fas fa-trash-alt"></i>
         </div>
 
-        <!-- Other groups and styles -->
-        <div *ngFor="let group of currentContainer.currentEditBox.styles | groupBy" class="group">
-            <div *ngIf="group.group != 'dropdown'; else dropdownGroup" style="position:relative">
-                <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick(); currentContainer.currentEditBox.onContentChange()"
-                    [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !currentContainer.currentEditBox.inEditMode}">
+        <div class="style-button" (click)="copy()" title="Copy (Ctrl+C)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+            <i class="fas fa-copy"></i>
+        </div>
 
-                    <div *ngIf="(style.group === 'color' && currentContainer.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
+        <div class="style-button" (click)="paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !copied.component}">
+            <i class="fas fa-paste"></i>
+        </div>
+    </div>
+
+    <!-- Other groups and styles -->
+    <span *ngIf="editBox.currentEditBox && editBox.currentEditBox.isSelected">
+        <div *ngFor="let group of editBox.currentEditBox.styles | groupBy" class="group">
+            <div *ngIf="group.group != 'dropdown'; else dropdownGroup" style="position:relative">
+                <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick(); editBox.currentEditBox.onContentChange()"
+                    [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !editBox.currentEditBox.inEditMode}">
+
+                    <div *ngIf="(style.group === 'color' && editBox.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
                         class="color-bar" [style.backgroundColor]="style.styleValue"></div>
                     <i [class]="style.icon"></i>
                 </div>
             </div>
             <ng-template #dropdownGroup>
-                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value); currentContainer.currentEditBox.onContentChange()"
-                    [title]="style.title" [value]="currentContainer.currentEditBox.inEditMode ? style.styleValue : ''"
-                    [disabled]="!currentContainer.currentEditBox.inEditMode" [ngClass]="{'style-button-disabled': !currentContainer.currentEditBox.inEditMode}">
+                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value); editBox.currentEditBox.onContentChange()"
+                    [title]="style.title" [value]="editBox.currentEditBox.inEditMode ? style.styleValue : ''"
+                    [disabled]="!editBox.currentEditBox.inEditMode" [ngClass]="{'style-button-disabled': !editBox.currentEditBox.inEditMode}">
                     <option *ngFor="let option of style.options" [value]="option.value">{{option.name}}</option>
                 </select>
             </ng-template>
         </div>
+    </span>
+</div>
 
-    </div>
+<!-- Transform properties -->
+<div *ngIf="editBox.currentEditBox && editBox.currentEditBox.isSelected" class="transform-container">
+    <div>
+        <div class="property-title">Position</div>
+        <span class="property">X:</span>
+        <input #x type="number" [value]="editBox.currentEditBox.rect.x" (change)="setX(x)" onfocus="this.select()">
+        <br>
 
-    <!-- Transform properties -->
-    <div class="transform-container">
-        <div>
-            <div class="property-title">Position</div>
-            <span class="property">X:</span>
-            <input #x type="number" [value]="currentContainer.currentEditBox.rect.x" (change)="setX(x)" onfocus="this.select()">
-            <br>
-
-            <span class="property">Y:</span>
-            <input #y type="number" [value]="currentContainer.currentEditBox.rect.y" (change)="setY(y)" onfocus="this.select()">
+        <span class="property">Y:</span>
+        <input #y type="number" [value]="editBox.currentEditBox.rect.y" (change)="setY(y)" onfocus="this.select()">
 
 
-            <div class="property-title">Size</div>
-            <span class="property">W:</span>
-            <input #width type="number" [value]="Math.round(currentContainer.currentEditBox.rect.width)" (change)="width.oldValue = currentContainer.currentEditBox.rect.width; setWidth(width)" onfocus="this.select()">
-            <br>
+        <div class="property-title">Size</div>
+        <span class="property">W:</span>
+        <input #width type="number" [value]="Math.round(editBox.currentEditBox.rect.width)" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
+            onfocus="this.select()">
+        <br>
 
-            <span class="property">H:</span>
-            <input #height type="number" [value]="Math.round(currentContainer.currentEditBox.rect.height)" (change)="height.oldValue = currentContainer.currentEditBox.rect.height; setHeight(height)" onfocus="this.select()">
-        </div>
+        <span class="property">H:</span>
+        <input #height type="number" [value]="Math.round(editBox.currentEditBox.rect.height)" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
+            onfocus="this.select()">
     </div>
 </div>

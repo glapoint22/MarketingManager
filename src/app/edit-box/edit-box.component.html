@@ -1,5 +1,14 @@
-<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (mousedown)="setSelection(); $event.stopPropagation()" (dblclick)="setEditMode()" tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}">
-  <div *ngIf="!inEditMode" class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
+<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (mousedown)="setSelection(); $event.stopPropagation()"
+  (dblclick)="setEditMode()" tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}">
+
+  <!-- Content -->
+  <div class="content">
+    <div *ngIf="!inEditMode" class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
+    <ng-content></ng-content>
+    <ng-template #container></ng-template>
+  </div>
+
+  <!-- Handles -->
   <div *ngIf="isSelected && !inEditMode">
     <div *ngIf="showTopHandle" class="horizontal-side top-side" (mousedown)="onMouseDown($event, 'top')">
       <div class="handle horizontal-handle"></div>
@@ -22,6 +31,4 @@
     <div *ngIf="showBottomRightHandle" class="handle bottom-right-handle" (mousedown)="onMouseDown($event, 'bottomRight')"></div>
   </div>
 
-  <ng-content></ng-content>
-  <ng-template #container></ng-template>
 </div>

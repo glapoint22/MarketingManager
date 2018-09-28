@@ -94,3 +94,9 @@
     outline-width: 2px;
     outline-style: dashed;
 }
+.content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+}
