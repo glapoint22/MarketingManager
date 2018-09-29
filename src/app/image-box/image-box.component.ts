@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
 import { Vector2 } from '../vector2';
 import { EditBoxLink } from '../edit-box-link';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'image-box',
@@ -11,7 +12,7 @@ import { EditBoxLink } from '../edit-box-link';
 export class ImageBoxComponent extends UniformBoxComponent {
 
   initialize(copy) {
-    let editBoxLink: EditBoxLink = new EditBoxLink(this), size;
+    let editBoxLink: EditBoxLink = new EditBoxLink(this), rect;
 
     this.styles = [editBoxLink];
 
@@ -20,7 +21,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     // Set the style
     this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
     
-    size = copy ? copy.size : new Vector2(this.contentContainer.clientWidth, this.contentContainer.clientHeight);
+    rect = copy ? copy.rect : new Rect(null, null, this.contentContainer.clientWidth, this.contentContainer.clientHeight);
 
     if (copy) {
       this.link = copy.link;
@@ -29,7 +30,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     }
 
 
-    super.initialize(size);
+    super.initialize(rect);
 
     this.contentContainer.style.width = '100%';
     this.contentContainer.style.height = '100%';

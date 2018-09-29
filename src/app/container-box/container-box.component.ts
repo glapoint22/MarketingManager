@@ -16,7 +16,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
   initialize(copy) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
       bgColor,
-      size;
+      rect;
 
     // Assign the style
     this.styles = [backgroundColor];
@@ -26,17 +26,17 @@ export class ContainerBoxComponent extends EditBoxComponent {
 
     // Set copy or default
     if (copy) {
-      size = copy.size;
+      rect = copy.rect;
       bgColor = copy.backgroundColor;
     } else {
-      size = new Vector2(350, 150);
+      rect = new Rect(null, null, 350, 150);
       bgColor = '#c1c1c1';
     }
 
     // Set the content container style
     this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
 
-    super.initialize(size);
+    super.initialize(rect);
   }
 
   setRightHandle(deltaPosition: Vector2) {

@@ -295,25 +295,29 @@ export class EditBoxComponent {
 
   }
 
-  initialize(size?: Vector2) {
-    let pageWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
-    let y = 0;
+  initialize(rect?: Rect) {
+    if (!rect.x) {
+      let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+      let y = 0;
 
-    this.rect = new Rect(0, -Infinity, 0, 0);
+      this.rect = new Rect(0, -Infinity, 0, 0);
 
-    // Get an array of all rects from the container
-    let rects: Array<Rect> = this.parentContainer._embeddedViews.map(x => x.nodes[1].instance.rect);
+      // Get an array of all rects from the container
+      let rects: Array<Rect> = this.parentContainer.components.map(x => x.rect);
 
-    // Order the rects so we can set the y position
-    if (rects.length > 1) {
-      rects = rects.sort((a: Rect, b: Rect) => {
-        if (a.yMax > b.yMax) return 1;
-        return -1;
-      });
-      y = rects[rects.length - 1].yMax;
+      // Order the rects so we can set the y position
+      if (rects.length > 1) {
+        rects = rects.sort((a: Rect, b: Rect) => {
+          if (a.yMax > b.yMax) return 1;
+          return -1;
+        });
+        y = rects[rects.length - 1].yMax;
+      }
+
+      this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
+    } else {
+      this.rect = rect;
     }
-
-    this.rect = new Rect((pageWidth * 0.5) - (size.x * 0.5), y, size.x, size.y);
 
     this.setSelection();
     this.setElement();

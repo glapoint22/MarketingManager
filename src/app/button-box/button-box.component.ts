@@ -32,7 +32,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       fontSize: FontSize = new FontSize(this),
       font: Font = new Font(this),
       bgColor,
-      size,
+      rect,
       srcdoc;
 
     // Assign the styles
@@ -47,7 +47,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     if (copy) {
       srcdoc = copy.content;
       bgColor = copy.backgroundColor;
-      size = copy.size;
+      rect = copy.rect;
       this.link = copy.link;
       editBoxLink.isSelected = this.link ? true : false;
       if (this.link) this.editBox.nativeElement.title = this.link;
@@ -65,7 +65,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       bgColor = '#b0b0b0';
 
       // Set the default size
-      size = new Vector2(144, 42);
+      rect = new Rect(null, null, 144, 42);
     }
 
     // Set the background color
@@ -76,16 +76,16 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     this.contentContainer.frameBorder = 0;
 
     // Set the fixed size
-    this.fixedWidth = this.contentContainer.width = size.x;
-    this.fixedHeight = this.contentContainer.height = size.y;
+    this.fixedWidth = this.contentContainer.width = rect.width;
+    this.fixedHeight = this.contentContainer.height = rect.height;
 
     // Set the content container's style and events
     this.contentContainer.onload = () => {
       this.content = this.contentContainer.contentDocument.body;
       this.content.style.margin = 0;
-      this.content.style.width = size.x + 'px';
-      this.content.style.height = size.y + 'px';
-      this.content.style.lineHeight = size.y + 'px';
+      this.content.style.width = rect.width + 'px';
+      this.content.style.height = rect.height + 'px';
+      this.content.style.lineHeight = rect.height + 'px';
       this.content.style.textAlign = 'center';
       this.content.style.whiteSpace = 'nowrap';
       this.content.style.overflow = 'hidden';
@@ -115,7 +115,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       }
     }
 
-    super.initialize(size);
+    super.initialize(rect);
   }
 
 

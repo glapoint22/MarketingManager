@@ -44,7 +44,7 @@ export class TextBoxComponent extends EditBoxComponent {
       alignJustify: AlignJustify = new AlignJustify(this),
       linkStyle: LinkStyle = new LinkStyle(this),
       bgColor,
-      size,
+      rect,
       srcdoc;
 
     // Assign the styles
@@ -62,7 +62,7 @@ export class TextBoxComponent extends EditBoxComponent {
     if (copy) {
       srcdoc = copy.content;
       bgColor = copy.backgroundColor;
-      size = copy.size;
+      rect = copy.rect;
     } else {
       // Set the default text
       let div = document.createElement('DIV'),
@@ -81,7 +81,7 @@ export class TextBoxComponent extends EditBoxComponent {
       bgColor = '#00000000';
 
       // Set the default size
-      size = new Vector2(180, 54);
+      rect = new Rect(null, null, 180, 54);
     }
 
     // Set the background color
@@ -124,11 +124,11 @@ export class TextBoxComponent extends EditBoxComponent {
     }
 
     // Set the size
-    this.contentContainer.width = size.x;
-    this.contentContainer.height = size.y;
+    this.contentContainer.width = rect.width;
+    this.contentContainer.height = rect.height;
 
     // Initialize
-    super.initialize(size);
+    super.initialize(rect);
   }
 
   fixInvalidElements() {
