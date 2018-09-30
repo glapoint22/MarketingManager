@@ -13,20 +13,14 @@
 }
 .header {
     width: auto;
-    height: 22px;
-    background: #525252;
-    color: white;
-    overflow-x: hidden;
-    box-sizing: border-box;
+    height: 25px;
+    background: #3b3b3b;
+    line-height: 25px;
 }
 .bar {
     width: auto;
     height: 22px;
 }
-// .toolbar {
-//     background: #3f3f3f;
-//     transition: max-height 0.5s;
-// }
 .email-content-container {
     position: relative;
     width: auto;
@@ -36,7 +30,7 @@
     clear: both;
     transition: max-height 0.5s;
 }
-.header, .row{
+.row{
     line-height: 22px;
 }
 .subject {
@@ -52,4 +46,35 @@ input {
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+.page {
+    background: #00000000;
+    margin: auto;
+    position: relative;
+    top: 10px;
+    width: 600px;
+    outline: 1px dashed #969696;
+}
+.edit-box-button {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+    color: #7b7b7b;
+    text-align: center;
+    display: inline-block;
+    margin: 1px 5px;
+    position: relative;
+    cursor: pointer;
+    
+}
+.edit-box-button:hover {
+    color: #a4a4a4;
+}
+.palette {
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    top: 16px;
+    border: 1px solid #949494;
+    left: 15px;
 }

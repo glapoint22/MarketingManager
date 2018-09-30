@@ -51,19 +51,15 @@ export class EditBoxService {
     this.fileInput.click();
   }
 
-  createBox(component: Type<any>, currentContainer, contentContainerType?: string) {
-    let componentFactory = this.resolver.resolveComponentFactory(component),
+  createBox(box: Type<EditBoxComponent>, container, contentContainerType?: string) {
+    let componentFactory = this.resolver.resolveComponentFactory(box),
       contentContainer = document.createElement(contentContainerType),
-      box = currentContainer.createComponent(componentFactory, null, null, contentContainerType ? [[contentContainer]] : null);
-
-    // Add this editbox to the container
-    if (!currentContainer.components) currentContainer.components = [];
-    currentContainer.components.push(box.instance);
+      newBox = container.createComponent(componentFactory, null, null, contentContainerType ? [[contentContainer]] : null);
 
     // Set the editbox properties
-    box.instance.contentContainer = contentContainer;
-    box.instance.parentContainer = currentContainer;
-    return box;
+    newBox.instance.contentContainer = contentContainer;
+    newBox.instance.parentContainer = container;
+    return newBox;
   }
 
   delete() {
@@ -72,10 +68,10 @@ export class EditBoxService {
         EditBoxComponent.currentContainer = EditBoxComponent.currentEditBox.parentContainer;
       }
 
-      let index = EditBoxComponent.currentContainer.components.findIndex(x => x === EditBoxComponent.currentEditBox);
+      let index = EditBoxComponent.currentContainer.boxes.findIndex(x => x === EditBoxComponent.currentEditBox);
       EditBoxComponent.currentEditBox = null;
       EditBoxComponent.currentContainer.remove(index);
-      EditBoxComponent.currentContainer.components.splice(index, 1);
+      EditBoxComponent.currentContainer.boxes.splice(index, 1);
     }
   }
 
@@ -85,32 +81,37 @@ export class EditBoxService {
     }
   }
 
+  cut() {
+    this.copy();
+    this.delete();
+  }
+
   copyBox(box: EditBoxComponent, preservePosition?: boolean) {
     let copied: any = {}
 
     // Text
     if (box instanceof TextBoxComponent) {
-      copied.component = TextBoxComponent;
+      copied.box = TextBoxComponent;
       copied.contentContainerType = 'iframe';
 
       // Image
     } else if (box instanceof ImageBoxComponent) {
-      copied.component = ImageBoxComponent;
+      copied.box = ImageBoxComponent;
       copied.contentContainerType = 'img';
       copied.src = box.contentContainer.src;
       copied.link = box.link;
 
       // Button
     } else if (box instanceof ButtonBoxComponent) {
-      copied.component = ButtonBoxComponent;
+      copied.box = ButtonBoxComponent;
       copied.contentContainerType = 'iframe';
       copied.link = box.link;
 
       // Container
     } else if (box instanceof ContainerBoxComponent) {
-      copied.component = ContainerBoxComponent;
+      copied.box = ContainerBoxComponent;
       copied.contentContainerType = null;
-      copied.components = box.container.components ? this.copyComponents(box.container.components): null;
+      copied.boxes = box.container.boxes ? this.copyBoxes(box.container.boxes) : null;
     }
 
     copied.backgroundColor = box.editBox.nativeElement.style.backgroundColor;
@@ -121,56 +122,54 @@ export class EditBoxService {
       copied.rect = new Rect(null, null, box.rect.width, box.rect.height);
     }
 
-
     return copied;
   }
 
-  copyComponents(components) {
-    let copies = [];
-    components.forEach(x => copies.push(this.copyBox(x, true)));
-    return copies;
+  copyBoxes(boxes) {
+    let boxCopies = [];
+    boxes.forEach(x => boxCopies.push(this.copyBox(x, true)));
+    return boxCopies;
   }
 
   paste() {
-    if (this.copied.component) {
-      let box = this.createBox(this.copied.component, EditBoxComponent.currentContainer, this.copied.contentContainerType);
+    if (this.copied.box) {
+      let box = this.createBox(this.copied.box, EditBoxComponent.currentContainer, this.copied.contentContainerType);
 
       // Image
-      if (this.copied.component === ImageBoxComponent) {
+      if (this.copied.box === ImageBoxComponent) {
         box.instance.contentContainer.src = this.copied.src;
         box.instance.contentContainer.onload = () => {
           box.instance.initialize(this.copied);
         }
         // Container
-      } else if (this.copied.component === ContainerBoxComponent) {
+      } else if (this.copied.box === ContainerBoxComponent) {
         box.instance.initialize(this.copied);
 
-        // Create the components in the container
-        this.createContainerComponents(box.instance.container, this.copied.components);
-        box.instance.setSelection();
-
+        // Create the boxes in the container
+        this.createBoxesInContainer(box.instance.container, this.copied.boxes);
       } else {
         box.instance.initialize(this.copied);
       }
     }
   }
 
-  createContainerComponents(container, components) {
-    if (components) {
-      components.forEach(copy => {
-        // Copy the current component and create a new one
-        let newBox = this.createBox(copy.component, container, copy.contentContainerType);
+  createBoxesInContainer(container, boxes) {
+    if (boxes) {
+      boxes.forEach(copy => {
+        // create a new box
+        let newBox = this.createBox(copy.box, container, copy.contentContainerType);
 
         // Image
-        if (copy.component === ImageBoxComponent) {
+        if (copy.box === ImageBoxComponent) {
           newBox.instance.contentContainer.src = copy.src;
           newBox.instance.contentContainer.onload = () => {
             newBox.instance.initialize(copy);
           }
           // Container
-        } else if (copy.component === ContainerBoxComponent) {
+        } else if (copy.box === ContainerBoxComponent) {
           newBox.instance.initialize(copy);
-          this.createContainerComponents(newBox.instance.container, copy.components);
+          this.createBoxesInContainer(newBox.instance.container, copy.boxes);
+          // Other
         } else {
           newBox.instance.initialize(copy);
         }

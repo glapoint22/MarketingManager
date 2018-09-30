@@ -48,11 +48,11 @@ export class TextBoxComponent extends EditBoxComponent {
       srcdoc;
 
     // Assign the styles
-    this.styles = [backgroundColor, bold, italic, underline,
+    this.styles = [backgroundColor, linkStyle, bold, italic, underline,
       textColor, highlightColor, orderedList,
       unorderedList, alignLeft, alignCenter,
       alignRight, alignJustify, fontSize,
-      font, linkStyle];
+      font];
 
     //set the handles 
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
@@ -70,7 +70,7 @@ export class TextBoxComponent extends EditBoxComponent {
         text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
 
       // Set the default style
-      span.style.color = '#414141';
+      span.style.color = '#c7c7c7';
       span.style.fontSize = '16px';
       span.style.fontFamily = '"Times New Roman", Times, serif';
       div.style.textAlign = 'left';

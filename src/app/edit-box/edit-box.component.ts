@@ -45,7 +45,6 @@ export class EditBoxComponent {
     this.isMousedown = true;
     this.handle = handle;
     this.currentPosition = new Vector2(event.clientX, event.clientY);
-    // this.setSelection();
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -166,14 +165,15 @@ export class EditBoxComponent {
 
   setRect(action, response?) {
     let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center),
-      parentContainerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+      containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
 
+    // Test rect against container
     if (tempRect.x < 0) {
       this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    if (tempRect.xMax > parentContainerWidth) {
-      this.setLeftCollision(tempRect, new Rect(parentContainerWidth, 0, 0, 0));
+    if (tempRect.xMax > containerWidth) {
+      this.setLeftCollision(tempRect, new Rect(containerWidth, 0, 0, 0));
       if (response) tempRect = response();
     }
     if (tempRect.y < 0) {
@@ -181,9 +181,9 @@ export class EditBoxComponent {
       if (response) tempRect = response();
     }
 
-    // Set rect with other rects
-    for (let i = 0; i < this.parentContainer.components.length; i++) {
-      let otherRect = this.parentContainer.components[i].rect;
+    // Test rect against other rects
+    for (let i = 0; i < this.parentContainer.boxes.length; i++) {
+      let otherRect = this.parentContainer.boxes[i].rect;
 
       if (this.rect !== otherRect) {
         if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
@@ -297,27 +297,18 @@ export class EditBoxComponent {
 
   initialize(rect?: Rect) {
     if (!rect.x) {
-      let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
-      let y = 0;
+      let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
+        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect.yMax)) : 0;
 
-      this.rect = new Rect(0, -Infinity, 0, 0);
-
-      // Get an array of all rects from the container
-      let rects: Array<Rect> = this.parentContainer.components.map(x => x.rect);
-
-      // Order the rects so we can set the y position
-      if (rects.length > 1) {
-        rects = rects.sort((a: Rect, b: Rect) => {
-          if (a.yMax > b.yMax) return 1;
-          return -1;
-        });
-        y = rects[rects.length - 1].yMax;
-      }
-
+      // Calculate this rect to be at bottom of page
       this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
     } else {
       this.rect = rect;
     }
+
+    // Add this new box to the container
+    if (!this.parentContainer.boxes) this.parentContainer.boxes = [];
+    this.parentContainer.boxes.push(this);
 
     this.setSelection();
     this.setElement();

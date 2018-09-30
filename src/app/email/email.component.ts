@@ -12,18 +12,30 @@ export class EmailComponent implements OnInit {
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
+  public pageHeight: number;
+  public pageColor: string = '#00000000'
   private emailContentContainerArray: Array<any>;
+  public colorPalette: HTMLInputElement;
 
   constructor(public editBoxService: EditBoxService) { }
 
   ngOnInit() {
     this.setHeight();
+    this.colorPalette = document.createElement('input');
+    this.colorPalette.type = 'color';
+    this.colorPalette.onchange = (event: any) => {
+      this.pageColor = event.path[0].value;
+    }
   }
 
   ngAfterViewInit() {
     this.emailContentContainer.changes.subscribe((x: QueryList<ViewContainerRef>) => {
       this.emailContentContainerArray = x.toArray();
     });
+  }
+
+  ngDoCheck() {
+    this.pageHeight = EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0 ? Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect.yMax)) : 0;
   }
 
   setHeight() {
@@ -61,4 +73,6 @@ export class EmailComponent implements OnInit {
   onMouseDown() {
     if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.unSelect();
   }
+
+
 }

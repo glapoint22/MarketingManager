@@ -30,7 +30,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       bgColor = copy.backgroundColor;
     } else {
       rect = new Rect(null, null, 350, 150);
-      bgColor = '#c1c1c1';
+      bgColor = '#494949';
     }
 
     // Set the content container style
