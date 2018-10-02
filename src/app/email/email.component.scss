@@ -19,7 +19,7 @@
 }
 .bar {
     width: auto;
-    height: 22px;
+    height: 23px;
 }
 .email-content-container {
     position: relative;
@@ -31,7 +31,7 @@
     transition: max-height 0.5s;
 }
 .row{
-    line-height: 22px;
+    line-height: 23px;
 }
 .subject {
     padding-left: 5px;
@@ -51,14 +51,14 @@ input {
     background: #00000000;
     margin: auto;
     position: relative;
-    top: 10px;
+    // top: 1px;
     width: 600px;
-    outline: 1px dashed #969696;
+    border: 1px dashed #969696;
 }
-.edit-box-button {
-    width: 22px;
-    height: 22px;
-    font-size: 22px;
+.header-button {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
     color: #7b7b7b;
     text-align: center;
     display: inline-block;
@@ -67,7 +67,7 @@ input {
     cursor: pointer;
     
 }
-.edit-box-button:hover {
+.header-button:hover {
     color: #a4a4a4;
 }
 .palette {
