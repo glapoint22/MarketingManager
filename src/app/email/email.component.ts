@@ -52,54 +52,36 @@ export class EmailComponent implements OnInit {
 
   setTable() {
     if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes) {
-      
 
-      let mainTable =  this.createTable(this.tempTable.nativeElement, 0, 0, '100%');
+
+      let mainTable = this.foo(this.tempTable.nativeElement, 0, 0, '100%');
 
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
       td.style.padding = 0;
-      
-      let pageTable =  this.createTable(td, 0,0,'600px');
+
+      let pageTable = this.foo(td, 0, 0, '600px');
       pageTable.style.margin = 'auto';
       tr = pageTable.appendChild(document.createElement('tr'));
       td = tr.appendChild(document.createElement('td'));
 
 
-      let boxes: Array<EditBoxComponent> = EditBoxComponent.mainContainer.boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
-        if (a.rect.y > b.rect.y) return 1;
-        return -1;
-      });
 
-      let rows = [];
 
-      rows.push({
-        boxes: [boxes[0]],
-        columns: []
-      });
-      let currentRow = rows[0];
-      let j;
+      // let rows = this.groupBoxes(EditBoxComponent.mainContainer.boxes, true);
+      // rows.forEach(row => {
+      //   row.columns = this.groupBoxes(row.boxes);
+      // });
 
-      for(let i = 1; i < boxes.length; i++){
-        for(j = 0; j < currentRow.boxes.length; j++){
-          if(boxes[i].rect.y < currentRow.boxes[j].rect.yMax){
-            currentRow.boxes.push(boxes[i]);
-            break;
-          }
-        }
-        if(j === currentRow.boxes.length){
-          rows.push({
-            boxes: [boxes[i]],
-            columns: []
-          });
-          currentRow = rows[rows.length - 1];
-        }
-      }
+
+      let table = this.createTable(EditBoxComponent.mainContainer.boxes);
+
 
     }
+
   }
 
-  createTable(parent, x, y, width) {
+  foo(parent, x, y, width) {
     let table = parent.appendChild(document.createElement('table'));
     table.style.marginLeft = x + 'px';
     table.style.marginTop = y + 'px';
@@ -107,6 +89,99 @@ export class EmailComponent implements OnInit {
     table.style.borderCollapse = 'collapse';
     return table;
   }
+
+  createTable(boxes: Array<EditBoxComponent>) {
+    let rows = this.groupBoxes(boxes, true);
+    rows.forEach(row => {
+      let columns = this.groupBoxes(row.boxes);
+      for (let i = 0; i < columns.length; i++) {
+        if (columns[i].boxes.length > 1) {
+          columns[i] = { table: this.createTable(columns[i].boxes) }
+        } else {
+          columns[i] = { box: columns[i].boxes[0] }
+        }
+      }
+      row.columns = columns;
+
+    });
+
+    return {
+      rows: rows.map(x => ({
+        columns: x.columns
+      }))
+    }
+  }
+
+  groupBoxes(boxes: Array<EditBoxComponent>, isHorizontal?: boolean) {
+    let groups = [],
+      currentGroup,
+      j,
+      component = isHorizontal ? 'y' : 'x',
+      max = isHorizontal ? 'yMax' : 'xMax';
+
+
+
+    boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
+      if (a.rect[component] > b.rect[component]) return 1;
+      return -1;
+    });
+
+
+
+    groups.push({ boxes: [boxes[0]] });
+    currentGroup = groups[0];
+
+
+    for (let i = 1; i < boxes.length; i++) {
+      for (j = 0; j < currentGroup.boxes.length; j++) {
+        if (boxes[i].rect[component] < currentGroup.boxes[j].rect[max]) {
+          currentGroup.boxes.push(boxes[i]);
+          break;
+        }
+      }
+      if (j === currentGroup.boxes.length) {
+        groups.push({ boxes: [boxes[i]] });
+        currentGroup = groups[groups.length - 1];
+      }
+    }
+
+    return groups;
+  }
+
+  // createColumns(boxes: Array<EditBoxComponent>) {
+  //   let columns = [],
+  //     currentColumn,
+  //     j;
+
+  //   boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
+  //     if (a.rect.x > b.rect.x) return 1;
+  //     return -1;
+  //   });
+
+
+  //   columns.push({ boxes: [boxes[0]] });
+  //   currentColumn = columns[0];
+
+
+
+  //   for (let i = 1; i < boxes.length; i++) {
+  //     for (j = 0; j < currentColumn.boxes.length; j++) {
+  //       if (boxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
+  //         currentColumn.boxes.push(boxes[i]);
+  //         break;
+  //       }
+  //     }
+
+  //     if (j === currentColumn.boxes.length) {
+  //       columns.push({ boxes: [boxes[i]] });
+  //       currentColumn = columns[columns.length - 1];
+  //     }
+
+  //   }
+
+  //   return columns;
+
+  // }
 
   setHeight() {
     this.height = window.innerHeight - 22;
