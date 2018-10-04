@@ -54,16 +54,16 @@ export class EmailComponent implements OnInit {
     if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes) {
 
 
-      let mainTable = this.foo(this.tempTable.nativeElement, 0, 0, '100%');
+      let mainTable = this.createTable(this.tempTable.nativeElement, 0, 0, '100%');
 
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
       td.style.padding = 0;
 
-      let pageTable = this.foo(td, 0, 0, '600px');
+      let pageTable = this.createTable(td, 0, 0, '600px', EditBoxComponent.mainContainer.boxes);
       pageTable.style.margin = 'auto';
-      tr = pageTable.appendChild(document.createElement('tr'));
-      td = tr.appendChild(document.createElement('td'));
+      // tr = pageTable.appendChild(document.createElement('tr'));
+      // td = tr.appendChild(document.createElement('td'));
 
 
 
@@ -74,50 +74,81 @@ export class EmailComponent implements OnInit {
       // });
 
 
-      let table = this.createTable(EditBoxComponent.mainContainer.boxes);
+      // this.createRowsColumns(pageTable, EditBoxComponent.mainContainer.boxes);
 
 
     }
 
   }
 
-  foo(parent, x, y, width) {
+  createTable(parent, x, y, width, boxes?) {
     let table = parent.appendChild(document.createElement('table'));
     table.style.marginLeft = x + 'px';
     table.style.marginTop = y + 'px';
     table.style.width = width;
     table.style.borderCollapse = 'collapse';
+
+
+
+
+    if (boxes) {
+      let rows = this.groupBoxes(boxes, table, 'tr');
+
+      rows.forEach(row => {
+        // let tableData = row.element.appendChild(document.createElement('td'));
+
+        // let t = this.createTable(tableData, 0, 0, '100%');
+        // let r = t.appendChild(document.createElement('tr'));
+
+
+        let columns = this.groupBoxes(row.boxes, row.element, 'td');
+        columns.forEach((column) => {
+          column.element.style.padding = '0';
+          column.element.style.border = '1px solid white';
+          column.element.style.verticalAlign = 'top';
+          
+          
+          
+          let table
+          if (column.boxes.length > 1) {
+            table = this.createTable(column.element, column.element.offsetLeft, column.element.offsetTop, column.element.offsetWidth + 'px', column.boxes);
+            
+            column.element.style.border = '1px solid white';
+          } else {
+            let box = column.boxes[0];
+
+            
+            // column.element.style.width = column.element.parentElement.offsetWidth - column.element.offsetLeft + 'px';
+            
+
+
+            table = this.createTable(column.element, box.rect.x - column.element.offsetLeft, box.rect.y - column.element.offsetTop, box.rect.width + 'px');
+
+
+            table.style.height = column.boxes[0].rect.height + 'px';
+            let tr = table.appendChild(document.createElement('tr'));
+            let td = tr.appendChild(document.createElement('td'));
+            td.style.outline = '1px solid red';
+            td.style.padding = '0';
+            td.style.verticalAlign = 'top';
+
+          }
+        });
+      });
+    }
+
+
     return table;
   }
 
-  createTable(boxes: Array<EditBoxComponent>) {
-    let rows = this.groupBoxes(boxes, true);
-    rows.forEach(row => {
-      let columns = this.groupBoxes(row.boxes);
-      for (let i = 0; i < columns.length; i++) {
-        if (columns[i].boxes.length > 1) {
-          columns[i] = { table: this.createTable(columns[i].boxes) }
-        } else {
-          columns[i] = { box: columns[i].boxes[0] }
-        }
-      }
-      row.columns = columns;
+  
 
-    });
-
-    return {
-      rows: rows.map(x => ({
-        columns: x.columns
-      }))
-    }
-  }
-
-  groupBoxes(boxes: Array<EditBoxComponent>, isHorizontal?: boolean) {
+  groupBoxes(boxes: Array<EditBoxComponent>, parent, elementType) {
     let groups = [],
       currentGroup,
       j,
-      component = isHorizontal ? 'y' : 'x',
-      max = isHorizontal ? 'yMax' : 'xMax';
+      component = elementType === 'tr' ? 'y' : 'x',
+      max = elementType === 'tr' ? 'yMax' : 'xMax';
 
 
 
@@ -128,7 +159,10 @@ export class EmailComponent implements OnInit {
 
 
 
-    groups.push({ boxes: [boxes[0]] });
+    groups.push({
+      boxes: [boxes[0]],
+      element: parent.appendChild(document.createElement(elementType))
+    });
     currentGroup = groups[0];
 
 
@@ -140,7 +174,10 @@ export class EmailComponent implements OnInit {
         }
       }
       if (j === currentGroup.boxes.length) {
-        groups.push({ boxes: [boxes[i]] });
+        groups.push({
+          boxes: [boxes[i]],
+          element: parent.appendChild(document.createElement(elementType))
+        });
         currentGroup = groups[groups.length - 1];
       }
     }
@@ -148,40 +185,7 @@ export class EmailComponent implements OnInit {
     return groups;
   }
 
-  // createColumns(boxes: Array<EditBoxComponent>) {
-  //   let columns = [],
-  //     currentColumn,
-  //     j;
-
-  //   boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
-  //     if (a.rect.x > b.rect.x) return 1;
-  //     return -1;
-  //   });
-
-
-  //   columns.push({ boxes: [boxes[0]] });
-  //   currentColumn = columns[0];
-
-
-
-  //   for (let i = 1; i < boxes.length; i++) {
-  //     for (j = 0; j < currentColumn.boxes.length; j++) {
-  //       if (boxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
-  //         currentColumn.boxes.push(boxes[i]);
-  //         break;
-  //       }
-  //     }
-
-  //     if (j === currentColumn.boxes.length) {
-  //       columns.push({ boxes: [boxes[i]] });
-  //       currentColumn = columns[columns.length - 1];
-  //     }
-
-  //   }
-
-  //   return columns;
-
-  // }
+  
 
   setHeight() {
     this.height = window.innerHeight - 22;
