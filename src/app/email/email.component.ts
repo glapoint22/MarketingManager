@@ -62,21 +62,6 @@ export class EmailComponent implements OnInit {
 
       let pageTable = this.createTable(td, 0, 0, '600px', EditBoxComponent.mainContainer.boxes);
       pageTable.style.margin = 'auto';
-      // tr = pageTable.appendChild(document.createElement('tr'));
-      // td = tr.appendChild(document.createElement('td'));
-
-
-
-
-      // let rows = this.groupBoxes(EditBoxComponent.mainContainer.boxes, true);
-      // rows.forEach(row => {
-      //   row.columns = this.groupBoxes(row.boxes);
-      // });
-
-
-      // this.createRowsColumns(pageTable, EditBoxComponent.mainContainer.boxes);
-
-
     }
 
   }
@@ -88,104 +73,149 @@ export class EmailComponent implements OnInit {
     table.style.width = width;
     table.style.borderCollapse = 'collapse';
 
-
-
-
     if (boxes) {
-      let rows = this.groupBoxes(boxes, table, 'tr');
+      let rows = this.createRows(boxes, table);
 
       rows.forEach(row => {
-        // let tableData = row.element.appendChild(document.createElement('td'));
+        let parent = rows.length > 1 ? this.createTable(row.element, 0, 0, '100%').appendChild(document.createElement('tr')) : row.element,
+          columns = this.createColumns(row, parent);
 
-        // let t = this.createTable(tableData, 0, 0, '100%');
-        // let r = t.appendChild(document.createElement('tr'));
-
-
-        let columns = this.groupBoxes(row.boxes, row.element, 'td');
         columns.forEach((column) => {
-          column.element.style.padding = '0';
-          column.element.style.border = '1px solid white';
-          column.element.style.verticalAlign = 'top';
-          
-          
-          
           let table
-          if (column.boxes.length > 1) {
-            table = this.createTable(column.element, column.element.offsetLeft, column.element.offsetTop, column.element.offsetWidth + 'px', column.boxes);
-            
-            column.element.style.border = '1px solid white';
+
+          // Set the column style
+          column.element.style.padding = '0';
+          column.element.style.outline = '1px solid white';
+          column.element.style.verticalAlign = 'top';
+          column.element.style.width = column.width + 'px';
+
+          if (column.boxes.length >= 4) {
+            let a = 0;
+          } else if (column.boxes.length > 1) {
+            table = this.createTable(column.element, 0, 0, column.width + 'px', column.boxes);
+            column.element.style.outline = '1px solid white';
           } else {
+
             let box = column.boxes[0];
+            table = this.createTable(column.element, box.rect.x - column.x, box.rect.y - column.y, box.rect.width + 'px');
 
-            
-            // column.element.style.width = column.element.parentElement.offsetWidth - column.element.offsetLeft + 'px';
-            
-
-
-            table = this.createTable(column.element, box.rect.x - column.element.offsetLeft, box.rect.y - column.element.offsetTop, box.rect.width + 'px');
-
-
-            table.style.height = column.boxes[0].rect.height + 'px';
-            let tr = table.appendChild(document.createElement('tr'));
-            let td = tr.appendChild(document.createElement('td'));
-            td.style.outline = '1px solid red';
-            td.style.padding = '0';
-            td.style.verticalAlign = 'top';
-
+            // temp
+            table.style.height = box.rect.height + 'px';
+            table.style.outline = '1px solid red';
           }
         });
       });
     }
-
-
     return table;
   }
 
-  
-
-  groupBoxes(boxes: Array<EditBoxComponent>, parent, elementType) {
-    let groups = [],
-      currentGroup,
-      j,
-      component = elementType === 'tr' ? 'y' : 'x',
-      max = elementType === 'tr' ? 'yMax' : 'xMax';
 
 
+
+
+  createRows(boxes: Array<EditBoxComponent>, parent) {
+    let rows = [], currentRow, j;
 
     boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
-      if (a.rect[component] > b.rect[component]) return 1;
+      if (a.rect.y > b.rect.y) return 1;
       return -1;
     });
 
 
 
-    groups.push({
+    rows.push({
       boxes: [boxes[0]],
-      element: parent.appendChild(document.createElement(elementType))
+      element: parent.appendChild(document.createElement('tr')),
+      x: parent.parentElement.offsetLeft,
+      y: parent.parentElement.offsetTop,
+      width: parent.clientWidth,
+      height: boxes[0].rect.yMax - parent.offsetTop
     });
-    currentGroup = groups[0];
+    currentRow = rows[0];
 
 
     for (let i = 1; i < boxes.length; i++) {
-      for (j = 0; j < currentGroup.boxes.length; j++) {
-        if (boxes[i].rect[component] < currentGroup.boxes[j].rect[max]) {
-          currentGroup.boxes.push(boxes[i]);
+      for (j = 0; j < currentRow.boxes.length; j++) {
+        if (boxes[i].rect.y < currentRow.boxes[j].rect.yMax) {
+          currentRow.boxes.push(boxes[i]);
+          currentRow.height = Math.max(currentRow.height, boxes[i].rect.yMax - currentRow.y);
           break;
         }
       }
-      if (j === currentGroup.boxes.length) {
-        groups.push({
+      if (j === currentRow.boxes.length) {
+        rows.push({
           boxes: [boxes[i]],
-          element: parent.appendChild(document.createElement(elementType))
+          element: parent.appendChild(document.createElement('tr')),
+          x: parent.parentElement.offsetLeft,
+          y: currentRow.height + currentRow.y,
+          width: parent.clientWidth,
+          height: boxes[i].rect.yMax - (currentRow.height + currentRow.y)
         });
-        currentGroup = groups[groups.length - 1];
+        currentRow = rows[rows.length - 1];
       }
     }
 
-    return groups;
+    return rows;
   }
 
-  
+
+
+
+  createColumns(row, parent) {
+    let columns = [], currentColumn, j, boxes: Array<EditBoxComponent>;
+
+    boxes = row.boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
+      if (a.rect.x > b.rect.x) return 1;
+      return -1;
+    });
+
+
+
+    columns.push({
+      boxes: [boxes[0]],
+      element: parent.appendChild(document.createElement('td')),
+      x: row.x,
+      y: row.y,
+      width: boxes[0].rect.xMax - row.x,
+      height: row.height
+    });
+    currentColumn = columns[0];
+
+
+    for (let i = 1; i < boxes.length; i++) {
+      for (j = 0; j < currentColumn.boxes.length; j++) {
+        if (boxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
+          currentColumn.boxes.push(boxes[i]);
+          currentColumn.width = Math.max(currentColumn.width, boxes[i].rect.xMax - currentColumn.x);
+          break;
+        }
+      }
+      if (j === currentColumn.boxes.length) {
+        columns.push({
+          boxes: [boxes[i]],
+          element: parent.appendChild(document.createElement('td')),
+          x: currentColumn.width + currentColumn.x,
+          y: row.y,
+          width: boxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
+          height: row.height
+        });
+        currentColumn = columns[columns.length - 1];
+      }
+    }
+
+
+    currentColumn.width = row.width - currentColumn.x;
+
+
+    return columns;
+  }
+
+
+
+
+
+
+
 
   setHeight() {
     this.height = window.innerHeight - 22;
