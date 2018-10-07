@@ -97,7 +97,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
       this.content.style.margin = 0;
       this.content.style.outline = 'none';
-      this.content.style.wordWrap = 'break-word';
+      // this.content.style.wordWrap = 'break-word';
       this.content.style.overflow = 'hidden';
       this.content.contentEditable = 'false';
 

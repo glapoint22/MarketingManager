@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener, ViewContainerRef, ViewChildren, QueryList, ViewChild, ElementRef } from '@angular/core';
 import { EditBoxService } from '../edit-box.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { Vector2 } from '../vector2';
 
 @Component({
   selector: 'email',
@@ -48,43 +49,59 @@ export class EmailComponent implements OnInit {
 
   ngDoCheck() {
     this.pageHeight = EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0 ? Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect.yMax)) : 0;
+
+    // this.setTable();
   }
 
   setTable() {
+    let table = document.getElementById('table');
+    if (table) table.remove();
+
     if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes) {
 
 
-      let mainTable = this.createTable(this.tempTable.nativeElement, 0, 0, '100%');
+      let mainTable = this.createTable(this.tempTable.nativeElement, '100%');
+      mainTable.id = 'table';
 
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
-      td.style.padding = 0;
+      // td.style.padding = 0;
 
-      let pageTable = this.createTable(td, 0, 0, '600px', EditBoxComponent.mainContainer.boxes);
-      pageTable.style.margin = 'auto';
+      let pageTable = this.createTable(td, '600', EditBoxComponent.mainContainer.boxes);
+      pageTable.align = 'center';
+      pageTable.style.backgroundColor = '#000000';
+      // pageTable.style.margin = 'auto';
     }
 
   }
 
-  createTable(parent, x, y, width, boxes?) {
+  createTable(parent, width, boxes?, position?: Vector2) {
     let table = parent.appendChild(document.createElement('table'));
-    table.style.marginLeft = x + 'px';
-    table.style.marginTop = y + 'px';
-    table.style.width = width;
-    table.style.borderCollapse = 'collapse';
+    // table.style.marginLeft = x + 'px';
+    // table.style.marginTop = y + 'px';
+    // table.style.width = width;
+    table.width = width;
+    table.cellPadding = 0;
+    table.cellSpacing = 0;
+    // table.style.borderCollapse = 'collapse';
+    // table.style.tableLayout = 'fixed';
+
+
+
+
 
     if (boxes) {
-      let rows = this.createRows(boxes, table);
+      let rows = this.createRows(boxes, table, new Vector2(position ? position.x : 0, position ? position.y : 0));
 
       rows.forEach(row => {
-        let parent = rows.length > 1 ? this.createTable(row.element, 0, 0, '100%').appendChild(document.createElement('tr')) : row.element,
+        let parent = rows.length > 1 ? this.createTable(row.element, '100%').appendChild(document.createElement('tr')) : row.element,
           columns = this.createColumns(row, parent);
 
         columns.forEach((column) => {
           let table
 
           // Set the column style
-          column.element.style.padding = '0';
+          // column.element.style.padding = '0';
           column.element.style.outline = '1px solid white';
           column.element.style.verticalAlign = 'top';
           column.element.style.width = column.width + 'px';
@@ -92,16 +109,28 @@ export class EmailComponent implements OnInit {
           if (column.boxes.length >= 4) {
             let a = 0;
           } else if (column.boxes.length > 1) {
-            table = this.createTable(column.element, 0, 0, column.width + 'px', column.boxes);
+            table = this.createTable(column.element, column.width, column.boxes, new Vector2(column.x, column.y));
             column.element.style.outline = '1px solid white';
           } else {
 
             let box = column.boxes[0];
-            table = this.createTable(column.element, box.rect.x - column.x, box.rect.y - column.y, box.rect.width + 'px');
+            table = this.createTable(column.element, box.rect.width);
 
-            // temp
+            table.style.marginLeft = box.rect.x - column.x + 'px';
+            table.style.marginTop = box.rect.y - column.y + 'px';
             table.style.height = box.rect.height + 'px';
-            table.style.outline = '1px solid red';
+            // table.style.outline = '1px solid red';
+
+            let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+              td.style.outline = '1px solid red';
+              td.style.color = '#ffffff';
+              // td.style.padding = '0';
+              td.style.fontSize = '16px';
+              td.style.fontFamily = '"Times New Roman", Times, serif';
+              td.style.lineHeight = 'normal';
+              td.style.verticalAlign = 'top';
+              // td.style.wordWrap = 'break-word';
+              td.appendChild(document.createTextNode('This is a temporary paragraph. Double click to edit this text.'));
           }
         });
       });
@@ -113,7 +142,7 @@ export class EmailComponent implements OnInit {
 
 
 
-  createRows(boxes: Array<EditBoxComponent>, parent) {
+  createRows(boxes: Array<EditBoxComponent>, parent, position: Vector2) {
     let rows = [], currentRow, j;
 
     boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
@@ -126,10 +155,10 @@ export class EmailComponent implements OnInit {
     rows.push({
       boxes: [boxes[0]],
       element: parent.appendChild(document.createElement('tr')),
-      x: parent.parentElement.offsetLeft,
-      y: parent.parentElement.offsetTop,
+      x: position.x,
+      y: position.y,
       width: parent.clientWidth,
-      height: boxes[0].rect.yMax - parent.offsetTop
+      height: boxes[0].rect.yMax - position.y
     });
     currentRow = rows[0];
 
@@ -146,7 +175,7 @@ export class EmailComponent implements OnInit {
         rows.push({
           boxes: [boxes[i]],
           element: parent.appendChild(document.createElement('tr')),
-          x: parent.parentElement.offsetLeft,
+          x: position.x,
           y: currentRow.height + currentRow.y,
           width: parent.clientWidth,
           height: boxes[i].rect.yMax - (currentRow.height + currentRow.y)
