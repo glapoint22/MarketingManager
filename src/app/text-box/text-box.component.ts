@@ -70,7 +70,7 @@ export class TextBoxComponent extends EditBoxComponent {
         text = document.createTextNode('This is a temporary paragraph. Double click to edit this text.');
 
       // Set the default style
-      span.style.color = '#c7c7c7';
+      span.style.color = '#000000';
       span.style.fontSize = '16px';
       span.style.fontFamily = '"Times New Roman", Times, serif';
       div.style.textAlign = 'left';

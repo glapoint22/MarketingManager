@@ -14,8 +14,8 @@ export class EmailComponent implements OnInit {
   public emails: Array<any> = [];
   public pageWidth: number = 600;
   public pageHeight: number;
-  public backgroundColor: string = '#00000000';
-  public pageColor: string = '#00000000';
+  public backgroundColor: string = '#ffffff';
+  public pageColor: string = '#ffffff';
   public colorType: string;
   private emailContentContainerArray: Array<any>;
   private colorPalette: HTMLInputElement;
@@ -61,34 +61,29 @@ export class EmailComponent implements OnInit {
 
 
       let mainTable = this.createTable(this.tempTable.nativeElement, '100%');
-      mainTable.id = 'table';
+      mainTable.bgColor = this.backgroundColor;
 
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
-      // td.style.padding = 0;
+      td.width = '100%';
 
-      let pageTable = this.createTable(td, '600', EditBoxComponent.mainContainer.boxes);
+
+      let pageTable = this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px');
       pageTable.align = 'center';
-      pageTable.style.backgroundColor = '#000000';
-      // pageTable.style.margin = 'auto';
+      pageTable.bgColor = this.pageColor;
     }
 
   }
 
-  createTable(parent, width, boxes?, position?: Vector2) {
+  createTable(parent, width, boxes?, position?: Vector2, maxWidth?) {
     let table = parent.appendChild(document.createElement('table'));
-    // table.style.marginLeft = x + 'px';
-    // table.style.marginTop = y + 'px';
-    // table.style.width = width;
     table.width = width;
     table.cellPadding = 0;
     table.cellSpacing = 0;
-    // table.style.borderCollapse = 'collapse';
-    // table.style.tableLayout = 'fixed';
-
-
-
-
+    table.border = 0;
+    if (maxWidth) {
+      table.style.maxWidth = maxWidth;
+    }
 
     if (boxes) {
       let rows = this.createRows(boxes, table, new Vector2(position ? position.x : 0, position ? position.y : 0));
@@ -98,39 +93,28 @@ export class EmailComponent implements OnInit {
           columns = this.createColumns(row, parent);
 
         columns.forEach((column) => {
-          let table
-
-          // Set the column style
-          // column.element.style.padding = '0';
-          column.element.style.outline = '1px solid white';
-          column.element.style.verticalAlign = 'top';
-          column.element.style.width = column.width + 'px';
+          column.element.vAlign = 'top';
+          column.element.width = column.width / row.width * 100 + '%';
 
           if (column.boxes.length >= 4) {
-            let a = 0;
+
           } else if (column.boxes.length > 1) {
-            table = this.createTable(column.element, column.width, column.boxes, new Vector2(column.x, column.y));
-            column.element.style.outline = '1px solid white';
+            this.createTable(column.element, '100%', column.boxes, new Vector2(column.x, column.y));
           } else {
 
             let box = column.boxes[0];
-            table = this.createTable(column.element, box.rect.width);
+            let boxTable = this.createTable(column.element, box.rect.width / column.width * 100 + '%');
 
-            table.style.marginLeft = box.rect.x - column.x + 'px';
-            table.style.marginTop = box.rect.y - column.y + 'px';
-            table.style.height = box.rect.height + 'px';
-            // table.style.outline = '1px solid red';
+            // boxTable.style.marginLeft = (box.rect.x - column.x) / column.width * 100 + '%';
+            // boxTable.style.marginTop = (box.rect.y - column.y) + 'px';
+            boxTable.style.backgroundColor = box.editBox.nativeElement.style.backgroundColor;
 
-            let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
-              td.style.outline = '1px solid red';
-              td.style.color = '#ffffff';
-              // td.style.padding = '0';
-              td.style.fontSize = '16px';
-              td.style.fontFamily = '"Times New Roman", Times, serif';
-              td.style.lineHeight = 'normal';
-              td.style.verticalAlign = 'top';
-              // td.style.wordWrap = 'break-word';
-              td.appendChild(document.createTextNode('This is a temporary paragraph. Double click to edit this text.'));
+            Array.from(box.content.children).forEach((content: HTMLElement) => {
+              let td = boxTable.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+              td.style.textAlign = content.style.textAlign;
+              td.innerHTML = content.innerHTML;
+            });
+
           }
         });
       });
@@ -232,8 +216,12 @@ export class EmailComponent implements OnInit {
       }
     }
 
+    if (columns.length > 1) {
+      currentColumn.width = row.width - currentColumn.x;
+    } else {
+      currentColumn.width = row.width;
+    }
 
-    currentColumn.width = row.width - currentColumn.x;
 
 
     return columns;
