@@ -114,7 +114,7 @@ export class EditBoxService {
       copied.boxes = box.container.boxes ? this.copyBoxes(box.container.boxes) : null;
     }
 
-    copied.backgroundColor = box.editBox.nativeElement.style.backgroundColor;
+    copied.backgroundColor = box.backgroundColor;
     copied.content = box.content ? box.content.innerHTML : null;
     if (preservePosition) {
       copied.rect = new Rect(box.rect.x, box.rect.y, box.rect.width, box.rect.height);

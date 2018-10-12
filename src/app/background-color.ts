@@ -17,7 +17,7 @@ export class BackgroundColor extends ColorStyle {
     }
 
     setStyle() {
-        this.editBox.editBox.nativeElement.style[this.style] = this.styleValue;
+        this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = this.styleValue;
     }
 
     checkSelection() {}

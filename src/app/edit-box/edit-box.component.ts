@@ -32,6 +32,7 @@ export class EditBoxComponent {
   public styles: Array<Style>;
   public contentContainer;
   public link: string;
+  public backgroundColor: string;
   public static currentEditBox: EditBoxComponent;
   public static currentContainer: any;
   public static mainContainer: any;
@@ -339,4 +340,5 @@ export class EditBoxComponent {
   }
 
   onContentChange() { }
+  convert(table: HTMLTableElement) { }
 }

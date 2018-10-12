@@ -20,7 +20,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     // Set the style
     this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
-    
+
     rect = copy ? copy.rect : new Rect(null, null, this.contentContainer.clientWidth, this.contentContainer.clientHeight);
 
     if (copy) {
@@ -47,4 +47,19 @@ export class ImageBoxComponent extends UniformBoxComponent {
   }
 
   setEditMode() { }
+
+  convert(table: HTMLTableElement) {
+    let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+    let img = document.createElement('img');
+    img.src = this.contentContainer.src;
+    img.style.width = '100%';
+
+    if (this.link) {
+      let anchor = td.appendChild(document.createElement('a'));
+      anchor.href = this.link;
+      anchor.appendChild(img);
+    } else {
+      td.appendChild(img);
+    }
+  }
 }

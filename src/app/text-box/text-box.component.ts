@@ -43,7 +43,7 @@ export class TextBoxComponent extends EditBoxComponent {
       alignRight: AlignRight = new AlignRight(this),
       alignJustify: AlignJustify = new AlignJustify(this),
       linkStyle: LinkStyle = new LinkStyle(this),
-      bgColor,
+      // bgColor,
       rect,
       srcdoc;
 
@@ -61,7 +61,7 @@ export class TextBoxComponent extends EditBoxComponent {
     // Set copy or default
     if (copy) {
       srcdoc = copy.content;
-      bgColor = copy.backgroundColor;
+      this.backgroundColor = copy.backgroundColor;
       rect = copy.rect;
     } else {
       // Set the default text
@@ -78,14 +78,14 @@ export class TextBoxComponent extends EditBoxComponent {
       span.appendChild(text);
       div.appendChild(span);
       srcdoc = div.outerHTML;
-      bgColor = '#00000000';
+      this.backgroundColor = '#00000000';
 
       // Set the default size
       rect = new Rect(null, null, 180, 54);
     }
 
     // Set the background color
-    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = bgColor;
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     // Set the content container
     this.contentContainer.srcdoc = srcdoc;
@@ -250,5 +250,24 @@ export class TextBoxComponent extends EditBoxComponent {
       this.fixedHeight = this.rect.height;
     }
     this.contentContainer.height = this.rect.height;
+  }
+
+  convert(table: HTMLTableElement) {
+    // Set the background color
+    if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
+
+    // Set the content
+    Array.from(this.content.children).forEach((content: HTMLElement) => {
+      let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+
+      if (content.tagName === 'OL' || content.tagName === 'UL') {
+        let list = td.appendChild(document.createElement(content.tagName));
+        list.setAttribute('style', content.getAttribute('style'));
+        list.innerHTML = content.innerHTML;
+      } else {
+        td.style.textAlign = content.style.textAlign;
+        td.innerHTML = content.innerHTML;
+      }
+    });
   }
 }

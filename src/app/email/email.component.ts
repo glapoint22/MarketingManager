@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ViewContainerRef, ViewChildren, QueryL
 import { EditBoxService } from '../edit-box.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
+import { ContainerBoxComponent } from '../container-box/container-box.component';
 
 @Component({
   selector: 'email',
@@ -106,7 +107,7 @@ export class EmailComponent implements OnInit {
             this.createTable(column.element, '100%', column.boxes, new Vector2(column.x, column.y));
           } else {
             // Set this box
-            let box = column.boxes[0],
+            let box: EditBoxComponent = column.boxes[0],
               boxTableColumn = column.element;
 
             // If the box has a left or top margin
@@ -145,25 +146,25 @@ export class EmailComponent implements OnInit {
               boxTableColumn = tr.appendChild(document.createElement('td'));
               boxTableColumn.width = boxTableContainerWidth + '%';
             }
+            
 
-            // Create the box table
-            let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
+            if(box instanceof ContainerBoxComponent){
+              let containerBox = box as ContainerBoxComponent;
+              let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
+              boxTable.bgColor = box.backgroundColor;
 
-            boxTable.style.backgroundColor = box.editBox.nativeElement.style.backgroundColor;
-            Array.from(box.content.children).forEach((content: HTMLElement) => {
               let td = boxTable.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+              td.width = '100%';
+              td.height = containerBox.rect.height.toString();
+              td.vAlign = 'top';
+              
 
-              if (content.tagName === 'OL' || content.tagName === 'UL') {
-                let list = td.appendChild(document.createElement(content.tagName));
-                list.setAttribute('style', content.getAttribute('style'));
-                list.innerHTML = content.innerHTML;
-              } else {
-                td.style.textAlign = content.style.textAlign;
-                td.innerHTML = content.innerHTML;
-              }
+              this.createTable(td, '100%', containerBox.container.boxes);
+            }else{
+              box.convert(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
+            }
 
-
-            });
+            
           }
         });
       });
