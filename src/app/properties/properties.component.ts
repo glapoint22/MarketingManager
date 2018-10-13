@@ -20,7 +20,7 @@ export class PropertiesComponent {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
-    if (event.code === 'Escape') {
+    if (event.code === 'Escape' && this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
       if (this.linkService.show) {
         this.linkService.show = false;
       } else {

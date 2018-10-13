@@ -64,14 +64,6 @@ input{
 .flex-container{
     display: flex;
 }
-.highlight:hover{
-    background: $hover-color;
-    color: white;
-}
-.selected{
-    background: $selected-color !important;
-    color: white;
-}
 .selected > .button-container{
     opacity: 1;
     .button{

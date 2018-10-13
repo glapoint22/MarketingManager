@@ -20,6 +20,8 @@ export class EmailComponent implements OnInit {
   public colorType: string;
   private emailContentContainerArray: Array<any>;
   private colorPalette: HTMLInputElement;
+  private currentEmail;
+  private currentToggleButton;
 
 
 
@@ -289,13 +291,17 @@ export class EmailComponent implements OnInit {
     this.height = window.innerHeight - 22;
   }
 
-  onToggleButtonClick(input, index) {
+  onToggleButtonClick(input, index, email) {
     if (input.checked) {
       input.checked = false;
       EditBoxComponent.currentContainer = null;
+      this.currentEmail.selected = false;
     } else {
+      this.onEmailClick(email);
       input.checked = true;
       EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[index];
+      
+      this.currentToggleButton = input;
     }
   }
 
@@ -308,13 +314,33 @@ export class EmailComponent implements OnInit {
       .map(x => ({
         id: x.id,
         subject: x.subject,
-        body: x.body
+        body: x.body,
+        selected: false
       }));
+  }
+
+  onEmailClick(email){
+    if(this.currentEmail && this.currentEmail !== email){
+      this.currentEmail.selected = false;
+      this.currentToggleButton.checked = false;
+      EditBoxComponent.currentContainer = null;
+    }
+    this.currentEmail = email;
+    email.selected = true;
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.setHeight();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape' && this.currentEmail && this.currentEmail.selected) {
+      this.currentEmail.selected = false;
+
+    }
   }
 
   onMouseDown() {

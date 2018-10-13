@@ -13,11 +13,12 @@
 }
 .header {
     width: auto;
-    height: 25px;
+    height: 22px;
     background: #3b3b3b;
     line-height: 25px;
 }
 .bar {
+    position: relative;
     width: auto;
     height: 23px;
 }
@@ -26,6 +27,7 @@
     width: auto;
     height: 800px;
     overflow-x: hidden;
+    // overflow-y: scroll;
     background: #1e1e1e;
     clear: both;
     transition: max-height 0.5s;
@@ -56,25 +58,53 @@ input {
     border: 1px dashed #969696;
 }
 .header-button {
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    color: #7b7b7b;
+    width: 18px;
+    height: 18px;
+    font-size: 16px;
+    color: #b4b4b4;
     text-align: center;
     display: inline-block;
-    margin: 1px 5px;
+    margin-left: 8px;
+    margin-right: 8px;
     position: relative;
+    line-height: 24px;
     cursor: pointer;
     
 }
 .header-button:hover {
-    color: #a4a4a4;
+    color: #ffffff;
 }
 .palette {
     width: 6px;
     height: 6px;
     position: absolute;
-    top: 16px;
+    top: 13px;
     border: 1px solid #949494;
-    left: 15px;
+    left: 12px;
+}
+.button-container {
+    height: 22px;
+    position: absolute;
+    right: 35px;
+}
+.button-group {
+    border-right: 1px solid #a0a0a0;
+    margin-left: 2.5px;
+    display: inline-block;
+}
+.button-group:first-child {
+    border-left: 1px solid #a0a0a0;
+}
+.edit-button{
+    float: right;
+    margin-right: 11px;
+}
+.highlight:not(.selected) > .edit-button{
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+.highlight:hover:not(.selected) > .edit-button{
+    opacity: 1;
+    transition: opacity 0.5s;
+    transition-delay: 0.25s;
 }
