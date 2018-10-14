@@ -18,15 +18,13 @@ export class EmailComponent implements OnInit {
   public backgroundColor: string = '#ffffff';
   public pageColor: string = '#ffffff';
   public colorType: string;
+  public change: number = 0;
+  public currentItem;
   private emailContentContainerArray: Array<any>;
   private colorPalette: HTMLInputElement;
   private currentEmail;
   private currentToggleButton;
 
-
-
-  // temp
-  @ViewChild('tempTable') tempTable: ElementRef;
 
   constructor(public editBoxService: EditBoxService) { }
 
@@ -42,6 +40,21 @@ export class EmailComponent implements OnInit {
       }
 
     }
+
+    EditBoxComponent.change.subscribe(() => {
+      let div = document.body.appendChild(document.createElement('div'));
+
+      let mainTable = this.createTable(div, '100%', null, null, null, null, this.backgroundColor);
+      mainTable.style.lineHeight = 'normal';
+      let tr = mainTable.appendChild(document.createElement('tr'));
+      let td = tr.appendChild(document.createElement('td'));
+      td.width = '100%';
+
+
+      this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.pageColor);
+      this.currentEmail.body = mainTable.outerHTML;
+      div.remove();
+    });
   }
 
   ngAfterViewInit() {
@@ -52,23 +65,9 @@ export class EmailComponent implements OnInit {
 
   ngDoCheck() {
     this.pageHeight = EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0 ? Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect.yMax)) : 0;
-
-    // this.setTable();
   }
 
-  setTable() {
-    if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes) {
-      let mainTable = this.createTable(this.tempTable.nativeElement, '100%', null, null, null, null, this.backgroundColor);
-      mainTable.style.lineHeight = 'normal';
-      let tr = mainTable.appendChild(document.createElement('tr'));
-      let td = tr.appendChild(document.createElement('td'));
-      td.width = '100%';
 
-
-      let pageTable = this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.pageColor);
-    }
-
-  }
 
   createTable(parent: HTMLElement, width: string, boxes?: Array<EditBoxComponent>, position?: Vector2, maxWidth?: string, align?: string, bgColor?: string) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
@@ -148,9 +147,9 @@ export class EmailComponent implements OnInit {
               boxTableColumn = tr.appendChild(document.createElement('td'));
               boxTableColumn.width = boxTableContainerWidth + '%';
             }
-            
 
-            if(box instanceof ContainerBoxComponent){
+
+            if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
               let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
               boxTable.bgColor = box.backgroundColor;
@@ -159,14 +158,14 @@ export class EmailComponent implements OnInit {
               td.width = '100%';
               td.height = containerBox.rect.height.toString();
               td.vAlign = 'top';
-              
+
 
               this.createTable(td, '100%', containerBox.container.boxes);
-            }else{
+            } else {
               box.convert(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
             }
 
-            
+
           }
         });
       });
@@ -281,12 +280,6 @@ export class EmailComponent implements OnInit {
   }
 
 
-
-
-
-
-
-
   setHeight() {
     this.height = window.innerHeight - 22;
   }
@@ -295,12 +288,11 @@ export class EmailComponent implements OnInit {
     if (input.checked) {
       input.checked = false;
       EditBoxComponent.currentContainer = null;
-      this.currentEmail.selected = false;
     } else {
       this.onEmailClick(email);
       input.checked = true;
       EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[index];
-      
+
       this.currentToggleButton = input;
     }
   }
@@ -308,25 +300,30 @@ export class EmailComponent implements OnInit {
   onItemClick(item) {
     if (item.tierIndex === 0) {
       this.emails = [];
+      this.currentItem = null;
       return;
     }
-    this.emails = item.emails
-      .map(x => ({
-        id: x.id,
-        subject: x.subject,
-        body: x.body,
-        selected: false
-      }));
+    this.emails = item.emails;
+    this.currentItem = item;
   }
 
-  onEmailClick(email){
-    if(this.currentEmail && this.currentEmail !== email){
+  onEmailClick(email) {
+    if (this.currentEmail && this.currentEmail !== email) {
       this.currentEmail.selected = false;
-      this.currentToggleButton.checked = false;
+      if (this.currentToggleButton) this.currentToggleButton.checked = false;
       EditBoxComponent.currentContainer = null;
     }
     this.currentEmail = email;
     email.selected = true;
+  }
+
+  onEmailDelete() {
+    if (this.currentEmail && this.currentEmail.selected) {
+      this.currentEmail.isDeleted = true;
+      this.currentEmail.selected = false;
+      this.change += 1;
+    }
+
   }
 
   @HostListener('window:resize', ['$event'])
@@ -337,9 +334,18 @@ export class EmailComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
-    if (event.code === 'Escape' && this.currentEmail && this.currentEmail.selected) {
-      this.currentEmail.selected = false;
+    if (event.code === 'Escape') {
+      if (this.currentEmail && this.currentEmail.selected) {
 
+        if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
+          if (this.currentToggleButton && this.currentToggleButton.checked) {
+            this.currentToggleButton.checked = false;
+            EditBoxComponent.currentContainer = null;
+          } else {
+            this.currentEmail.selected = false;
+          }
+        }
+      }
     }
   }
 

@@ -2,6 +2,7 @@ import { Component, HostListener, ViewChild, ElementRef, ApplicationRef } from '
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'edit-box',
@@ -36,6 +37,7 @@ export class EditBoxComponent {
   public static currentEditBox: EditBoxComponent;
   public static currentContainer: any;
   public static mainContainer: any;
+  public static change = new Subject<void>();
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -143,7 +145,9 @@ export class EditBoxComponent {
 
   @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
+    if (this.isMousedown) EditBoxComponent.change.next();
     this.isMousedown = false;
+
   }
 
   setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {

@@ -53,7 +53,6 @@ input {
     background: #00000000;
     margin: auto;
     position: relative;
-    // top: 1px;
     width: 600px;
     border: 1px dashed #969696;
 }
@@ -61,7 +60,7 @@ input {
     width: 18px;
     height: 18px;
     font-size: 16px;
-    color: #b4b4b4;
+    color: #d1d1d1;
     text-align: center;
     display: inline-block;
     margin-left: 8px;
@@ -71,7 +70,7 @@ input {
     cursor: pointer;
     
 }
-.header-button:hover {
+.header-button:hover:not(.disabled) {
     color: #ffffff;
 }
 .palette {
@@ -107,4 +106,7 @@ input {
     opacity: 1;
     transition: opacity 0.5s;
     transition-delay: 0.25s;
+}
+.disabled {
+    color: #656565;
 }
