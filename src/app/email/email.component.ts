@@ -3,6 +3,7 @@ import { EditBoxService } from '../edit-box.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
+import { EmailGridComponent } from '../email-grid/email-grid.component';
 
 @Component({
   selector: 'email',
@@ -11,6 +12,7 @@ import { ContainerBoxComponent } from '../container-box/container-box.component'
 })
 export class EmailComponent implements OnInit {
   @ViewChildren('emailContentContainer', { read: ViewContainerRef }) emailContentContainer: QueryList<ViewContainerRef>;
+  @ViewChild(EmailGridComponent) emailGridComponent: EmailGridComponent;
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
@@ -54,6 +56,8 @@ export class EmailComponent implements OnInit {
       this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.pageColor);
       this.currentEmail.body = mainTable.outerHTML;
       div.remove();
+
+      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
     });
   }
 
@@ -91,7 +95,7 @@ export class EmailComponent implements OnInit {
       // Loop through each row
       rows.forEach(row => {
         // Create the columns for this row
-        let parent: HTMLElement = rows.length > 1 ? this.createTable(row.element, '100%').appendChild(document.createElement('tr')) : row.element,
+        let parent: HTMLElement = rows.length > 1 ? this.createTable(row.element.appendChild(document.createElement('td')), '100%').appendChild(document.createElement('tr')) : row.element,
           columns = this.createColumns(row, parent);
 
         // Loop through each column
@@ -322,6 +326,8 @@ export class EmailComponent implements OnInit {
       this.currentEmail.isDeleted = true;
       this.currentEmail.selected = false;
       this.change += 1;
+      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
     }
 
   }

@@ -3,6 +3,7 @@ import { DataService } from "../data.service";
 import { TierComponent } from '../tier/tier.component';
 import { Itier } from '../itier';
 import { Igrid } from '../igrid';
+import { SaveService } from '../save.service';
 
 @Component({
   selector: 'grid',
@@ -24,7 +25,7 @@ export class GridComponent implements OnInit, Igrid {
   public hasFocus: boolean = false;
   public isHighlightRow: boolean = true;
 
-  constructor(public dataService: DataService) { }
+  constructor(public dataService: DataService, public saveService: SaveService) { }
 
   ngOnInit() {
     this.dataService.get(this.apiUrl, this.apiParameters)
@@ -105,6 +106,13 @@ export class GridComponent implements OnInit, Igrid {
           this.currentItem.isSelected = false;
         }
       }
+    }
+  }
+
+  saveUpdate(item, tier) {
+    // Put this edited item in the updated items array so it can be saved to the database
+    if (!this.saveService.newItems.some(x => x.item == item) && !this.saveService.updatedItems.some(x => x.item == item)) {
+      this.saveService.addSaveItem(this.saveService.updatedItems, item, tier);
     }
   }
 

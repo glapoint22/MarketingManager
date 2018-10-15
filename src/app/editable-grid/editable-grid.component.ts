@@ -12,7 +12,7 @@ export class EditableGridComponent extends GridComponent {
   public change: number = 0;
   private editedFields: Array<any>;
 
-  constructor(dataService: DataService, public saveService: SaveService, public promptService: PromptService) { super(dataService) }
+  constructor(dataService: DataService, saveService: SaveService, public promptService: PromptService) { super(dataService, saveService) }
 
   setHeaderButtons(newButtonName: string, deleteButtonName: string): Array<GridButton> {
     return [
@@ -98,12 +98,12 @@ export class EditableGridComponent extends GridComponent {
     }
   }
 
-  saveUpdate(item, tier) {
-    // Put this edited item in the updated items array so it can be saved to the database
-    if (!this.saveService.newItems.some(x => x.item == item) && !this.saveService.updatedItems.some(x => x.item == item)) {
-      this.saveService.addSaveItem(this.saveService.updatedItems, item, tier);
-    }
-  }
+  // saveUpdate(item, tier) {
+  //   // Put this edited item in the updated items array so it can be saved to the database
+  //   if (!this.saveService.newItems.some(x => x.item == item) && !this.saveService.updatedItems.some(x => x.item == item)) {
+  //     this.saveService.addSaveItem(this.saveService.updatedItems, item, tier);
+  //   }
+  // }
 
   editItem(item) {
     item.isInEditMode = true;

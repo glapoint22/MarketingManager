@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from '../data.service';
+import { SaveService } from '../save.service';
 
 @Component({
   selector: 'email-grid',
@@ -10,7 +11,7 @@ import { DataService } from '../data.service';
 export class EmailGridComponent extends GridComponent implements OnInit {
   @Output() onItemClick = new EventEmitter<any>();
 
-  constructor(dataService: DataService) { super(dataService) }
+  constructor(dataService: DataService, saveService: SaveService) { super(dataService, saveService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Mail';
@@ -99,6 +100,22 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           width: 5000
         }
       ],
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          EmailCampaigns: item.emails.map(x => ({
+            ID: x.id,
+            ProductID: item.id,
+            Subject: x.subject,
+            Body: x.body,
+            Day: x.day
+          }))
+        }
+      },
+      check: (item) => {
+        return true;
+      },
+      url: 'api/Mail'
     });
 
     super.createTiers();
