@@ -12,6 +12,7 @@ export class ColorStyle extends Style {
         this.colorPalette.onchange = (event: any) => {
             this.styleValue = event.path[0].value;
             this.setStyle();
+            editBox.onContentChange();
         }
         this.group = 'color';
     }

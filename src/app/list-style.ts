@@ -12,6 +12,7 @@ export class ListStyle extends Style {
             Style.setSelection(this.editBox.content);
             this.setList();
             super.onClick();
+            this.editBox.onContentChange();
         }
     }
 

@@ -72,6 +72,8 @@ export class EditBoxService {
       EditBoxComponent.currentEditBox = null;
       EditBoxComponent.currentContainer.remove(index);
       EditBoxComponent.currentContainer.boxes.splice(index, 1);
+
+      EditBoxComponent.change.next();
     }
   }
 
@@ -150,6 +152,8 @@ export class EditBoxService {
       } else {
         box.instance.initialize(this.copied);
       }
+
+      // EditBoxComponent.change.next();
     }
   }
 

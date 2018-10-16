@@ -37,6 +37,8 @@ export class ContainerBoxComponent extends EditBoxComponent {
     this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     super.initialize(rect);
+
+    EditBoxComponent.change.next();
   }
 
   setRightHandle(deltaPosition: Vector2) {

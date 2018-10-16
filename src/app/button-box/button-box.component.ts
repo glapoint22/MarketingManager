@@ -11,6 +11,7 @@ import { FontSize } from '../font-size';
 import { Font } from '../font';
 import { Rect } from '../rect';
 import { EditBoxLink } from '../edit-box-link';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'button-box',
@@ -113,6 +114,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
           event.preventDefault();
         }
       }
+      EditBoxComponent.change.next();
     }
 
     super.initialize(rect);
@@ -269,6 +271,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     });
     this.setWidth(false);
     this.setHeight(false);
+
+    super.onContentChange();
   }
 
   getContentSize() {

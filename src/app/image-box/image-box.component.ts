@@ -3,6 +3,7 @@ import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
 import { Vector2 } from '../vector2';
 import { EditBoxLink } from '../edit-box-link';
 import { Rect } from '../rect';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'image-box',
@@ -34,6 +35,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     this.contentContainer.style.width = '100%';
     this.contentContainer.style.height = '100%';
+    EditBoxComponent.change.next();
   }
 
   setRightHandle(deltaPosition: Vector2) {

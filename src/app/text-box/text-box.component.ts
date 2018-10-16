@@ -121,6 +121,8 @@ export class TextBoxComponent extends EditBoxComponent {
           this.unSelect();
         }
       }
+
+      EditBoxComponent.change.next();
     }
 
     // Set the size
@@ -189,6 +191,7 @@ export class TextBoxComponent extends EditBoxComponent {
       });
       this.contentContainer.height = this.rect.height;
     }
+    super.onContentChange();
   }
 
   setRightHandle(deltaPosition: Vector2) {

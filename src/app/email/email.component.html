@@ -17,7 +17,7 @@
             </div>
 
             <!-- New email button -->
-            <div style="float:right" class="header-button" title="New email">
+            <div style="float:right" class="header-button" title="New email" (click)="newEmail()">
                 <i class="fas fa-file"></i>
             </div>
         </div>
@@ -35,7 +35,14 @@
                 <!-- Email subject bar -->
                 <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected}"
                     (click)="onEmailClick(email)">
-                    {{email.subject}}
+                    <!-- {{email.subject}} -->
+
+                    <span *ngIf="email.isInEditMode else subjectValue">
+                        <input #edit class="edit" type="text" [value]="email.subject" onfocus="this.select()">
+                    </span>
+                    <ng-template #subjectValue>
+                        {{email.subject}}
+                    </ng-template>
 
 
                     <!-- Button container -->
@@ -92,7 +99,7 @@
                     </span>
 
                     <!-- Edit -->
-                    <div class="header-button edit-button" title="Edit subject">
+                    <div class="header-button edit-button" title="Edit subject" (click)="onEditClick(email)">
                         <i class="fas fa-edit"></i>
                     </div>
                 </div>

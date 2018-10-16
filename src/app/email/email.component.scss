@@ -110,3 +110,22 @@ input {
 .disabled {
     color: #656565;
 }
+.edit{
+    display: inline-block;
+    background: #005475;
+    color: white;
+    line-height: 23px;
+    padding-left: 4px;
+    margin-top: -1px;
+    height: 22px;
+    margin-left: -5px;
+    border: 1px solid #00b7ff;
+    box-sizing: border-box;
+    outline: none;
+    // width: stretch;
+    margin-bottom: 1px;
+}
+.edit::selection {
+    background-color: #00c500;
+    color: #fff;
+}

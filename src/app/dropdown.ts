@@ -13,6 +13,7 @@ export class Dropdown extends Style {
         if (this.editBox.inEditMode) {
             this.styleValue = value;
             this.setStyle();
+            this.editBox.onContentChange();
         }
     }
 

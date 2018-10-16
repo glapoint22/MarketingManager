@@ -13,6 +13,7 @@ export class AlignStyle extends Style {
             Style.setSelection(this.editBox.content);
             this.setStyle();
             super.onClick();
+            this.editBox.onContentChange();
         }
     }
 

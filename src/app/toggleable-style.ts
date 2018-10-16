@@ -12,6 +12,7 @@ export class ToggleableStyle extends Style {
         if (this.editBox.inEditMode) {
             this.setStyle();
             super.onClick();
+            this.editBox.onContentChange();
         }
     }
 

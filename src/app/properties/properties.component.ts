@@ -23,10 +23,7 @@ export class PropertiesComponent {
     if (event.code === 'Escape' && this.editBox.currentEditBox && this.editBox.currentEditBox.isSelected) {
       if (this.linkService.show) {
         this.linkService.show = false;
-      } else {
-        this.editBox.currentEditBox.unSelect();
       }
-
     }
   }
 

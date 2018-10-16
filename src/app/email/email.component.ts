@@ -13,6 +13,7 @@ import { EmailGridComponent } from '../email-grid/email-grid.component';
 export class EmailComponent implements OnInit {
   @ViewChildren('emailContentContainer', { read: ViewContainerRef }) emailContentContainer: QueryList<ViewContainerRef>;
   @ViewChild(EmailGridComponent) emailGridComponent: EmailGridComponent;
+  @ViewChild('edit') editInput: ElementRef;
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
@@ -40,7 +41,7 @@ export class EmailComponent implements OnInit {
       } else {
         this.backgroundColor = event.path[0].value;
       }
-
+      EditBoxComponent.change.next();
     }
 
     EditBoxComponent.change.subscribe(() => {
@@ -54,10 +55,16 @@ export class EmailComponent implements OnInit {
 
 
       this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.pageColor);
-      this.currentEmail.body = mainTable.outerHTML;
+
+      if (this.currentEmail.body !== mainTable.outerHTML) {
+        this.currentEmail.body = mainTable.outerHTML;
+        this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      }
+
+
       div.remove();
 
-      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+
     });
   }
 
@@ -88,7 +95,7 @@ export class EmailComponent implements OnInit {
     if (bgColor) table.bgColor = bgColor;
 
     // If this table has boxes
-    if (boxes) {
+    if (boxes && boxes.length > 0) {
       // Create rows based on the boxes position
       let rows = this.createRows(boxes, table, new Vector2(position ? position.x : 0, position ? position.y : 0));
 
@@ -328,6 +335,11 @@ export class EmailComponent implements OnInit {
       this.change += 1;
       this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
       this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
+
+      // Reorder the days of this item's emails
+      this.currentItem.emails.forEach((email, i) => {
+        email.day = i + 1;
+      });
     }
 
   }
@@ -342,15 +354,29 @@ export class EmailComponent implements OnInit {
     //Escape
     if (event.code === 'Escape') {
       if (this.currentEmail && this.currentEmail.selected) {
-
-        if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
+        if (this.currentEmail.isInEditMode) {
+          this.currentEmail.isInEditMode = false;
+        } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
           if (this.currentToggleButton && this.currentToggleButton.checked) {
             this.currentToggleButton.checked = false;
             EditBoxComponent.currentContainer = null;
           } else {
             this.currentEmail.selected = false;
           }
+        } else {
+          EditBoxComponent.currentEditBox.unSelect();
         }
+      }
+    } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+      if (this.currentEmail.isInEditMode) {
+        this.currentEmail.isInEditMode = false;
+
+        if (this.currentEmail.subject !== this.editInput.nativeElement.value) {
+          this.currentEmail.subject = this.editInput.nativeElement.value;
+          this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+        }
+
+
       }
     }
   }
@@ -362,5 +388,26 @@ export class EmailComponent implements OnInit {
   setColor(colorType: string) {
     this.colorType = colorType;
     this.colorPalette.click();
+  }
+
+  onEditClick(email) {
+    email.isInEditMode = true;
+    window.setTimeout(() => {
+      this.editInput.nativeElement.focus();
+    }, 1);
+
+  }
+
+  newEmail() {
+    let day  = this.currentItem.emails.length + 1;
+    this.currentItem.emails.push({
+      id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
+      subject: 'subject',
+      body: '',
+      day: day
+    });
+    this.change += 1;
+    this.currentEmail = this.currentItem.emails[this.currentItem.emails.length - 1];
+    this.onEditClick(this.currentEmail);
   }
 }

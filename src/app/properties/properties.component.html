@@ -23,7 +23,7 @@
     <span *ngIf="editBox.currentEditBox && editBox.currentEditBox.isSelected">
         <div *ngFor="let group of editBox.currentEditBox.styles | groupBy" class="group">
             <div *ngIf="group.group != 'dropdown'; else dropdownGroup" style="position:relative">
-                <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick(); editBox.currentEditBox.onContentChange()"
+                <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick()"
                     [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !editBox.currentEditBox.inEditMode}">
 
                     <div *ngIf="(style.group === 'color' && editBox.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <ng-template #dropdownGroup>
-                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value); editBox.currentEditBox.onContentChange()"
+                <select *ngFor="let style of group.styles" #dropdown (change)="style.onClick(dropdown.value)"
                     [title]="style.title" [value]="editBox.currentEditBox.inEditMode ? style.styleValue : ''"
                     [disabled]="!editBox.currentEditBox.inEditMode" [ngClass]="{'style-button-disabled': !editBox.currentEditBox.inEditMode}">
                     <option *ngFor="let option of style.options" [value]="option.value">{{option.name}}</option>

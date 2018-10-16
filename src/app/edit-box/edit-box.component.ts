@@ -343,6 +343,8 @@ export class EditBoxComponent {
     }, 1);
   }
 
-  onContentChange() { }
+  onContentChange() {
+    EditBoxComponent.change.next();
+   }
   convert(table: HTMLTableElement) { }
 }
