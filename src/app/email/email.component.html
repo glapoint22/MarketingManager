@@ -51,7 +51,7 @@
                         <!-- Group -->
                         <span class="button-group">
                             <!-- Preview -->
-                            <div class="header-button" title="Preview">
+                            <div class="header-button" title="Preview" (click)="emailPreviewService.open(currentEmail.body)">
                                 <i class="far fa-eye"></i>
                             </div>
                         </span>
@@ -99,7 +99,7 @@
                     </span>
 
                     <!-- Edit -->
-                    <div class="header-button edit-button" title="Edit subject" (click)="onEditClick(email)">
+                    <div class="header-button edit-button" title="Edit subject" (click)="editEmail(email)">
                         <i class="fas fa-edit"></i>
                     </div>
                 </div>

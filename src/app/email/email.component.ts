@@ -4,6 +4,7 @@ import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Vector2 } from '../vector2';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { EmailGridComponent } from '../email-grid/email-grid.component';
+import { EmailPreviewService } from '../email-preview.service';
 
 @Component({
   selector: 'email',
@@ -29,7 +30,7 @@ export class EmailComponent implements OnInit {
   private currentToggleButton;
 
 
-  constructor(public editBoxService: EditBoxService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService) { }
 
   ngOnInit() {
     this.setHeight();
@@ -390,7 +391,7 @@ export class EmailComponent implements OnInit {
     this.colorPalette.click();
   }
 
-  onEditClick(email) {
+  editEmail(email) {
     email.isInEditMode = true;
     window.setTimeout(() => {
       this.editInput.nativeElement.focus();
@@ -400,6 +401,8 @@ export class EmailComponent implements OnInit {
 
   newEmail() {
     let day  = this.currentItem.emails.length + 1;
+
+    this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
     this.currentItem.emails.push({
       id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
       subject: 'subject',
@@ -408,6 +411,6 @@ export class EmailComponent implements OnInit {
     });
     this.change += 1;
     this.currentEmail = this.currentItem.emails[this.currentItem.emails.length - 1];
-    this.onEditClick(this.currentEmail);
+    this.editEmail(this.currentEmail);
   }
 }

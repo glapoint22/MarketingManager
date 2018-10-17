@@ -1,0 +1,58 @@
+@import 'theme';
+
+.container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: #000000cf;
+}
+.content-container {
+    width: 1600px;
+    margin: auto;
+    position: relative;
+    margin-top: 50px;
+    @include shadow();
+}
+.window {
+    position: relative;
+    max-height: 600px;
+    overflow: hidden;
+    overflow-y: auto;
+    border-left: 1px solid #646464;
+    border-right: 1px solid #646464;
+}
+.caption {
+    color: #dbdbdb;
+    background: #2d2d2d;
+    text-align: center;
+    height: 25px;
+    line-height: 25px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 1px solid #646464;
+}
+.close {
+    color: #bbbbbb;
+    width: 15px;
+    height: 15px;
+    position: relative;
+    cursor: pointer;
+    float: right;
+    margin-right: 5px;
+}
+.close:hover {
+    color: white;
+}
+.close:active {
+    color: #868686
+}
+.footer {
+    background: #2d2d2d;
+    height: 10px;
+    position: relative;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border: 1px solid #646464;
+}

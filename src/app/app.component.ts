@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { SaveService } from "./save.service";
 import { PromptService } from "./prompt.service";
 import { LinkService } from './link.service';
+import { EmailPreviewService } from './email-preview.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { LinkService } from './link.service';
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService) { }
+  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public emailPreviewService: EmailPreviewService) { }
 
   ngAfterContentChecked() {
     if (this.promptService.show) this.saveService.isSaving = false;

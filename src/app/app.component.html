@@ -15,6 +15,12 @@
     <social *ngIf="activeScreen == 'social'"></social>
 </div>
 
+<!-- Link form -->
+<link-form *ngIf="linkService.show"></link-form>
+
+<!-- Email preview -->
+<email-preview *ngIf="emailPreviewService.show"></email-preview>
+
 <!-- Prompt -->
 <prompt *ngIf="promptService.show"></prompt>
 
@@ -26,5 +32,3 @@
     </div>
 </div>
 
-<!-- Link form -->
-<link-form *ngIf="linkService.show"></link-form>

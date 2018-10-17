@@ -42,6 +42,7 @@ import { ContainerBoxComponent } from './container-box/container-box.component';
 import { PropertiesComponent } from './properties/properties.component';
 import { GroupByPipe } from './group-by.pipe';
 import { LinkFormComponent } from './link-form/link-form.component';
+import { EmailPreviewComponent } from './email-preview/email-preview.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import { LinkFormComponent } from './link-form/link-form.component';
     ContainerBoxComponent,
     PropertiesComponent,
     GroupByPipe,
-    LinkFormComponent
+    LinkFormComponent,
+    EmailPreviewComponent
   ],
   imports: [
     BrowserModule,

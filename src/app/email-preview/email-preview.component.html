@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="content-container">
+    
+    <div class="caption">
+      <div class="close" (click)="emailPreviewService.show = false">
+        <i class="far fa-window-close"></i>
+      </div>
+    </div>
+    <div class="window">
+
+
+      <div [innerHTML]="emailPreviewService.content"></div>
+
+    </div>
+    <div class="footer"></div>
+    
+  </div>
+
+</div>
