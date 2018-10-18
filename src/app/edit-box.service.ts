@@ -35,8 +35,8 @@ export class EditBoxService {
     }
   }
 
-  createTextBox() {
-    this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize();
+  createTextBox(box?) {
+    this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(box);
   }
 
   createButtonBox() {

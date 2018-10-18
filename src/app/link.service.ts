@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Style } from './style';
+import { EditBoxComponent } from './edit-box/edit-box.component';
 
 @Injectable({
   providedIn: 'root'
@@ -54,5 +55,6 @@ export class LinkService {
     this.style.styleValue = this.selectedOption.value;
     this.style.onClick();
     this.show = false;
+    EditBoxComponent.change.next();
   }
 }

@@ -5,6 +5,7 @@ import { Vector2 } from '../vector2';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { EmailGridComponent } from '../email-grid/email-grid.component';
 import { EmailPreviewService } from '../email-preview.service';
+import { Rect } from '../rect';
 
 @Component({
   selector: 'email',
@@ -304,9 +305,51 @@ export class EmailComponent implements OnInit {
       this.onEmailClick(email);
       input.checked = true;
       EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[index];
-
       this.currentToggleButton = input;
+      this.loadEmail();
     }
+  }
+
+  loadEmail() {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(this.currentEmail.body, "text/html");
+    let tempContent = document.body.appendChild(doc.body);
+    let tables = tempContent.getElementsByTagName('table');
+
+    this.backgroundColor = tables[0].bgColor;
+    this.pageColor = tables[1].bgColor;
+
+    this.foo(tables[1]);
+
+    // for(let i = 1; i < tables.length; i++){
+    //   let table = tables[i];
+    // if(table.width !== '100%'){
+    //   let content = document.createElement('div');
+    //   content.setAttribute('style', table.rows[0].firstElementChild.getAttribute('style'));
+    //   content.innerHTML = table.rows[0].firstElementChild.innerHTML;
+    //   let box = {
+    //     content: content.outerHTML,
+    //     backgroundColor: '#00000000',
+    //     rect: new Rect(122, 22, 180, 54)
+    //   }
+
+    //   this.editBoxService.createTextBox(box);
+    // }
+    // }
+    tempContent.remove();
+  }
+
+  foo(table: HTMLTableElement) {
+    let rows = table.rows;
+
+    Array.from(rows).forEach(row => {
+      Array.from(row.children).forEach(td => {
+        if (td.firstElementChild && td.firstElementChild.tagName === 'TABLE') {
+          let table: HTMLTableElement = td.firstElementChild as HTMLTableElement;
+          this.foo(table);
+        }
+      });
+    });
   }
 
   onItemClick(item) {
@@ -400,7 +443,7 @@ export class EmailComponent implements OnInit {
   }
 
   newEmail() {
-    let day  = this.currentItem.emails.length + 1;
+    let day = this.currentItem.emails.length + 1;
 
     this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
     this.currentItem.emails.push({

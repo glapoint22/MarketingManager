@@ -27,7 +27,7 @@ export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
   private minWidth: number = 8;
 
-  initialize(copy) {
+  initialize(box) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
       bold: Bold = new Bold(this),
       italic: Italic = new Italic(this),
@@ -58,11 +58,11 @@ export class TextBoxComponent extends EditBoxComponent {
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
 
-    // Set copy or default
-    if (copy) {
-      srcdoc = copy.content;
-      this.backgroundColor = copy.backgroundColor;
-      rect = copy.rect;
+    // Set box properties or default
+    if (box) {
+      srcdoc = box.content;
+      this.backgroundColor = box.backgroundColor;
+      rect = box.rect;
     } else {
       // Set the default text
       let div = document.createElement('DIV'),
