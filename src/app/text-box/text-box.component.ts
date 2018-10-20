@@ -121,8 +121,7 @@ export class TextBoxComponent extends EditBoxComponent {
           this.unSelect();
         }
       }
-
-      EditBoxComponent.change.next();
+      if (!box || !box.loading) EditBoxComponent.change.next();
     }
 
     // Set the size
@@ -255,7 +254,9 @@ export class TextBoxComponent extends EditBoxComponent {
     this.contentContainer.height = this.rect.height;
   }
 
-  convert(table: HTMLTableElement) {
+  boxToTable(table: HTMLTableElement) {
+    table.className = 'text-box';
+
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
 

@@ -346,5 +346,5 @@ export class EditBoxComponent {
   onContentChange() {
     EditBoxComponent.change.next();
    }
-  convert(table: HTMLTableElement) { }
+  boxToTable(table: HTMLTableElement) { }
 }

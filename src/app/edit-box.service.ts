@@ -35,20 +35,26 @@ export class EditBoxService {
     }
   }
 
-  createTextBox(box?) {
-    this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(box);
+  createTextBox(boxData?) {
+    this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(boxData);
   }
 
-  createButtonBox() {
-    this.createBox(ButtonBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize();
+  createButtonBox(boxData) {
+    this.createBox(ButtonBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(boxData);
   }
 
-  createContainerBox() {
-    this.createBox(ContainerBoxComponent, EditBoxComponent.currentContainer).instance.initialize();
+  createContainerBox(boxData?) {
+    this.createBox(ContainerBoxComponent, EditBoxComponent.currentContainer).instance.initialize(boxData);
   }
 
-  createImageBox() {
-    this.fileInput.click();
+  createImageBox(boxData?) {
+    if (boxData) {
+      let imageBox = this.createBox(ImageBoxComponent, EditBoxComponent.currentContainer, 'img');
+      this.setImageBox(imageBox, boxData);
+    } else {
+      this.fileInput.click();
+    }
+
   }
 
   createBox(box: Type<EditBoxComponent>, container, contentContainerType?: string) {
@@ -133,16 +139,21 @@ export class EditBoxService {
     return boxCopies;
   }
 
+  setImageBox(box, boxData) {
+    box.instance.contentContainer.src = boxData.src;
+    box.instance.contentContainer.onload = () => {
+      // boxData.rect.height = box.instance.contentContainer.clientHeight;
+      box.instance.initialize(boxData);
+    }
+  }
+
   paste() {
     if (this.copied.box) {
       let box = this.createBox(this.copied.box, EditBoxComponent.currentContainer, this.copied.contentContainerType);
 
       // Image
       if (this.copied.box === ImageBoxComponent) {
-        box.instance.contentContainer.src = this.copied.src;
-        box.instance.contentContainer.onload = () => {
-          box.instance.initialize(this.copied);
-        }
+        this.setImageBox(box, this.copied);
         // Container
       } else if (this.copied.box === ContainerBoxComponent) {
         box.instance.initialize(this.copied);
@@ -152,8 +163,6 @@ export class EditBoxService {
       } else {
         box.instance.initialize(this.copied);
       }
-
-      // EditBoxComponent.change.next();
     }
   }
 

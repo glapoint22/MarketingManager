@@ -13,9 +13,8 @@ export class ContainerBoxComponent extends EditBoxComponent {
   @ViewChild('container', { read: ViewContainerRef }) container: any;
   private minSize: number = 8;
 
-  initialize(copy) {
+  initialize(box) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
-      // bgColor,
       rect;
 
     // Assign the style
@@ -24,10 +23,10 @@ export class ContainerBoxComponent extends EditBoxComponent {
     //set the handles
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
-    // Set copy or default
-    if (copy) {
-      rect = copy.rect;
-      this.backgroundColor = copy.backgroundColor;
+    // Set box properties or default
+    if (box) {
+      rect = box.rect;
+      this.backgroundColor = box.backgroundColor;
     } else {
       rect = new Rect(null, null, 350, 150);
       this.backgroundColor = '#494949';
@@ -38,7 +37,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
 
     super.initialize(rect);
 
-    EditBoxComponent.change.next();
+    if (!box || !box.loading) EditBoxComponent.change.next();
   }
 
   setRightHandle(deltaPosition: Vector2) {

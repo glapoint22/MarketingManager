@@ -6,6 +6,7 @@ import { ContainerBoxComponent } from '../container-box/container-box.component'
 import { EmailGridComponent } from '../email-grid/email-grid.component';
 import { EmailPreviewService } from '../email-preview.service';
 import { Rect } from '../rect';
+import { TextBoxComponent } from '../text-box/text-box.component';
 
 @Component({
   selector: 'email',
@@ -20,8 +21,6 @@ export class EmailComponent implements OnInit {
   public emails: Array<any> = [];
   public pageWidth: number = 600;
   public pageHeight: number;
-  public backgroundColor: string = '#ffffff';
-  public pageColor: string = '#ffffff';
   public colorType: string;
   public change: number = 0;
   public currentItem;
@@ -39,9 +38,9 @@ export class EmailComponent implements OnInit {
     this.colorPalette.type = 'color';
     this.colorPalette.onchange = (event: any) => {
       if (this.colorType === 'page') {
-        this.pageColor = event.path[0].value;
+        this.currentEmail.pageColor = event.path[0].value;
       } else {
-        this.backgroundColor = event.path[0].value;
+        this.currentEmail.backgroundColor = event.path[0].value;
       }
       EditBoxComponent.change.next();
     }
@@ -49,14 +48,15 @@ export class EmailComponent implements OnInit {
     EditBoxComponent.change.subscribe(() => {
       let div = document.body.appendChild(document.createElement('div'));
 
-      let mainTable = this.createTable(div, '100%', null, null, null, null, this.backgroundColor);
+      let mainTable = this.createTable(div, '100%', null, null, null, null, this.currentEmail.backgroundColor);
       mainTable.style.lineHeight = 'normal';
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
       td.width = '100%';
 
 
-      this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.pageColor);
+      this.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.currentEmail.pageColor);
+
 
       if (this.currentEmail.body !== mainTable.outerHTML) {
         this.currentEmail.body = mainTable.outerHTML;
@@ -110,8 +110,13 @@ export class EmailComponent implements OnInit {
         // Loop through each column
         columns.forEach((column) => {
           // Set the column properties
-          column.element.vAlign = 'top';
-          column.element.width = column.width / row.width * 100 + '%';
+          let columnWidth = column.width / row.width * 100 + '%';
+
+          if (columnWidth !== '100%') {
+            column.element.vAlign = 'top';
+            column.element.width = columnWidth;
+          }
+
 
           // If this colum has 4 or more boxes, this means there are uneven columns and rows
           if (column.boxes.length >= 4) {
@@ -166,6 +171,8 @@ export class EmailComponent implements OnInit {
               let containerBox = box as ContainerBoxComponent;
               let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
               boxTable.bgColor = box.backgroundColor;
+              boxTable.className = 'container-box';
+
 
               let td = boxTable.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
               td.width = '100%';
@@ -174,8 +181,9 @@ export class EmailComponent implements OnInit {
 
 
               this.createTable(td, '100%', containerBox.container.boxes);
+
             } else {
-              box.convert(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
+              box.boxToTable(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
             }
 
 
@@ -311,42 +319,81 @@ export class EmailComponent implements OnInit {
   }
 
   loadEmail() {
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(this.currentEmail.body, "text/html");
-    let tempContent = document.body.appendChild(doc.body);
-    let tables = tempContent.getElementsByTagName('table');
+    let parser = new DOMParser(),
+      doc = parser.parseFromString(this.currentEmail.body, "text/html"),
+      mainTable: HTMLTableElement = document.body.appendChild(doc.body).firstElementChild as HTMLTableElement,
+      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement,
+      rect = pageTable.getBoundingClientRect();
 
-    this.backgroundColor = tables[0].bgColor;
-    this.pageColor = tables[1].bgColor;
+    // Set the colors
+    this.currentEmail.backgroundColor = mainTable.bgColor;
+    this.currentEmail.pageColor = pageTable.bgColor;
 
-    this.foo(tables[1]);
 
-    // for(let i = 1; i < tables.length; i++){
-    //   let table = tables[i];
-    // if(table.width !== '100%'){
-    //   let content = document.createElement('div');
-    //   content.setAttribute('style', table.rows[0].firstElementChild.getAttribute('style'));
-    //   content.innerHTML = table.rows[0].firstElementChild.innerHTML;
-    //   let box = {
-    //     content: content.outerHTML,
-    //     backgroundColor: '#00000000',
-    //     rect: new Rect(122, 22, 180, 54)
-    //   }
+    this.tableToBox(pageTable, new Vector2(rect.left, rect.top), EditBoxComponent.currentContainer);
 
-    //   this.editBoxService.createTextBox(box);
-    // }
-    // }
-    tempContent.remove();
+
+    document.body.lastElementChild.remove();
   }
 
-  foo(table: HTMLTableElement) {
-    let rows = table.rows;
+  tableToBox(table: HTMLTableElement, offset: Vector2, container: ViewContainerRef) {
+    let rect = table.getBoundingClientRect();
 
-    Array.from(rows).forEach(row => {
-      Array.from(row.children).forEach(td => {
+    // Text box
+    if (table.className === 'text-box') {
+      let content = document.createElement('div');
+
+      content.setAttribute('style', table.rows[0].firstElementChild.getAttribute('style'));
+      content.innerHTML = table.rows[0].firstElementChild.innerHTML;
+      let box = {
+        content: content.outerHTML,
+        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
+        loading: true
+      }
+      EditBoxComponent.currentContainer = container;
+      this.editBoxService.createTextBox(box);
+
+      // Container box
+    } else if (table.className === 'container-box') {
+      let box = {
+        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
+        loading: true
+      }
+      offset = new Vector2(rect.left, rect.top);
+      EditBoxComponent.currentContainer = container;
+      this.editBoxService.createContainerBox(box);
+      container = EditBoxComponent.currentContainer;
+
+      // Button box
+    } else if (table.className === 'button-box') {
+      let box = {
+        content: table.getElementsByTagName('table')[0].rows[0].firstElementChild.innerHTML,
+        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
+        loading: true,
+        link: table.getElementsByTagName('a')[0].getAttribute('href')
+      }
+      EditBoxComponent.currentContainer = container;
+      this.editBoxService.createButtonBox(box);
+
+      // Image box
+    } else if (table.className === 'image-box') {
+      let box = {
+        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
+        loading: true,
+        link: table.getElementsByTagName('a')[0].getAttribute('href'),
+        src: table.getElementsByTagName('img')[0].getAttribute('src')
+      }
+      EditBoxComponent.currentContainer = container;
+      this.editBoxService.createImageBox(box);
+    }
+
+    Array.from(table.rows).forEach((row: HTMLTableRowElement) => {
+      Array.from(row.children).forEach((td: HTMLTableColElement) => {
         if (td.firstElementChild && td.firstElementChild.tagName === 'TABLE') {
-          let table: HTMLTableElement = td.firstElementChild as HTMLTableElement;
-          this.foo(table);
+          this.tableToBox(td.firstElementChild as HTMLTableElement, offset, container);
         }
       });
     });

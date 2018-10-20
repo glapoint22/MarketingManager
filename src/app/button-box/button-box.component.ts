@@ -22,7 +22,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   private fixedWidth: number;
   private fixedHeight: number;
 
-  initialize(copy) {
+  initialize(box) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
       editBoxLink: EditBoxLink = new EditBoxLink(this),
       bold: Bold = new Bold(this),
@@ -44,12 +44,12 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     //set the handles 
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
-    // Set copy or default
-    if (copy) {
-      srcdoc = copy.content;
-      this.backgroundColor = copy.backgroundColor;
-      rect = copy.rect;
-      this.link = copy.link;
+    // Set box properties or default
+    if (box) {
+      srcdoc = box.content;
+      this.backgroundColor = box.backgroundColor;
+      rect = box.rect;
+      this.link = box.link;
       editBoxLink.isSelected = this.link ? true : false;
       if (this.link) this.editBox.nativeElement.title = this.link;
     } else {
@@ -114,7 +114,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
           event.preventDefault();
         }
       }
-      EditBoxComponent.change.next();
+      if (!box || !box.loading) EditBoxComponent.change.next();
     }
 
     super.initialize(rect);
@@ -317,7 +317,9 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     }, 1);
   }
 
-  convert(table: HTMLTableElement) {
+  boxToTable(table: HTMLTableElement) {
+    table.className = 'button-box';
+
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
     
