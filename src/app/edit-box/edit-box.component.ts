@@ -274,7 +274,6 @@ export class EditBoxComponent {
       }
     }
     EditBoxComponent.currentEditBox = this;
-    this.setCurrentContainer();
   }
 
   setCurrentContainer() {
@@ -315,7 +314,7 @@ export class EditBoxComponent {
     if (!this.parentContainer.boxes) this.parentContainer.boxes = [];
     this.parentContainer.boxes.push(this);
 
-    this.setSelection();
+    this.setCurrentContainer();
     this.setElement();
   }
 

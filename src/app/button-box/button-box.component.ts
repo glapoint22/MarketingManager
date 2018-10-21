@@ -22,7 +22,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   private fixedWidth: number;
   private fixedHeight: number;
 
-  initialize(box) {
+  initialize(boxData) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
       editBoxLink: EditBoxLink = new EditBoxLink(this),
       bold: Bold = new Bold(this),
@@ -45,11 +45,11 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
     // Set box properties or default
-    if (box) {
-      srcdoc = box.content;
-      this.backgroundColor = box.backgroundColor;
-      rect = box.rect;
-      this.link = box.link;
+    if (boxData) {
+      srcdoc = boxData.content;
+      this.backgroundColor = boxData.backgroundColor;
+      rect = boxData.rect;
+      this.link = boxData.link;
       editBoxLink.isSelected = this.link ? true : false;
       if (this.link) this.editBox.nativeElement.title = this.link;
     } else {
@@ -114,7 +114,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
           event.preventDefault();
         }
       }
-      if (!box || !box.loading) EditBoxComponent.change.next();
+      if (!boxData || !boxData.loading) EditBoxComponent.change.next();
     }
 
     super.initialize(rect);

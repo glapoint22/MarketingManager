@@ -27,7 +27,7 @@ export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
   private minWidth: number = 8;
 
-  initialize(box) {
+  initialize(boxData) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
       bold: Bold = new Bold(this),
       italic: Italic = new Italic(this),
@@ -43,7 +43,6 @@ export class TextBoxComponent extends EditBoxComponent {
       alignRight: AlignRight = new AlignRight(this),
       alignJustify: AlignJustify = new AlignJustify(this),
       linkStyle: LinkStyle = new LinkStyle(this),
-      // bgColor,
       rect,
       srcdoc;
 
@@ -59,10 +58,10 @@ export class TextBoxComponent extends EditBoxComponent {
 
 
     // Set box properties or default
-    if (box) {
-      srcdoc = box.content;
-      this.backgroundColor = box.backgroundColor;
-      rect = box.rect;
+    if (boxData) {
+      srcdoc = boxData.content;
+      this.backgroundColor = boxData.backgroundColor;
+      rect = boxData.rect;
     } else {
       // Set the default text
       let div = document.createElement('DIV'),
@@ -121,7 +120,7 @@ export class TextBoxComponent extends EditBoxComponent {
           this.unSelect();
         }
       }
-      if (!box || !box.loading) EditBoxComponent.change.next();
+      if (!boxData || !boxData.loading) EditBoxComponent.change.next();
     }
 
     // Set the size

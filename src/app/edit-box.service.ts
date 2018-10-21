@@ -142,7 +142,6 @@ export class EditBoxService {
   setImageBox(box, boxData) {
     box.instance.contentContainer.src = boxData.src;
     box.instance.contentContainer.onload = () => {
-      // boxData.rect.height = box.instance.contentContainer.clientHeight;
       box.instance.initialize(boxData);
     }
   }

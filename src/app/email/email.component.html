@@ -38,7 +38,7 @@
                     <!-- {{email.subject}} -->
 
                     <span *ngIf="email.isInEditMode else subjectValue">
-                        <input #edit class="edit" type="text" [value]="email.subject" onfocus="this.select()">
+                        <input #edit class="edit" type="text" [value]="email.subject" (focus)="edit.select()" (blur)="email.isInEditMode = false">
                     </span>
                     <ng-template #subjectValue>
                         {{email.subject}}
@@ -106,7 +106,9 @@
 
                 <!-- Email content -->
                 <div style="background-color: #1e1e1e">
-                    <div class="email-content-container" [style.backgroundColor]="email.backgroundColor" [style.maxHeight.px]="inputToggle.checked ? 600 : 0"
+                    <div class="email-content-container" [style.transition]="'max-height ' + speed + 's'"
+                        (transitionend)="transitionEnd()" [style.backgroundColor]="email.backgroundColor"
+                        [style.maxHeight.px]="inputToggle.checked ? pageHeight : 0"
                         (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
