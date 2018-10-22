@@ -18,7 +18,6 @@ export class EmailComponent implements OnInit {
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
-  public pageHeight: number;
   public colorType: string;
   public change: number = 0;
   public currentItem;
@@ -27,7 +26,8 @@ export class EmailComponent implements OnInit {
   private colorPalette: HTMLInputElement;
   private currentEmail;
   private currentToggleButton;
-
+  private closedContainer: any;
+  private defaultSpeed: number = 0.5;
 
   constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService) { }
 
@@ -73,7 +73,12 @@ export class EmailComponent implements OnInit {
   }
 
   ngDoCheck() {
-    this.pageHeight = EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0 ? Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect.yMax)) : 0;
+    if (this.currentEmail)
+      if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0) {
+        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect.yMax));
+      } else {
+        this.currentEmail.pageHeight = 40;
+      }
   }
 
 
@@ -82,16 +87,20 @@ export class EmailComponent implements OnInit {
   }
 
   onToggleButtonClick(input, index, email) {
+    this.speed = this.defaultSpeed;
     if (input.checked) {
-      this.speed = 0.5;
+
       input.checked = false;
+      this.closedContainer = EditBoxComponent.currentContainer;
       EditBoxComponent.currentContainer = null;
     } else {
       this.onEmailClick(email);
       input.checked = true;
       EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[index];
       this.currentToggleButton = input;
-      if (email.body !== '') this.loadEmail();
+      if (this.currentEmail.body !== '' && (!EditBoxComponent.currentContainer.boxes || EditBoxComponent.currentContainer.boxes.length === 0)) {
+        this.loadEmail();
+      }
     }
   }
 
@@ -124,11 +133,13 @@ export class EmailComponent implements OnInit {
   }
 
   onEmailClick(email) {
-    this.speed = 0.5;
     if (this.currentEmail && this.currentEmail !== email) {
       this.currentEmail.selected = false;
-      // this.currentEmail.isInEditMode = false;
-      if (this.currentToggleButton) this.currentToggleButton.checked = false;
+      if (this.currentToggleButton) {
+        this.speed = this.defaultSpeed;
+        this.currentToggleButton.checked = false;
+        this.closedContainer = EditBoxComponent.currentContainer;
+      }
       EditBoxComponent.currentContainer = null;
     }
     this.currentEmail = email;
@@ -165,7 +176,9 @@ export class EmailComponent implements OnInit {
         } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
           if (this.currentToggleButton && this.currentToggleButton.checked) {
             this.currentToggleButton.checked = false;
+            this.closedContainer = EditBoxComponent.currentContainer;
             EditBoxComponent.currentContainer = null;
+            this.speed = this.defaultSpeed;
           } else {
             this.currentEmail.selected = false;
           }
@@ -217,15 +230,28 @@ export class EmailComponent implements OnInit {
     this.change += 1;
     let email = this.currentItem.emails[this.currentItem.emails.length - 1];
 
-
+    this.speed = this.defaultSpeed;
     this.editEmail(email);
     this.onEmailClick(email);
     this.currentEmail = email;
+    window.setTimeout(() => {
+      this.currentToggleButton = document.getElementById(email.id);
+      this.currentToggleButton.checked = true;
+      EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[this.currentItem.emails.length - 1];
+    }, 1);
   }
 
-  transitionEnd() {
-    if (this.currentToggleButton.checked) {
+  transitionEnd(event) {
+    if (event.elapsedTime >= this.defaultSpeed) {
       this.speed = 0;
+      if (this.closedContainer) {
+        this.closedContainer.clear();
+        if (this.closedContainer.boxes) {
+          this.closedContainer.boxes = [];
+        }
+        this.closedContainer = null;
+      }
     }
+
   }
 }

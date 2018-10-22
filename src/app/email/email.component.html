@@ -33,9 +33,9 @@
                 </span>
 
                 <!-- Email subject bar -->
-                <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected}"
+                <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected && !inputToggle.checked, 'expanded': inputToggle.checked}"
                     (click)="onEmailClick(email)">
-                    <!-- {{email.subject}} -->
+                    
 
                     <span *ngIf="email.isInEditMode else subjectValue">
                         <input #edit class="edit" type="text" [value]="email.subject" (focus)="edit.select()" (blur)="email.isInEditMode = false">
@@ -107,12 +107,12 @@
                 <!-- Email content -->
                 <div style="background-color: #1e1e1e">
                     <div class="email-content-container" [style.transition]="'max-height ' + speed + 's'"
-                        (transitionend)="transitionEnd()" [style.backgroundColor]="email.backgroundColor"
-                        [style.maxHeight.px]="inputToggle.checked ? pageHeight : 0"
+                        (transitionend)="transitionEnd($event)" [style.backgroundColor]="email.backgroundColor"
+                        [style.maxHeight.px]="inputToggle.checked ? email.pageHeight : 0"
                         (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
-                        <div class="page" [style.width.px]="pageWidth" [style.height.px]="pageHeight" [style.opacity]="pageHeight === 0 ? 0 : 1"
+                        <div class="page" [style.width.px]="pageWidth" [style.height.px]="email.pageHeight" [style.opacity]="email.pageHeight === 0 ? 0 : 1"
                             [style.backgroundColor]="email.pageColor">
                             <ng-template #emailContentContainer></ng-template>
                         </div>

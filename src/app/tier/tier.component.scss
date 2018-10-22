@@ -108,3 +108,7 @@ input{
     background-color: #00c500;
     color: #fff;
 }
+.highlight:hover:not(.selected){
+    background: $hover-color;
+    color: white;
+}

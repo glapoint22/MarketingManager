@@ -1,3 +1,5 @@
+@import 'theme';
+
 .container {
     width: 1370px;
     height: 100%;
@@ -21,6 +23,8 @@
     position: relative;
     width: auto;
     height: 23px;
+    border: 1px solid transparent;
+    box-sizing: border-box;
 }
 .email-content-container {
     position: relative;
@@ -30,8 +34,6 @@
     overflow-y: auto;
     background: #1e1e1e;
     clear: both;
-    // transition: max-height 0.5s;
-    // overflow: hidden;
 }
 .row{
     line-height: 23px;
@@ -61,7 +63,7 @@ input {
     width: 18px;
     height: 18px;
     font-size: 16px;
-    color: #d1d1d1;
+    color: #9e9e9e;
     text-align: center;
     display: inline-block;
     margin-left: 8px;
@@ -69,16 +71,15 @@ input {
     position: relative;
     line-height: 24px;
     cursor: pointer;
-    
 }
 .header-button:hover:not(.disabled) {
-    color: #ffffff;
+    color: #d6d6d6;
 }
 .palette {
     width: 6px;
     height: 6px;
     position: absolute;
-    top: 13px;
+    top: 12px;
     border: 1px solid #949494;
     left: 12px;
 }
@@ -98,8 +99,9 @@ input {
 .edit-button{
     float: right;
     margin-right: 11px;
+    color: #c1c1c1;
 }
-.highlight:not(.selected) > .edit-button{
+.highlight:not(.expanded):not(.selected) > .edit-button{
     opacity: 0;
     transition: opacity 0.1s;
 }
@@ -108,6 +110,10 @@ input {
     transition: opacity 0.5s;
     transition-delay: 0.25s;
 }
+.highlight:hover:not(.expanded).highlight:hover:not(.selected){
+    background: $hover-color;
+    color: white;
+}
 .disabled {
     color: #656565;
 }
@@ -115,17 +121,21 @@ input {
     display: inline-block;
     background: #005475;
     color: white;
-    line-height: 23px;
     padding-left: 4px;
-    margin-top: -1px;
     height: 22px;
     margin-left: -5px;
     border: 1px solid #00b7ff;
     box-sizing: border-box;
     outline: none;
-    margin-bottom: 1px;
+    padding-top: 2px;
 }
 .edit::selection {
     background-color: #00c500;
     color: #fff;
+}
+.expanded {
+    background-color: #525252;
+    border: 1px solid #00ff00;
+    box-sizing: border-box;
+    color: white;
 }

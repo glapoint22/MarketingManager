@@ -74,10 +74,6 @@ input:checked ~ .toggle-button:hover::after {
 .toggle-button:hover::after{
     border-left-color: white;
 }
-.highlight:hover:not(.selected){
-    background: $hover-color;
-    color: white;
-}
 .selected{
     background: $selected-color;
     color: white;
