@@ -56,12 +56,12 @@
 
         <div class="property-title">Size</div>
         <span class="property">W:</span>
-        <input #width type="number" [value]="Math.round(editBox.currentEditBox.rect.width)" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
+        <input #width type="number" [value]="editBox.currentEditBox.rect.width" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
             onfocus="this.select()">
         <br>
 
         <span class="property">H:</span>
-        <input #height type="number" [value]="Math.round(editBox.currentEditBox.rect.height)" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
+        <input #height type="number" [value]="editBox.currentEditBox.rect.height" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
             onfocus="this.select()">
     </div>
 </div>

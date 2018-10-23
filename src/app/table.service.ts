@@ -40,7 +40,7 @@ export class TableService {
         // Loop through each column
         columns.forEach((column) => {
           // Set the column properties
-          let columnWidth = Math.round(column.width / row.width * 100) + '%';
+          let columnWidth = column.width / row.width * 100 + '%';
 
           if (columnWidth !== '100%') {
             column.element.vAlign = 'top';
@@ -61,7 +61,7 @@ export class TableService {
 
             // If the box has a left or top margin
             if (box.rect.x > 0 || box.rect.y > 0) {
-              let leftMarginWidth = Math.round((box.rect.x - column.x) / column.width * 100),
+              let leftMarginWidth = (box.rect.x - column.x) / column.width * 100,
                 boxTableContainerWidth = 100 - leftMarginWidth,
                 topMarginHeight = box.rect.y - column.y,
                 containerTable = this.createTable(column.element, '100%');
@@ -99,7 +99,7 @@ export class TableService {
 
             if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
-              let boxTable = this.createTable(boxTableColumn, Math.round(box.rect.width / boxTableColumn.offsetWidth * 100) + '%');
+              let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
               boxTable.bgColor = box.backgroundColor;
               boxTable.className = 'container-box';
 
@@ -113,7 +113,7 @@ export class TableService {
               this.createTable(td, '100%', containerBox.container.boxes);
 
             } else {
-              box.boxToTable(this.createTable(boxTableColumn, Math.round(box.rect.width / boxTableColumn.offsetWidth * 100) + '%'));
+              box.boxToTable(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
             }
           }
         });
@@ -122,33 +122,36 @@ export class TableService {
     return table;
   }
 
+  getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent) {
+    return boxes.find(x => x.rect === box.rect)
+  }
 
   createRows(boxes: Array<EditBoxComponent>, table: HTMLTableElement, position: Vector2) {
     let rows = [], currentRow, j;
 
     // Sort the boxes vertically
-    boxes = boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
+    let sortedBoxes = boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
       if (a.rect.y > b.rect.y) return 1;
       return -1;
     });
 
     // Create the first row based on the top box
     rows.push({
-      boxes: [boxes[0]],
+      boxes: [this.getBox(boxes, sortedBoxes[0])],
       element: table.appendChild(document.createElement('tr')),
       x: position.x,
       y: position.y,
       width: table.clientWidth,
-      height: boxes[0].rect.yMax - position.y
+      height: sortedBoxes[0].rect.yMax - position.y
     });
     currentRow = rows[0];
 
     // See if any other box belongs to this row
-    for (let i = 1; i < boxes.length; i++) {
+    for (let i = 1; i < sortedBoxes.length; i++) {
       for (j = 0; j < currentRow.boxes.length; j++) {
-        if (boxes[i].rect.y < currentRow.boxes[j].rect.yMax) {
-          currentRow.boxes.push(boxes[i]);
-          currentRow.height = Math.max(currentRow.height, boxes[i].rect.yMax - currentRow.y);
+        if (sortedBoxes[i].rect.y < currentRow.boxes[j].rect.yMax) {
+          currentRow.boxes.push(this.getBox(boxes, sortedBoxes[i]));
+          currentRow.height = Math.max(currentRow.height, sortedBoxes[i].rect.yMax - currentRow.y);
           break;
         }
       }
@@ -156,12 +159,12 @@ export class TableService {
       // Create a new row
       if (j === currentRow.boxes.length) {
         rows.push({
-          boxes: [boxes[i]],
+          boxes: [this.getBox(boxes, sortedBoxes[i])],
           element: table.appendChild(document.createElement('tr')),
           x: position.x,
           y: currentRow.height + currentRow.y,
           width: table.clientWidth,
-          height: boxes[i].rect.yMax - (currentRow.height + currentRow.y)
+          height: sortedBoxes[i].rect.yMax - (currentRow.height + currentRow.y)
         });
         currentRow = rows[rows.length - 1];
       }
@@ -174,10 +177,10 @@ export class TableService {
 
 
   createColumns(row, parent: HTMLElement) {
-    let columns = [], currentColumn, j, boxes: Array<EditBoxComponent>;
+    let columns = [], currentColumn, j, sortedBoxes: Array<EditBoxComponent>;
 
     // Sort the boxes horizontally
-    boxes = row.boxes.sort((a: EditBoxComponent, b: EditBoxComponent) => {
+    sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
       if (a.rect.x > b.rect.x) return 1;
       return -1;
     });
@@ -185,21 +188,21 @@ export class TableService {
 
     // Create the first column based on the most left box
     columns.push({
-      boxes: [boxes[0]],
+      boxes: [this.getBox(row.boxes, sortedBoxes[0])],
       element: parent.appendChild(document.createElement('td')),
       x: row.x,
       y: row.y,
-      width: boxes[0].rect.xMax - row.x,
+      width: sortedBoxes[0].rect.xMax - row.x,
       height: row.height
     });
     currentColumn = columns[0];
 
     // See if any other box belongs to this column
-    for (let i = 1; i < boxes.length; i++) {
+    for (let i = 1; i < sortedBoxes.length; i++) {
       for (j = 0; j < currentColumn.boxes.length; j++) {
-        if (boxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
-          currentColumn.boxes.push(boxes[i]);
-          currentColumn.width = Math.max(currentColumn.width, boxes[i].rect.xMax - currentColumn.x);
+        if (sortedBoxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
+          currentColumn.boxes.push(this.getBox(row.boxes, sortedBoxes[i]));
+          currentColumn.width = Math.max(currentColumn.width, sortedBoxes[i].rect.xMax - currentColumn.x);
           break;
         }
       }
@@ -207,11 +210,11 @@ export class TableService {
       // Create a new column
       if (j === currentColumn.boxes.length) {
         columns.push({
-          boxes: [boxes[i]],
+          boxes: [this.getBox(row.boxes, sortedBoxes[i])],
           element: parent.appendChild(document.createElement('td')),
           x: currentColumn.width + currentColumn.x,
           y: row.y,
-          width: boxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
+          width: sortedBoxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
           height: row.height
         });
         currentColumn = columns[columns.length - 1];
@@ -292,6 +295,7 @@ export class TableService {
       }
       EditBoxComponent.currentContainer = container;
       this.editBoxService.createImageBox(boxData);
+      table.style.height = table.className.substr(10) + 'px';
     }
 
     Array.from(table.rows).forEach((row: HTMLTableRowElement) => {

@@ -54,7 +54,6 @@ export class EditBoxService {
     } else {
       this.fileInput.click();
     }
-
   }
 
   createBox(box: Type<EditBoxComponent>, container, contentContainerType?: string) {
@@ -86,6 +85,7 @@ export class EditBoxService {
   copy() {
     if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
       this.copied = this.copyBox(EditBoxComponent.currentEditBox);
+      this.copied.isSelected = true;
     }
   }
 

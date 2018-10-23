@@ -274,6 +274,7 @@ export class EditBoxComponent {
       }
     }
     EditBoxComponent.currentEditBox = this;
+    this.setCurrentContainer();
   }
 
   setCurrentContainer() {
@@ -299,7 +300,7 @@ export class EditBoxComponent {
 
   }
 
-  initialize(rect?: Rect) {
+  initialize(rect?: Rect, isSelected?: boolean) {
     if (!rect.x) {
       let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
         y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect.yMax)) : 0;
@@ -316,6 +317,8 @@ export class EditBoxComponent {
 
     this.setCurrentContainer();
     this.setElement();
+
+    if (isSelected) this.setSelection();
   }
 
 
@@ -344,6 +347,6 @@ export class EditBoxComponent {
 
   onContentChange() {
     EditBoxComponent.change.next();
-   }
+  }
   boxToTable(table: HTMLTableElement) { }
 }

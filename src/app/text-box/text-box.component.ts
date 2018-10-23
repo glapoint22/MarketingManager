@@ -120,7 +120,7 @@ export class TextBoxComponent extends EditBoxComponent {
           this.unSelect();
         }
       }
-      if (!boxData || !boxData.loading) EditBoxComponent.change.next();
+      // if (!boxData || !boxData.loading) EditBoxComponent.change.next();
     }
 
     // Set the size
@@ -128,7 +128,7 @@ export class TextBoxComponent extends EditBoxComponent {
     this.contentContainer.height = rect.height;
 
     // Initialize
-    super.initialize(rect);
+    super.initialize(rect, !boxData || boxData.isSelected);
   }
 
   fixInvalidElements() {

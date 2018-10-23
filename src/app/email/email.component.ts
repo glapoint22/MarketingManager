@@ -89,11 +89,11 @@ export class EmailComponent implements OnInit {
   onToggleButtonClick(input, index, email) {
     this.speed = this.defaultSpeed;
     if (input.checked) {
-
       input.checked = false;
       this.closedContainer = EditBoxComponent.currentContainer;
       EditBoxComponent.currentContainer = null;
     } else {
+      this.closedContainer = null;
       this.onEmailClick(email);
       input.checked = true;
       EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[index];
@@ -115,7 +115,7 @@ export class EmailComponent implements OnInit {
     this.currentEmail.backgroundColor = mainTable.bgColor;
     this.currentEmail.pageColor = pageTable.bgColor;
 
-
+    
     this.tableService.tableToBox(pageTable, new Vector2(rect.left, rect.top), EditBoxComponent.currentContainer);
 
 
