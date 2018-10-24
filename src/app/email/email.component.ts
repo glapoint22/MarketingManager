@@ -116,7 +116,7 @@ export class EmailComponent implements OnInit {
     this.currentEmail.pageColor = pageTable.bgColor;
 
     
-    this.tableService.tableToBox(pageTable, new Vector2(rect.left, rect.top), EditBoxComponent.currentContainer);
+    this.tableService.tableToBox(pageTable, EditBoxComponent.currentContainer);
 
 
     document.body.lastElementChild.remove();

@@ -349,4 +349,8 @@ export class EditBoxComponent {
     EditBoxComponent.change.next();
   }
   boxToTable(table: HTMLTableElement) { }
+
+  getTableRect(boxType){
+    return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;
+  }
 }

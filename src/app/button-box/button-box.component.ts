@@ -318,7 +318,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
   }
 
   boxToTable(table: HTMLTableElement) {
-    table.className = 'button-box';
+    table.summary = this.getTableRect('buttonBox');
 
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;

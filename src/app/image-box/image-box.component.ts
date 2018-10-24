@@ -61,7 +61,8 @@ export class ImageBoxComponent extends UniformBoxComponent {
     img.src = this.contentContainer.src;
     img.style.width = '100%';
     img.style.display = 'block';
-    table.className = 'image-box';
+
+    table.summary = this.getTableRect('imageBox');
 
     if (this.link) {
       let anchor = td.appendChild(document.createElement('a'));

@@ -101,7 +101,7 @@ export class TableService {
               let containerBox = box as ContainerBoxComponent;
               let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
               boxTable.bgColor = box.backgroundColor;
-              boxTable.className = 'container-box';
+              boxTable.summary = containerBox.getTableRect('containerBox');
 
 
               let td = boxTable.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
@@ -231,79 +231,97 @@ export class TableService {
     return columns;
   }
 
-  tableToBox(table: HTMLTableElement, offset: Vector2, container: ViewContainerRef) {
-    let rect = table.getBoundingClientRect();
+  tableToBox(table: HTMLTableElement, container: ViewContainerRef) {
+    if (table.summary !== '') {
+      let rect = this.getRect(table.summary, table.summary.indexOf('-') + 1);
 
-    // Text box
-    if (table.className === 'text-box') {
-      let content = document.createElement('div');
+      // Text box
+      if (table.summary.substr(0, 7) === 'textBox') {
+        let content = document.createElement('div');
 
-      Array.from(table.rows).forEach(row => {
-        let rowContent;
-        if (row.firstElementChild.firstElementChild.tagName === 'OL' || row.firstElementChild.firstElementChild.tagName === 'UL') {
-          rowContent = row.firstElementChild.firstElementChild;
-          rowContent.setAttribute('style', row.firstElementChild.firstElementChild.getAttribute('style'));
-          rowContent.innerHTML = row.firstElementChild.firstElementChild.innerHTML;
-        } else {
-          rowContent = document.createElement('div');
-          rowContent.setAttribute('style', row.firstElementChild.getAttribute('style'));
-          rowContent.innerHTML = row.firstElementChild.innerHTML;
+        Array.from(table.rows).forEach(row => {
+          let rowContent;
+          if (row.firstElementChild.firstElementChild.tagName === 'OL' || row.firstElementChild.firstElementChild.tagName === 'UL') {
+            rowContent = row.firstElementChild.firstElementChild;
+            rowContent.setAttribute('style', row.firstElementChild.firstElementChild.getAttribute('style'));
+            rowContent.innerHTML = row.firstElementChild.firstElementChild.innerHTML;
+          } else {
+            rowContent = document.createElement('div');
+            rowContent.setAttribute('style', row.firstElementChild.getAttribute('style'));
+            rowContent.innerHTML = row.firstElementChild.innerHTML;
+          }
+          content.appendChild(rowContent);
+        });
+
+        let boxData = {
+          content: content.innerHTML,
+          backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
+          loading: true
         }
-        content.appendChild(rowContent);
-      });
+        EditBoxComponent.currentContainer = container;
+        table.style.width = boxData.rect.width + 'px';
+        table.style.height = boxData.rect.height + 'px';
+        this.editBoxService.createTextBox(boxData);
 
-      let boxData = {
-        content: content.innerHTML,
-        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
-        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
-        loading: true
-      }
-      EditBoxComponent.currentContainer = container;
-      this.editBoxService.createTextBox(boxData);
+        // Container box
+      } else if (table.summary.substr(0, 12) === 'containerBox') {
+        let boxData = {
+          backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
+          loading: true
+        }
+        
+        EditBoxComponent.currentContainer = container;
+        this.editBoxService.createContainerBox(boxData);
+        container = EditBoxComponent.currentContainer;
 
-      // Container box
-    } else if (table.className === 'container-box') {
-      let boxData = {
-        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
-        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
-        loading: true
-      }
-      offset = new Vector2(rect.left, rect.top);
-      EditBoxComponent.currentContainer = container;
-      this.editBoxService.createContainerBox(boxData);
-      container = EditBoxComponent.currentContainer;
+        // Button box
+      } else if (table.summary.substr(0, 9) === 'buttonBox') {
+        let boxData = {
+          content: table.getElementsByTagName('table')[0].rows[0].firstElementChild.innerHTML,
+          backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
+          loading: true,
+          link: table.getElementsByTagName('a')[0].getAttribute('href')
+        }
+        EditBoxComponent.currentContainer = container;
+        this.editBoxService.createButtonBox(boxData);
 
-      // Button box
-    } else if (table.className === 'button-box') {
-      let boxData = {
-        content: table.getElementsByTagName('table')[0].rows[0].firstElementChild.innerHTML,
-        backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
-        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
-        loading: true,
-        link: table.getElementsByTagName('a')[0].getAttribute('href')
+        // Image box
+      } else if (table.summary.substr(0, 8) === 'imageBox') {
+        let boxData = {
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
+          loading: true,
+          link: table.getElementsByTagName('a')[0].getAttribute('href'),
+          src: table.getElementsByTagName('img')[0].getAttribute('src')
+        }
+        EditBoxComponent.currentContainer = container;
+        
+        table.style.width = boxData.rect.width + 'px';
+        table.style.height = boxData.rect.height + 'px';
+        this.editBoxService.createImageBox(boxData);
       }
-      EditBoxComponent.currentContainer = container;
-      this.editBoxService.createButtonBox(boxData);
-
-      // Image box
-    } else if (table.className === 'image-box') {
-      let boxData = {
-        rect: new Rect(rect.left - offset.x, rect.top - offset.y, rect.width, rect.height),
-        loading: true,
-        link: table.getElementsByTagName('a')[0].getAttribute('href'),
-        src: table.getElementsByTagName('img')[0].getAttribute('src')
-      }
-      EditBoxComponent.currentContainer = container;
-      this.editBoxService.createImageBox(boxData);
-      table.style.height = table.className.substr(10) + 'px';
     }
 
     Array.from(table.rows).forEach((row: HTMLTableRowElement) => {
       Array.from(row.children).forEach((td: HTMLTableColElement) => {
         if (td.firstElementChild && td.firstElementChild.tagName === 'TABLE') {
-          this.tableToBox(td.firstElementChild as HTMLTableElement, offset, container);
+          this.tableToBox(td.firstElementChild as HTMLTableElement, container);
         }
       });
     });
   }
+
+
+  getRect(summary: string, index: number, rect: Array<number> = []) {
+    let nextIndex = summary.indexOf('-', index);
+    if (nextIndex === -1) nextIndex = summary.length;
+
+    rect.push(parseFloat(summary.substr(index, nextIndex - index)));
+    if (nextIndex === summary.length) return rect;
+    return this.getRect(summary, nextIndex + 1, rect);
+  }
+
+
 }

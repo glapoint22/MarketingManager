@@ -254,7 +254,7 @@ export class TextBoxComponent extends EditBoxComponent {
   }
 
   boxToTable(table: HTMLTableElement) {
-    table.className = 'text-box';
+    table.summary = this.getTableRect('textBox');
 
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
