@@ -34,6 +34,7 @@ export class EditBoxComponent {
   public contentContainer;
   public link: string;
   public backgroundColor: string;
+  public isLoaded: boolean = false;
   public static currentEditBox: EditBoxComponent;
   public static currentContainer: any;
   public static mainContainer: any;
@@ -303,7 +304,7 @@ export class EditBoxComponent {
   initialize(rect?: Rect, isSelected?: boolean) {
     if (!rect.x) {
       let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
-        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect.yMax)) : 0;
+        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect? x.rect.yMax: 0)) : 0;
 
       // Calculate this rect to be at bottom of page
       this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
@@ -311,14 +312,11 @@ export class EditBoxComponent {
       this.rect = rect;
     }
 
-    // Add this new box to the container
-    if (!this.parentContainer.boxes) this.parentContainer.boxes = [];
-    this.parentContainer.boxes.push(this);
-
     this.setCurrentContainer();
     this.setElement();
 
     if (isSelected) this.setSelection();
+    this.isLoaded = true;
   }
 
 

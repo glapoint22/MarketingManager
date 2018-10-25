@@ -114,10 +114,10 @@ export class ButtonBoxComponent extends UniformBoxComponent {
           event.preventDefault();
         }
       }
-      // if (!boxData || !boxData.loading) EditBoxComponent.change.next();
+      super.initialize(rect, !boxData || boxData.isSelected);
     }
 
-    super.initialize(rect, !boxData || boxData.isSelected);
+    
   }
 
 

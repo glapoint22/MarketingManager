@@ -14,7 +14,7 @@
             <i class="fas fa-cut"></i>
         </div>
 
-        <div class="style-button" (click)="editBoxService.paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !editBoxService.copied.box}">
+        <div class="style-button" (click)="editBoxService.paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !editBoxService.copied.boxType}">
             <i class="fas fa-paste"></i>
         </div>
     </div>

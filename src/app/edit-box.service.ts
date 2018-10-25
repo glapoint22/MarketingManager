@@ -24,11 +24,11 @@ export class EditBoxService {
 
         this.dataService.post('/api/Image', formData)
           .subscribe((imageName: any) => {
-            let imageBox = this.createBox(ImageBoxComponent, EditBoxComponent.currentContainer, 'img');
-
-            imageBox.instance.contentContainer.src = 'Images/' + imageName;
-            imageBox.instance.contentContainer.onload = () => {
-              imageBox.instance.initialize();
+            let box = this.createBox(ImageBoxComponent, EditBoxComponent.currentContainer, 'img');
+            this.setChange([box.instance]);
+            box.instance.contentContainer.src = 'Images/' + imageName;
+            box.instance.contentContainer.onload = () => {
+              box.instance.initialize();
             }
           });
       }
@@ -36,15 +36,21 @@ export class EditBoxService {
   }
 
   createTextBox(boxData?) {
-    this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(boxData);
+    let box = this.createBox(TextBoxComponent, EditBoxComponent.currentContainer, 'iframe');
+    box.instance.initialize(boxData);
+    if(!boxData)this.setChange([box.instance]);
   }
 
-  createButtonBox(boxData) {
-    this.createBox(ButtonBoxComponent, EditBoxComponent.currentContainer, 'iframe').instance.initialize(boxData);
+  createButtonBox(boxData?) {
+    let box = this.createBox(ButtonBoxComponent, EditBoxComponent.currentContainer, 'iframe');
+    box.instance.initialize(boxData);
+    if(!boxData)this.setChange([box.instance]);
   }
 
   createContainerBox(boxData?) {
-    this.createBox(ContainerBoxComponent, EditBoxComponent.currentContainer).instance.initialize(boxData);
+    let box = this.createBox(ContainerBoxComponent, EditBoxComponent.currentContainer);
+    box.instance.initialize(boxData)
+    if(!boxData)this.setChange([box.instance]);
   }
 
   createImageBox(boxData?) {
@@ -56,14 +62,19 @@ export class EditBoxService {
     }
   }
 
-  createBox(box: Type<EditBoxComponent>, container, contentContainerType?: string) {
-    let componentFactory = this.resolver.resolveComponentFactory(box),
+  createBox(boxType: Type<EditBoxComponent>, container, contentContainerType?: string) {
+    let componentFactory = this.resolver.resolveComponentFactory(boxType),
       contentContainer = document.createElement(contentContainerType),
       newBox = container.createComponent(componentFactory, null, null, contentContainerType ? [[contentContainer]] : null);
 
     // Set the editbox properties
     newBox.instance.contentContainer = contentContainer;
     newBox.instance.parentContainer = container;
+
+    // Add this new box to the container
+    if (!container.boxes) container.boxes = [];
+    container.boxes.push(newBox.instance);
+
     return newBox;
   }
 
@@ -99,25 +110,25 @@ export class EditBoxService {
 
     // Text
     if (box instanceof TextBoxComponent) {
-      copied.box = TextBoxComponent;
+      copied.boxType = TextBoxComponent;
       copied.contentContainerType = 'iframe';
 
       // Image
     } else if (box instanceof ImageBoxComponent) {
-      copied.box = ImageBoxComponent;
+      copied.boxType = ImageBoxComponent;
       copied.contentContainerType = 'img';
       copied.src = box.contentContainer.src;
       copied.link = box.link;
 
       // Button
     } else if (box instanceof ButtonBoxComponent) {
-      copied.box = ButtonBoxComponent;
+      copied.boxType = ButtonBoxComponent;
       copied.contentContainerType = 'iframe';
       copied.link = box.link;
 
       // Container
     } else if (box instanceof ContainerBoxComponent) {
-      copied.box = ContainerBoxComponent;
+      copied.boxType = ContainerBoxComponent;
       copied.contentContainerType = null;
       copied.boxes = box.container.boxes ? this.copyBoxes(box.container.boxes) : null;
     }
@@ -147,43 +158,57 @@ export class EditBoxService {
   }
 
   paste() {
-    if (this.copied.box) {
-      let box = this.createBox(this.copied.box, EditBoxComponent.currentContainer, this.copied.contentContainerType);
+    if (this.copied.boxType) {
+      let box = this.createBox(this.copied.boxType, EditBoxComponent.currentContainer, this.copied.contentContainerType);
+      let newBoxes: Array<EditBoxComponent> = [];
+
+      newBoxes.push(box.instance);
 
       // Image
-      if (this.copied.box === ImageBoxComponent) {
+      if (this.copied.boxType === ImageBoxComponent) {
         this.setImageBox(box, this.copied);
         // Container
-      } else if (this.copied.box === ContainerBoxComponent) {
+      } else if (this.copied.boxType === ContainerBoxComponent) {
         box.instance.initialize(this.copied);
 
         // Create the boxes in the container
-        this.createBoxesInContainer(box.instance.container, this.copied.boxes);
+        this.createBoxesInContainer(box.instance.container, this.copied.boxes, newBoxes);
       } else {
         box.instance.initialize(this.copied);
       }
+
+      this.setChange(newBoxes);
     }
   }
 
-  createBoxesInContainer(container, boxes) {
+  setChange(changedBoxes: Array<EditBoxComponent>){
+     // Mark a change has happened when all boxes have loaded
+     let interval = window.setInterval(() => {
+      if (changedBoxes.every(x => x.isLoaded)) {
+        EditBoxComponent.change.next();
+        window.clearInterval(interval);
+      }
+    }, 1);
+  }
+
+  createBoxesInContainer(container, boxes, newBoxes: Array<EditBoxComponent>) {
     if (boxes) {
-      boxes.forEach(copy => {
+      boxes.forEach(boxData => {
         // create a new box
-        let newBox = this.createBox(copy.box, container, copy.contentContainerType);
+        let newBox = this.createBox(boxData.boxType, container, boxData.contentContainerType);
+        newBoxes.push(newBox.instance);
 
         // Image
-        if (copy.box === ImageBoxComponent) {
-          newBox.instance.contentContainer.src = copy.src;
-          newBox.instance.contentContainer.onload = () => {
-            newBox.instance.initialize(copy);
-          }
+        if (boxData.boxType === ImageBoxComponent) {
+          this.setImageBox(newBox, boxData);
+
           // Container
-        } else if (copy.box === ContainerBoxComponent) {
-          newBox.instance.initialize(copy);
-          this.createBoxesInContainer(newBox.instance.container, copy.boxes);
+        } else if (boxData.boxType === ContainerBoxComponent) {
+          newBox.instance.initialize(boxData);
+          this.createBoxesInContainer(newBox.instance.container, boxData.boxes, newBoxes);
           // Other
         } else {
-          newBox.instance.initialize(copy);
+          newBox.instance.initialize(boxData);
         }
       });
     }

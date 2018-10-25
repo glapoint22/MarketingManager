@@ -40,7 +40,6 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     this.contentContainer.style.width = '100%';
     this.contentContainer.style.height = '100%';
-    // if (!boxData || !boxData.loading) EditBoxComponent.change.next();
   }
 
   setRightHandle(deltaPosition: Vector2) {

@@ -256,8 +256,7 @@ export class TableService {
         let boxData = {
           content: content.innerHTML,
           backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
-          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
-          loading: true
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
         EditBoxComponent.currentContainer = container;
         table.style.width = boxData.rect.width + 'px';
@@ -268,10 +267,9 @@ export class TableService {
       } else if (table.summary.substr(0, 12) === 'containerBox') {
         let boxData = {
           backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
-          rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
-          loading: true
+          rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
-        
+
         EditBoxComponent.currentContainer = container;
         this.editBoxService.createContainerBox(boxData);
         container = EditBoxComponent.currentContainer;
@@ -282,7 +280,6 @@ export class TableService {
           content: table.getElementsByTagName('table')[0].rows[0].firstElementChild.innerHTML,
           backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
-          loading: true,
           link: table.getElementsByTagName('a')[0].getAttribute('href')
         }
         EditBoxComponent.currentContainer = container;
@@ -290,14 +287,15 @@ export class TableService {
 
         // Image box
       } else if (table.summary.substr(0, 8) === 'imageBox') {
+        let anchor = table.getElementsByTagName('a');
+
         let boxData = {
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
-          loading: true,
-          link: table.getElementsByTagName('a')[0].getAttribute('href'),
+          link: anchor.length > 0 ? anchor[0].getAttribute('href') : null,
           src: table.getElementsByTagName('img')[0].getAttribute('src')
         }
         EditBoxComponent.currentContainer = container;
-        
+
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';
         this.editBoxService.createImageBox(boxData);

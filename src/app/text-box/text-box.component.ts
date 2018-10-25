@@ -120,15 +120,16 @@ export class TextBoxComponent extends EditBoxComponent {
           this.unSelect();
         }
       }
-      // if (!boxData || !boxData.loading) EditBoxComponent.change.next();
+
+      // Set the size
+      this.contentContainer.width = rect.width;
+      this.contentContainer.height = rect.height;
+
+      // Initialize
+      super.initialize(rect, !boxData || boxData.isSelected);
     }
 
-    // Set the size
-    this.contentContainer.width = rect.width;
-    this.contentContainer.height = rect.height;
 
-    // Initialize
-    super.initialize(rect, !boxData || boxData.isSelected);
   }
 
   fixInvalidElements() {
