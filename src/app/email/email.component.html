@@ -11,15 +11,38 @@
 
     <div *ngIf="currentItem && currentItem.isSelected">
         <div class="header">
-            <!-- Delete email button -->
-            <div style="float:right" class="header-button" title="Delete email" (click)="onEmailDelete()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+
+            <!-- Paste email -->
+            <div style="float:right" class="header-button" title="Paste email" (click)="pasteEmail()" [ngClass]="{'disabled': !copy }">
+                <i class="fas fa-paste"></i>
+            </div>
+
+            <!-- Cut email -->
+            <div style="float:right" class="header-button" title="Cut email" (click)="cutEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+                <i class="fas fa-cut"></i>
+            </div>
+
+
+            <!-- Copy email -->
+            <div style="float:right" class="header-button" title="Copy email" (click)="copyEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+                <i class="fas fa-copy"></i>
+            </div>
+
+
+            <!-- Delete email -->
+            <div style="float:right" class="header-button" title="Delete email" (click)="deleteEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 
-            <!-- New email button -->
+            <!-- New email -->
             <div style="float:right" class="header-button" title="New email" (click)="newEmail()">
                 <i class="fas fa-file"></i>
             </div>
+
+
+
+
+
         </div>
 
         <!-- Email container -->
@@ -35,7 +58,7 @@
                 <!-- Email subject bar -->
                 <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected && !inputToggle.checked, 'expanded': inputToggle.checked}"
                     (click)="onEmailClick(email)">
-                    
+
 
                     <span *ngIf="email.isInEditMode else subjectValue">
                         <input #edit class="edit" type="text" [value]="email.subject" (focus)="edit.select()" (blur)="email.isInEditMode = false">
@@ -108,12 +131,11 @@
                 <div style="background-color: #1e1e1e">
                     <div class="email-content-container" [style.transition]="'max-height ' + speed + 's'"
                         (transitionend)="transitionEnd($event)" [style.backgroundColor]="email.backgroundColor"
-                        [style.maxHeight.px]="inputToggle.checked ? email.pageHeight : 0"
-                        (mousedown)="onMouseDown()">
+                        [style.maxHeight.px]="inputToggle.checked ? email.pageHeight : 0" (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
-                        <div class="page" [style.width.px]="pageWidth" [style.height.px]="email.pageHeight" [style.opacity]="email.pageHeight === 0 ? 0 : 1"
-                            [style.backgroundColor]="email.pageColor">
+                        <div class="page" [style.width.px]="pageWidth" [style.height.px]="email.pageHeight"
+                            [style.opacity]="email.pageHeight === 0 ? 0 : 1" [style.backgroundColor]="email.pageColor">
                             <ng-template #emailContentContainer></ng-template>
                         </div>
                     </div>

@@ -75,6 +75,8 @@ export class EditBoxService {
     if (!container.boxes) container.boxes = [];
     container.boxes.push(newBox.instance);
 
+    newBox.instance.setCurrentContainer();
+
     return newBox;
   }
 

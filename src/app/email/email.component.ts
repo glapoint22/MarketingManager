@@ -28,6 +28,7 @@ export class EmailComponent implements OnInit {
   private currentToggleButton;
   private closedContainer: any;
   private defaultSpeed: number = 0.5;
+  private copy: any;
 
   constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService) { }
 
@@ -75,7 +76,7 @@ export class EmailComponent implements OnInit {
   ngDoCheck() {
     if (this.currentEmail)
       if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0) {
-        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect? x.rect.yMax: 0));
+        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 0));
       } else {
         this.currentEmail.pageHeight = 40;
       }
@@ -107,19 +108,18 @@ export class EmailComponent implements OnInit {
   loadEmail() {
     let parser = new DOMParser(),
       doc = parser.parseFromString(this.currentEmail.body, "text/html"),
-      mainTable: HTMLTableElement = document.body.appendChild(doc.body).firstElementChild as HTMLTableElement,
-      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement,
-      rect = pageTable.getBoundingClientRect();
+      mainTable: HTMLTableElement = doc.body.firstElementChild as HTMLTableElement,
+      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement;
 
     // Set the colors
     this.currentEmail.backgroundColor = mainTable.bgColor;
     this.currentEmail.pageColor = pageTable.bgColor;
 
-    
+    // Create the boxes
     this.tableService.tableToBox(pageTable, EditBoxComponent.currentContainer);
 
-
-    document.body.lastElementChild.remove();
+    // Set the current container as this page
+    EditBoxComponent.currentContainer = EditBoxComponent.mainContainer;
   }
 
   onItemClick(item) {
@@ -146,7 +146,7 @@ export class EmailComponent implements OnInit {
     email.selected = true;
   }
 
-  onEmailDelete() {
+  deleteEmail() {
     if (this.currentEmail && this.currentEmail.selected) {
       this.currentEmail.isDeleted = true;
       this.currentEmail.selected = false;
@@ -215,30 +215,25 @@ export class EmailComponent implements OnInit {
 
   }
 
-  newEmail() {
+  newEmail(data?) {
     let day = this.currentItem.emails.length + 1;
 
     this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
     this.currentItem.emails.push({
       id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
-      subject: 'subject',
-      body: '',
+      subject: data ? data.subject : 'subject',
+      body: data ? data.body : '',
       day: day,
-      backgroundColor: '#ffffff',
-      pageColor: '#ffffff'
+      backgroundColor: data ? data.backgroundColor : '#ffffff',
+      pageColor: data ? data.pageColor : '#ffffff'
     });
     this.change += 1;
     let email = this.currentItem.emails[this.currentItem.emails.length - 1];
 
     this.speed = this.defaultSpeed;
-    this.editEmail(email);
     this.onEmailClick(email);
     this.currentEmail = email;
-    window.setTimeout(() => {
-      this.currentToggleButton = document.getElementById(email.id);
-      this.currentToggleButton.checked = true;
-      EditBoxComponent.currentContainer = EditBoxComponent.mainContainer = this.emailContentContainerArray[this.currentItem.emails.length - 1];
-    }, 1);
+    this.editEmail(email);
   }
 
   transitionEnd(event) {
@@ -252,6 +247,28 @@ export class EmailComponent implements OnInit {
         this.closedContainer = null;
       }
     }
+  }
 
+  copyEmail() {
+    if (this.currentEmail && this.currentEmail.selected) {
+      let regex = RegExp(/bgcolor="(#[a-z0-9]+)"/, 'g');
+
+      this.copy = {
+        body: this.currentEmail.body,
+        pageHeight: this.currentEmail.pageHeight,
+        subject: this.currentEmail.subject,
+        backgroundColor: regex.exec(this.currentEmail.body)[1],
+        pageColor: regex.exec(this.currentEmail.body)[1]
+      }
+    }
+  }
+
+  pasteEmail() {
+    if (this.copy) this.newEmail(this.copy);
+  }
+
+  cutEmail() {
+    this.copyEmail();
+    this.deleteEmail();
   }
 }

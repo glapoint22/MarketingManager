@@ -79,4 +79,8 @@ export class PropertiesComponent {
     editBox.setBottomHandle(new Vector2(0, input.valueAsNumber - input.oldValue));
     if (editBox.rect.height !== input.valueAsNumber) input.value = editBox.rect.height;
   }
+
+  setChange(){
+    EditBoxComponent.change.next();
+  }
 }

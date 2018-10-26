@@ -312,7 +312,6 @@ export class EditBoxComponent {
       this.rect = rect;
     }
 
-    this.setCurrentContainer();
     this.setElement();
 
     if (isSelected) this.setSelection();
