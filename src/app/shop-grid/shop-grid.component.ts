@@ -221,7 +221,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
                 .map(z => ({
                   id: z.id,
                   name: z.data[0].value,
-                  isChecked: item.filters ? item.filters.some(x => x === z.id) : false
+                  isChecked: item.filters ? item.filters.some(x => x.filterOption === z.id) : false
                 }))
             }))
         }
@@ -272,8 +272,9 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
             Selected: x.isSelected
           })),
           ProductFilters: item.filters.map(x => ({
+            ID: x.id,
             ProductID: item.id,
-            FilterLabelID: x
+            FilterLabelID: x.filterOption
           })),
           ProductVideos: item.videos.map(x => ({
             ProductID: item.id,
@@ -360,11 +361,14 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.saveUpdate(this.currentItem, this.tiers[2]);
     if (!option.isChecked) {
       option.isChecked = true;
-      this.currentItem.filters.push(option.id);
+      // this.currentItem.filters.push(option.id);
+      this.currentItem.filters.push({
+        filterOption: option.id,
+      });
       this.currentItem.filters.sort((a, b) => { return a - b });
     } else {
       option.isChecked = false;
-      this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x === option.id), 1);
+      this.currentItem.filters.splice(this.currentItem.filters.findIndex(x => x.filterOption === option.id), 1);
     }
     this.saveService.checkForNoChanges();
   }

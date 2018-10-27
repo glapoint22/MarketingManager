@@ -148,16 +148,19 @@ export class EmailComponent implements OnInit {
 
   deleteEmail() {
     if (this.currentEmail && this.currentEmail.selected) {
-      this.currentEmail.isDeleted = true;
+      // this.currentEmail.isDeleted = true;
       this.currentEmail.selected = false;
       this.change += 1;
       this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
       this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
 
-      // Reorder the days of this item's emails
-      this.currentItem.emails.forEach((email, i) => {
-        email.day = i + 1;
-      });
+      if (this.currentItem.tierIndex === 2) {
+        // Reorder the days of this item's emails
+        this.currentItem.emails.forEach((email, i) => {
+          email.day = i + 1;
+        });
+      }
+
     }
   }
 
@@ -216,24 +219,28 @@ export class EmailComponent implements OnInit {
   }
 
   newEmail(data?) {
-    let day = this.currentItem.emails.length + 1;
+    if ((this.currentItem.tierIndex === 1 && this.currentItem.emails.length === 0) || this.currentItem.tierIndex === 2) {
+      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      this.currentItem.emails.push({
+        id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
+        subject: data ? data.subject : 'subject',
+        body: data ? data.body : '',
+        backgroundColor: data ? data.backgroundColor : '#ffffff',
+        pageColor: data ? data.pageColor : '#ffffff'
+      });
+      let email = this.currentItem.emails[this.currentItem.emails.length - 1];
 
-    this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
-    this.currentItem.emails.push({
-      id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
-      subject: data ? data.subject : 'subject',
-      body: data ? data.body : '',
-      day: day,
-      backgroundColor: data ? data.backgroundColor : '#ffffff',
-      pageColor: data ? data.pageColor : '#ffffff'
-    });
-    this.change += 1;
-    let email = this.currentItem.emails[this.currentItem.emails.length - 1];
+      if (this.currentItem.tierIndex === 2) {
+        email.day = this.currentItem.emails.length;
+      }
 
-    this.speed = this.defaultSpeed;
-    this.onEmailClick(email);
-    this.currentEmail = email;
-    this.editEmail(email);
+      this.change += 1;
+      this.onEmailClick(email);
+      this.currentEmail = email;
+      this.editEmail(email);
+    }
+
+
   }
 
   transitionEnd(event) {

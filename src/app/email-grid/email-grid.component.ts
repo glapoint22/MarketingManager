@@ -69,6 +69,21 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           width: 5000
         }
       ],
+      setItem: (item) => {
+        return {
+          ID: item.id,
+          LeadMagnetEmails: item.emails.map(x => ({
+            ID: x.id,
+            NicheID: item.id,
+            Subject: x.subject,
+            Body: x.body
+          }))
+        }
+      },
+      check: (item) => {
+        return true;
+      },
+      url: 'api/Niches'
     });
 
     //Products
@@ -115,7 +130,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       check: (item) => {
         return true;
       },
-      url: 'api/Mail'
+      url: 'api/Products'
     });
 
     super.createTiers();
