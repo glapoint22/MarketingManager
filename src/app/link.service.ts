@@ -22,28 +22,28 @@ export class LinkService {
         value: ''
       },
       {
-        name: 'Home (https://www.nicheshack.com)',
-        value: 'https://www.nicheshack.com'
+        name: 'nicheshack (https://www.nicheshack.com)',
+        value: '{3}'
       },
       {
         name: 'Email Preferences',
-        value: 'https://www.nicheshack.com/preferences?cid={2}'
+        value: '{3}/preferences?cid={2}'
       },
       {
         name: 'This Email',
-        value: 'https://www.nicheshack.com/mail?eid={1}&cid={2}'
+        value: '{3}/mail?eid={1}&cid={2}'
       },
     ];
 
     if (gridItem.hoplink) {
       this.linkOptions.push({
         name: 'Hoplink',
-        value: gridItem.hoplink + '?tid={2}{3}'
+        value: gridItem.hoplink + '?tid={2}' + gridItem.id
       });
     } else if (gridItem.leadMagnet) {
       this.linkOptions.push({
         name: 'Lead Magnet',
-        value: 'https://www.nicheshack.com/Downloads/' + gridItem.leadMagnet
+        value: '{3}/Downloads/' + gridItem.leadMagnet
       });
     }
 

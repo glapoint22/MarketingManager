@@ -121,6 +121,19 @@ export class TextBoxComponent extends EditBoxComponent {
         }
       }
 
+      this.content.onpaste = (event) => {
+        let text = event.clipboardData.getData('text'),
+          selection = this.content.ownerDocument.getSelection(),
+          range: any = selection.getRangeAt(0);
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (range.startContainer === range.endContainer) {
+          range.startContainer.replaceData(range.startOffset, range.endOffset - range.startOffset, text);
+        }
+      }
+
       // Set the size
       this.contentContainer.width = rect.width;
       this.contentContainer.height = rect.height;
@@ -137,6 +150,7 @@ export class TextBoxComponent extends EditBoxComponent {
       let selection = this.content.ownerDocument.getSelection();
       let range: any = selection.getRangeAt(0);
       let startContainer: any = range.startContainer;
+
 
       // Content has been deleted
       if (range.startContainer === this.content) {
