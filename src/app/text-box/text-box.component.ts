@@ -121,16 +121,78 @@ export class TextBoxComponent extends EditBoxComponent {
         }
       }
 
+      // OnPaste
       this.content.onpaste = (event) => {
         let text = event.clipboardData.getData('text'),
           selection = this.content.ownerDocument.getSelection(),
           range: any = selection.getRangeAt(0);
 
         event.preventDefault();
-        event.stopPropagation();
 
+        // Single container
         if (range.startContainer === range.endContainer) {
-          range.startContainer.replaceData(range.startOffset, range.endOffset - range.startOffset, text);
+
+          if (range.startContainer.tagName === 'BR') {
+            range.startContainer.replaceWith(text);
+          } else {
+            range.startContainer.replaceData(range.startOffset, range.endOffset - range.startOffset, text);
+          }
+          // Multiple containers
+        } else {
+          let start = range.startContainer, end = range.endContainer;
+
+          // Get the start and end nodes
+          while (start.tagName !== 'DIV' && start.tagName !== 'OL' && start.tagName !== 'UL') {
+            start = start.parentElement;
+          }
+
+          while (end.tagName !== 'DIV' && end.tagName !== 'OL' && end.tagName !== 'UL') {
+            end = end.parentElement;
+          }
+
+          // Paste the text
+          range.startContainer.replaceData(range.startOffset, range.startContainer.length, text);
+
+          // Loop through each child node in the content
+          for (let i = 0; i < this.content.childElementCount; i++) {
+            let child = this.content.children[i];
+
+            // Remove child if it's not the start or end node and it's in the selection
+            if (child !== start && child !== end && range.isPointInRange(child, 0)) {
+              child.remove();
+              i--;
+
+              // If the child is a list node and it it's in the selection
+            } else if ((child.tagName === 'UL' || child.tagName === 'OL') && range.isPointInRange(child, 0)) {
+              for (let j = 0; j < child.childElementCount; j++) {
+                if (range.isPointInRange(child.children[j], 0)) {
+                  if (!Array.from(child.children[j].children).some((x: HTMLElement) => x.firstChild === range.endContainer)) {
+                    child.children[j].remove();
+                    j--;
+                  } else {
+                    for (let k = 0; k < child.children[j].childElementCount; k++) {
+                      if (child.children[j].children[k].firstChild === range.endContainer) {
+                        if (child.children[j].children[k].firstChild.length === range.endOffset) child.children[j].children[k].remove();
+                        break;
+                      } else {
+                        child.children[j].children[k].remove();
+                        k--;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if (range.endContainer.nodeType === 3) {
+            if (range.endOffset === range.endContainer.length) {
+              end.remove();
+            } else {
+              range.endContainer.deleteData(0, range.endOffset);
+            }
+          }
+
+
         }
       }
 
@@ -168,7 +230,7 @@ export class TextBoxComponent extends EditBoxComponent {
       }
 
       if (startContainer.firstElementChild.tagName === 'FONT') {
-        startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
+        if (startContainer.previousElementSibling) startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
         startContainer.firstElementChild.replaceWith(document.createElement('BR'));
       }
 
