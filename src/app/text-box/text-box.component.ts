@@ -131,67 +131,23 @@ export class TextBoxComponent extends EditBoxComponent {
 
         // Single container
         if (range.startContainer === range.endContainer) {
-
           if (range.startContainer.tagName === 'BR') {
             range.startContainer.replaceWith(text);
+            range.setStart(range.startContainer.firstChild, range.startContainer.firstChild.length);
           } else {
             range.startContainer.replaceData(range.startOffset, range.endOffset - range.startOffset, text);
           }
           // Multiple containers
         } else {
-          let start = range.startContainer, end = range.endContainer;
+          let endParentContainer = range.endContainer;
 
-          // Get the start and end nodes
-          while (start.tagName !== 'DIV' && start.tagName !== 'OL' && start.tagName !== 'UL') {
-            start = start.parentElement;
+          // Get the parent container the end conter is in
+          while (endParentContainer.tagName !== 'DIV' && endParentContainer.tagName !== 'OL' && endParentContainer.tagName !== 'UL') {
+            endParentContainer = endParentContainer.parentElement;
           }
 
-          while (end.tagName !== 'DIV' && end.tagName !== 'OL' && end.tagName !== 'UL') {
-            end = end.parentElement;
-          }
-
-          // Paste the text
-          range.startContainer.replaceData(range.startOffset, range.startContainer.length, text);
-
-          // Loop through each child node in the content
-          for (let i = 0; i < this.content.childElementCount; i++) {
-            let child = this.content.children[i];
-
-            // Remove child if it's not the start or end node and it's in the selection
-            if (child !== start && child !== end && range.isPointInRange(child, 0)) {
-              child.remove();
-              i--;
-
-              // If the child is a list node and it it's in the selection
-            } else if ((child.tagName === 'UL' || child.tagName === 'OL') && range.isPointInRange(child, 0)) {
-              for (let j = 0; j < child.childElementCount; j++) {
-                if (range.isPointInRange(child.children[j], 0)) {
-                  if (!Array.from(child.children[j].children).some((x: HTMLElement) => x.firstChild === range.endContainer)) {
-                    child.children[j].remove();
-                    j--;
-                  } else {
-                    for (let k = 0; k < child.children[j].childElementCount; k++) {
-                      if (child.children[j].children[k].firstChild === range.endContainer) {
-                        if (child.children[j].children[k].firstChild.length === range.endOffset) child.children[j].children[k].remove();
-                        break;
-                      } else {
-                        child.children[j].children[k].remove();
-                        k--;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          if (range.endContainer.nodeType === 3) {
-            if (range.endOffset === range.endContainer.length) {
-              end.remove();
-            } else {
-              range.endContainer.deleteData(0, range.endOffset);
-            }
-          }
-
+          // Loop through the children and paste the contents
+          this.loopChildren(this.content, range, text, endParentContainer);
 
         }
       }
@@ -207,11 +163,43 @@ export class TextBoxComponent extends EditBoxComponent {
 
   }
 
+  loopChildren(node: HTMLElement, range, text, endParentContainer) {
+    if (node === range.startContainer) {
+      range.startContainer.replaceData(range.startOffset, range.startContainer.length, text);
+    } else if (node === range.endContainer) {
+      if (range.endOffset === range.endContainer.length) {
+        if (endParentContainer === 'OL' || endParentContainer === 'UL') {
+          range.endContainer.parentElement.parentElement.remove();
+        } else {
+          range.endContainer.parentElement.remove();
+        }
+      } else {
+        range.endContainer.deleteData(0, range.endOffset);
+      }
+    } else {
+      if (range.isPointInRange(node, 0)) {
+        if (node !== range.endContainer.parentElement && node !== range.endContainer.parentElement.parentElement && node !== endParentContainer) {
+          node.remove();
+        }
+      }
+    }
+
+    Array.from(node.childNodes).forEach((child: HTMLElement) => {
+      this.loopChildren(child, range, text, endParentContainer);
+    });
+  }
+
   fixInvalidElements() {
     window.setTimeout(() => {
       let selection = this.content.ownerDocument.getSelection();
       let range: any = selection.getRangeAt(0);
       let startContainer: any = range.startContainer;
+
+      if(range.collapsed){
+        if(range.startContainer.tagName === 'SPAN'){
+          range.selectNodeContents(range.startContainer.firstChild);
+        }
+      }
 
 
       // Content has been deleted
