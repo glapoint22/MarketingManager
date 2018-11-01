@@ -76,5 +76,6 @@ input:checked ~ .toggle-button:hover::after {
 }
 .selected{
     background: $selected-color;
-    color: white;
+    color: #ffffff;
+    font-weight: bold;
 }

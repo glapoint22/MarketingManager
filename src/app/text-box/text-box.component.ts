@@ -129,6 +129,8 @@ export class TextBoxComponent extends EditBoxComponent {
 
         event.preventDefault();
 
+        if (text.length === 0) return;
+
         // Single container
         if (range.startContainer === range.endContainer) {
           if (range.startContainer.tagName === 'BR') {
@@ -195,8 +197,8 @@ export class TextBoxComponent extends EditBoxComponent {
       let range: any = selection.getRangeAt(0);
       let startContainer: any = range.startContainer;
 
-      if(range.collapsed){
-        if(range.startContainer.tagName === 'SPAN'){
+      if (range.collapsed) {
+        if (range.startContainer.tagName === 'SPAN') {
           range.selectNodeContents(range.startContainer.firstChild);
         }
       }

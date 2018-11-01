@@ -1,3 +1,6 @@
+@import 'theme';
+
+
 .edit-box {
     position: absolute;
     cursor: move;
@@ -18,7 +21,7 @@
     width: 7px;
     height: 7px;
     background-color: #fff;
-    border: 1px solid #3899ec;
+    border: 1px solid $hover-color;
     border-radius: 50%;
 }
 .horizontal-handle {
@@ -81,16 +84,16 @@
 }
 
 .selected {
-    outline-color: #3899ec;
+    outline-color: $selected-color;
     z-index: 1;
 }
 
 .edit-box:hover:not(.selected){
-    outline-color: #00ff00;
+    outline-color: $hover-color;
     z-index: 10;
 }
 .edit-mode {
-    outline-width: 2px;
+    outline-width: 1px;
     outline-style: dashed;
 }
 .content {
