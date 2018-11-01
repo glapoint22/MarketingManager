@@ -76,7 +76,7 @@ export class EmailComponent implements OnInit {
   ngDoCheck() {
     if (this.currentEmail)
       if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0) {
-        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 0));
+        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 40));
       } else {
         this.currentEmail.pageHeight = 40;
       }

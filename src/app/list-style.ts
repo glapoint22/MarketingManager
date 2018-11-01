@@ -53,6 +53,7 @@ export class ListStyle extends Style {
         endContainer = this.editBox.content.children[Style.range.endOffset - 1].lastElementChild.lastElementChild.firstChild;
         Style.selection.setBaseAndExtent(startContainer, 0, endContainer, endContainer.length);
         Style.range = Style.selection.getRangeAt(0);
+        Style.range.collapse();
     }
 
     removeList() {
@@ -90,6 +91,7 @@ export class ListStyle extends Style {
         extentNode = this.editBox.content.children[indices.startContainerIndex + elementCount].lastElementChild.firstChild;
         Style.selection.setBaseAndExtent(baseNode, 0, extentNode, extentNode.length);
         Style.range = Style.selection.getRangeAt(0);
+        Style.range.collapse();
     }
 
 

@@ -135,9 +135,10 @@ export class TextBoxComponent extends EditBoxComponent {
         if (range.startContainer === range.endContainer) {
           if (range.startContainer.tagName === 'BR') {
             range.startContainer.replaceWith(text);
-            range.setStart(range.startContainer.firstChild, range.startContainer.firstChild.length);
+            range.setStart(range.endContainer.firstChild, range.endContainer.firstChild.length);
           } else {
             range.startContainer.replaceData(range.startOffset, range.endOffset - range.startOffset, text);
+            range.setStart(range.endContainer, range.endContainer.length);
           }
           // Multiple containers
         } else {
@@ -150,9 +151,10 @@ export class TextBoxComponent extends EditBoxComponent {
 
           // Loop through the children and paste the contents
           this.loopChildren(this.content, range, text, endParentContainer);
-
+          range.collapse();
         }
       }
+
 
       // Set the size
       this.contentContainer.width = rect.width;
@@ -170,13 +172,14 @@ export class TextBoxComponent extends EditBoxComponent {
       range.startContainer.replaceData(range.startOffset, range.startContainer.length, text);
     } else if (node === range.endContainer) {
       if (range.endOffset === range.endContainer.length) {
-        if (endParentContainer === 'OL' || endParentContainer === 'UL') {
+        if (endParentContainer.tagName === 'OL' || endParentContainer.tagName === 'UL') {
           range.endContainer.parentElement.parentElement.remove();
         } else {
           range.endContainer.parentElement.remove();
         }
+        if (endParentContainer.childElementCount === 0) endParentContainer.remove();
       } else {
-        range.endContainer.deleteData(0, range.endOffset);
+        if (range.endContainer.nodeType === 3) range.endContainer.deleteData(0, range.endOffset);
       }
     } else {
       if (range.isPointInRange(node, 0)) {
@@ -196,6 +199,7 @@ export class TextBoxComponent extends EditBoxComponent {
       let selection = this.content.ownerDocument.getSelection();
       let range: any = selection.getRangeAt(0);
       let startContainer: any = range.startContainer;
+      let text;
 
       if (range.collapsed) {
         if (range.startContainer.tagName === 'SPAN') {
@@ -221,27 +225,34 @@ export class TextBoxComponent extends EditBoxComponent {
 
       if (startContainer.firstElementChild.tagName === 'FONT') {
         if (startContainer.previousElementSibling) startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
+        if (startContainer.firstElementChild.firstChild.nodeType === 3) text = startContainer.firstElementChild.firstChild;
         startContainer.firstElementChild.replaceWith(document.createElement('BR'));
       }
 
       // Fix element if we have a break tag inside a div
       if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {
         let span = document.createElement('SPAN'),
-          br = document.createElement('BR');
+          child = text ? text : document.createElement('BR');
 
         span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
         span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
         span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
         span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+        if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
 
         let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
         span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
-        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
 
-        span.appendChild(br);
+        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+        if (span.style.fontSize === '') span.style.fontSize = '16px';
+
+        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+        if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+
+        span.appendChild(child);
         range.startContainer.firstElementChild.replaceWith(span);
-        range.selectNodeContents(br);
+        range.selectNodeContents(child);
+        range.collapse();
         this.checkSelectionForStyles();
       }
     }, 1);

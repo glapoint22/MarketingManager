@@ -289,8 +289,8 @@ export class EditBoxComponent {
 
       let selection = this.content.ownerDocument.getSelection(),
         node: any = this.content,
-        firstChild = node.firstChild.firstChild.nodeType === 3 ? node.firstChild.firstChild : node.firstChild.firstChild.firstChild,
-        lastChild = node.lastChild.lastChild.nodeType === 3 ? node.lastChild.lastChild : node.lastChild.lastChild.firstChild;
+        firstChild = this.getChild(node.firstChild),
+        lastChild = this.getChild(node.lastChild.lastChild);
 
       selection.setBaseAndExtent(firstChild, 0, lastChild, lastChild.length);
       this.content.style.setProperty('cursor', 'text');
@@ -299,6 +299,16 @@ export class EditBoxComponent {
       this.checkSelectionForStyles();
     }
 
+  }
+
+  getChild(parent){
+    let node = parent;
+
+    while(node.nodeType !== 3 && node.tagName !== 'BR'){
+      node = node.firstChild;
+    }
+
+    return node;
   }
 
   initialize(rect?: Rect, isSelected?: boolean) {
