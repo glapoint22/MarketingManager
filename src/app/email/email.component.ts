@@ -22,6 +22,7 @@ export class EmailComponent implements OnInit {
   public change: number = 0;
   public currentItem;
   public speed: number;
+  public editBoxComponent = EditBoxComponent;
   private emailContentContainerArray: Array<any>;
   private colorPalette: HTMLInputElement;
   private currentEmail;
@@ -76,9 +77,9 @@ export class EmailComponent implements OnInit {
   ngDoCheck() {
     if (this.currentEmail)
       if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0) {
-        this.currentEmail.pageHeight = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 40));
+        EditBoxComponent.mainContainer.height = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 40));
       } else {
-        this.currentEmail.pageHeight = 40;
+        EditBoxComponent.mainContainer.height = 40;
       }
   }
 
@@ -262,7 +263,6 @@ export class EmailComponent implements OnInit {
 
       this.copy = {
         body: this.currentEmail.body,
-        pageHeight: this.currentEmail.pageHeight,
         subject: this.currentEmail.subject,
         backgroundColor: regex.exec(this.currentEmail.body)[1],
         pageColor: regex.exec(this.currentEmail.body)[1]

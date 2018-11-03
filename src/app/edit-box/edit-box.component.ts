@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(private app: ApplicationRef) { }
+  constructor(public app: ApplicationRef) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -85,6 +85,17 @@ export class EditBoxComponent {
         case 'bottomRight':
           this.setBottomRightHandle(deltaPosition);
           break;
+      }
+      if (this.parentContainer.injector.view.component.rect) {
+        let yMax = Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0));
+        let rect = this.parentContainer.injector.view.component.rect;
+
+        if (yMax > rect.height) {
+          this.parentContainer.injector.view.component.handle = '';
+          this.parentContainer.injector.view.component.setRect(() => {
+            return new Rect(rect.x, rect.y, rect.width, yMax);
+          });
+        }
       }
     }
   }
@@ -171,7 +182,8 @@ export class EditBoxComponent {
 
   setRect(action, response?) {
     let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center),
-      containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
+      containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
+      containerHeight = this.parentContainer.element.nativeElement.parentElement.clientHeight;
 
     // Test rect against container
     if (tempRect.x < 0) {
@@ -186,6 +198,9 @@ export class EditBoxComponent {
       this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
+    // if (tempRect.yMax > containerHeight) {
+    //   this.setTopCollision(tempRect, new Rect(0, containerHeight, 0, 0));
+    // }
 
     // Test rect against other rects
     for (let i = 0; i < this.parentContainer.boxes.length; i++) {
@@ -301,10 +316,10 @@ export class EditBoxComponent {
 
   }
 
-  getChild(parent){
+  getChild(parent) {
     let node = parent;
 
-    while(node.nodeType !== 3 && node.tagName !== 'BR'){
+    while (node.nodeType !== 3 && node.tagName !== 'BR') {
       node = node.firstChild;
     }
 
@@ -314,7 +329,7 @@ export class EditBoxComponent {
   initialize(rect?: Rect, isSelected?: boolean) {
     if (!rect.x) {
       let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
-        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect? x.rect.yMax: 0)) : 0;
+        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
 
       // Calculate this rect to be at bottom of page
       this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
@@ -357,7 +372,7 @@ export class EditBoxComponent {
   }
   boxToTable(table: HTMLTableElement) { }
 
-  getTableRect(boxType){
+  getTableRect(boxType) {
     return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;
   }
 }

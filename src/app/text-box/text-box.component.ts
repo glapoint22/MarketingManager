@@ -268,6 +268,10 @@ export class TextBoxComponent extends EditBoxComponent {
       this.contentContainer.height = this.rect.height;
     }
     super.onContentChange();
+    if (this.rect.yMax > EditBoxComponent.currentContainer.height) {
+      this.app.tick();
+    }
+
   }
 
   setRightHandle(deltaPosition: Vector2) {

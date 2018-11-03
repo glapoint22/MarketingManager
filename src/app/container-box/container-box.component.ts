@@ -145,4 +145,35 @@ export class ContainerBoxComponent extends EditBoxComponent {
   setCurrentContainer() {
     EditBoxComponent.currentContainer = this.container;
   }
+
+  // onMouseMove(event: MouseEvent) {
+  //   super.onMouseMove(event);
+  //   if (this.container.boxes && this.container.boxes.length > 0) {
+  //     let yMax = Math.max(...this.container.boxes.map(x => x.rect ? x.rect.yMax : 0));
+  //     if (yMax > this.rect.height) {
+  //       if (!this.isMousedown) {
+  //         this.handle = '';
+  //       }
+
+
+  //       this.setRect(() => {
+  //         return new Rect(this.rect.x, this.rect.y, this.rect.width, yMax);
+  //       }
+
+  //         // , (tempRect) => {
+  //         //   let box: EditBoxComponent = this.container.boxes.find(x => x.rect.yMax === yMax);
+  //         //   box.setRect(()=>{
+  //         //     return new Rect(box.rect.x, box.rect.y - (yMax - tempRect.height), box.rect.width, box.rect.height);
+  //         //   });
+
+
+  //         //   return new Rect(tempRect.x, tempRect.y, tempRect.width, tempRect.height);
+  //         // }
+  //       );
+  //     }
+  //   }
+  // }
+
+
+
 }
