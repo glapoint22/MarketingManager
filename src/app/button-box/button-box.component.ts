@@ -309,7 +309,12 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
         span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
 
-        range.startContainer.firstElementChild.replaceWith(span);
+        if(range.startContainer.firstElementChild){
+          range.startContainer.firstElementChild.replaceWith(span);
+        }else{
+          range.startContainer.appendChild(span);
+        }
+        
         range.selectNodeContents(br);
         this.checkSelectionForStyles();
       }
