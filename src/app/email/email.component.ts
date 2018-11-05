@@ -66,6 +66,7 @@ export class EmailComponent implements OnInit {
 
       div.remove();
     });
+    this.editBoxComponent.minContainerHeight = 40;
   }
 
   ngAfterViewInit() {
@@ -73,16 +74,6 @@ export class EmailComponent implements OnInit {
       this.emailContentContainerArray = x.toArray();
     });
   }
-
-  ngDoCheck() {
-    if (this.currentEmail)
-      if (EditBoxComponent.mainContainer && EditBoxComponent.mainContainer.boxes && EditBoxComponent.mainContainer.boxes.length > 0) {
-        EditBoxComponent.mainContainer.height = Math.max(...EditBoxComponent.mainContainer.boxes.map(x => x.rect ? x.rect.yMax : 40));
-      } else {
-        EditBoxComponent.mainContainer.height = 40;
-      }
-  }
-
 
   setHeight() {
     this.height = window.innerHeight - 22;
@@ -103,6 +94,7 @@ export class EmailComponent implements OnInit {
       if (this.currentEmail.body !== '' && (!EditBoxComponent.currentContainer.boxes || EditBoxComponent.currentContainer.boxes.length === 0)) {
         this.loadEmail();
       }
+      EditBoxComponent.setContainerHeight(EditBoxComponent.mainContainer);
     }
   }
 

@@ -39,6 +39,7 @@ export class EditBoxComponent {
   public static currentContainer: any;
   public static mainContainer: any;
   public static change = new Subject<void>();
+  public static minContainerHeight: number;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -86,17 +87,7 @@ export class EditBoxComponent {
           this.setBottomRightHandle(deltaPosition);
           break;
       }
-      if (this.parentContainer.injector.view.component.rect) {
-        let yMax = Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0));
-        let rect = this.parentContainer.injector.view.component.rect;
-
-        if (yMax > rect.height) {
-          this.parentContainer.injector.view.component.handle = '';
-          this.parentContainer.injector.view.component.setRect(() => {
-            return new Rect(rect.x, rect.y, rect.width, yMax);
-          });
-        }
-      }
+      EditBoxComponent.setContainerHeight(this.parentContainer);
     }
   }
 
@@ -198,9 +189,14 @@ export class EditBoxComponent {
       this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    // if (tempRect.yMax > containerHeight) {
-    //   this.setTopCollision(tempRect, new Rect(0, containerHeight, 0, 0));
-    // }
+    if (this.parentContainer.injector.view.component.rect) {
+      if (tempRect.yMax > containerHeight) {
+        if (this.parentContainer.injector.view.component.parentContainer.boxes.some(x => x.rect.y === this.parentContainer.injector.view.component.rect.yMax)) {
+          this.setTopCollision(tempRect, new Rect(0, containerHeight, 0, 0));
+        }
+      }
+    }
+
 
     // Test rect against other rects
     for (let i = 0; i < this.parentContainer.boxes.length; i++) {
@@ -374,5 +370,51 @@ export class EditBoxComponent {
 
   getTableRect(boxType) {
     return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;
+  }
+
+  static setContainerHeight(container) {
+    // If container has any boxes
+    if (container.boxes && container.boxes.length > 0) {
+
+      // If every box has a rect
+      if (container.boxes.every(x => x.rect)) {
+
+        // Container box
+        if (container.injector.view.component.rect) {
+          let yMax = Math.max(...container.boxes.map(x => x.rect.yMax));
+          let rect = container.injector.view.component.rect;
+
+          container.injector.view.component.handle = '';
+          container.injector.view.component.setRect(() => {
+            return new Rect(rect.x, rect.y, rect.width, Math.max(container.injector.view.component.fixedHeight, yMax));
+          });
+          EditBoxComponent.setContainerHeight(container.injector.view.component.parentContainer);
+
+          // Main container
+        } else {
+          container.height = Math.max(...container.boxes.map(x => x.rect.yMax));
+        }
+
+        // Wait until all boxes have their rects
+      } else {
+        container.height = EditBoxComponent.minContainerHeight;
+        let interval = window.setInterval(() => {
+          if (container.boxes.every(x => x.rect)) {
+            EditBoxComponent.setContainerHeight(container);
+            window.clearInterval(interval);
+          }
+        }, 1);
+      }
+
+      // Container has no boxes
+    } else {
+      if (container.injector.view.component.rect) {
+        // Set parent container height
+        EditBoxComponent.setContainerHeight(container.injector.view.component.parentContainer);
+      } else {
+        // Set the default container height
+        container.height = EditBoxComponent.minContainerHeight;
+      }
+    }
   }
 }

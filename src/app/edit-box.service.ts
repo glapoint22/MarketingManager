@@ -92,6 +92,7 @@ export class EditBoxService {
       EditBoxComponent.currentContainer.boxes.splice(index, 1);
 
       EditBoxComponent.change.next();
+      EditBoxComponent.setContainerHeight(EditBoxComponent.currentContainer);
     }
   }
 
@@ -188,6 +189,7 @@ export class EditBoxService {
      let interval = window.setInterval(() => {
       if (changedBoxes.every(x => x.isLoaded)) {
         EditBoxComponent.change.next();
+        EditBoxComponent.setContainerHeight(EditBoxComponent.currentContainer);
         window.clearInterval(interval);
       }
     }, 1);

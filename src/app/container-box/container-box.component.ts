@@ -12,6 +12,7 @@ import { Rect } from '../rect';
 export class ContainerBoxComponent extends EditBoxComponent {
   @ViewChild('container', { read: ViewContainerRef }) container: any;
   private minSize: number = 8;
+  public fixedHeight: number;
 
   initialize(boxData) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
@@ -31,6 +32,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       rect = new Rect(null, null, 350, 150);
       this.backgroundColor = '#494949';
     }
+    this.fixedHeight = rect.height;
 
     // Set the content container style
     this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
@@ -66,6 +68,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
+    this.fixedHeight = this.rect.height;
   }
 
   setTopHandle(deltaPosition: Vector2) {
@@ -124,6 +127,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
+    this.fixedHeight = this.rect.height;
   }
 
   setBottomRightHandle(deltaPosition: Vector2) {
@@ -140,40 +144,10 @@ export class ContainerBoxComponent extends EditBoxComponent {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
+    this.fixedHeight = this.rect.height;
   }
 
   setCurrentContainer() {
     EditBoxComponent.currentContainer = this.container;
   }
-
-  // onMouseMove(event: MouseEvent) {
-  //   super.onMouseMove(event);
-  //   if (this.container.boxes && this.container.boxes.length > 0) {
-  //     let yMax = Math.max(...this.container.boxes.map(x => x.rect ? x.rect.yMax : 0));
-  //     if (yMax > this.rect.height) {
-  //       if (!this.isMousedown) {
-  //         this.handle = '';
-  //       }
-
-
-  //       this.setRect(() => {
-  //         return new Rect(this.rect.x, this.rect.y, this.rect.width, yMax);
-  //       }
-
-  //         // , (tempRect) => {
-  //         //   let box: EditBoxComponent = this.container.boxes.find(x => x.rect.yMax === yMax);
-  //         //   box.setRect(()=>{
-  //         //     return new Rect(box.rect.x, box.rect.y - (yMax - tempRect.height), box.rect.width, box.rect.height);
-  //         //   });
-
-
-  //         //   return new Rect(tempRect.x, tempRect.y, tempRect.width, tempRect.height);
-  //         // }
-  //       );
-  //     }
-  //   }
-  // }
-
-
-
 }
