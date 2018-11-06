@@ -33,7 +33,7 @@ export class ToggleableStyle extends Style {
 
             // Set selection
             if (node === Style.range.startContainer) {
-                Style.range.setStart(newNode.firstChild, 0);
+                Style.range.selectNodeContents(newNode.firstChild);
             } else {
                 Style.range.setEnd(newNode.firstChild, newNode.firstChild.length);
             }

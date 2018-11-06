@@ -22,7 +22,7 @@ export class LinkService {
         value: ''
       },
       {
-        name: 'nicheshack (https://www.nicheshack.com)',
+        name: 'www.nicheshack.com',
         value: '{3}'
       },
       {
