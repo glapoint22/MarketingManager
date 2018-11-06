@@ -323,7 +323,7 @@ export class EditBoxComponent {
   }
 
   initialize(rect?: Rect, isSelected?: boolean) {
-    if (!rect.x) {
+    if (rect.x === null) {
       let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
         y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
 
