@@ -34,8 +34,8 @@ export class TextBoxComponent extends EditBoxComponent {
       underline: Underline = new Underline(this),
       textColor: TextColor = new TextColor(this),
       highlightColor: HighlightColor = new HighlightColor(this),
-      orderedList: OrderedList = new OrderedList(this),
-      unorderedList: UnorderedList = new UnorderedList(this),
+      // orderedList: OrderedList = new OrderedList(this),
+      // unorderedList: UnorderedList = new UnorderedList(this),
       fontSize: FontSize = new FontSize(this),
       font: Font = new Font(this),
       alignLeft: AlignLeft = new AlignLeft(this),
@@ -48,8 +48,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
     // Assign the styles
     this.styles = [backgroundColor, linkStyle, bold, italic, underline,
-      textColor, highlightColor, orderedList,
-      unorderedList, alignLeft, alignCenter,
+      textColor, highlightColor, alignLeft, alignCenter,
       alignRight, alignJustify, fontSize,
       font];
 
@@ -96,27 +95,22 @@ export class TextBoxComponent extends EditBoxComponent {
 
       this.content.style.margin = 0;
       this.content.style.outline = 'none';
-      // this.content.style.wordWrap = 'break-word';
       this.content.style.overflow = 'hidden';
       this.content.contentEditable = 'false';
 
       // OnMouseUp
-      this.content.ownerDocument.onmouseup = () => {
-        this.checkSelectionForStyles();
-      }
-
-      // OnInput
-      this.content.oninput = () => {
-        this.onContentChange();
+      this.content.ownerDocument.onselectionchange = () => {
+        if(this.inEditMode){
+          this.onContentChange();
         this.fixInvalidElements();
+        this.checkSelectionForStyles();
+        }
+        
       }
 
       // OnKeyDown
       this.content.onkeydown = (event) => {
-        if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
-          event.code === 'ArrowRight' || event.code === 'ArrowDown') {
-          this.checkSelectionForStyles();
-        } else if (event.code === 'Escape') {
+        if (event.code === 'Escape') {
           this.unSelect();
         }
       }
@@ -218,16 +212,16 @@ export class TextBoxComponent extends EditBoxComponent {
         range.selectNodeContents(div);
       }
 
-      // Check to see if there is a font tag
-      while (startContainer.tagName !== 'BODY' && startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
-        startContainer = startContainer.parentElement;
-      }
+      // // Check to see if there is a font tag
+      // while (startContainer.tagName !== 'BODY' && startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
+      //   startContainer = startContainer.parentElement;
+      // }
 
-      if (startContainer.firstElementChild.tagName === 'FONT') {
-        if (startContainer.previousElementSibling) startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
-        if (startContainer.firstElementChild.firstChild.nodeType === 3) text = startContainer.firstElementChild.firstChild;
-        startContainer.firstElementChild.replaceWith(document.createElement('BR'));
-      }
+      // if (startContainer.firstElementChild.tagName === 'FONT') {
+      //   if (startContainer.previousElementSibling) startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
+      //   if (startContainer.firstElementChild.firstChild.nodeType === 3) text = startContainer.firstElementChild.firstChild;
+      //   startContainer.firstElementChild.replaceWith(document.createElement('BR'));
+      // }
 
       // Fix element if we have a break tag inside a div
       if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {

@@ -35,13 +35,13 @@ export class Style {
         Style.selection = content.ownerDocument.getSelection();
         if (Style.selection.type !== 'None') {
             Style.range = Style.selection.getRangeAt(0);
-            if(Style.range.collapsed && Style.range.startContainer.firstChild && Style.range.startContainer.firstChild.tagName === 'BR'){
+            if (Style.range.collapsed && Style.range.startContainer.firstChild && Style.range.startContainer.firstChild.tagName === 'BR') {
                 Style.range.selectNodeContents(Style.range.startContainer.firstChild);
             }
         }
     }
 
-    setSelectedFalse(){
+    setSelectedFalse() {
         this.isSelected = false;
     }
 
@@ -201,7 +201,7 @@ export class Style {
     }
 
     getParentNode(node) {
-        while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL') {
+        while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL' && node.tagName !== 'BODY') {
             node = node.parentElement;
         }
         return node;
