@@ -12,109 +12,56 @@ export class TableService {
 
   constructor(private editBoxService: EditBoxService) { }
 
-  createTable(parent: HTMLElement, width: string, boxes?: Array<EditBoxComponent>, position?: Vector2, maxWidth?: string, align?: string, bgColor?: string) {
+  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, align?: string, bgColor?: string, display?: string, height?: number) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
 
     // Set the table properties
-    table.width = width;
+    table.width = '100%';
     table.cellPadding = '0';
     table.cellSpacing = '0';
     table.border = '0';
 
     // Set the optional properties
-    if (maxWidth) table.style.maxWidth = maxWidth;
+    if (maxWidth) table.style.maxWidth = maxWidth + 'px';
     if (align) table.align = align;
     if (bgColor) table.bgColor = bgColor;
+    if (display) table.style.display = display;
 
     // If this table has boxes
     if (boxes && boxes.length > 0) {
       // Create rows based on the boxes position
-      let rows = this.createRows(boxes, table, new Vector2(position ? position.x : 0, position ? position.y : 0));
+      let rows = this.createRows(boxes, table, new Vector2(0, 0));
 
       // Loop through each row
-      rows.forEach(row => {
-        // Create the columns for this row
-        let parent: HTMLElement = rows.length > 1 ? this.createTable(row.element.appendChild(document.createElement('td')), '100%').appendChild(document.createElement('tr')) : row.element,
-          columns = this.createColumns(row, parent);
+      rows.forEach((row, i, array) => {
+        let column: HTMLElement = row.element.appendChild(document.createElement('td')),
+          paddingTop = (row.boxes[0].rect.y - row.y);
 
-        // Loop through each column
-        columns.forEach((column) => {
-          // Set the column properties
-          let columnWidth = column.width / row.width * 100 + '%';
+        // Set the column properties
+        column.style.paddingLeft = '0';
+        column.style.paddingRight = '0';
+        column.style.paddingBottom = '0';
+        column.style.paddingTop = paddingTop + 'px';
+        column.style.textAlign = 'center';
+        column.style.fontSize = '0';
+        column.style.verticalAlign = 'top';
 
-          if (columnWidth !== '100%') {
-            column.element.vAlign = 'top';
-            column.element.width = columnWidth;
-          }
+        // Set the column height
+        if (i === array.length - 1 && height) {
+          column.style.height = row.height + height - (row.y + row.height) - paddingTop + 'px';
+        }
 
+        // Loop through each box
+        row.boxes.forEach((box) => {
+          // Box is container
+          if (box instanceof ContainerBoxComponent) {
+            let containerBox = box as ContainerBoxComponent;
 
-          // If this colum has 4 or more boxes, this means there are uneven columns and rows
-          if (column.boxes.length >= 4) {
-
-          } else if (column.boxes.length > 1) {
-            // Group the boxes into another table if there are more than one box
-            this.createTable(column.element, '100%', column.boxes, new Vector2(column.x, column.y));
+            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, box.rect.width, 'center', containerBox.backgroundColor, 'inline-table', box.rect.height));
+          
+          // Box is text, button, or image
           } else {
-            // Set this box
-            let box: EditBoxComponent = column.boxes[0],
-              boxTableColumn = column.element;
-
-            // If the box has a left or top margin
-            if (box.rect.x > 0 || box.rect.y > 0) {
-              let leftMarginWidth = (box.rect.x - column.x) / column.width * 100,
-                boxTableContainerWidth = 100 - leftMarginWidth,
-                topMarginHeight = box.rect.y - column.y,
-                containerTable = this.createTable(column.element, '100%');
-
-              // If the box as a top margin
-              if (box.rect.y > 0) {
-                let blankRow = containerTable.appendChild(document.createElement('tr'));
-
-                // Create a td for the left margin and height
-                if (leftMarginWidth > 0) {
-                  let leftMargin = blankRow.appendChild(document.createElement('td'));
-                  leftMargin.width = leftMarginWidth + '%';
-                  leftMargin.height = topMarginHeight.toString();
-                }
-
-                // Create a blank td for the height
-                let blankTd = blankRow.appendChild(document.createElement('td'));
-                blankTd.width = boxTableContainerWidth + '%';
-                blankTd.height = topMarginHeight.toString();
-              }
-
-              // Create a row for the boxTable
-              let tr = containerTable.appendChild(document.createElement('tr'));
-
-              // Create a td for the left margin 
-              if (box.rect.x > 0) {
-                tr.appendChild(document.createElement('td')).width = leftMarginWidth + '%';
-              }
-
-              // Create a column for the boxTable
-              boxTableColumn = tr.appendChild(document.createElement('td'));
-              boxTableColumn.width = boxTableContainerWidth + '%';
-            }
-
-
-            if (box instanceof ContainerBoxComponent) {
-              let containerBox = box as ContainerBoxComponent;
-              let boxTable = this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%');
-              boxTable.bgColor = box.backgroundColor;
-              boxTable.summary = containerBox.getTableRect('containerBox');
-
-
-              let td = boxTable.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
-              td.width = '100%';
-              td.height = containerBox.rect.height.toString();
-              td.vAlign = 'top';
-
-
-              this.createTable(td, '100%', containerBox.container.boxes);
-
-            } else {
-              box.boxToTable(this.createTable(boxTableColumn, box.rect.width / boxTableColumn.offsetWidth * 100 + '%'));
-            }
+            box.boxToTable(this.createTable(column, null, box.rect.width, null, null, 'inline-block'));
           }
         });
       });
@@ -176,60 +123,60 @@ export class TableService {
 
 
 
-  createColumns(row, parent: HTMLElement) {
-    let columns = [], currentColumn, j, sortedBoxes: Array<EditBoxComponent>;
+  // createColumns(row, parent: HTMLElement) {
+  //   let columns = [], currentColumn, j, sortedBoxes: Array<EditBoxComponent>;
 
-    // Sort the boxes horizontally
-    sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-      if (a.rect.x > b.rect.x) return 1;
-      return -1;
-    });
+  //   // Sort the boxes horizontally
+  //   sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
+  //     if (a.rect.x > b.rect.x) return 1;
+  //     return -1;
+  //   });
 
 
-    // Create the first column based on the most left box
-    columns.push({
-      boxes: [this.getBox(row.boxes, sortedBoxes[0])],
-      element: parent.appendChild(document.createElement('td')),
-      x: row.x,
-      y: row.y,
-      width: sortedBoxes[0].rect.xMax - row.x,
-      height: row.height
-    });
-    currentColumn = columns[0];
+  //   // Create the first column based on the most left box
+  //   columns.push({
+  //     boxes: [this.getBox(row.boxes, sortedBoxes[0])],
+  //     element: parent.appendChild(document.createElement('td')),
+  //     x: row.x,
+  //     y: row.y,
+  //     width: sortedBoxes[0].rect.xMax - row.x,
+  //     height: row.height
+  //   });
+  //   currentColumn = columns[0];
 
-    // See if any other box belongs to this column
-    for (let i = 1; i < sortedBoxes.length; i++) {
-      for (j = 0; j < currentColumn.boxes.length; j++) {
-        if (sortedBoxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
-          currentColumn.boxes.push(this.getBox(row.boxes, sortedBoxes[i]));
-          currentColumn.width = Math.max(currentColumn.width, sortedBoxes[i].rect.xMax - currentColumn.x);
-          break;
-        }
-      }
+  //   // See if any other box belongs to this column
+  //   for (let i = 1; i < sortedBoxes.length; i++) {
+  //     for (j = 0; j < currentColumn.boxes.length; j++) {
+  //       if (sortedBoxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
+  //         currentColumn.boxes.push(this.getBox(row.boxes, sortedBoxes[i]));
+  //         currentColumn.width = Math.max(currentColumn.width, sortedBoxes[i].rect.xMax - currentColumn.x);
+  //         break;
+  //       }
+  //     }
 
-      // Create a new column
-      if (j === currentColumn.boxes.length) {
-        columns.push({
-          boxes: [this.getBox(row.boxes, sortedBoxes[i])],
-          element: parent.appendChild(document.createElement('td')),
-          x: currentColumn.width + currentColumn.x,
-          y: row.y,
-          width: sortedBoxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
-          height: row.height
-        });
-        currentColumn = columns[columns.length - 1];
-      }
-    }
+  //     // Create a new column
+  //     if (j === currentColumn.boxes.length) {
+  //       columns.push({
+  //         boxes: [this.getBox(row.boxes, sortedBoxes[i])],
+  //         element: parent.appendChild(document.createElement('td')),
+  //         x: currentColumn.width + currentColumn.x,
+  //         y: row.y,
+  //         width: sortedBoxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
+  //         height: row.height
+  //       });
+  //       currentColumn = columns[columns.length - 1];
+  //     }
+  //   }
 
-    // Set the last column's width
-    if (columns.length > 1) {
-      currentColumn.width = row.width - currentColumn.x;
-    } else {
-      currentColumn.width = row.width;
-    }
+  //   // Set the last column's width
+  //   if (columns.length > 1) {
+  //     currentColumn.width = row.width - currentColumn.x;
+  //   } else {
+  //     currentColumn.width = row.width;
+  //   }
 
-    return columns;
-  }
+  //   return columns;
+  // }
 
   tableToBox(table: HTMLTableElement, container: ViewContainerRef) {
     if (table.summary !== '') {

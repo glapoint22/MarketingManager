@@ -324,6 +324,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
   boxToTable(table: HTMLTableElement) {
     table.summary = this.getTableRect('buttonBox');
+    table.style.display = 'table';
+    table.align = 'center';
 
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
@@ -348,8 +350,5 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     contentTd.height = this.content.offsetHeight;
     contentTd.align = 'center';
     contentTd.innerHTML = this.content.innerHTML;
-    
-
-
   }
 }

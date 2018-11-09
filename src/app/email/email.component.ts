@@ -49,14 +49,14 @@ export class EmailComponent implements OnInit {
     EditBoxComponent.change.subscribe(() => {
       let div = document.body.appendChild(document.createElement('div'));
 
-      let mainTable = this.tableService.createTable(div, '100%', null, null, null, null, this.currentEmail.backgroundColor);
+      let mainTable = this.tableService.createTable(div, null, null, null, this.currentEmail.backgroundColor);
       mainTable.style.lineHeight = 'normal';
       let tr = mainTable.appendChild(document.createElement('tr'));
       let td = tr.appendChild(document.createElement('td'));
       td.width = '100%';
 
 
-      this.tableService.createTable(td, '100%', EditBoxComponent.mainContainer.boxes, null, this.pageWidth + 'px', 'center', this.currentEmail.pageColor);
+      this.tableService.createTable(td, EditBoxComponent.mainContainer.boxes, this.pageWidth, 'center', this.currentEmail.pageColor);
 
 
       if (this.currentEmail.body !== mainTable.outerHTML) {
