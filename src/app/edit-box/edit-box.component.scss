@@ -21,7 +21,7 @@
     width: 7px;
     height: 7px;
     background-color: #fff;
-    border: 1px solid $hover-color;
+    border: 1px solid #00ff00;
     border-radius: 50%;
 }
 .horizontal-handle {
@@ -84,12 +84,12 @@
 }
 
 .selected {
-    outline-color: $selected-color;
+    outline-color: #00ff00;
     z-index: 1;
 }
 
 .edit-box:hover:not(.selected){
-    outline-color: $hover-color;
+    outline-color: #ff00ff;
     z-index: 10;
 }
 .edit-mode {

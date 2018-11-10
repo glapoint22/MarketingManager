@@ -324,7 +324,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
   boxToTable(table: HTMLTableElement) {
     table.summary = this.getTableRect('buttonBox');
-    table.style.display = 'table';
+    // table.style.display = 'table';
     table.align = 'center';
 
     // Set the background color

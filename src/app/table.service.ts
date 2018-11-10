@@ -34,7 +34,7 @@ export class TableService {
 
       // Loop through each row
       rows.forEach((row, i, array) => {
-        let column: HTMLElement = row.element.appendChild(document.createElement('td')),
+        let column: HTMLTableColElement = row.element.appendChild(document.createElement('td')),
           paddingTop = (row.boxes[0].rect.y - row.y);
 
         // Set the column properties
@@ -42,26 +42,46 @@ export class TableService {
         column.style.paddingRight = '0';
         column.style.paddingBottom = '0';
         column.style.paddingTop = paddingTop + 'px';
-        column.style.textAlign = 'center';
+        // column.style.textAlign = 'center';
+        column.align = 'center';
         column.style.fontSize = '0';
-        column.style.verticalAlign = 'top';
+        // column.style.verticalAlign = 'top';
+        column.vAlign = 'top';
 
         // Set the column height
         if (i === array.length - 1 && height) {
           column.style.height = row.height + height - (row.y + row.height) - paddingTop + 'px';
         }
 
+        // Sort the boxes horizontally
+        let sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
+          if (a.rect.x > b.rect.x) return 1;
+          return -1;
+        });
+
         // Loop through each box
-        row.boxes.forEach((box) => {
+        sortedBoxes.forEach((currentBox) => {
+          let box = this.getBox(row.boxes, currentBox);
+          let foo: HTMLElement;
+
+          if (sortedBoxes.length > 1) {
+            foo = column.appendChild(document.createElement('DIV'));
+            foo.style.width = '100%';
+            foo.style.maxWidth = box.rect.width + 'px';
+            foo.style.display = 'inline-block';
+          } else {
+            foo = column;
+          }
+
           // Box is container
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, box.rect.width, 'center', containerBox.backgroundColor, 'inline-table', box.rect.height));
-          
-          // Box is text, button, or image
+            containerBox.boxToTable(this.createTable(foo, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, null, containerBox.rect.height));
+
+            // Box is text, button, or image
           } else {
-            box.boxToTable(this.createTable(column, null, box.rect.width, null, null, 'inline-block'));
+            box.boxToTable(this.createTable(foo, null, box.rect.width));
           }
         });
       });
@@ -251,8 +271,11 @@ export class TableService {
 
     Array.from(table.rows).forEach((row: HTMLTableRowElement) => {
       Array.from(row.children).forEach((td: HTMLTableColElement) => {
-        if (td.firstElementChild && td.firstElementChild.tagName === 'TABLE') {
-          this.tableToBox(td.firstElementChild as HTMLTableElement, container);
+        if (td.firstElementChild && (td.firstElementChild.tagName === 'TABLE' || td.firstElementChild.tagName === 'DIV')) {
+          Array.from(td.children).forEach((child: any) => {
+            let childTable: HTMLTableElement = child.tagName === 'TABLE' ? child : child.firstElementChild as HTMLTableElement;
+            this.tableToBox(childTable, container);
+          });
         }
       });
     });
