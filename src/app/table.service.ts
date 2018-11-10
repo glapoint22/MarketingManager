@@ -42,10 +42,8 @@ export class TableService {
         column.style.paddingRight = '0';
         column.style.paddingBottom = '0';
         column.style.paddingTop = paddingTop + 'px';
-        // column.style.textAlign = 'center';
         column.align = 'center';
         column.style.fontSize = '0';
-        // column.style.verticalAlign = 'top';
         column.vAlign = 'top';
 
         // Set the column height
@@ -53,37 +51,50 @@ export class TableService {
           column.style.height = row.height + height - (row.y + row.height) - paddingTop + 'px';
         }
 
-        // Sort the boxes horizontally
-        let sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-          if (a.rect.x > b.rect.x) return 1;
-          return -1;
-        });
 
-        // Loop through each box
-        sortedBoxes.forEach((currentBox) => {
-          let box = this.getBox(row.boxes, currentBox);
-          let foo: HTMLElement;
-
-          if (sortedBoxes.length > 1) {
-            foo = column.appendChild(document.createElement('DIV'));
-            foo.style.width = '100%';
-            foo.style.maxWidth = box.rect.width + 'px';
-            foo.style.display = 'inline-block';
-          } else {
-            foo = column;
-          }
+        if (row.boxes.length === 1) {
+          let box = row.boxes[0];
 
           // Box is container
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(foo, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, null, containerBox.rect.height));
+            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, null, containerBox.rect.height));
 
             // Box is text, button, or image
           } else {
-            box.boxToTable(this.createTable(foo, null, box.rect.width));
+            box.boxToTable(this.createTable(column, null, box.rect.width));
           }
-        });
+        } else {
+          // Sort the boxes horizontally
+          let sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
+            if (a.rect.x > b.rect.x) return 1;
+            return -1;
+          });
+
+          // Loop through each box
+          sortedBoxes.forEach((currentBox) => {
+            let box = this.getBox(row.boxes, currentBox),
+              div: HTMLElement;
+
+            // Set the div
+            div = column.appendChild(document.createElement('DIV'));
+            div.style.width = '100%';
+            div.style.maxWidth = box.rect.width + 'px';
+            div.style.display = 'inline-block';
+
+            // Box is container
+            if (box instanceof ContainerBoxComponent) {
+              let containerBox = box as ContainerBoxComponent;
+
+              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, null, containerBox.backgroundColor, null, containerBox.rect.height));
+
+              // Box is text, button, or image
+            } else {
+              box.boxToTable(this.createTable(div));
+            }
+          });
+        }
       });
     }
     return table;
