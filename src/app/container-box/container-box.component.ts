@@ -154,8 +154,11 @@ export class ContainerBoxComponent extends EditBoxComponent {
   boxToTable(table: HTMLTableElement) {
     table.summary = this.getTableRect('containerBox');
     if (!this.container.boxes || this.container.boxes.length === 0) {
-      let column = table.appendChild(document.createElement('tr').appendChild(document.createElement('td')));
+      let row = table.appendChild(document.createElement('tr'));
+      let column = document.createElement('td');
       column.style.height = this.rect.height + 'px';
+      row.appendChild(column);
+      
     }
   }
 }

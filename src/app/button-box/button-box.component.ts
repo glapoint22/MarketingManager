@@ -117,7 +117,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       super.initialize(rect, !boxData || boxData.isSelected);
     }
 
-    
+
   }
 
 
@@ -309,12 +309,12 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
         span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
 
-        if(range.startContainer.firstElementChild){
+        if (range.startContainer.firstElementChild) {
           range.startContainer.firstElementChild.replaceWith(span);
-        }else{
+        } else {
           range.startContainer.appendChild(span);
         }
-        
+
         range.selectNodeContents(br);
         this.checkSelectionForStyles();
       }
@@ -329,26 +329,39 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
+    let row = table.appendChild(document.createElement('tr'));
+    let column = document.createElement('td');
+
+    // let column = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+
+    column.align = 'center';
+
+    row.appendChild(column);
     
-    let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+    let anchor = document.createElement('a');
     
-    td.align = 'center';
-    let anchor = td.appendChild(document.createElement('a'));
     anchor.href = this.link;
     anchor.style.textDecoration = 'none';
 
-    let contentTable = anchor.appendChild(document.createElement('table'));
+    column.appendChild(anchor);
+
+    let contentTable = document.createElement('table');
+    
     contentTable.cellPadding = '0';
     contentTable.cellSpacing = '0';
     contentTable.border = '0';
+
+    anchor.appendChild(contentTable);
+
+    let contentRow = contentTable.appendChild(document.createElement('tr'));
+    let contentColumn = document.createElement('td');
     
 
-    let contentTd = contentTable.appendChild(document.createElement('tr').appendChild(document.createElement('td')));
-    
-    
-    
-    contentTd.height = this.content.offsetHeight;
-    contentTd.align = 'center';
-    contentTd.innerHTML = this.content.innerHTML;
+
+
+    contentColumn.height = this.content.offsetHeight;
+    contentColumn.align = 'center';
+    contentColumn.innerHTML = this.content.innerHTML;
+    contentRow.appendChild(contentColumn);
   }
 }

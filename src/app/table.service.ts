@@ -12,8 +12,9 @@ export class TableService {
 
   constructor(private editBoxService: EditBoxService) { }
 
-  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, align?: string, bgColor?: string, display?: string, height?: number) {
+  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, align?: string, bgColor?: string, height?: number) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
+    let tableAttributes: string;
 
     // Set the table properties
     table.width = '100%';
@@ -22,10 +23,24 @@ export class TableService {
     table.border = '0';
 
     // Set the optional properties
-    if (maxWidth) table.style.maxWidth = maxWidth + 'px';
-    if (align) table.align = align;
-    if (bgColor) table.bgColor = bgColor;
-    if (display) table.style.display = display;
+    if (maxWidth) {
+      table.style.maxWidth = maxWidth + 'px';
+      tableAttributes = 'width="' + maxWidth + '" cellpadding="0" cellspacing="0" border="0"';
+    }
+    if (align) {
+      table.align = align;
+      if (maxWidth) tableAttributes += ' align="' + align + '"';
+    }
+    if (bgColor) {
+      table.bgColor = bgColor;
+      if (maxWidth) tableAttributes += ' bgcolor="' + bgColor + '"';
+    }
+
+    if (maxWidth) {
+      parent.insertBefore(document.createComment('[if (gte mso 9)|(IE)]><table ' + tableAttributes + '><tr><td><![endif]'), table);
+      parent.appendChild(document.createComment('[if (gte mso 9)|(IE)]></td></tr></table><![endif]'));
+    }
+
 
     // If this table has boxes
     if (boxes && boxes.length > 0) {
@@ -33,22 +48,33 @@ export class TableService {
       let rows = this.createRows(boxes, table, new Vector2(0, 0));
 
       // Loop through each row
-      rows.forEach((row, i, array) => {
+      rows.forEach((row, i) => {
         let column: HTMLTableColElement = row.element.appendChild(document.createElement('td')),
           paddingTop = (row.boxes[0].rect.y - row.y);
+
+          if(paddingTop > 0){
+            let paddingRow = table.insertBefore(document.createElement('tr'),row.element);
+            let paddingColumn = paddingRow.insertCell();
+            paddingColumn.height = paddingTop.toString();
+          }
 
         // Set the column properties
         column.style.paddingLeft = '0';
         column.style.paddingRight = '0';
         column.style.paddingBottom = '0';
-        column.style.paddingTop = paddingTop + 'px';
+        // column.style.paddingTop = paddingTop + 'px';
         column.align = 'center';
         column.style.fontSize = '0';
         column.vAlign = 'top';
 
         // Set the column height
-        if (i === array.length - 1 && height) {
-          column.style.height = row.height + height - (row.y + row.height) - paddingTop + 'px';
+        if (i === rows.length - 1 && height) {
+          // column.style.height = row.height + height - (row.y + row.height) + 'px';
+          let yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
+          let paddingBottom = height - yMax;
+          let paddingBottomRow = table.appendChild(document.createElement('tr'));
+          let paddingBottomColumn = paddingBottomRow.appendChild(document.createElement('td'));
+          paddingBottomColumn.height = paddingBottom.toString();
         }
 
 
@@ -59,7 +85,7 @@ export class TableService {
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, null, containerBox.rect.height));
+            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, containerBox.rect.height));
 
             // Box is text, button, or image
           } else {
@@ -72,27 +98,48 @@ export class TableService {
             return -1;
           });
 
+
+
+
+
           // Loop through each box
-          sortedBoxes.forEach((currentBox) => {
+          sortedBoxes.forEach((currentBox, i) => {
             let box = this.getBox(row.boxes, currentBox),
-              div: HTMLElement;
+              div: HTMLElement,
+              comment;
+
+            if (i === 0) {
+              comment = document.createComment('[if (gte mso 9)|(IE)]><table cellpadding="0" cellspacing="0" border="0"><tr><td valign="top" width="' + box.rect.width + '" style="text-align:center"><![endif]');
+            } else {
+              comment = document.createComment('[if (gte mso 9)|(IE)]></td><td valign="top" width="' + box.rect.width + '" style="text-align:center"><![endif]');
+            }
+
+            column.appendChild(comment);
 
             // Set the div
-            div = column.appendChild(document.createElement('DIV'));
+            div = document.createElement('DIV');
             div.style.width = '100%';
             div.style.maxWidth = box.rect.width + 'px';
             div.style.display = 'inline-block';
+            div.style.verticalAlign = 'top';
+            column.appendChild(div);
 
             // Box is container
             if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
 
-              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, null, containerBox.backgroundColor, null, containerBox.rect.height));
+              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, null, containerBox.backgroundColor, containerBox.rect.height));
 
               // Box is text, button, or image
             } else {
               box.boxToTable(this.createTable(div));
             }
+
+            if(i === sortedBoxes.length - 1){
+              comment = document.createComment('[if (gte mso 9)|(IE)]></td></tr></table><![endif]');
+              column.appendChild(comment);
+            }
+
           });
         }
       });

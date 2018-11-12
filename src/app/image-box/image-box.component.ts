@@ -55,7 +55,11 @@ export class ImageBoxComponent extends UniformBoxComponent {
   setEditMode() { }
 
   boxToTable(table: HTMLTableElement) {
-    let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+    let row = table.appendChild(document.createElement('tr'));
+    let column = document.createElement('td');
+
+    row.appendChild(column);
+
     let img = document.createElement('img');
     img.src = this.contentContainer.src;
     img.style.width = '100%';
@@ -64,11 +68,12 @@ export class ImageBoxComponent extends UniformBoxComponent {
     table.summary = this.getTableRect('imageBox');
 
     if (this.link) {
-      let anchor = td.appendChild(document.createElement('a'));
+      let anchor = document.createElement('a');
       anchor.href = this.link;
       anchor.appendChild(img);
+      column.appendChild(anchor);
     } else {
-      td.appendChild(img);
+      column.appendChild(img);
     }
   }
 }

@@ -335,16 +335,18 @@ export class TextBoxComponent extends EditBoxComponent {
 
     // Set the content
     Array.from(this.content.children).forEach((content: HTMLElement) => {
-      let td = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
+      let tr = table.appendChild(document.createElement('tr'));
+      let column = document.createElement('td');
 
-      if (content.tagName === 'OL' || content.tagName === 'UL') {
-        let list = td.appendChild(document.createElement(content.tagName));
-        list.setAttribute('style', content.getAttribute('style'));
-        list.innerHTML = content.innerHTML;
-      } else {
-        td.style.textAlign = content.style.textAlign;
-        td.innerHTML = content.innerHTML;
-      }
+      // if (content.tagName === 'OL' || content.tagName === 'UL') {
+      //   let list = td.appendChild(document.createElement(content.tagName));
+      //   list.setAttribute('style', content.getAttribute('style'));
+      //   list.innerHTML = content.innerHTML;
+      // } else {
+        column.style.textAlign = content.style.textAlign;
+        column.innerHTML = content.innerHTML;
+        tr.appendChild(column);
+      // }
     });
   }
 }
