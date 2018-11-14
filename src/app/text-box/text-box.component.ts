@@ -97,6 +97,7 @@ export class TextBoxComponent extends EditBoxComponent {
       this.content.style.outline = 'none';
       this.content.style.overflow = 'hidden';
       this.content.contentEditable = 'false';
+      this.content.style.fontSize = '0';
 
       // OnMouseUp
       this.content.ownerDocument.onselectionchange = () => {
@@ -337,6 +338,11 @@ export class TextBoxComponent extends EditBoxComponent {
     Array.from(this.content.children).forEach((content: HTMLElement) => {
       let tr = table.appendChild(document.createElement('tr'));
       let column = document.createElement('td');
+      
+      if(this.rect.height > this.content.clientHeight){
+        column.height = this.rect.height.toString();
+        column.vAlign = 'top';
+      }
 
       // if (content.tagName === 'OL' || content.tagName === 'UL') {
       //   let list = td.appendChild(document.createElement(content.tagName));

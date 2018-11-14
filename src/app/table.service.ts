@@ -12,7 +12,7 @@ export class TableService {
 
   constructor(private editBoxService: EditBoxService) { }
 
-  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, align?: string, bgColor?: string, height?: number) {
+  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, bgColor?: string, height?: number) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
     let tableAttributes: string;
 
@@ -26,10 +26,6 @@ export class TableService {
     if (maxWidth) {
       table.style.maxWidth = maxWidth + 'px';
       tableAttributes = 'width="' + maxWidth + '" cellpadding="0" cellspacing="0" border="0"';
-    }
-    if (align) {
-      table.align = align;
-      if (maxWidth) tableAttributes += ' align="' + align + '"';
     }
     if (bgColor) {
       table.bgColor = bgColor;
@@ -62,7 +58,6 @@ export class TableService {
         column.style.paddingLeft = '0';
         column.style.paddingRight = '0';
         column.style.paddingBottom = '0';
-        // column.style.paddingTop = paddingTop + 'px';
         column.align = 'center';
         column.style.fontSize = '0';
         column.vAlign = 'top';
@@ -85,7 +80,7 @@ export class TableService {
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, null, containerBox.backgroundColor, containerBox.rect.height));
+            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, containerBox.backgroundColor, containerBox.rect.height));
 
             // Box is text, button, or image
           } else {
@@ -128,7 +123,7 @@ export class TableService {
             if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
 
-              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, null, containerBox.backgroundColor, containerBox.rect.height));
+              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, containerBox.backgroundColor, containerBox.rect.height));
 
               // Box is text, button, or image
             } else {
