@@ -52,6 +52,7 @@ export class LinkStyle extends Style {
 
         anchor.setAttribute('href', this.styleValue);
         anchor.setAttribute('style', node.getAttribute('style'));
+        anchor.setAttribute('target', '_blank');
         anchor.title = this.styleValue;
         anchor.appendChild(document.createTextNode(data));
         return anchor;

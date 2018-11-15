@@ -342,6 +342,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     
     anchor.href = this.link;
     anchor.style.textDecoration = 'none';
+    anchor.setAttribute('target', '_blank');
 
     column.appendChild(anchor);
 
@@ -361,6 +362,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
     contentColumn.height = this.content.offsetHeight;
     contentColumn.align = 'center';
+    contentColumn.style.verticalAlign = 'middle';
     contentColumn.innerHTML = this.content.innerHTML;
     contentRow.appendChild(contentColumn);
   }
