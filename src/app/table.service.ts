@@ -309,7 +309,7 @@ export class TableService {
         
         let boxData = {
           content: span.outerHTML,
-          backgroundColor: anchor.style.backgroundColor,
+          backgroundColor: table.bgColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
           link: anchor.getAttribute('href')
         }

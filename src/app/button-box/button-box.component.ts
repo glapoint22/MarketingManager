@@ -332,6 +332,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
 
     column.align = 'center';
+    column.height = this.rect.height.toString();
+    column.style.verticalAlign = 'middle';
 
     row.appendChild(column);
     
@@ -343,19 +345,6 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     anchor.appendChild(document.createTextNode(this.content.innerText));
     anchor.setAttribute('style',this.content.firstElementChild.getAttribute('style'));
     column.appendChild(anchor);
-
-    let anchorRect = anchor.getBoundingClientRect();
-    let contentRect = this.content.getBoundingClientRect();
-    let borderWidth = (contentRect.width - anchorRect.width - 1) / 2;
-    let borderHeight = (contentRect.height - anchorRect.height - 1) / 2;
-
-    anchor.style.borderLeft = borderWidth + 'px solid ' + table.bgColor;
-    anchor.style.borderRight = borderWidth + 'px solid ' + table.bgColor;
-    anchor.style.borderTop = borderHeight + 'px solid ' + table.bgColor;
-    anchor.style.borderBottom = borderHeight + 'px solid ' + table.bgColor;
-    anchor.style.display = 'inline-block';
-    anchor.style.textDecoration = this.content.firstElementChild.style.textDecoration === '' ? 'none' : this.content.firstElementChild.style.textDecoration;
-    anchor.style.backgroundColor = table.bgColor;
-    table.bgColor = null;
+    table.bgColor = this.backgroundColor;
   }
 }
