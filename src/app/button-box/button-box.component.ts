@@ -29,7 +29,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       italic: Italic = new Italic(this),
       underline: Underline = new Underline(this),
       textColor: TextColor = new TextColor(this),
-      highlightColor: HighlightColor = new HighlightColor(this),
+      // highlightColor: HighlightColor = new HighlightColor(this),
       fontSize: FontSize = new FontSize(this),
       font: Font = new Font(this),
       // bgColor,
@@ -38,7 +38,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
     // Assign the styles
     this.styles = [backgroundColor, editBoxLink, bold, italic, underline,
-      textColor, highlightColor, fontSize,
+      textColor, fontSize,
       font];
 
     //set the handles 
@@ -324,15 +324,12 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
   boxToTable(table: HTMLTableElement) {
     table.summary = this.getTableRect('buttonBox');
-    // table.style.display = 'table';
-    table.align = 'center';
 
     // Set the background color
     if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
     let row = table.appendChild(document.createElement('tr'));
     let column = document.createElement('td');
 
-    // let column = table.appendChild(document.createElement('tr')).appendChild(document.createElement('td'));
 
     column.align = 'center';
 
@@ -343,27 +340,22 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     anchor.href = this.link;
     anchor.style.textDecoration = 'none';
     anchor.setAttribute('target', '_blank');
-
+    anchor.appendChild(document.createTextNode(this.content.innerText));
+    anchor.setAttribute('style',this.content.firstElementChild.getAttribute('style'));
     column.appendChild(anchor);
 
-    let contentTable = document.createElement('table');
-    
-    contentTable.cellPadding = '0';
-    contentTable.cellSpacing = '0';
-    contentTable.border = '0';
+    let anchorRect = anchor.getBoundingClientRect();
+    let contentRect = this.content.getBoundingClientRect();
+    let borderWidth = (contentRect.width - anchorRect.width - 1) / 2;
+    let borderHeight = (contentRect.height - anchorRect.height - 1) / 2;
 
-    anchor.appendChild(contentTable);
-
-    let contentRow = contentTable.appendChild(document.createElement('tr'));
-    let contentColumn = document.createElement('td');
-    
-
-
-
-    contentColumn.height = this.content.offsetHeight;
-    contentColumn.align = 'center';
-    contentColumn.style.verticalAlign = 'middle';
-    contentColumn.innerHTML = this.content.innerHTML;
-    contentRow.appendChild(contentColumn);
+    anchor.style.borderLeft = borderWidth + 'px solid ' + table.bgColor;
+    anchor.style.borderRight = borderWidth + 'px solid ' + table.bgColor;
+    anchor.style.borderTop = borderHeight + 'px solid ' + table.bgColor;
+    anchor.style.borderBottom = borderHeight + 'px solid ' + table.bgColor;
+    anchor.style.display = 'inline-block';
+    anchor.style.textDecoration = this.content.firstElementChild.style.textDecoration === '' ? 'none' : this.content.firstElementChild.style.textDecoration;
+    anchor.style.backgroundColor = table.bgColor;
+    table.bgColor = null;
   }
 }
