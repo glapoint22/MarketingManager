@@ -195,6 +195,16 @@ export class EmailComponent implements OnInit {
     }
   }
 
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (this.editBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.onMouseMove(event);
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseUp(event: MouseEvent) {
+    if (this.editBoxComponent.currentEditBox) this.editBoxComponent.currentEditBox.onMouseUp(event);
+  }
+
   onMouseDown() {
     if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.unSelect();
   }

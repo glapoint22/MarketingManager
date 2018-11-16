@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild, ElementRef, ApplicationRef } from '@angular/core';
+import { Component,  ViewChild, ElementRef, ApplicationRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
@@ -52,7 +52,6 @@ export class EditBoxComponent {
     this.currentPosition = new Vector2(event.clientX, event.clientY);
   }
 
-  @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     if (this.isMousedown) {
       let deltaPosition = new Vector2(event.clientX - this.currentPosition.x, event.clientY - this.currentPosition.y);
@@ -146,11 +145,9 @@ export class EditBoxComponent {
     });
   }
 
-  @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     if (this.isMousedown) EditBoxComponent.change.next();
     this.isMousedown = false;
-
   }
 
   setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {
