@@ -143,7 +143,7 @@ export class TableService {
   }
 
   getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent) {
-    return boxes.find(x => x.rect === box.rect)
+    return boxes.find(x => x.rect === box.rect);
   }
 
   createRows(boxes: Array<EditBoxComponent>, table: HTMLTableElement, position: Vector2) {

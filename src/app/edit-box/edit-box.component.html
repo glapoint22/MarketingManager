@@ -1,5 +1,5 @@
-<div #editBox class="edit-box" [style.opacity]="rect ? 1 : 0" (mousedown)="setSelection(); $event.stopPropagation()"
-  (dblclick)="setEditMode()" tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}">
+<div #editBox class="edit-box" (mousedown)="setSelection(); $event.stopPropagation()" (dblclick)="setEditMode()"
+  tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}">
 
   <!-- Content -->
   <div class="content">
@@ -30,5 +30,4 @@
     <div *ngIf="showBottomLeftHandle" class="handle bottom-left-handle" (mousedown)="onMouseDown($event, 'bottomLeft')"></div>
     <div *ngIf="showBottomRightHandle" class="handle bottom-right-handle" (mousedown)="onMouseDown($event, 'bottomRight')"></div>
   </div>
-
 </div>

@@ -1,4 +1,4 @@
-import { Component,  ViewChild, ElementRef, ApplicationRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ApplicationRef } from '@angular/core';
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
@@ -199,7 +199,7 @@ export class EditBoxComponent {
     for (let i = 0; i < this.parentContainer.boxes.length; i++) {
       let otherRect = this.parentContainer.boxes[i].rect;
 
-      if (this.rect !== otherRect) {
+      if (otherRect && this.rect !== otherRect) {
         if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
           +(tempRect.yMax.toFixed(2)) > +(otherRect.y.toFixed(2)) && +(tempRect.y.toFixed(2)) < +(otherRect.yMax.toFixed(2))) {
 
@@ -319,16 +319,87 @@ export class EditBoxComponent {
     return node;
   }
 
+  getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent) {
+    return boxes.find(x => x.rect === box.rect);
+  }
+
   initialize(rect?: Rect, isSelected?: boolean) {
     if (rect.x === null) {
-      let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
-        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
+      // let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
+      //   y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
 
-      // Calculate this rect to be at bottom of page
-      this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
+      // // Calculate this rect to be at bottom of page
+      // this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), y, rect.width, rect.height);
+
+
+      if (!this.parentContainer.rows) this.parentContainer.rows = [];
+
+      if (this.parentContainer.rows.length === 0 ||
+        !this.parentContainer.currentRow) {
+        this.rect = new Rect(0, 0, rect.width, rect.height);
+
+        this.parentContainer.rows.push({
+          boxes: [this],
+          align: 'left',
+          y: this.rect.y,
+          yMax: this.rect.yMax
+        });
+        this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
+      } else {
+        let foo = 'left';
+        let x;
+
+        // Sort the boxes horizontally
+        let sortedBoxes = this.parentContainer.currentRow.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
+          if (a.rect.x > b.rect.x) return 1;
+          return -1;
+        });
+
+        if (foo === 'right') {
+          x = EditBoxComponent.currentEditBox.rect.x;
+        } else {
+          if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+            x = EditBoxComponent.currentEditBox.rect.xMax;
+          } else {
+            x = sortedBoxes[sortedBoxes.length - 1].rect.xMax;
+          }
+
+        }
+
+
+        for (let i = sortedBoxes.length - 1; i > -1; i--) {
+          if (sortedBoxes[i].rect.x >= x) {
+            let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+            box.setRect(() => {
+              return new Rect(box.rect.x + rect.width, box.rect.y, box.rect.width, box.rect.height);
+            });
+          }
+
+        }
+
+
+
+        // this.rect = new Rect(sortedBoxes[sortedBoxes.length - 1].rect.xMax, this.parentContainer.currentRow.y, rect.width, rect.height);
+        this.rect = new Rect(x, this.parentContainer.currentRow.y, rect.width, rect.height);
+        this.parentContainer.currentRow.boxes.push(this);
+      }
+
+
+
     } else {
       this.rect = rect;
     }
+
+
+
+
+
+
+
+
+
+
+
 
     this.setElement();
 
