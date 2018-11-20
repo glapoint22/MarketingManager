@@ -325,7 +325,7 @@ export class EditBoxComponent {
 
   initialize(rect?: Rect, isSelected?: boolean) {
     if (rect.x === null) {
-      // let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
+      let containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth;
       //   y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
 
       // // Calculate this rect to be at bottom of page
@@ -336,17 +336,18 @@ export class EditBoxComponent {
 
       if (this.parentContainer.rows.length === 0 ||
         !this.parentContainer.currentRow) {
-        this.rect = new Rect(0, 0, rect.width, rect.height);
+        // this.rect = new Rect(0, 0, rect.width, rect.height);
+        this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), 0, rect.width, rect.height);
 
         this.parentContainer.rows.push({
           boxes: [this],
-          align: 'left',
+          align: 'center',
           y: this.rect.y,
           yMax: this.rect.yMax
         });
         this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
       } else {
-        let foo = 'left';
+        let insert = 'left';
         let x;
 
         // Sort the boxes horizontally
@@ -355,27 +356,85 @@ export class EditBoxComponent {
           return -1;
         });
 
-        if (foo === 'right') {
-          x = EditBoxComponent.currentEditBox.rect.x;
-        } else {
-          if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+
+
+
+
+
+        // Align left
+        if (this.parentContainer.currentRow.align === 'left') {
+          if (insert === 'left') {
+            x = EditBoxComponent.currentEditBox.rect.x;
+          } else if (insert === 'right') {
             x = EditBoxComponent.currentEditBox.rect.xMax;
-          } else {
-            x = sortedBoxes[sortedBoxes.length - 1].rect.xMax;
           }
 
-        }
 
 
-        for (let i = sortedBoxes.length - 1; i > -1; i--) {
-          if (sortedBoxes[i].rect.x >= x) {
+          for (let i = sortedBoxes.length - 1; i > -1; i--) {
+            if (sortedBoxes[i].rect.x >= x) {
+              let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+              box.rect = new Rect(box.rect.x + rect.width, box.rect.y, box.rect.width, box.rect.height);
+              box.setElement();
+            }
+          }
+
+          // Align center
+        } else if (this.parentContainer.currentRow.align === 'center') {
+          let boxesWidth = rect.width;
+          this.parentContainer.currentRow.boxes.forEach(box => {
+            boxesWidth += box.rect.width;
+          });
+          let currentX = (containerWidth * 0.5) - (boxesWidth * 0.5);
+
+          for (let i = 0; i < sortedBoxes.length; i++) {
             let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-            box.setRect(() => {
-              return new Rect(box.rect.x + rect.width, box.rect.y, box.rect.width, box.rect.height);
-            });
+
+            if (box === EditBoxComponent.currentEditBox) {
+              if (insert === 'left') {
+                x = currentX;
+                currentX = rect.width + currentX;
+
+                box.rect.x = currentX;
+                currentX = box.rect.width + currentX;
+                box.setElement();
+              } else {
+                box.rect.x = currentX;
+                currentX = box.rect.width + currentX;
+                box.setElement();
+
+                x = currentX;
+                currentX = rect.width + currentX;
+              }
+              continue;
+            }
+
+            box.rect.x = currentX;
+            currentX = box.rect.width + currentX;
+            box.setElement();
+
           }
 
+
+
+          // Align right
+        } else if (this.parentContainer.currentRow.align === 'right') {
+          if (insert === 'left') {
+            x = EditBoxComponent.currentEditBox.rect.x - rect.width;
+          } else if (insert === 'right') {
+            x = EditBoxComponent.currentEditBox.rect.xMax - rect.width;
+          }
+
+
+          for (let i = 0; i < sortedBoxes.length; i++) {
+            if (sortedBoxes[i].rect.xMax <= x + rect.width) {
+              let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+              box.rect = new Rect(box.rect.x - rect.width, box.rect.y, box.rect.width, box.rect.height);
+              box.setElement();
+            }
+          }
         }
+
 
 
 
