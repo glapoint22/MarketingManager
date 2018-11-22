@@ -336,23 +336,23 @@ export class EditBoxComponent {
 
 
       // *****TEMP*****
-      this.parentContainer.rows.push({
-        boxes: [this.parentContainer.boxes[0], this.parentContainer.boxes[1], this.parentContainer.boxes[2]],
-        align: 'center',
-        y: 0,
-        yMax: 54
-      });
-      this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
-      this.parentContainer.rows.push({
-        boxes: [this.parentContainer.boxes[3], this.parentContainer.boxes[4], this.parentContainer.boxes[5]],
-        align: 'center',
-        y: 54,
-        yMax: 108
-      });
+      // this.parentContainer.rows.push({
+      //   boxes: [this.parentContainer.boxes[0], this.parentContainer.boxes[1], this.parentContainer.boxes[2]],
+      //   align: 'center',
+      //   y: 0,
+      //   yMax: 54
+      // });
+      
+      // this.parentContainer.rows.push({
+      //   boxes: [this.parentContainer.boxes[3], this.parentContainer.boxes[4], this.parentContainer.boxes[5]],
+      //   align: 'center',
+      //   y: 80,
+      //   yMax: 134
+      // });
+      // this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
       // *****************
 
-      if (this.parentContainer.rows.length === 0 ||
-        !this.parentContainer.currentRow) {
+      if (this.parentContainer.rows.length === 0) {
         this.rect = new Rect(0, 0, rect.width, rect.height);
         // this.rect = new Rect((containerWidth * 0.5) - (rect.width * 0.5), 0, rect.width, rect.height);
 
@@ -364,7 +364,7 @@ export class EditBoxComponent {
         });
         // this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
       } else {
-        let insert = 'bottom';
+        let insert = 'top';
         let x;
 
         if (insert === 'left' || insert === 'right') {
@@ -460,31 +460,41 @@ export class EditBoxComponent {
           // this.rect = new Rect(x, this.parentContainer.currentRow.y, rect.width, rect.height);
           // this.parentContainer.currentRow.boxes.push(this);
         } else {
-          let currentRowIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + 1;
+          let currentRowIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + (insert === 'bottom' ? 1 : 0);
+          
 
-          for (let i = currentRowIndex; i < this.parentContainer.rows.length; i++) {
-            let currentRow = this.parentContainer.rows[i];
-
-            currentRow.y = currentRow.y + rect.height;
-            // currentRow.boxes.forEach(box => {
-            //   box.rect.y = currentRow.y;
-            //   box.setElement();
-            // });
-
-            for(let j = 0; j < currentRow.boxes.length; j++){
-              let box = currentRow.boxes[j];
-              box.rect.y = currentRow.y;
-              box.setElement();
-            }
-
-          }
           this.parentContainer.rows.splice(currentRowIndex, 0, {
             boxes: [this],
             align: 'left',
-            y: 54,
-            yMax: 0
+            y: insert === 'bottom' ? this.parentContainer.currentRow.yMax : this.parentContainer.currentRow.y,
+            yMax: insert === 'bottom' ? this.parentContainer.currentRow.yMax + rect.height : this.parentContainer.currentRow.y + rect.height
           });
           this.parentContainer.currentRow = this.parentContainer.rows[currentRowIndex];
+
+
+
+          for (let i = currentRowIndex + 1; i < this.parentContainer.rows.length; i++) {
+            let currentRow = this.parentContainer.rows[i];
+            let previousRow = this.parentContainer.rows[i - 1];
+
+            if (currentRow.y < previousRow.yMax) {
+              currentRow.y = previousRow.yMax;
+
+              for (let j = 0; j < currentRow.boxes.length; j++) {
+                let box = currentRow.boxes[j];
+                box.rect.y = currentRow.y;
+                box.setElement();
+              }
+
+              currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
+
+            } else {
+              break;
+            }
+
+
+          }
+
           x = 0;
         }
         this.rect = new Rect(x, this.parentContainer.currentRow.y, rect.width, rect.height);
