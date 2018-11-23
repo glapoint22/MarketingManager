@@ -43,6 +43,7 @@ import { PropertiesComponent } from './properties/properties.component';
 import { GroupByPipe } from './group-by.pipe';
 import { LinkFormComponent } from './link-form/link-form.component';
 import { EmailPreviewComponent } from './email-preview/email-preview.component';
+import { ColorPickerComponent } from './color-picker/color-picker.component';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import { EmailPreviewComponent } from './email-preview/email-preview.component';
     PropertiesComponent,
     GroupByPipe,
     LinkFormComponent,
-    EmailPreviewComponent
+    EmailPreviewComponent,
+    ColorPickerComponent
   ],
   imports: [
     BrowserModule,

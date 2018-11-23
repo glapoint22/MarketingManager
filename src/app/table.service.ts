@@ -4,13 +4,14 @@ import { Vector2 } from './vector2';
 import { ContainerBoxComponent } from './container-box/container-box.component';
 import { Rect } from './rect';
 import { EditBoxService } from './edit-box.service';
+import { EditBoxManagerService } from './edit-box-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TableService {
 
-  constructor(private editBoxService: EditBoxService) { }
+  constructor(private editBoxService: EditBoxService, private editBoxManagerService: EditBoxManagerService) { }
 
   createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, bgColor?: string, height?: number) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
@@ -278,7 +279,7 @@ export class TableService {
           backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
-        EditBoxComponent.currentContainer = container;
+        this.editBoxManagerService.currentContainer = container;
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';
         this.editBoxService.createTextBox(boxData);
@@ -290,9 +291,9 @@ export class TableService {
           rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
 
-        EditBoxComponent.currentContainer = container;
+        this.editBoxManagerService.currentContainer = container;
         this.editBoxService.createContainerBox(boxData);
-        container = EditBoxComponent.currentContainer;
+        container = this.editBoxManagerService.currentContainer;
 
         // Button box
       } else if (table.summary.substr(0, 9) === 'buttonBox') {
@@ -313,7 +314,7 @@ export class TableService {
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
           link: anchor.getAttribute('href')
         }
-        EditBoxComponent.currentContainer = container;
+        this.editBoxManagerService.currentContainer = container;
         this.editBoxService.createButtonBox(boxData);
 
         // Image box
@@ -325,7 +326,7 @@ export class TableService {
           link: anchor.length > 0 ? anchor[0].getAttribute('href') : null,
           src: table.getElementsByTagName('img')[0].getAttribute('src')
         }
-        EditBoxComponent.currentContainer = container;
+        this.editBoxManagerService.currentContainer = container;
 
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';

@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, ApplicationRef } from '@angular/core'
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
-import { Subject } from 'rxjs';
+import { EditBoxManagerService } from '../edit-box-manager.service';
 
 @Component({
   selector: 'edit-box',
@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(public app: ApplicationRef) { }
+  constructor(public app: ApplicationRef, public editBoxManagerService: EditBoxManagerService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -35,11 +35,6 @@ export class EditBoxComponent {
   public link: string;
   public backgroundColor: string;
   public isLoaded: boolean = false;
-  public static currentEditBox: EditBoxComponent;
-  public static currentContainer: any;
-  public static mainContainer: any;
-  public static change = new Subject<void>();
-  public static minContainerHeight: number;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -86,7 +81,7 @@ export class EditBoxComponent {
           this.setBottomRightHandle(deltaPosition);
           break;
       }
-      EditBoxComponent.setContainerHeight(this.parentContainer);
+      this.editBoxManagerService.setContainerHeight(this.parentContainer);
     }
   }
 
@@ -146,7 +141,7 @@ export class EditBoxComponent {
   }
 
   onMouseUp(event: MouseEvent) {
-    if (this.isMousedown) EditBoxComponent.change.next();
+    if (this.isMousedown) this.editBoxManagerService.change.next();
     this.isMousedown = false;
   }
 
@@ -273,21 +268,21 @@ export class EditBoxComponent {
 
   setSelection() {
     this.isSelected = true;
-    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox !== this) {
-      EditBoxComponent.currentEditBox.isSelected = false;
-      if (EditBoxComponent.currentEditBox.inEditMode && EditBoxComponent.currentEditBox.content) {
-        EditBoxComponent.currentEditBox.inEditMode = false;
-        EditBoxComponent.currentEditBox.content.setAttribute('contenteditable', 'false');
-        EditBoxComponent.currentEditBox.content.style.setProperty('cursor', '');
-        EditBoxComponent.currentEditBox.content.ownerDocument.getSelection().empty();
+    if (this.editBoxManagerService.currentEditBox && this.editBoxManagerService.currentEditBox !== this) {
+      this.editBoxManagerService.currentEditBox.isSelected = false;
+      if (this.editBoxManagerService.currentEditBox.inEditMode && this.editBoxManagerService.currentEditBox.content) {
+        this.editBoxManagerService.currentEditBox.inEditMode = false;
+        this.editBoxManagerService.currentEditBox.content.setAttribute('contenteditable', 'false');
+        this.editBoxManagerService.currentEditBox.content.style.setProperty('cursor', '');
+        this.editBoxManagerService.currentEditBox.content.ownerDocument.getSelection().empty();
       }
     }
-    EditBoxComponent.currentEditBox = this;
+    this.editBoxManagerService.currentEditBox = this;
     this.setCurrentContainer();
   }
 
   setCurrentContainer() {
-    EditBoxComponent.currentContainer = this.parentContainer;
+    this.editBoxManagerService.currentContainer = this.parentContainer;
   }
 
 
@@ -384,9 +379,9 @@ export class EditBoxComponent {
           // Align left
           if (this.parentContainer.currentRow.align === 'left') {
             if (insert === 'left') {
-              x = EditBoxComponent.currentEditBox.rect.x;
+              x = this.editBoxManagerService.currentEditBox.rect.x;
             } else if (insert === 'right') {
-              x = EditBoxComponent.currentEditBox.rect.xMax;
+              x = this.editBoxManagerService.currentEditBox.rect.xMax;
             }
 
 
@@ -410,7 +405,7 @@ export class EditBoxComponent {
             for (let i = 0; i < sortedBoxes.length; i++) {
               let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
 
-              if (box === EditBoxComponent.currentEditBox) {
+              if (box === this.editBoxManagerService.currentEditBox) {
                 if (insert === 'left') {
                   x = currentX;
                   currentX = rect.width + currentX;
@@ -439,9 +434,9 @@ export class EditBoxComponent {
             // Align right
           } else if (this.parentContainer.currentRow.align === 'right') {
             if (insert === 'left') {
-              x = EditBoxComponent.currentEditBox.rect.x - rect.width;
+              x = this.editBoxManagerService.currentEditBox.rect.x - rect.width;
             } else if (insert === 'right') {
-              x = EditBoxComponent.currentEditBox.rect.xMax - rect.width;
+              x = this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
             }
 
 
@@ -537,7 +532,7 @@ export class EditBoxComponent {
       this.editBox.nativeElement.focus();
     } else {
       this.isSelected = false;
-      EditBoxComponent.currentContainer = EditBoxComponent.mainContainer;
+      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer;
     }
   }
 
@@ -550,57 +545,11 @@ export class EditBoxComponent {
   }
 
   onContentChange() {
-    EditBoxComponent.change.next();
+    this.editBoxManagerService.change.next();
   }
   boxToTable(table: HTMLTableElement) { }
 
   getTableRect(boxType) {
     return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;
-  }
-
-  static setContainerHeight(container) {
-    // If container has any boxes
-    if (container.boxes && container.boxes.length > 0) {
-
-      // If every box has a rect
-      if (container.boxes.every(x => x.rect)) {
-
-        // Container box
-        if (container.injector.view.component.rect) {
-          let yMax = Math.max(...container.boxes.map(x => x.rect.yMax));
-          let rect = container.injector.view.component.rect;
-
-          container.injector.view.component.handle = '';
-          container.injector.view.component.setRect(() => {
-            return new Rect(rect.x, rect.y, rect.width, Math.max(container.injector.view.component.fixedHeight, yMax));
-          });
-          EditBoxComponent.setContainerHeight(container.injector.view.component.parentContainer);
-
-          // Main container
-        } else {
-          container.height = Math.max(...container.boxes.map(x => x.rect.yMax));
-        }
-
-        // Wait until all boxes have their rects
-      } else {
-        container.height = EditBoxComponent.minContainerHeight;
-        let interval = window.setInterval(() => {
-          if (container.boxes.every(x => x.rect)) {
-            EditBoxComponent.setContainerHeight(container);
-            window.clearInterval(interval);
-          }
-        }, 1);
-      }
-
-      // Container has no boxes
-    } else {
-      if (container.injector.view.component.rect) {
-        // Set parent container height
-        EditBoxComponent.setContainerHeight(container.injector.view.component.parentContainer);
-      } else {
-        // Set the default container height
-        container.height = EditBoxComponent.minContainerHeight;
-      }
-    }
   }
 }

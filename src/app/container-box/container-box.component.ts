@@ -148,7 +148,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setCurrentContainer() {
-    EditBoxComponent.currentContainer = this.container;
+    this.editBoxManagerService.currentContainer = this.container;
   }
 
   boxToTable(table: HTMLTableElement) {
