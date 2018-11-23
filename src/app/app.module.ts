@@ -44,6 +44,7 @@ import { GroupByPipe } from './group-by.pipe';
 import { LinkFormComponent } from './link-form/link-form.component';
 import { EmailPreviewComponent } from './email-preview/email-preview.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
+import { MenuComponent } from './menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
     GroupByPipe,
     LinkFormComponent,
     EmailPreviewComponent,
-    ColorPickerComponent
+    ColorPickerComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,

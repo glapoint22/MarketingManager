@@ -24,6 +24,9 @@
 <!-- Prompt -->
 <prompt *ngIf="promptService.show"></prompt>
 
+<!-- Menu -->
+<menu *ngIf="editBoxManagerService.showMenu"></menu>
+
 <!-- Saving -->
 <div *ngIf="saveService.isSaving" class="saving">
     <div>
@@ -31,4 +34,3 @@
         <div class="saving-text">Saving...</div>
     </div>
 </div>
-

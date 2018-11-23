@@ -12,7 +12,10 @@ export class EditBoxManagerService {
   public mainContainer: any;
   public change = new Subject<void>();
   public minContainerHeight: number;
-  public insertType: string;
+  public insertType: string = null;
+  public showMenu: boolean;
+  public menuLeft: number;
+  public menuTop: number;
 
   constructor() { }
 
@@ -60,5 +63,13 @@ export class EditBoxManagerService {
         container.height = this.minContainerHeight;
       }
     }
+  }
+
+  setMenu(event){
+    event.preventDefault();
+    this.menuLeft = event.clientX;
+    this.menuTop = event.clientY;
+
+    this.showMenu = true;
   }
 }
