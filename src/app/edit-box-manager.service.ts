@@ -69,7 +69,6 @@ export class EditBoxManagerService {
     event.preventDefault();
     this.menuLeft = event.clientX;
     this.menuTop = event.clientY;
-
     this.showMenu = true;
   }
 }

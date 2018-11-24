@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EditBoxManagerService } from '../edit-box-manager.service';
+import { EditBoxService } from '../edit-box.service';
 
 @Component({
   selector: 'menu',
@@ -8,7 +9,7 @@ import { EditBoxManagerService } from '../edit-box-manager.service';
 })
 export class MenuComponent implements OnInit {
 
-  constructor(public editBoxManagerService: EditBoxManagerService) { }
+  constructor(public editBoxManagerService: EditBoxManagerService, public editBoxService: EditBoxService) { }
 
   ngOnInit() {
   }

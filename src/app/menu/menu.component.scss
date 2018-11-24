@@ -1,0 +1,60 @@
+@import 'theme';
+
+.menu {
+    width: 200px;
+    background: #363636;
+    position: absolute;
+    z-index: 20;
+    color: white;
+    outline: 1px solid #666666;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    @include shadow();
+}
+.group {
+    width: 100%;
+    margin: auto;
+    border-bottom: 1px solid #898989;
+    padding-bottom: 3px;
+    padding-top: 3px;
+}
+.group:first-child {
+    padding-top: 0;
+}
+.group:last-child {
+    border: none;
+    padding-bottom: 0;
+}
+.menu-row {
+    display: flex;
+    padding: 2px 10px;
+    position: relative;
+}
+.menu-row:hover {
+    background-color: $hover-color;
+}
+.menu-row-data {
+    flex: 1;
+}
+.arrow {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #8f8f8f;
+    margin-top: 5px;
+    margin-right: -4px;
+  }
+  .menu-row:hover > .arrow {
+     border-left-color: white; 
+  }
+  .menu-row:hover * .submenu {
+    display: block;
+ }
+  .submenu {
+    top: -4px;
+    margin-left: 6px;
+    display: none;
+  }

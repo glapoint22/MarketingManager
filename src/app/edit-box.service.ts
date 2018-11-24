@@ -14,6 +14,193 @@ import { EditBoxManagerService } from './edit-box-manager.service';
 export class EditBoxService {
   public copied: any = {};
   private fileInput = document.createElement('input');
+  public menu = {
+    groups: [
+      {
+        rows: [
+          {
+            item: 'Align Left',
+            action: () => {
+              alert('hello');
+            }
+          },
+          {
+            item: 'Align Center'
+          },
+          {
+            item: 'Align Right'
+          }
+        ]
+      },
+      {
+        rows: [
+          {
+            item: 'Move Left'
+          },
+          {
+            item: 'Move Right'
+          },
+          {
+            item: 'Move Up'
+          },
+          {
+            item: 'Move Down'
+          }
+        ]
+      },
+      {
+        rows: [
+          {
+            item: 'Insert Left',
+            menu: {
+              groups: [
+                {
+                  rows: [
+                    {
+                      item: 'Paste'
+                    }
+                  ]
+                },
+                {
+                  rows: [
+                    {
+                      item: 'Textbox',
+                      action: () => {
+                        this.editBoxManagerService.insertType = 'left';
+                        this.createTextBox();
+                        this.editBoxManagerService.showMenu = false;
+                      }
+                    },
+                    {
+                      item: 'Button',
+                      action: () => {
+                        this.editBoxManagerService.insertType = 'left';
+                        this.createButtonBox();
+                        this.editBoxManagerService.showMenu = false;
+                      }
+                    },
+                    {
+                      item: 'Image',
+                      action: () => {
+                        this.editBoxManagerService.insertType = 'left';
+                        this.createImageBox();
+                        this.editBoxManagerService.showMenu = false;
+                      }
+                    },
+                    {
+                      item: 'Container',
+                      action: () => {
+                        this.editBoxManagerService.insertType = 'left';
+                        this.createContainerBox();
+                        this.editBoxManagerService.showMenu = false;
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            item: 'Insert Right',
+            menu: {
+              groups: [
+                {
+                  rows: [
+                    {
+                      item: 'Paste'
+                    }
+                  ]
+                },
+                {
+                  rows: [
+                    {
+                      item: 'Textbox'
+                    },
+                    {
+                      item: 'Button'
+                    },
+                    {
+                      item: 'Image'
+                    },
+                    {
+                      item: 'Container'
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            item: 'Insert Top',
+            menu: {
+              groups: [
+                {
+                  rows: [
+                    {
+                      item: 'Paste'
+                    }
+                  ]
+                },
+                {
+                  rows: [
+                    {
+                      item: 'Textbox'
+                    },
+                    {
+                      item: 'Button'
+                    },
+                    {
+                      item: 'Image'
+                    },
+                    {
+                      item: 'Container'
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            item: 'Insert Bottom',
+            menu: {
+              groups: [
+                {
+                  rows: [
+                    {
+                      item: 'Paste'
+                    }
+                  ]
+                },
+                {
+                  rows: [
+                    {
+                      item: 'Textbox'
+                    },
+                    {
+                      item: 'Button'
+                    },
+                    {
+                      item: 'Image'
+                    },
+                    {
+                      item: 'Container'
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        rows: [
+          {
+            item: 'Distribute Rows'
+          }
+        ]
+      }
+    ]
+  }
 
   constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService) {
     this.fileInput.type = 'file';
@@ -39,19 +226,19 @@ export class EditBoxService {
   createTextBox(boxData?) {
     let box = this.createBox(TextBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
     box.instance.initialize(boxData);
-    if(!boxData)this.setChange([box.instance]);
+    if (!boxData) this.setChange([box.instance]);
   }
 
   createButtonBox(boxData?) {
     let box = this.createBox(ButtonBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
     box.instance.initialize(boxData);
-    if(!boxData)this.setChange([box.instance]);
+    if (!boxData) this.setChange([box.instance]);
   }
 
   createContainerBox(boxData?) {
     let box = this.createBox(ContainerBoxComponent, this.editBoxManagerService.currentContainer);
     box.instance.initialize(boxData)
-    if(!boxData)this.setChange([box.instance]);
+    if (!boxData) this.setChange([box.instance]);
   }
 
   createImageBox(boxData?) {
@@ -185,9 +372,9 @@ export class EditBoxService {
     }
   }
 
-  setChange(changedBoxes: Array<EditBoxComponent>){
-     // Mark a change has happened when all boxes have loaded
-     let interval = window.setInterval(() => {
+  setChange(changedBoxes: Array<EditBoxComponent>) {
+    // Mark a change has happened when all boxes have loaded
+    let interval = window.setInterval(() => {
       if (changedBoxes.every(x => x.isLoaded)) {
         this.editBoxManagerService.change.next();
         this.editBoxManagerService.setContainerHeight(this.editBoxManagerService.currentContainer);
