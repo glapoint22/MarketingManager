@@ -38,6 +38,7 @@ export class EditBoxComponent {
   public link: string;
   public backgroundColor: string;
   public isLoaded: boolean = false;
+  public row;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -45,12 +46,12 @@ export class EditBoxComponent {
 
   onMouseDown(event, handle) {
     event.preventDefault();
+    this.editBoxManagerService.currentContainer.currentRow = this.row;
     if (event.button === 0) {
       this.isMousedown = true;
       this.handle = handle;
       this.currentPosition = new Vector2(event.clientX, event.clientY);
     }
-
   }
 
   onMouseMove(event: MouseEvent) {
@@ -414,6 +415,14 @@ export class EditBoxComponent {
             }
           }
 
+          // Check to see if the ymax has changed. If so, move rows down
+          let yMax = Math.max(this.parentContainer.currentRow.yMax, this.parentContainer.currentRow.y + rect.yMax);
+          if(yMax > this.parentContainer.currentRow.yMax){
+            this.parentContainer.currentRow.yMax = yMax;
+            let startIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + 1;
+            this.moveRowsDown(startIndex);
+          }
+
           // Insert type is top or bottom
         } else {
           // Get the new inserted row index
@@ -428,37 +437,14 @@ export class EditBoxComponent {
           });
           this.parentContainer.currentRow = this.parentContainer.rows[insertedRowIndex];
 
-          // Loop through all the rows and see if we need to move them down
-          for (let i = insertedRowIndex + 1; i < this.parentContainer.rows.length; i++) {
-            let currentRow = this.parentContainer.rows[i],
-              previousRow = this.parentContainer.rows[i - 1];
-
-            // Test to see if we need to move this current row down
-            if (currentRow.y < previousRow.yMax) {
-              // Set the new y for the row
-              currentRow.y = previousRow.yMax;
-
-              // Move all the boxes in this row
-              for (let j = 0; j < currentRow.boxes.length; j++) {
-                let box = currentRow.boxes[j];
-                box.rect.y = currentRow.y;
-                box.setElement();
-              }
-
-              // Set the new ymax
-              currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
-
-            } else {
-              break;
-            }
-          }
+          this.moveRowsDown(insertedRowIndex + 1);
 
           // Set the new x
           x = (this.containerWidth * 0.5) - (rect.width * 0.5);
         }
         // Set the new y
         y = this.parentContainer.currentRow.y;
-
+        this.editBoxManagerService.insertType = null;
       } else {
         x = (this.containerWidth * 0.5) - (rect.width * 0.5);
         y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
@@ -474,6 +460,7 @@ export class EditBoxComponent {
 
       this.rect = new Rect(x, y, rect.width, rect.height);
       this.parentContainer.currentRow.boxes.push(this);
+      this.row = this.parentContainer.currentRow;
 
     } else {
       this.rect = rect;
@@ -483,6 +470,33 @@ export class EditBoxComponent {
 
     if (isSelected) this.setSelection();
     this.isLoaded = true;
+  }
+
+  moveRowsDown(startIndex){
+    // Loop through all the rows and see if we need to move them down
+    for (let i = startIndex; i < this.parentContainer.rows.length; i++) {
+      let currentRow = this.parentContainer.rows[i],
+        previousRow = this.parentContainer.rows[i - 1];
+
+      // Test to see if we need to move this current row down
+      if (currentRow.y < previousRow.yMax) {
+        // Set the new y for the row
+        currentRow.y = previousRow.yMax;
+
+        // Move all the boxes in this row
+        for (let j = 0; j < currentRow.boxes.length; j++) {
+          let box = currentRow.boxes[j];
+          box.rect.y = currentRow.y;
+          box.setElement();
+        }
+
+        // Set the new ymax
+        currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
+
+      } else {
+        break;
+      }
+    }
   }
 
 

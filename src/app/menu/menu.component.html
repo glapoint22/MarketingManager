@@ -1,12 +1,13 @@
 <div class="menu" [style.left.px]="editBoxManagerService.menuLeft" [style.top.px]="editBoxManagerService.menuTop">
     <div class="group" *ngFor="let group of editBoxService.menu.groups">
-        <div class="menu-row" *ngFor="let row of group.rows">
-            <div class="menu-row-data" (click)="row.action ? row.action() : null">{{row.item}}</div>
+        <div class="menu-row" *ngFor="let row of group.rows" (click)="row.action ? row.action() : null" [ngClass]="{'disabled': row.isDisabled ? row.isDisabled(): false}">
+            <div class="menu-row-data">{{row.item}}</div>
             <div *ngIf="row.menu" class="arrow">
                 <div class="menu submenu">
                     <div class="group" *ngFor="let subGroup of row.menu.groups">
-                        <div class="menu-row" *ngFor="let subRow of subGroup.rows">
-                            <div class="menu-row-data" (click)="subRow.action ? subRow.action() : null">{{subRow.item}}</div>
+                        <div class="menu-row" *ngFor="let subRow of subGroup.rows" (click)="subRow.action ? subRow.action() : null"
+                            [ngClass]="{'disabled': subRow.isDisabled ? subRow.isDisabled(): false}">
+                            <div class="menu-row-data">{{subRow.item}}</div>
                         </div>
                     </div>
                 </div>
