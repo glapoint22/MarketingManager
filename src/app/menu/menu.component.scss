@@ -52,7 +52,7 @@
 .menu-row:hover > .arrow {
     border-left-color: white; 
 }
-.menu-row:hover * .submenu {
+.menu-row:hover .submenu {
     display: block;
 }
 .submenu {

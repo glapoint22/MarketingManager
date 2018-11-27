@@ -49,11 +49,11 @@ export class TableService {
         let column: HTMLTableColElement = row.element.appendChild(document.createElement('td')),
           paddingTop = (row.boxes[0].rect.y - row.y);
 
-          if(paddingTop > 0){
-            let paddingRow = table.insertBefore(document.createElement('tr'),row.element);
-            let paddingColumn = paddingRow.insertCell();
-            paddingColumn.height = paddingTop.toString();
-          }
+        if (paddingTop > 0) {
+          let paddingRow = table.insertBefore(document.createElement('tr'), row.element);
+          let paddingColumn = paddingRow.insertCell();
+          paddingColumn.height = paddingTop.toString();
+        }
 
         // Set the column properties
         column.style.paddingLeft = '0';
@@ -131,7 +131,7 @@ export class TableService {
               box.boxToTable(this.createTable(div));
             }
 
-            if(i === sortedBoxes.length - 1){
+            if (i === sortedBoxes.length - 1) {
               comment = document.createComment('[if (gte mso 9)|(IE)]></td></tr></table><![endif]');
               column.appendChild(comment);
             }
@@ -194,64 +194,6 @@ export class TableService {
     return rows;
   }
 
-
-
-
-  // createColumns(row, parent: HTMLElement) {
-  //   let columns = [], currentColumn, j, sortedBoxes: Array<EditBoxComponent>;
-
-  //   // Sort the boxes horizontally
-  //   sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-  //     if (a.rect.x > b.rect.x) return 1;
-  //     return -1;
-  //   });
-
-
-  //   // Create the first column based on the most left box
-  //   columns.push({
-  //     boxes: [this.getBox(row.boxes, sortedBoxes[0])],
-  //     element: parent.appendChild(document.createElement('td')),
-  //     x: row.x,
-  //     y: row.y,
-  //     width: sortedBoxes[0].rect.xMax - row.x,
-  //     height: row.height
-  //   });
-  //   currentColumn = columns[0];
-
-  //   // See if any other box belongs to this column
-  //   for (let i = 1; i < sortedBoxes.length; i++) {
-  //     for (j = 0; j < currentColumn.boxes.length; j++) {
-  //       if (sortedBoxes[i].rect.x < currentColumn.boxes[j].rect.xMax) {
-  //         currentColumn.boxes.push(this.getBox(row.boxes, sortedBoxes[i]));
-  //         currentColumn.width = Math.max(currentColumn.width, sortedBoxes[i].rect.xMax - currentColumn.x);
-  //         break;
-  //       }
-  //     }
-
-  //     // Create a new column
-  //     if (j === currentColumn.boxes.length) {
-  //       columns.push({
-  //         boxes: [this.getBox(row.boxes, sortedBoxes[i])],
-  //         element: parent.appendChild(document.createElement('td')),
-  //         x: currentColumn.width + currentColumn.x,
-  //         y: row.y,
-  //         width: sortedBoxes[i].rect.xMax - (currentColumn.width + currentColumn.x),
-  //         height: row.height
-  //       });
-  //       currentColumn = columns[columns.length - 1];
-  //     }
-  //   }
-
-  //   // Set the last column's width
-  //   if (columns.length > 1) {
-  //     currentColumn.width = row.width - currentColumn.x;
-  //   } else {
-  //     currentColumn.width = row.width;
-  //   }
-
-  //   return columns;
-  // }
-
   tableToBox(table: HTMLTableElement, container: ViewContainerRef) {
     if (table.summary !== '') {
       let rect = this.getRect(table.summary, table.summary.indexOf('-') + 1);
@@ -305,9 +247,9 @@ export class TableService {
         span.style.fontWeight = anchor.style.fontWeight;
         span.style.fontStyle = anchor.style.fontStyle;
         span.style.textDecoration = anchor.style.textDecoration;
-        
+
         span.appendChild(document.createTextNode(anchor.innerText));
-        
+
         let boxData = {
           content: span.outerHTML,
           backgroundColor: table.bgColor,

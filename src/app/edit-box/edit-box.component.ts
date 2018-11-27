@@ -17,8 +17,8 @@ export class EditBoxComponent {
   private isMousedown: boolean;
   private currentPosition: Vector2;
   private parentElement: HTMLElement;
-  private containerWidth: number;
-  private containerHeight: number;
+  public containerWidth: number;
+  public containerHeight: number;
   public showTopLeftHandle: boolean;
   public showTopHandle: boolean;
   public showTopRightHandle: boolean;
@@ -42,6 +42,170 @@ export class EditBoxComponent {
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
+  }
+
+  initialize(rect?: Rect, isSelected?: boolean) {
+    // Initialize the container properties
+    this.parentElement = this.parentContainer.element.nativeElement.parentElement;
+    this.containerWidth = this.parentElement.clientWidth;
+    this.containerHeight = this.parentElement.clientHeight;
+
+    if (rect.x === null) {
+      let x: number, y: number;
+      // If there are no rows for this container
+      if (!this.parentContainer.rows) this.parentContainer.rows = [];
+
+      // If this editBox is being inserted
+      if (this.editBoxManagerService.insertType) {
+
+        // Insert type is left or right
+        if (this.editBoxManagerService.insertType === 'left' || this.editBoxManagerService.insertType === 'right') {
+          // Sort the boxes horizontally
+          let sortedBoxes = this.editBoxManagerService.sortBoxes(this.parentContainer.currentRow.boxes);
+
+          // Align left
+          if (this.parentContainer.currentRow.align === 'left') {
+            if (this.editBoxManagerService.insertType === 'left') {
+              x = this.editBoxManagerService.currentEditBox.rect.x;
+            } else if (this.editBoxManagerService.insertType === 'right') {
+              x = this.editBoxManagerService.currentEditBox.rect.xMax;
+            }
+
+            for (let i = sortedBoxes.length - 1; i > -1; i--) {
+              if (sortedBoxes[i].rect.x >= x) {
+                let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+                box.rect.x = box.rect.x + rect.width;
+                box.setElement();
+              }
+            }
+
+            // Align center
+          } else if (this.parentContainer.currentRow.align === 'center') {
+            let boxesWidth = rect.width;
+            this.parentContainer.currentRow.boxes.forEach(box => {
+              boxesWidth += box.rect.width;
+            });
+            let currentX = (this.containerWidth * 0.5) - (boxesWidth * 0.5);
+
+            for (let i = 0; i < sortedBoxes.length; i++) {
+              let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+
+              if (box === this.editBoxManagerService.currentEditBox) {
+                if (this.editBoxManagerService.insertType === 'left') {
+                  x = currentX;
+                  currentX = rect.width + currentX;
+
+                  box.rect.x = currentX;
+                  currentX = box.rect.width + currentX;
+                } else {
+                  box.rect.x = currentX;
+                  currentX = box.rect.width + currentX;
+
+                  x = currentX;
+                  currentX = rect.width + currentX;
+                }
+
+              } else {
+                box.rect.x = currentX;
+                currentX = box.rect.width + currentX;
+              }
+
+              box.setElement();
+
+            }
+
+            // Align right
+          } else if (this.parentContainer.currentRow.align === 'right') {
+            if (this.editBoxManagerService.insertType === 'left') {
+              x = this.editBoxManagerService.currentEditBox.rect.x - rect.width;
+            } else if (this.editBoxManagerService.insertType === 'right') {
+              x = this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
+            }
+
+            for (let i = 0; i < sortedBoxes.length; i++) {
+              if (sortedBoxes[i].rect.xMax <= x + rect.width) {
+                let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+                box.rect.x = box.rect.x - rect.width;
+                box.setElement();
+              }
+            }
+          }
+
+          // Check to see if the ymax has changed. If so, move rows down
+          let yMax = Math.max(this.parentContainer.currentRow.yMax, this.parentContainer.currentRow.y + rect.yMax);
+          if (yMax > this.parentContainer.currentRow.yMax) {
+            this.parentContainer.currentRow.yMax = yMax;
+            let startIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + 1;
+            this.moveRowsDown(startIndex);
+          }
+
+          // Insert type is top or bottom
+        } else {
+          // Get the new inserted row index
+          let insertedRowIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + (this.editBoxManagerService.insertType === 'bottom' ? 1 : 0),
+            yPos: number, yMax: number;
+
+          if (this.editBoxManagerService.insertType === 'bottom') {
+            yPos = this.parentContainer.currentRow.yMax;
+            yMax = this.parentContainer.currentRow.yMax + rect.height;
+          } else {
+            yPos = this.parentContainer.currentRow.y - rect.height;
+
+            if (insertedRowIndex === 0) {
+              yPos = Math.max(yPos, 0);
+            } else {
+              if (yPos < this.parentContainer.rows[insertedRowIndex - 1].yMax) {
+                yPos = this.parentContainer.rows[insertedRowIndex - 1].yMax;
+              }
+            }
+
+
+            yMax = yPos + rect.height;
+          }
+
+          // Insert the new row
+          this.parentContainer.rows.push({
+            boxes: [],
+            align: 'center',
+            y: yPos,
+            yMax: yMax
+          });
+          this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
+          this.editBoxManagerService.sortRows(this.parentContainer.rows);
+
+          this.moveRowsDown(insertedRowIndex + 1);
+
+          // Set the new x
+          x = (this.containerWidth * 0.5) - (rect.width * 0.5);
+        }
+        // Set the new y
+        y = this.parentContainer.currentRow.y;
+        this.editBoxManagerService.insertType = null;
+      } else {
+        x = (this.containerWidth * 0.5) - (rect.width * 0.5);
+        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
+
+        this.parentContainer.rows.push({
+          boxes: [],
+          align: 'center',
+          y: y,
+          yMax: rect.yMax + y
+        });
+        this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
+      }
+
+      this.rect = new Rect(x, y, rect.width, rect.height);
+      this.parentContainer.currentRow.boxes.push(this);
+      this.row = this.parentContainer.currentRow;
+
+    } else {
+      this.rect = rect;
+    }
+
+    this.setElement();
+
+    if (isSelected) this.setSelection();
+    this.isLoaded = true;
   }
 
   onMouseDown(event, handle) {
@@ -90,6 +254,88 @@ export class EditBoxComponent {
       }
       this.editBoxManagerService.setContainerHeight(this.parentContainer);
     }
+  }
+
+  onMouseUp() {
+    if (this.isMousedown) {
+      let rowFound: boolean = false;
+
+      if (this.rect.y !== this.row.y) {
+        for (let i = 0; i < this.parentContainer.rows.length; i++) {
+          let row = this.parentContainer.rows[i];
+
+          if (this.rect.y >= row.y && this.rect.y <= row.yMax) {
+            // box is in its current row
+            if (row === this.row) {
+              rowFound = true;
+              this.rect.y = row.y;
+              break;
+
+              // Box is in another row
+            } else {
+              rowFound = true;
+              let boxIndex = this.row.boxes.findIndex(x => x === this);
+
+              this.row.boxes.splice(boxIndex, 1);
+              if (this.row.boxes.length === 0) {
+                let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
+                this.parentContainer.rows.splice(rowIndex, 1);
+              }
+              row.boxes.push(this);
+              this.row = row;
+              this.rect.y = row.y;
+              break;
+            }
+          }
+        }
+        // Box is not in an existing row
+        if (!rowFound) {
+          let boxIndex = this.row.boxes.findIndex(x => x === this);
+
+          this.row.boxes.splice(boxIndex, 1);
+          if (this.row.boxes.length === 0) {
+            let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
+            this.parentContainer.rows.splice(rowIndex, 1);
+          }
+
+          // Insert the new row
+          this.parentContainer.rows.push({
+            boxes: [this],
+            align: 'center',
+            y: this.rect.y,
+            yMax: this.rect.yMax
+          });
+          this.row = this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
+          this.editBoxManagerService.sortRows(this.parentContainer.rows);
+          
+        }
+        this.editBoxManagerService.change.next();
+      }
+
+      switch (this.row.align) {
+        case 'left':
+          this.editBoxManagerService.alignBoxesLeft(this.row.boxes);
+          break;
+        case 'center':
+          this.editBoxManagerService.alignBoxesCenter(this.row.boxes);
+          break;
+        case 'right':
+          this.editBoxManagerService.alignBoxesRight(this.row.boxes);
+          break;
+      }
+      this.isMousedown = false;
+    }
+  }
+
+  setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {
+    this.showTopLeftHandle = showLeftTopHandle;
+    this.showTopHandle = showTopHandle;
+    this.showTopRightHandle = showRightTopHandle;
+    this.showLeftHandle = showLeftHandle;
+    this.showRightHandle = showRightHandle;
+    this.showBottomLeftHandle = showBottomLeftHandle;
+    this.showBottomHandle = showBottomHandle;
+    this.showBottomRightHandle = showBottomRightHandle;
   }
 
   setCenterHandle(deltaPosition: Vector2) {
@@ -147,21 +393,6 @@ export class EditBoxComponent {
     });
   }
 
-  onMouseUp(event: MouseEvent) {
-    if (this.isMousedown) this.editBoxManagerService.change.next();
-    this.isMousedown = false;
-  }
-
-  setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {
-    this.showTopLeftHandle = showLeftTopHandle;
-    this.showTopHandle = showTopHandle;
-    this.showTopRightHandle = showRightTopHandle;
-    this.showLeftHandle = showLeftHandle;
-    this.showRightHandle = showRightHandle;
-    this.showBottomLeftHandle = showBottomLeftHandle;
-    this.showBottomHandle = showBottomHandle;
-    this.showBottomRightHandle = showBottomRightHandle;
-  }
 
   setElement() {
     this.editBox.nativeElement.style.left = this.rect.x + 'px';
@@ -172,8 +403,6 @@ export class EditBoxComponent {
 
   setRect(action, response?) {
     let tempRect: Rect = action(), direction: Vector2 = tempRect.center.subtract(this.rect.center);
-    // containerWidth = this.parentContainer.element.nativeElement.parentElement.clientWidth,
-    // containerHeight = this.parentContainer.element.nativeElement.parentElement.clientHeight;
 
     // Test rect against container
     if (tempRect.x < 0) {
@@ -321,158 +550,8 @@ export class EditBoxComponent {
     return node;
   }
 
-  getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent) {
-    return boxes.find(x => x.rect === box.rect);
-  }
 
-  initialize(rect?: Rect, isSelected?: boolean) {
-    // Initialize the container properties
-    this.parentElement = this.parentContainer.element.nativeElement.parentElement;
-    this.containerWidth = this.parentElement.clientWidth;
-    this.containerHeight = this.parentElement.clientHeight;
-
-    if (rect.x === null) {
-      let x: number, y: number;
-      // If there are no rows for this container
-      if (!this.parentContainer.rows) this.parentContainer.rows = [];
-
-      // If this editBox is being inserted
-      if (this.editBoxManagerService.insertType) {
-
-        // Insert type is left or right
-        if (this.editBoxManagerService.insertType === 'left' || this.editBoxManagerService.insertType === 'right') {
-          // Sort the boxes horizontally
-          let sortedBoxes = this.parentContainer.currentRow.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-            if (a.rect.x > b.rect.x) return 1;
-            return -1;
-          });
-
-          // Align left
-          if (this.parentContainer.currentRow.align === 'left') {
-            if (this.editBoxManagerService.insertType === 'left') {
-              x = this.editBoxManagerService.currentEditBox.rect.x;
-            } else if (this.editBoxManagerService.insertType === 'right') {
-              x = this.editBoxManagerService.currentEditBox.rect.xMax;
-            }
-
-            for (let i = sortedBoxes.length - 1; i > -1; i--) {
-              if (sortedBoxes[i].rect.x >= x) {
-                let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-                box.rect.x = box.rect.x + rect.width;
-                box.setElement();
-              }
-            }
-
-            // Align center
-          } else if (this.parentContainer.currentRow.align === 'center') {
-            let boxesWidth = rect.width;
-            this.parentContainer.currentRow.boxes.forEach(box => {
-              boxesWidth += box.rect.width;
-            });
-            let currentX = (this.containerWidth * 0.5) - (boxesWidth * 0.5);
-
-            for (let i = 0; i < sortedBoxes.length; i++) {
-              let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-
-              if (box === this.editBoxManagerService.currentEditBox) {
-                if (this.editBoxManagerService.insertType === 'left') {
-                  x = currentX;
-                  currentX = rect.width + currentX;
-
-                  box.rect.x = currentX;
-                  currentX = box.rect.width + currentX;
-                } else {
-                  box.rect.x = currentX;
-                  currentX = box.rect.width + currentX;
-
-                  x = currentX;
-                  currentX = rect.width + currentX;
-                }
-
-              } else {
-                box.rect.x = currentX;
-                currentX = box.rect.width + currentX;
-              }
-
-              box.setElement();
-
-            }
-
-            // Align right
-          } else if (this.parentContainer.currentRow.align === 'right') {
-            if (this.editBoxManagerService.insertType === 'left') {
-              x = this.editBoxManagerService.currentEditBox.rect.x - rect.width;
-            } else if (this.editBoxManagerService.insertType === 'right') {
-              x = this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
-            }
-
-            for (let i = 0; i < sortedBoxes.length; i++) {
-              if (sortedBoxes[i].rect.xMax <= x + rect.width) {
-                let box = this.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-                box.rect.x = box.rect.x - rect.width;
-                box.setElement();
-              }
-            }
-          }
-
-          // Check to see if the ymax has changed. If so, move rows down
-          let yMax = Math.max(this.parentContainer.currentRow.yMax, this.parentContainer.currentRow.y + rect.yMax);
-          if(yMax > this.parentContainer.currentRow.yMax){
-            this.parentContainer.currentRow.yMax = yMax;
-            let startIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + 1;
-            this.moveRowsDown(startIndex);
-          }
-
-          // Insert type is top or bottom
-        } else {
-          // Get the new inserted row index
-          let insertedRowIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + (this.editBoxManagerService.insertType === 'bottom' ? 1 : 0);
-
-          // Insert the new row
-          this.parentContainer.rows.splice(insertedRowIndex, 0, {
-            boxes: [],
-            align: 'center',
-            y: this.editBoxManagerService.insertType === 'bottom' ? this.parentContainer.currentRow.yMax : this.parentContainer.currentRow.y,
-            yMax: this.editBoxManagerService.insertType === 'bottom' ? this.parentContainer.currentRow.yMax + rect.height : this.parentContainer.currentRow.y + rect.height
-          });
-          this.parentContainer.currentRow = this.parentContainer.rows[insertedRowIndex];
-
-          this.moveRowsDown(insertedRowIndex + 1);
-
-          // Set the new x
-          x = (this.containerWidth * 0.5) - (rect.width * 0.5);
-        }
-        // Set the new y
-        y = this.parentContainer.currentRow.y;
-        this.editBoxManagerService.insertType = null;
-      } else {
-        x = (this.containerWidth * 0.5) - (rect.width * 0.5);
-        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
-
-        this.parentContainer.rows.push({
-          boxes: [],
-          align: 'center',
-          y: y,
-          yMax: rect.yMax + y
-        });
-        this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
-      }
-
-      this.rect = new Rect(x, y, rect.width, rect.height);
-      this.parentContainer.currentRow.boxes.push(this);
-      this.row = this.parentContainer.currentRow;
-
-    } else {
-      this.rect = rect;
-    }
-
-    this.setElement();
-
-    if (isSelected) this.setSelection();
-    this.isLoaded = true;
-  }
-
-  moveRowsDown(startIndex){
+  moveRowsDown(startIndex) {
     // Loop through all the rows and see if we need to move them down
     for (let i = startIndex; i < this.parentContainer.rows.length; i++) {
       let currentRow = this.parentContainer.rows[i],

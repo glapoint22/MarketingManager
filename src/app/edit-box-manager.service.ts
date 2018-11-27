@@ -65,10 +65,82 @@ export class EditBoxManagerService {
     }
   }
 
-  setMenu(event){
+  setMenu(event) {
     event.preventDefault();
     this.menuLeft = event.clientX;
     this.menuTop = event.clientY;
     this.showMenu = true;
+  }
+
+  getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent): EditBoxComponent {
+    return boxes.find(x => x.rect === box.rect);
+  }
+
+  sortBoxes(boxes): Array<EditBoxComponent> {
+    let sortedBoxes = boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
+      if (a.rect.x > b.rect.x) return 1;
+      return -1;
+    });
+
+    return sortedBoxes;
+  }
+
+  sortRows(rows){
+    let sortedRows = rows.sort((a, b) => {
+      if (a.y > b.y) return 1;
+      return -1;
+    });
+
+    return sortedRows;
+  }
+
+  alignBoxesLeft(boxes: Array<EditBoxComponent>) {
+    let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(boxes),
+      currentX: number = 0;
+
+    // Align the boxes left
+    sortedBoxes.forEach((sortedBox: EditBoxComponent) => {
+      let box: EditBoxComponent = this.getBox(boxes, sortedBox);
+      box.rect.x = currentX;
+      box.setElement();
+      currentX = box.rect.xMax;
+    });
+  }
+
+  alignBoxesCenter(boxes: Array<EditBoxComponent>) {
+    let boxesWidth: number = 0,
+      sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(boxes),
+      currentX: number;
+
+    // Get the combined width from all the boxes
+    sortedBoxes.forEach((box: EditBoxComponent) => {
+      boxesWidth += box.rect.width;
+    });
+
+    // Calculate the starting x
+    currentX = (boxes[0].containerWidth * 0.5) - (boxesWidth * 0.5);
+
+    // Align the boxes center
+    sortedBoxes.forEach((sortedBox: EditBoxComponent) => {
+      let box: EditBoxComponent = this.getBox(boxes, sortedBox);
+      box.rect.x = currentX;
+      box.setElement();
+      currentX = box.rect.xMax;
+    });
+  }
+
+  alignBoxesRight(boxes: Array<EditBoxComponent>) {
+    let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(boxes),
+      currentX: number = boxes[0].containerWidth;
+
+    // Align the boxes right
+    for (let i = sortedBoxes.length - 1; i > -1; i--) {
+      let box: EditBoxComponent = this.getBox(boxes, sortedBoxes[i]);
+
+      box.rect.x = currentX - box.rect.width;
+      box.setElement();
+      currentX = box.rect.x;
+    }
+
   }
 }
