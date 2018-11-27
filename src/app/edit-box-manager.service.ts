@@ -94,6 +94,20 @@ export class EditBoxManagerService {
     return sortedRows;
   }
 
+  alignBoxes(row){
+    switch (row.align) {
+      case 'left':
+        this.alignBoxesLeft(row.boxes);
+        break;
+      case 'center':
+        this.alignBoxesCenter(row.boxes);
+        break;
+      case 'right':
+        this.alignBoxesRight(row.boxes);
+        break;
+    }
+  }
+
   alignBoxesLeft(boxes: Array<EditBoxComponent>) {
     let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(boxes),
       currentX: number = 0;

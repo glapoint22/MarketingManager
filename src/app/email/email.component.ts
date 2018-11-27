@@ -200,7 +200,7 @@ export class EmailComponent implements OnInit {
 
   @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
-    if (this.editBoxManagerService.currentEditBox) this.editBoxManagerService.currentEditBox.onMouseUp(event);
+    if (this.editBoxManagerService.currentEditBox) this.editBoxManagerService.currentEditBox.onMouseUp();
   }
 
   onMouseDown() {

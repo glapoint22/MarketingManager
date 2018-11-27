@@ -17,6 +17,7 @@ export class EditBoxComponent {
   private isMousedown: boolean;
   private currentPosition: Vector2;
   private parentElement: HTMLElement;
+  private tempRect: Rect;
   public containerWidth: number;
   public containerHeight: number;
   public showTopLeftHandle: boolean;
@@ -210,7 +211,8 @@ export class EditBoxComponent {
 
   onMouseDown(event, handle) {
     event.preventDefault();
-    this.editBoxManagerService.currentContainer.currentRow = this.row;
+    this.parentContainer.currentRow = this.row;
+    this.tempRect = new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
     if (event.button === 0) {
       this.isMousedown = true;
       this.handle = handle;
@@ -260,30 +262,36 @@ export class EditBoxComponent {
     if (this.isMousedown) {
       let rowFound: boolean = false;
 
-      if (this.rect.y !== this.row.y) {
+      if (this.rect.x !== this.tempRect.x || this.rect.y !== this.tempRect.y || this.rect.width !== this.tempRect.width || this.rect.height !== this.tempRect.height) {
         for (let i = 0; i < this.parentContainer.rows.length; i++) {
           let row = this.parentContainer.rows[i];
 
-          if (this.rect.y >= row.y && this.rect.y <= row.yMax) {
+          if (this.rect.y > row.y && this.rect.y < row.yMax) {
             // box is in its current row
             if (row === this.row) {
               rowFound = true;
               this.rect.y = row.y;
+              this.row.yMax = this.rect.yMax;
               break;
 
               // Box is in another row
             } else {
               rowFound = true;
               let boxIndex = this.row.boxes.findIndex(x => x === this);
+              let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
 
               this.row.boxes.splice(boxIndex, 1);
               if (this.row.boxes.length === 0) {
-                let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
                 this.parentContainer.rows.splice(rowIndex, 1);
+              } else {
+                this.parentContainer.rows[rowIndex].yMax = Math.max(...this.parentContainer.rows[rowIndex].boxes.map(x => x.rect.yMax));
+                this.editBoxManagerService.alignBoxes(this.parentContainer.rows[rowIndex]);
               }
               row.boxes.push(this);
               this.row = row;
               this.rect.y = row.y;
+              row.yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
+              if (rowIndex > 0) this.moveRowsDown(rowIndex);
               break;
             }
           }
@@ -291,11 +299,14 @@ export class EditBoxComponent {
         // Box is not in an existing row
         if (!rowFound) {
           let boxIndex = this.row.boxes.findIndex(x => x === this);
+          let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
 
           this.row.boxes.splice(boxIndex, 1);
           if (this.row.boxes.length === 0) {
-            let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
             this.parentContainer.rows.splice(rowIndex, 1);
+          } else {
+            this.parentContainer.rows[rowIndex].yMax = Math.max(...this.parentContainer.rows[rowIndex].boxes.map(x => x.rect.yMax));
+            this.editBoxManagerService.alignBoxes(this.parentContainer.rows[rowIndex]);
           }
 
           // Insert the new row
@@ -307,22 +318,14 @@ export class EditBoxComponent {
           });
           this.row = this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
           this.editBoxManagerService.sortRows(this.parentContainer.rows);
-          
+
         }
+
+        this.editBoxManagerService.alignBoxes(this.row);
         this.editBoxManagerService.change.next();
       }
 
-      switch (this.row.align) {
-        case 'left':
-          this.editBoxManagerService.alignBoxesLeft(this.row.boxes);
-          break;
-        case 'center':
-          this.editBoxManagerService.alignBoxesCenter(this.row.boxes);
-          break;
-        case 'right':
-          this.editBoxManagerService.alignBoxesRight(this.row.boxes);
-          break;
-      }
+
       this.isMousedown = false;
     }
   }
