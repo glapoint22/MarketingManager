@@ -138,7 +138,9 @@
                         <div class="page" [style.width.px]="pageWidth" [style.height.px]="editBoxManagerService.mainContainer ?  editBoxManagerService.mainContainer.height : 0"
                             [style.opacity]="editBoxManagerService.mainContainer && editBoxManagerService.mainContainer.height === 0 ? 0 : 1"
                             [style.backgroundColor]="email.pageColor">
-                            <ng-template #emailContentContainer></ng-template>
+                            <ng-template #viewContainerRef>
+                                <!-- EditBoxes go here -->
+                            </ng-template>
                         </div>
                     </div>
                 </div>

@@ -5,7 +5,9 @@
   <div class="content">
     <div *ngIf="!inEditMode" class="center-handle" (mousedown)="onMouseDown($event, 'center')"></div>
     <ng-content></ng-content>
-    <ng-template #container></ng-template>
+    <ng-template #viewContainerRef>
+      <!-- EditBoxes go here -->
+    </ng-template>
   </div>
 
   <!-- Handles -->

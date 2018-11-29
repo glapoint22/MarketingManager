@@ -20,7 +20,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     this.setVisibleHandles(true, false, true, false, false, true, false, true);
 
     // Set the style
-    this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.parentContainer.element.nativeElement.parentElement.clientWidth + 'px;');
+    this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.container.width + 'px;');
 
     rect = boxData ? boxData.rect : new Rect(null, null, this.contentContainer.clientWidth, this.contentContainer.clientHeight);
 

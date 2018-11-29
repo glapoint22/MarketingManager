@@ -263,7 +263,7 @@ export class TextBoxComponent extends EditBoxComponent {
       this.contentContainer.height = this.rect.height;
     }
     super.onContentChange();
-    this.editBoxManagerService.setContainerHeight(this.parentContainer);
+    this.container.setHeight();
     this.app.tick();
   }
 

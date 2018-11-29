@@ -4,6 +4,7 @@ import { EmailGridComponent } from '../email-grid/email-grid.component';
 import { EmailPreviewService } from '../email-preview.service';
 import { TableService } from '../table.service';
 import { EditBoxManagerService } from '../edit-box-manager.service';
+import { Container } from '../container';
 
 @Component({
   selector: 'email',
@@ -11,7 +12,7 @@ import { EditBoxManagerService } from '../edit-box-manager.service';
   styleUrls: ['./email.component.scss']
 })
 export class EmailComponent implements OnInit {
-  @ViewChildren('emailContentContainer', { read: ViewContainerRef }) emailContentContainer: QueryList<ViewContainerRef>;
+  @ViewChildren('viewContainerRef', { read: ViewContainerRef }) viewContainerRefs: QueryList<ViewContainerRef>;
   @ViewChild(EmailGridComponent) emailGridComponent: EmailGridComponent;
   @ViewChild('edit') editInput: ElementRef;
   public height: number;
@@ -21,11 +22,10 @@ export class EmailComponent implements OnInit {
   public change: number = 0;
   public currentItem;
   public speed: number;
-  private emailContentContainerArray: Array<any>;
   private colorPalette: HTMLInputElement;
   private currentEmail;
   private currentToggleButton;
-  private closedContainer: any;
+  private closedContainer: Container;
   private defaultSpeed: number = 0.5;
   private copy: any;
 
@@ -65,14 +65,8 @@ export class EmailComponent implements OnInit {
 
       div.remove();
     });
-    this.editBoxManagerService.minContainerHeight = 40;
   }
 
-  ngAfterViewInit() {
-    this.emailContentContainer.changes.subscribe((x: QueryList<ViewContainerRef>) => {
-      this.emailContentContainerArray = x.toArray();
-    });
-  }
 
   setHeight() {
     this.height = window.innerHeight - 22;
@@ -82,18 +76,22 @@ export class EmailComponent implements OnInit {
     this.speed = this.defaultSpeed;
     if (input.checked) {
       input.checked = false;
-      this.closedContainer = this.editBoxManagerService.currentContainer;
+      this.closedContainer = this.editBoxManagerService.mainContainer;
       this.editBoxManagerService.currentContainer = null;
     } else {
       this.closedContainer = null;
       this.onEmailClick(email);
       input.checked = true;
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = this.emailContentContainerArray[index];
+      // this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = this.emailContentContainerArray[index];
+      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index]);
+      this.editBoxManagerService.currentContainer.width = this.pageWidth;
+      
       this.currentToggleButton = input;
       if (this.currentEmail.body !== '' && (!this.editBoxManagerService.currentContainer.boxes || this.editBoxManagerService.currentContainer.boxes.length === 0)) {
         this.loadEmail();
       }
-      this.editBoxManagerService.setContainerHeight(this.editBoxManagerService.mainContainer);
+      // this.editBoxManagerService.setContainerHeight(this.editBoxManagerService.mainContainer);
+      this.editBoxManagerService.mainContainer.setHeight();
     }
   }
 
@@ -130,7 +128,7 @@ export class EmailComponent implements OnInit {
       if (this.currentToggleButton) {
         this.speed = this.defaultSpeed;
         this.currentToggleButton.checked = false;
-        this.closedContainer = this.editBoxManagerService.currentContainer;
+        this.closedContainer = this.editBoxManagerService.mainContainer;
       }
       this.editBoxManagerService.currentContainer = null;
     }
@@ -140,7 +138,6 @@ export class EmailComponent implements OnInit {
 
   deleteEmail() {
     if (this.currentEmail && this.currentEmail.selected) {
-      // this.currentEmail.isDeleted = true;
       this.currentEmail.selected = false;
       this.change += 1;
       this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
@@ -171,7 +168,7 @@ export class EmailComponent implements OnInit {
         } else if (!this.editBoxManagerService.currentEditBox || !this.editBoxManagerService.currentEditBox.isSelected) {
           if (this.currentToggleButton && this.currentToggleButton.checked) {
             this.currentToggleButton.checked = false;
-            this.closedContainer = this.editBoxManagerService.currentContainer;
+            this.closedContainer = this.editBoxManagerService.mainContainer;
             this.editBoxManagerService.currentContainer = null;
             this.speed = this.defaultSpeed;
           } else {
@@ -249,7 +246,7 @@ export class EmailComponent implements OnInit {
     if (event.elapsedTime >= this.defaultSpeed) {
       this.speed = 0;
       if (this.closedContainer) {
-        this.closedContainer.clear();
+        this.closedContainer.viewContainerRef.clear();
         if (this.closedContainer.boxes) {
           this.closedContainer.boxes = [];
         }

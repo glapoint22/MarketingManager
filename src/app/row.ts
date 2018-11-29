@@ -1,8 +1,10 @@
 import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class Row {
+    public boxes: Array<EditBoxComponent> = [];
+    public alignment: string = 'center';
 
-    constructor(public alignment: string, public boxes: Array<EditBoxComponent>, public y: number, public yMax: number) { }
+    constructor(public y: number, public yMax: number) { }
 
     alignBoxes() {
         switch (this.alignment) {
@@ -32,18 +34,24 @@ export class Row {
         });
     }
 
-    alignBoxesCenter() {
-        let boxesWidth: number = 0,
-            sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(),
-            currentX: number;
+    getBoxesWidth() {
+        let boxesWidth: number = 0;
 
         // Get the combined width from all the boxes
-        sortedBoxes.forEach((box: EditBoxComponent) => {
+        this.boxes.forEach((box: EditBoxComponent) => {
             boxesWidth += box.rect.width;
         });
+        return boxesWidth;
+    }
 
-        // Calculate the starting x
-        currentX = (this.boxes[0].containerWidth * 0.5) - (boxesWidth * 0.5);
+    getCenterX(width: number) {
+        return (this.boxes[0].container.width * 0.5) - (width * 0.5);
+    }
+
+    alignBoxesCenter() {
+        let boxesWidth: number = this.getBoxesWidth(),
+            sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(),
+            currentX: number = this.getCenterX(boxesWidth);
 
         // Align the boxes center
         sortedBoxes.forEach((sortedBox: EditBoxComponent) => {
@@ -57,7 +65,7 @@ export class Row {
 
     alignBoxesRight() {
         let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(),
-            currentX: number = this.boxes[0].containerWidth;
+            currentX: number = this.boxes[0].container.width;
 
         // Align the boxes right
         for (let i = sortedBoxes.length - 1; i > -1; i--) {
@@ -80,5 +88,34 @@ export class Row {
         });
 
         return sortedBoxes;
+    }
+
+    shiftBoxesRightAtPoint(point: number, shiftAmount: number) {
+        let sortedBoxes = this.sortBoxes();
+
+        for (let i = sortedBoxes.length - 1; i > -1; i--) {
+            if (sortedBoxes[i].rect.x >= point) {
+                let box = this.getBox(sortedBoxes[i]);
+                box.rect.x = box.rect.x + shiftAmount;
+                box.setElement();
+            }
+        }
+    }
+
+    shiftBoxesLeftAtPoint(point: number, shiftAmount: number) {
+        let sortedBoxes = this.sortBoxes();
+
+        for (let i = 0; i < sortedBoxes.length; i++) {
+            if (sortedBoxes[i].rect.xMax <= point + shiftAmount) {
+                let box = this.getBox(sortedBoxes[i]);
+                box.rect.x = box.rect.x - shiftAmount;
+                box.setElement();
+            }
+        }
+    }
+
+    removeBox(box: EditBoxComponent) {
+        let boxIndex = this.boxes.findIndex(x => x === box);
+        this.boxes.splice(boxIndex, 1);
     }
 }

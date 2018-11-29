@@ -5,6 +5,7 @@ import { ContainerBoxComponent } from './container-box/container-box.component';
 import { Rect } from './rect';
 import { EditBoxService } from './edit-box.service';
 import { EditBoxManagerService } from './edit-box-manager.service';
+import { Container } from './container';
 
 @Injectable({
   providedIn: 'root'
@@ -81,7 +82,7 @@ export class TableService {
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(column, containerBox.container.boxes, containerBox.rect.width, containerBox.backgroundColor, containerBox.rect.height));
+            containerBox.boxToTable(this.createTable(column, containerBox.boxContainer.boxes, containerBox.rect.width, containerBox.backgroundColor, containerBox.rect.height));
 
             // Box is text, button, or image
           } else {
@@ -124,7 +125,7 @@ export class TableService {
             if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
 
-              containerBox.boxToTable(this.createTable(div, containerBox.container.boxes, null, containerBox.backgroundColor, containerBox.rect.height));
+              containerBox.boxToTable(this.createTable(div, containerBox.boxContainer.boxes, null, containerBox.backgroundColor, containerBox.rect.height));
 
               // Box is text, button, or image
             } else {
@@ -194,7 +195,7 @@ export class TableService {
     return rows;
   }
 
-  tableToBox(table: HTMLTableElement, container: ViewContainerRef) {
+  tableToBox(table: HTMLTableElement, container: Container) {
     if (table.summary !== '') {
       let rect = this.getRect(table.summary, table.summary.indexOf('-') + 1);
 

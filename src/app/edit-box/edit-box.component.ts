@@ -3,6 +3,9 @@ import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
 import { EditBoxManagerService } from '../edit-box-manager.service';
+import { Container } from '../container';
+import { Row } from '../row';
+import { BoxContainer } from '../box-container';
 
 @Component({
   selector: 'edit-box',
@@ -16,10 +19,7 @@ export class EditBoxComponent {
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
-  private parentElement: HTMLElement;
   private tempRect: Rect;
-  public containerWidth: number;
-  public containerHeight: number;
   public showTopLeftHandle: boolean;
   public showTopHandle: boolean;
   public showTopRightHandle: boolean;
@@ -30,7 +30,7 @@ export class EditBoxComponent {
   public showBottomRightHandle: boolean;
   public rect: Rect;
   public handle: string;
-  public parentContainer: any;
+  public container: Container;
   public inEditMode: boolean;
   public content: any;
   public isSelected: boolean;
@@ -39,57 +39,35 @@ export class EditBoxComponent {
   public link: string;
   public backgroundColor: string;
   public isLoaded: boolean = false;
-  public row;
+  public row: Row;
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
   }
 
   initialize(rect?: Rect, isSelected?: boolean) {
-    // Initialize the container properties
-    this.parentElement = this.parentContainer.element.nativeElement.parentElement;
-    this.containerWidth = this.parentElement.clientWidth;
-    this.containerHeight = this.parentElement.clientHeight;
-
     if (rect.x === null) {
       let x: number, y: number;
-      // If there are no rows for this container
-      if (!this.parentContainer.rows) this.parentContainer.rows = [];
 
       // If this editBox is being inserted
       if (this.editBoxManagerService.insertType) {
 
         // Insert type is left or right
         if (this.editBoxManagerService.insertType === 'left' || this.editBoxManagerService.insertType === 'right') {
-          // Sort the boxes horizontally
-          let sortedBoxes = this.editBoxManagerService.sortBoxes(this.parentContainer.currentRow.boxes);
 
           // Align left
-          if (this.parentContainer.currentRow.align === 'left') {
-            if (this.editBoxManagerService.insertType === 'left') {
-              x = this.editBoxManagerService.currentEditBox.rect.x;
-            } else if (this.editBoxManagerService.insertType === 'right') {
-              x = this.editBoxManagerService.currentEditBox.rect.xMax;
-            }
-
-            for (let i = sortedBoxes.length - 1; i > -1; i--) {
-              if (sortedBoxes[i].rect.x >= x) {
-                let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-                box.rect.x = box.rect.x + rect.width;
-                box.setElement();
-              }
-            }
+          if (this.container.currentRow.alignment === 'left') {
+            x = this.editBoxManagerService.insertType === 'left' ? this.editBoxManagerService.currentEditBox.rect.x : this.editBoxManagerService.currentEditBox.rect.xMax;
+            this.container.currentRow.shiftBoxesRightAtPoint(x, rect.width);
 
             // Align center
-          } else if (this.parentContainer.currentRow.align === 'center') {
-            let boxesWidth = rect.width;
-            this.parentContainer.currentRow.boxes.forEach(box => {
-              boxesWidth += box.rect.width;
-            });
-            let currentX = (this.containerWidth * 0.5) - (boxesWidth * 0.5);
+          } else if (this.container.currentRow.alignment === 'center') {
+            let boxesWidth = this.container.currentRow.getBoxesWidth() + rect.width,
+              currentX = this.container.currentRow.getCenterX(boxesWidth),
+              sortedBoxes = this.container.currentRow.sortBoxes();
 
             for (let i = 0; i < sortedBoxes.length; i++) {
-              let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
+              let box = this.container.currentRow.getBox(sortedBoxes[i]);
 
               if (box === this.editBoxManagerService.currentEditBox) {
                 if (this.editBoxManagerService.insertType === 'left') {
@@ -112,97 +90,75 @@ export class EditBoxComponent {
               }
 
               box.setElement();
-
             }
 
             // Align right
-          } else if (this.parentContainer.currentRow.align === 'right') {
-            if (this.editBoxManagerService.insertType === 'left') {
-              x = this.editBoxManagerService.currentEditBox.rect.x - rect.width;
-            } else if (this.editBoxManagerService.insertType === 'right') {
-              x = this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
-            }
-
-            for (let i = 0; i < sortedBoxes.length; i++) {
-              if (sortedBoxes[i].rect.xMax <= x + rect.width) {
-                let box = this.editBoxManagerService.getBox(this.parentContainer.currentRow.boxes, sortedBoxes[i]);
-                box.rect.x = box.rect.x - rect.width;
-                box.setElement();
-              }
-            }
+          } else if (this.container.currentRow.alignment === 'right') {
+            x = this.editBoxManagerService.insertType === 'left' ? this.editBoxManagerService.currentEditBox.rect.x - rect.width : this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
+            this.container.currentRow.shiftBoxesLeftAtPoint(x, rect.width);
           }
 
           // Check to see if the ymax has changed. If so, move rows down
-          let yMax = Math.max(this.parentContainer.currentRow.yMax, this.parentContainer.currentRow.y + rect.yMax);
-          if (yMax > this.parentContainer.currentRow.yMax) {
-            this.parentContainer.currentRow.yMax = yMax;
-            let startIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + 1;
-            this.moveRowsDown(startIndex);
+          let yMax = Math.max(this.container.currentRow.yMax, this.container.currentRow.y + rect.yMax);
+          if (yMax > this.container.currentRow.yMax) {
+            this.container.currentRow.yMax = yMax;
+            let startingRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + 1;
+            this.container.moveRowsDown(startingRowIndex);
           }
 
           // Insert type is top or bottom
         } else {
           // Get the new inserted row index
-          let insertedRowIndex = this.parentContainer.rows.findIndex(x => x === this.parentContainer.currentRow) + (this.editBoxManagerService.insertType === 'bottom' ? 1 : 0),
+          let insertedRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + (this.editBoxManagerService.insertType === 'bottom' ? 1 : 0),
             yPos: number, yMax: number;
 
           if (this.editBoxManagerService.insertType === 'bottom') {
-            yPos = this.parentContainer.currentRow.yMax;
-            yMax = this.parentContainer.currentRow.yMax + rect.height;
+            yPos = this.container.currentRow.yMax;
+            yMax = this.container.currentRow.yMax + rect.height;
           } else {
-            yPos = this.parentContainer.currentRow.y - rect.height;
+            yPos = this.container.currentRow.y - rect.height;
 
             if (insertedRowIndex === 0) {
               yPos = Math.max(yPos, 0);
             } else {
-              if (yPos < this.parentContainer.rows[insertedRowIndex - 1].yMax) {
-                yPos = this.parentContainer.rows[insertedRowIndex - 1].yMax;
+              if (yPos < this.container.rows[insertedRowIndex - 1].yMax) {
+                yPos = this.container.rows[insertedRowIndex - 1].yMax;
               }
             }
-
-
             yMax = yPos + rect.height;
           }
 
-          // Insert the new row
-          this.parentContainer.rows.push({
-            boxes: [],
-            align: 'center',
-            y: yPos,
-            yMax: yMax
-          });
-          this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
-          this.editBoxManagerService.sortRows(this.parentContainer.rows);
-
-          this.moveRowsDown(insertedRowIndex + 1);
+          // Set the new row
+          this.container.rows.push(new Row(yPos, yMax));
+          this.container.currentRow = this.container.rows[this.container.rows.length - 1];
+          this.container.sortRows();
+          this.container.moveRowsDown(insertedRowIndex + 1);
 
           // Set the new x
-          x = (this.containerWidth * 0.5) - (rect.width * 0.5);
+          x = (this.container.width * 0.5) - (rect.width * 0.5);
         }
         // Set the new y
-        y = this.parentContainer.currentRow.y;
+        y = this.container.currentRow.y;
         this.editBoxManagerService.insertType = null;
-      } else {
-        x = (this.containerWidth * 0.5) - (rect.width * 0.5);
-        y = this.parentContainer.boxes && this.parentContainer.boxes.length > 0 ? Math.max(...this.parentContainer.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
 
-        this.parentContainer.rows.push({
-          boxes: [],
-          align: 'center',
-          y: y,
-          yMax: rect.yMax + y
-        });
-        this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
+        // New box is not being inserted
+      } else {
+        x = (this.container.width * 0.5) - (rect.width * 0.5);
+        y = this.container.boxes && this.container.boxes.length > 0 ? Math.max(...this.container.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
+
+        this.container.rows.push(new Row(y, rect.yMax + y));
+        this.container.currentRow = this.container.rows[this.container.rows.length - 1];
       }
 
       this.rect = new Rect(x, y, rect.width, rect.height);
-      this.parentContainer.currentRow.boxes.push(this);
-      this.row = this.parentContainer.currentRow;
+      this.container.currentRow.boxes.push(this);
+      this.row = this.container.currentRow;
 
     } else {
       this.rect = rect;
     }
 
+    this.setCurrentContainer();
     this.setElement();
 
     if (isSelected) this.setSelection();
@@ -211,7 +167,7 @@ export class EditBoxComponent {
 
   onMouseDown(event, handle) {
     event.preventDefault();
-    this.parentContainer.currentRow = this.row;
+    this.container.currentRow = this.row;
     this.tempRect = new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
     if (event.button === 0) {
       this.isMousedown = true;
@@ -254,7 +210,7 @@ export class EditBoxComponent {
           this.setBottomRightHandle(deltaPosition);
           break;
       }
-      this.editBoxManagerService.setContainerHeight(this.parentContainer);
+      this.container.setHeight();
     }
   }
 
@@ -263,8 +219,8 @@ export class EditBoxComponent {
       let rowFound: boolean = false;
 
       if (this.rect.x !== this.tempRect.x || this.rect.y !== this.tempRect.y || this.rect.width !== this.tempRect.width || this.rect.height !== this.tempRect.height) {
-        for (let i = 0; i < this.parentContainer.rows.length; i++) {
-          let row = this.parentContainer.rows[i];
+        for (let i = 0; i < this.container.rows.length; i++) {
+          let row = this.container.rows[i];
 
           if (this.rect.y > row.y && this.rect.y < row.yMax) {
             // box is in its current row
@@ -276,52 +232,56 @@ export class EditBoxComponent {
 
               // Box is in another row
             } else {
+              let rowIndex = this.container.rows.findIndex(x => x === this.row);
+              
               rowFound = true;
-              let boxIndex = this.row.boxes.findIndex(x => x === this);
-              let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
 
-              this.row.boxes.splice(boxIndex, 1);
+              // Remove this box from its current row
+              this.row.removeBox(this);
+
               if (this.row.boxes.length === 0) {
-                this.parentContainer.rows.splice(rowIndex, 1);
+                // No boxes in this row so remove the row
+                this.container.removeRow(this.row);
               } else {
-                this.parentContainer.rows[rowIndex].yMax = Math.max(...this.parentContainer.rows[rowIndex].boxes.map(x => x.rect.yMax));
-                this.editBoxManagerService.alignBoxes(this.parentContainer.rows[rowIndex]);
+                // Reset this row's yMax and re-align
+                this.row.yMax = Math.max(...this.row.boxes.map(x => x.rect.yMax));
+                this.row.alignBoxes();
               }
+
+              // Put this box in the other row
               row.boxes.push(this);
-              this.row = row;
+              this.row = this.container.currentRow = row;
               this.rect.y = row.y;
               row.yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
-              if (rowIndex > 0) this.moveRowsDown(rowIndex);
+              if (rowIndex > 0) this.container.moveRowsDown(rowIndex);
               break;
             }
           }
         }
         // Box is not in an existing row
         if (!rowFound) {
-          let boxIndex = this.row.boxes.findIndex(x => x === this);
-          let rowIndex = this.parentContainer.rows.findIndex(x => x === this.row);
+          // Remove this box from its current row
+          this.row.removeBox(this);
 
-          this.row.boxes.splice(boxIndex, 1);
           if (this.row.boxes.length === 0) {
-            this.parentContainer.rows.splice(rowIndex, 1);
+            // No boxes in this row so remove the row
+            this.container.removeRow(this.row);
           } else {
-            this.parentContainer.rows[rowIndex].yMax = Math.max(...this.parentContainer.rows[rowIndex].boxes.map(x => x.rect.yMax));
-            this.editBoxManagerService.alignBoxes(this.parentContainer.rows[rowIndex]);
+            // Reset this row's yMax and re-align
+            this.row.yMax = Math.max(...this.row.boxes.map(x => x.rect.yMax));
+            this.row.alignBoxes();
           }
 
           // Insert the new row
-          this.parentContainer.rows.push({
-            boxes: [this],
-            align: 'center',
-            y: this.rect.y,
-            yMax: this.rect.yMax
-          });
-          this.row = this.parentContainer.currentRow = this.parentContainer.rows[this.parentContainer.rows.length - 1];
-          this.editBoxManagerService.sortRows(this.parentContainer.rows);
+          this.container.rows.push(new Row(this.rect.y, this.rect.yMax));
+
+          this.row = this.container.currentRow = this.container.rows[this.container.rows.length - 1];
+          this.row.boxes.push(this);
+          this.container.sortRows();
 
         }
 
-        this.editBoxManagerService.alignBoxes(this.row);
+        this.container.currentRow.alignBoxes();
         this.editBoxManagerService.change.next();
       }
 
@@ -412,26 +372,28 @@ export class EditBoxComponent {
       this.setRightCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    if (tempRect.xMax > this.containerWidth) {
-      this.setLeftCollision(tempRect, new Rect(this.containerWidth, 0, 0, 0));
+    if (tempRect.xMax > this.container.width) {
+      this.setLeftCollision(tempRect, new Rect(this.container.width, 0, 0, 0));
       if (response) tempRect = response();
     }
     if (tempRect.y < 0) {
       this.setBottomCollision(tempRect, new Rect(0, 0, 0, 0));
       if (response) tempRect = response();
     }
-    if (this.parentContainer.injector.view.component.rect) {
-      if (tempRect.yMax > this.containerHeight) {
-        if (this.parentContainer.injector.view.component.parentContainer.boxes.some(x => x.rect.y === this.parentContainer.injector.view.component.rect.yMax)) {
-          this.setTopCollision(tempRect, new Rect(0, this.containerHeight, 0, 0));
+    if (this.container instanceof BoxContainer) {
+      let boxContainer: BoxContainer = this.container as BoxContainer;
+
+      if (tempRect.yMax > boxContainer.height) {
+        if (boxContainer.containerBox.container.boxes.some(x => x.rect.y === boxContainer.containerBox.rect.yMax)) {
+          this.setTopCollision(tempRect, new Rect(0, boxContainer.height, 0, 0));
         }
       }
     }
 
 
     // Test rect against other rects
-    for (let i = 0; i < this.parentContainer.boxes.length; i++) {
-      let otherRect = this.parentContainer.boxes[i].rect;
+    for (let i = 0; i < this.container.boxes.length; i++) {
+      let otherRect = this.container.boxes[i].rect;
 
       if (otherRect && this.rect !== otherRect) {
         if (+(tempRect.xMax.toFixed(2)) > +(otherRect.x.toFixed(2)) && +(tempRect.x.toFixed(2)) < +(otherRect.xMax.toFixed(2)) &&
@@ -521,7 +483,7 @@ export class EditBoxComponent {
   }
 
   setCurrentContainer() {
-    this.editBoxManagerService.currentContainer = this.parentContainer;
+    this.editBoxManagerService.currentContainer = this.container;
   }
 
 
@@ -554,32 +516,32 @@ export class EditBoxComponent {
   }
 
 
-  moveRowsDown(startIndex) {
-    // Loop through all the rows and see if we need to move them down
-    for (let i = startIndex; i < this.parentContainer.rows.length; i++) {
-      let currentRow = this.parentContainer.rows[i],
-        previousRow = this.parentContainer.rows[i - 1];
+  // moveRowsDown(startIndex) {
+  //   // Loop through all the rows and see if we need to move them down
+  //   for (let i = startIndex; i < this.container.rows.length; i++) {
+  //     let currentRow = this.container.rows[i],
+  //       previousRow = this.container.rows[i - 1];
 
-      // Test to see if we need to move this current row down
-      if (currentRow.y < previousRow.yMax) {
-        // Set the new y for the row
-        currentRow.y = previousRow.yMax;
+  //     // Test to see if we need to move this current row down
+  //     if (currentRow.y < previousRow.yMax) {
+  //       // Set the new y for the row
+  //       currentRow.y = previousRow.yMax;
 
-        // Move all the boxes in this row
-        for (let j = 0; j < currentRow.boxes.length; j++) {
-          let box = currentRow.boxes[j];
-          box.rect.y = currentRow.y;
-          box.setElement();
-        }
+  //       // Move all the boxes in this row
+  //       for (let j = 0; j < currentRow.boxes.length; j++) {
+  //         let box = currentRow.boxes[j];
+  //         box.rect.y = currentRow.y;
+  //         box.setElement();
+  //       }
 
-        // Set the new ymax
-        currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
+  //       // Set the new ymax
+  //       currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
 
-      } else {
-        break;
-      }
-    }
-  }
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  // }
 
 
   unSelect() {
