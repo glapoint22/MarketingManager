@@ -113,28 +113,32 @@ export class EditBoxService {
     return group.rows[group.rows.length - 1];
   }
 
-  createTextBox(boxData?) {
+  createTextBox(boxData?): TextBoxComponent {
     let box = this.createBox(TextBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
     box.instance.initialize(boxData);
     if (!boxData) this.setChange([box.instance]);
+    return box.instance as TextBoxComponent;
   }
 
-  createButtonBox(boxData?) {
+  createButtonBox(boxData?): ButtonBoxComponent {
     let box = this.createBox(ButtonBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
     box.instance.initialize(boxData);
     if (!boxData) this.setChange([box.instance]);
+    return box.instance as ButtonBoxComponent;
   }
 
-  createContainerBox(boxData?) {
+  createContainerBox(boxData?): ContainerBoxComponent {
     let box = this.createBox(ContainerBoxComponent, this.editBoxManagerService.currentContainer);
     box.instance.initialize(boxData)
     if (!boxData) this.setChange([box.instance]);
+    return box.instance as ContainerBoxComponent;
   }
 
-  createImageBox(boxData?) {
+  createImageBox(boxData?): ImageBoxComponent {
     if (boxData) {
       let imageBox = this.createBox(ImageBoxComponent, this.editBoxManagerService.currentContainer, 'img');
       this.setImageBox(imageBox, boxData);
+      return imageBox.instance as ImageBoxComponent;
     } else {
       this.fileInput.click();
     }
@@ -161,13 +165,15 @@ export class EditBoxService {
         this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
       }
 
+      // Get the index of the current box
       let index = this.editBoxManagerService.currentContainer.boxes.findIndex(x => x === this.editBoxManagerService.currentEditBox);
       
+      // Delete the box from the viewContainerRef and its container
       this.editBoxManagerService.currentContainer.viewContainerRef.remove(index);
-      this.editBoxManagerService.currentContainer.removeBox(this.editBoxManagerService.currentEditBox);
-      
+      this.editBoxManagerService.currentContainer.deleteBox(this.editBoxManagerService.currentEditBox);
       this.editBoxManagerService.currentEditBox = null;
 
+      // Mark that there is a change and set the container height
       this.editBoxManagerService.change.next();
       this.editBoxManagerService.currentContainer.setHeight();
     }

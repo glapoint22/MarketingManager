@@ -2,9 +2,9 @@ import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class Row {
     public boxes: Array<EditBoxComponent> = [];
-    public alignment: string = 'center';
+    public yMax: number;
 
-    constructor(public y: number, public yMax: number) { }
+    constructor(public alignment: string,public y: number) { }
 
     alignBoxes() {
         switch (this.alignment) {
@@ -117,5 +117,15 @@ export class Row {
     removeBox(box: EditBoxComponent) {
         let boxIndex = this.boxes.findIndex(x => x === box);
         this.boxes.splice(boxIndex, 1);
+    }
+
+    setYMax(){
+        this.yMax = Math.max(...this.boxes.map(box => box.rect.yMax));
+    }
+
+    addBox(box: EditBoxComponent){
+        this.boxes.push(box);
+        box.row = this;
+        this.setYMax();
     }
 }

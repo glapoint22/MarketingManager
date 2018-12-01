@@ -14,7 +14,6 @@ export class Container {
   setHeight() {
     // If container has any boxes
     if (this.boxes.length > 0) {
-
       // If every box has a rect
       if (this.boxes.every((box: EditBoxComponent) => box.rect !== undefined)) {
         this.height = Math.max(...this.boxes.map(x => x.rect.yMax));
@@ -77,7 +76,7 @@ export class Container {
     this.rows.splice(rowIndex, 1);
   }
 
-  removeBox(box: EditBoxComponent) {
+  deleteBox(box: EditBoxComponent) {
     let boxIndex = this.boxes.findIndex(x => x === box),
       row = box.row;
 
@@ -91,7 +90,14 @@ export class Container {
       row.yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
       row.alignBoxes();
     }
-    
+  }
+
+  addRow(alignment: string, y: number): Row{
+    this.rows.push(new Row(alignment, y));
+    let newRow: Row = this.rows[this.rows.length - 1];
+    this.sortRows();
+
+    return newRow;
   }
 
 }

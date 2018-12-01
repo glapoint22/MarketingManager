@@ -6,6 +6,7 @@ import { Rect } from './rect';
 import { EditBoxService } from './edit-box.service';
 import { EditBoxManagerService } from './edit-box-manager.service';
 import { Container } from './container';
+import { Row } from './row';
 
 @Injectable({
   providedIn: 'root'
@@ -197,7 +198,8 @@ export class TableService {
 
   tableToBox(table: HTMLTableElement, container: Container) {
     if (table.summary !== '') {
-      let rect = this.getRect(table.summary, table.summary.indexOf('-') + 1);
+      let rect = this.getRect(table.summary, table.summary.indexOf('-') + 1),
+        box: EditBoxComponent;
 
       // Text box
       if (table.summary.substr(0, 7) === 'textBox') {
@@ -205,15 +207,10 @@ export class TableService {
 
         Array.from(table.rows).forEach(row => {
           let rowContent;
-          if (row.firstElementChild.firstElementChild.tagName === 'OL' || row.firstElementChild.firstElementChild.tagName === 'UL') {
-            rowContent = row.firstElementChild.firstElementChild;
-            rowContent.setAttribute('style', row.firstElementChild.firstElementChild.getAttribute('style'));
-            rowContent.innerHTML = row.firstElementChild.firstElementChild.innerHTML;
-          } else {
-            rowContent = document.createElement('div');
-            rowContent.setAttribute('style', row.firstElementChild.getAttribute('style'));
-            rowContent.innerHTML = row.firstElementChild.innerHTML;
-          }
+
+          rowContent = document.createElement('div');
+          rowContent.setAttribute('style', row.firstElementChild.getAttribute('style'));
+          rowContent.innerHTML = row.firstElementChild.innerHTML;
           content.appendChild(rowContent);
         });
 
@@ -225,7 +222,8 @@ export class TableService {
         this.editBoxManagerService.currentContainer = container;
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';
-        this.editBoxService.createTextBox(boxData);
+
+        box = this.editBoxService.createTextBox(boxData);
 
         // Container box
       } else if (table.summary.substr(0, 12) === 'containerBox') {
@@ -235,7 +233,7 @@ export class TableService {
         }
 
         this.editBoxManagerService.currentContainer = container;
-        this.editBoxService.createContainerBox(boxData);
+        box = this.editBoxService.createContainerBox(boxData);
         container = this.editBoxManagerService.currentContainer;
 
         // Button box
@@ -258,7 +256,7 @@ export class TableService {
           link: anchor.getAttribute('href')
         }
         this.editBoxManagerService.currentContainer = container;
-        this.editBoxService.createButtonBox(boxData);
+        box = this.editBoxService.createButtonBox(boxData);
 
         // Image box
       } else if (table.summary.substr(0, 8) === 'imageBox') {
@@ -273,8 +271,41 @@ export class TableService {
 
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';
-        this.editBoxService.createImageBox(boxData);
+        box = this.editBoxService.createImageBox(boxData);
       }
+
+      // Add the box to a row when it has been loaded
+      let interval = window.setInterval(() => {
+        if (box.isLoaded) {
+          let row: Row;
+
+          // Loop through the rows to see if this box belongs to one of them
+          // based on the row's and box's Y
+          for (let i = 0; i < box.container.rows.length; i++) {
+            if (box.container.rows[i].y === rect[1]) {
+              row = box.container.rows[i];
+              break;
+            }
+          }
+
+          // Row was not found, so create a new one
+          if (!row) {
+            let parentElement: HTMLElement = table.parentElement;
+
+            // Find the TD element
+            while (parentElement.tagName !== 'TD') {
+              parentElement = parentElement.parentElement;
+            }
+
+            // Create the row
+            row = box.container.addRow(parentElement.getAttribute('align'), box.rect.y);
+          }
+
+          // Add the box to the row
+          row.addBox(box);
+          window.clearInterval(interval);
+        }
+      }, 1);
     }
 
     Array.from(table.rows).forEach((row: HTMLTableRowElement) => {

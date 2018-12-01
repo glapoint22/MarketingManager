@@ -73,24 +73,33 @@ export class EmailComponent implements OnInit {
   }
 
   onToggleButtonClick(input, index, email) {
+    // Set the speed the page expands and collapses
     this.speed = this.defaultSpeed;
+    
+    // Collapse the page
     if (input.checked) {
       input.checked = false;
       this.closedContainer = this.editBoxManagerService.mainContainer;
       this.editBoxManagerService.currentContainer = null;
+
+      // Expand the page
     } else {
       this.closedContainer = null;
       this.onEmailClick(email);
       input.checked = true;
-      // this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = this.emailContentContainerArray[index];
+
+      // Create the container for this page
       this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index]);
       this.editBoxManagerService.currentContainer.width = this.pageWidth;
       
       this.currentToggleButton = input;
+      
+      // Load the email
       if (this.currentEmail.body !== '' && (!this.editBoxManagerService.currentContainer.boxes || this.editBoxManagerService.currentContainer.boxes.length === 0)) {
         this.loadEmail();
       }
-      // this.editBoxManagerService.setContainerHeight(this.editBoxManagerService.mainContainer);
+
+      // Set the container height
       this.editBoxManagerService.mainContainer.setHeight();
     }
   }
