@@ -3,7 +3,7 @@ import { SaveService } from "./save.service";
 import { PromptService } from "./prompt.service";
 import { LinkService } from './link.service';
 import { EmailPreviewService } from './email-preview.service';
-import { EditBoxManagerService } from './edit-box-manager.service';
+import { MenuService } from './menu.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +13,7 @@ import { EditBoxManagerService } from './edit-box-manager.service';
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public emailPreviewService: EmailPreviewService, public editBoxManagerService: EditBoxManagerService) { }
+  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public emailPreviewService: EmailPreviewService, public menuService: MenuService) { }
 
   ngAfterContentChecked() {
     if (this.promptService.show) this.saveService.isSaving = false;

@@ -8,6 +8,8 @@ import { ImageBoxComponent } from './image-box/image-box.component';
 import { Rect } from './rect';
 import { EditBoxManagerService } from './edit-box-manager.service';
 import { Container } from './container';
+import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
+import { MenuService } from './menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +17,8 @@ import { Container } from './container';
 export class EditBoxService {
   public copied: any = {};
   private fileInput = document.createElement('input');
-  public menu = {};
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService) {
+  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService, private menuService: MenuService) {
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -36,41 +37,40 @@ export class EditBoxService {
           });
       }
     }
-    this.setMenu();
+    this.createMenu();
   }
 
-  setMenu() {
-    let group = this.createMenuGroup(this.menu),
-      rowNames = ['Insert Left', 'Insert Right', 'Insert Top', 'Insert Bottom'],
-      subRowNames = ['Textbox', 'Button', 'Image', 'Container']
+  createMenu() {
+    let menuGroup: MenuGroup = this.editBoxManagerService.boxMenu.createMenuGroup(),
+      rowCaptions = ['Insert Left', 'Insert Right', 'Insert Top', 'Insert Bottom'],
+      subRowCaptions = ['Textbox', 'Button', 'Image', 'Container']
 
     for (let i = 0; i < 4; i++) {
-      let row = this.createMenuRow(group, rowNames[i]),
-        rowMenu = this.createRowMenu(row);
+      let menuRow: MenuRow = menuGroup.createMenuRow(rowCaptions[i]);
 
-      this.createMenuRow(this.createMenuGroup(rowMenu), 'Paste', () => this.menuPaste(row.item), () => { return !this.copied.boxType });
+      menuRow.subMenu = new ContextMenu();
+      menuRow.subMenu.createMenuGroup().createMenuRow('Paste', () => this.menuPaste(menuRow.caption), () => { return !this.copied.boxType });
 
-      let subGroup = this.createMenuGroup(rowMenu);
+      let subMenuGroup = menuRow.subMenu.createMenuGroup();
       for (let j = 0; j < 4; j++) {
-        this.createMenuRow(subGroup, subRowNames[j], () => this.menuBoxCreate(row.item, subRowNames[j]));
+        subMenuGroup.createMenuRow(subRowCaptions[j], () => this.menuBoxCreate(menuRow.caption, subRowCaptions[j]));
       }
-
     }
   }
 
   menuPaste(insertType) {
     if (!this.copied.boxType) return;
 
-    if(this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent){
+    if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
       this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
     }
 
     this.editBoxManagerService.insertType = insertType.substring(7).toLocaleLowerCase();
     this.paste();
-    this.editBoxManagerService.showMenu = false;
+    this.menuService.show = false;
   }
   menuBoxCreate(insertType, boxType) {
-    if(this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent){
+    if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
       this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
     }
 
@@ -91,26 +91,7 @@ export class EditBoxService {
         break;
     }
 
-    this.editBoxManagerService.showMenu = false;
-  }
-
-  createRowMenu(row) {
-    row.menu = {};
-    return row.menu;
-  }
-
-  createMenuGroup(menu) {
-    if (!menu.groups) menu.groups = [];
-    menu.groups.push({ rows: [] });
-    return menu.groups[menu.groups.length - 1];
-  }
-  createMenuRow(group, item, action?, disabled?) {
-    group.rows.push({
-      item: item,
-      action: action,
-      isDisabled: disabled
-    });
-    return group.rows[group.rows.length - 1];
+    this.menuService.show = false;
   }
 
   createTextBox(boxData?): TextBoxComponent {
@@ -155,7 +136,7 @@ export class EditBoxService {
 
     // Add this new box to the container
     container.boxes.push(newBox.instance);
-    
+
     return newBox;
   }
 
@@ -167,7 +148,7 @@ export class EditBoxService {
 
       // Get the index of the current box
       let index = this.editBoxManagerService.currentContainer.boxes.findIndex(x => x === this.editBoxManagerService.currentEditBox);
-      
+
       // Delete the box from the viewContainerRef and its container
       this.editBoxManagerService.currentContainer.viewContainerRef.remove(index);
       this.editBoxManagerService.currentContainer.deleteBox(this.editBoxManagerService.currentEditBox);

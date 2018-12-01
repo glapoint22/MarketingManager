@@ -6,6 +6,7 @@ import { EditBoxManagerService } from '../edit-box-manager.service';
 import { Container } from '../container';
 import { Row } from '../row';
 import { BoxContainer } from '../box-container';
+import { MenuService } from '../menu.service';
 
 @Component({
   selector: 'edit-box',
@@ -15,7 +16,7 @@ import { BoxContainer } from '../box-container';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(public app: ApplicationRef, public editBoxManagerService: EditBoxManagerService) { }
+  constructor(public app: ApplicationRef, public editBoxManagerService: EditBoxManagerService, public menuService: MenuService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;

@@ -45,25 +45,22 @@ export class EmailComponent implements OnInit {
     }
 
     this.editBoxManagerService.change.subscribe(() => {
-      let div = document.body.appendChild(document.createElement('div'));
+      // Create the main table
+      let mainTable = this.tableService.createTable(document.createElement('div'), null, null, this.currentEmail.backgroundColor),
+        tr = mainTable.appendChild(document.createElement('tr')),
+        td = tr.appendChild(document.createElement('td'));
 
-      let mainTable = this.tableService.createTable(div, null, null, this.currentEmail.backgroundColor);
-      mainTable.style.lineHeight = 'normal';
-      let tr = mainTable.appendChild(document.createElement('tr'));
-      let td = tr.appendChild(document.createElement('td'));
       td.width = '100%';
       td.align = 'center';
 
+      // Create all child tables
+      this.tableService.createTable(td, this.editBoxManagerService.mainContainer, this.pageWidth, this.currentEmail.pageColor);
 
-      this.tableService.createTable(td, this.editBoxManagerService.mainContainer.boxes, this.pageWidth, this.currentEmail.pageColor);
-
-
+      // If the main table differs from what has been saved
       if (this.currentEmail.body !== mainTable.outerHTML) {
         this.currentEmail.body = mainTable.outerHTML;
         this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
       }
-
-      div.remove();
     });
   }
 
@@ -75,7 +72,7 @@ export class EmailComponent implements OnInit {
   onToggleButtonClick(input, index, email) {
     // Set the speed the page expands and collapses
     this.speed = this.defaultSpeed;
-    
+
     // Collapse the page
     if (input.checked) {
       input.checked = false;
@@ -91,9 +88,9 @@ export class EmailComponent implements OnInit {
       // Create the container for this page
       this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index]);
       this.editBoxManagerService.currentContainer.width = this.pageWidth;
-      
+
       this.currentToggleButton = input;
-      
+
       // Load the email
       if (this.currentEmail.body !== '' && (!this.editBoxManagerService.currentContainer.boxes || this.editBoxManagerService.currentContainer.boxes.length === 0)) {
         this.loadEmail();

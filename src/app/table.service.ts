@@ -1,6 +1,5 @@
-import { Injectable, ViewContainerRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { EditBoxComponent } from './edit-box/edit-box.component';
-import { Vector2 } from './vector2';
 import { ContainerBoxComponent } from './container-box/container-box.component';
 import { Rect } from './rect';
 import { EditBoxService } from './edit-box.service';
@@ -15,7 +14,7 @@ export class TableService {
 
   constructor(private editBoxService: EditBoxService, private editBoxManagerService: EditBoxManagerService) { }
 
-  createTable(parent: HTMLElement, boxes?: Array<EditBoxComponent>, maxWidth?: number, bgColor?: string, height?: number) {
+  createTable(parent: HTMLElement, container?: Container, maxWidth?: number, bgColor?: string, height?: number) {
     let table: HTMLTableElement = parent.appendChild(document.createElement('table'));
     let tableAttributes: string;
 
@@ -35,47 +34,47 @@ export class TableService {
       if (maxWidth) tableAttributes += ' bgcolor="' + bgColor + '"';
     }
 
+    // For Outlook
     if (maxWidth) {
       parent.insertBefore(document.createComment('[if (gte mso 9)|(IE)]><table ' + tableAttributes + '><tr><td><![endif]'), table);
       parent.appendChild(document.createComment('[if (gte mso 9)|(IE)]></td></tr></table><![endif]'));
     }
 
 
-    // If this table has boxes
-    if (boxes && boxes.length > 0) {
-      // Create rows based on the boxes position
-      let rows = this.createRows(boxes, table, new Vector2(0, 0));
-
+    // If this container has boxes
+    if (container && container.boxes.length > 0) {
       // Loop through each row
-      rows.forEach((row, i) => {
-        let column: HTMLTableColElement = row.element.appendChild(document.createElement('td')),
-          paddingTop = (row.boxes[0].rect.y - row.y);
-
-        if (paddingTop > 0) {
-          let paddingRow = table.insertBefore(document.createElement('tr'), row.element);
-          let paddingColumn = paddingRow.insertCell();
-          paddingColumn.height = paddingTop.toString();
-        }
+      container.rows.forEach((row, i, rows) => {
+        let tableRow: HTMLTableRowElement = table.appendChild(document.createElement('tr')),
+          column: HTMLTableDataCellElement = tableRow.appendChild(document.createElement('td')),
+          paddingTop: number = i === 0 ? row.y : row.y - rows[i - 1].yMax;
 
         // Set the column properties
         column.style.paddingLeft = '0';
         column.style.paddingRight = '0';
         column.style.paddingBottom = '0';
-        column.align = 'center';
+        column.align = row.alignment;
         column.style.fontSize = '0';
         column.vAlign = 'top';
 
-        // Set the column height
-        if (i === rows.length - 1 && height) {
-          // column.style.height = row.height + height - (row.y + row.height) + 'px';
-          let yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
-          let paddingBottom = height - yMax;
-          let paddingBottomRow = table.appendChild(document.createElement('tr'));
-          let paddingBottomColumn = paddingBottomRow.appendChild(document.createElement('td'));
-          paddingBottomColumn.height = paddingBottom.toString();
+        // Create an empty row if there is space between the top of this row and the previous row
+        if (paddingTop > 0) {
+          let paddingRow = table.insertBefore(document.createElement('tr'), tableRow);
+          let paddingColumn = paddingRow.insertCell();
+          paddingColumn.height = paddingTop.toString();
         }
 
+        // Create an empty row if there is space between the bottom of the container and the last row
+        if (i === rows.length - 1 && height) {
+          let paddingBottom = height - row.yMax;
+          if (paddingBottom > 0) {
+            let paddingBottomRow = table.appendChild(document.createElement('tr'));
+            let paddingBottomColumn = paddingBottomRow.appendChild(document.createElement('td'));
+            paddingBottomColumn.height = paddingBottom.toString();
+          }
+        }
 
+        // Row has one box
         if (row.boxes.length === 1) {
           let box = row.boxes[0];
 
@@ -83,29 +82,25 @@ export class TableService {
           if (box instanceof ContainerBoxComponent) {
             let containerBox = box as ContainerBoxComponent;
 
-            containerBox.boxToTable(this.createTable(column, containerBox.boxContainer.boxes, containerBox.rect.width, containerBox.backgroundColor, containerBox.rect.height));
+            containerBox.boxToTable(this.createTable(column, containerBox.boxContainer, containerBox.rect.width, containerBox.backgroundColor, containerBox.rect.height));
 
             // Box is text, button, or image
           } else {
             box.boxToTable(this.createTable(column, null, box.rect.width));
           }
+
+          // Row has multiple boxes
         } else {
           // Sort the boxes horizontally
-          let sortedBoxes = row.boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-            if (a.rect.x > b.rect.x) return 1;
-            return -1;
-          });
-
-
-
-
+          let sortedBoxes = row.sortBoxes();
 
           // Loop through each box
           sortedBoxes.forEach((currentBox, i) => {
-            let box = this.getBox(row.boxes, currentBox),
+            let box = row.getBox(currentBox),
               div: HTMLElement,
               comment;
 
+            // For Outlook
             if (i === 0) {
               comment = document.createComment('[if (gte mso 9)|(IE)]><table cellpadding="0" cellspacing="0" border="0"><tr><td valign="top" width="' + box.rect.width + '" style="text-align:center"><![endif]');
             } else {
@@ -126,74 +121,23 @@ export class TableService {
             if (box instanceof ContainerBoxComponent) {
               let containerBox = box as ContainerBoxComponent;
 
-              containerBox.boxToTable(this.createTable(div, containerBox.boxContainer.boxes, null, containerBox.backgroundColor, containerBox.rect.height));
+              containerBox.boxToTable(this.createTable(div, containerBox.boxContainer, null, containerBox.backgroundColor, containerBox.rect.height));
 
               // Box is text, button, or image
             } else {
               box.boxToTable(this.createTable(div));
             }
 
+            // Last box in the row
             if (i === sortedBoxes.length - 1) {
               comment = document.createComment('[if (gte mso 9)|(IE)]></td></tr></table><![endif]');
               column.appendChild(comment);
             }
-
           });
         }
       });
     }
     return table;
-  }
-
-  getBox(boxes: Array<EditBoxComponent>, box: EditBoxComponent) {
-    return boxes.find(x => x.rect === box.rect);
-  }
-
-  createRows(boxes: Array<EditBoxComponent>, table: HTMLTableElement, position: Vector2) {
-    let rows = [], currentRow, j;
-
-    // Sort the boxes vertically
-    let sortedBoxes = boxes.map(x => Object.assign({}, x)).sort((a: EditBoxComponent, b: EditBoxComponent) => {
-      if (a.rect.y > b.rect.y) return 1;
-      return -1;
-    });
-
-    // Create the first row based on the top box
-    rows.push({
-      boxes: [this.getBox(boxes, sortedBoxes[0])],
-      element: table.appendChild(document.createElement('tr')),
-      x: position.x,
-      y: position.y,
-      width: table.clientWidth,
-      height: sortedBoxes[0].rect.yMax - position.y
-    });
-    currentRow = rows[0];
-
-    // See if any other box belongs to this row
-    for (let i = 1; i < sortedBoxes.length; i++) {
-      for (j = 0; j < currentRow.boxes.length; j++) {
-        if (sortedBoxes[i].rect.y < currentRow.boxes[j].rect.yMax) {
-          currentRow.boxes.push(this.getBox(boxes, sortedBoxes[i]));
-          currentRow.height = Math.max(currentRow.height, sortedBoxes[i].rect.yMax - currentRow.y);
-          break;
-        }
-      }
-
-      // Create a new row
-      if (j === currentRow.boxes.length) {
-        rows.push({
-          boxes: [this.getBox(boxes, sortedBoxes[i])],
-          element: table.appendChild(document.createElement('tr')),
-          x: position.x,
-          y: currentRow.height + currentRow.y,
-          width: table.clientWidth,
-          height: sortedBoxes[i].rect.yMax - (currentRow.height + currentRow.y)
-        });
-        currentRow = rows[rows.length - 1];
-      }
-    }
-
-    return rows;
   }
 
   tableToBox(table: HTMLTableElement, container: Container) {
@@ -329,6 +273,4 @@ export class TableService {
     if (nextIndex === summary.length) return rect;
     return this.getRect(summary, nextIndex + 1, rect);
   }
-
-
 }
