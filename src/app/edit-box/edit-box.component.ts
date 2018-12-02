@@ -109,7 +109,7 @@ export class EditBoxComponent {
           let yMax = Math.max(this.container.currentRow.yMax, this.container.currentRow.y + rect.yMax);
           if (yMax > this.container.currentRow.yMax) {
             this.container.currentRow.yMax = yMax;
-            let startingRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + 1;
+            let startingRowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
             this.container.moveRowsDown(startingRowIndex);
           }
 
@@ -169,7 +169,6 @@ export class EditBoxComponent {
       
       // Add this new box to the row
       this.container.currentRow.addBox(this);
-      // this.row = this.container.currentRow;
 
     } else {
       this.rect = rect;
@@ -249,7 +248,7 @@ export class EditBoxComponent {
 
               // Box is in another row
             } else {
-              let rowIndex = this.container.rows.findIndex(x => x === this.row);
+              let rowIndex = this.container.getRowIndex(this.row);
 
               rowFound = true;
 
@@ -293,6 +292,8 @@ export class EditBoxComponent {
           // Create a new row and add this box to it
           this.container.currentRow = this.container.addRow('center', this.rect.y);
           this.container.currentRow.addBox(this);
+          let rowIndex = this.container.getRowIndex(this.container.currentRow);
+          this.container.moveRowsDown(rowIndex + 1);
         }
 
         // Align the boxes in the current row and set the container height

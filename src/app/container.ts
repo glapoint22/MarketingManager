@@ -9,7 +9,7 @@ export class Container {
   public width: number;
   public height: number;
 
-  constructor(public viewContainerRef: ViewContainerRef) { }
+  constructor(public viewContainerRef: ViewContainerRef, public minHeight?: number) { }
 
   setHeight() {
     // If container has any boxes
@@ -20,7 +20,7 @@ export class Container {
 
         // Wait until all boxes have their rects
       } else {
-        this.height = 40;
+        this.height = this.minHeight;
         let interval = window.setInterval(() => {
           if (this.boxes.every((box: EditBoxComponent) => box.rect !== undefined)) {
             this.setHeight();
@@ -31,7 +31,7 @@ export class Container {
 
       // Container has no boxes
     } else {
-      this.height = 40;
+      this.height = this.minHeight;
     }
   }
 
@@ -100,4 +100,7 @@ export class Container {
     return newRow;
   }
 
+  getRowIndex(row: Row){
+    return this.rows.findIndex(x => x === row);
+  }
 }

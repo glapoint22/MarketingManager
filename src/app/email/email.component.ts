@@ -86,7 +86,7 @@ export class EmailComponent implements OnInit {
       input.checked = true;
 
       // Create the container for this page
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index]);
+      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index], 40);
       this.editBoxManagerService.currentContainer.width = this.pageWidth;
 
       this.currentToggleButton = input;
