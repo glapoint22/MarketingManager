@@ -3,8 +3,21 @@ import { EditBoxComponent } from "./edit-box/edit-box.component";
 export class Row {
     public boxes: Array<EditBoxComponent> = [];
     public yMax: number;
+    public rowElement: HTMLElement;
 
-    constructor(public alignment: string,public y: number) { }
+    constructor(public alignment: string, public y: number, private view: HTMLElement) {
+        let rowElements = this.view.getElementsByClassName('container-row'),
+            rowElementsArray = Array.from(rowElements).filter(x => x.parentElement === this.view),
+            refChild = rowElementsArray.length > 0 ? rowElementsArray[rowElementsArray.length - 1].nextSibling : this.view.firstElementChild;
+
+        // Set the row element (Used to display the dased outline for the row)
+        this.rowElement = document.createElement('DIV');
+        this.rowElement.className = 'container-row';
+        this.rowElement.style.position = 'absolute';
+        this.rowElement.style.top = y + 'px';
+        this.rowElement.style.width = '100%';
+        this.view.insertBefore(this.rowElement, refChild);
+    }
 
     alignBoxes() {
         switch (this.alignment) {
@@ -119,11 +132,12 @@ export class Row {
         this.boxes.splice(boxIndex, 1);
     }
 
-    setYMax(){
+    setYMax() {
         this.yMax = Math.max(...this.boxes.map(box => box.rect.yMax));
+        this.rowElement.style.height = Math.max(...this.boxes.map(box => box.rect.height)) + 'px';
     }
 
-    addBox(box: EditBoxComponent){
+    addBox(box: EditBoxComponent) {
         this.boxes.push(box);
         box.row = this;
         this.setYMax();

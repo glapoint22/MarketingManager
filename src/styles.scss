@@ -79,3 +79,6 @@ input:checked ~ .toggle-button:hover::after {
     color: #ffffff;
     font-weight: bold;
 }
+.container-row {
+    outline: 1px dashed #00000025;
+}

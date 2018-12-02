@@ -135,8 +135,7 @@
                         (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
-                        <div class="page" [style.width.px]="pageWidth" [style.height.px]="editBoxManagerService.mainContainer ? editBoxManagerService.mainContainer.height : 0"
-                            [style.opacity]="editBoxManagerService.mainContainer && editBoxManagerService.mainContainer.height === 0 ? 0 : 1"
+                        <div #page class="page" [style.width.px]="pageWidth" [style.height.px]="editBoxManagerService.mainContainer ? editBoxManagerService.mainContainer.height : 0"
                             [style.backgroundColor]="email.pageColor">
                             <ng-template #viewContainerRef>
                                 <!-- EditBoxes go here -->

@@ -4,7 +4,7 @@ import { Rect } from "./rect";
 import { ContainerBoxComponent } from "./container-box/container-box.component";
 
 export class BoxContainer extends Container {
-    constructor(viewContainerRef: ViewContainerRef, public containerBox: ContainerBoxComponent) { super(viewContainerRef) }
+    constructor(viewContainerRef: ViewContainerRef, view: HTMLElement, public containerBox: ContainerBoxComponent) { super(viewContainerRef, view) }
 
     setHeight() {
         // If container has any boxes

@@ -9,7 +9,6 @@ import { Rect } from './rect';
 import { EditBoxManagerService } from './edit-box-manager.service';
 import { Container } from './container';
 import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
-import { MenuService } from './menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class EditBoxService {
   public copied: any = {};
   private fileInput = document.createElement('input');
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService, private menuService: MenuService) {
+  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService) {
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -67,7 +66,6 @@ export class EditBoxService {
 
     this.editBoxManagerService.insertType = insertType.substring(7).toLocaleLowerCase();
     this.paste();
-    this.menuService.show = false;
   }
   menuBoxCreate(insertType, boxType) {
     if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
@@ -90,8 +88,6 @@ export class EditBoxService {
         this.createContainerBox();
         break;
     }
-
-    this.menuService.show = false;
   }
 
   createTextBox(boxData?): TextBoxComponent {

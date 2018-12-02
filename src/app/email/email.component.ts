@@ -15,6 +15,7 @@ export class EmailComponent implements OnInit {
   @ViewChildren('viewContainerRef', { read: ViewContainerRef }) viewContainerRefs: QueryList<ViewContainerRef>;
   @ViewChild(EmailGridComponent) emailGridComponent: EmailGridComponent;
   @ViewChild('edit') editInput: ElementRef;
+  @ViewChild('page') page: ElementRef;
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
@@ -86,7 +87,7 @@ export class EmailComponent implements OnInit {
       input.checked = true;
 
       // Create the container for this page
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index], 40);
+      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index], this.page.nativeElement, 40);
       this.editBoxManagerService.currentContainer.width = this.pageWidth;
 
       this.currentToggleButton = input;

@@ -9,7 +9,7 @@ export class Container {
   public width: number;
   public height: number;
 
-  constructor(public viewContainerRef: ViewContainerRef, public minHeight?: number) { }
+  constructor(public viewContainerRef: ViewContainerRef, public view: HTMLElement, public minHeight?: number) { }
 
   setHeight() {
     // If container has any boxes
@@ -45,6 +45,7 @@ export class Container {
       if (currentRow.y < previousRow.yMax) {
         // Set the new y for the row
         currentRow.y = previousRow.yMax;
+        currentRow.rowElement.style.top = currentRow.y + 'px';
 
         // Move all the boxes in this row
         for (let j = 0; j < currentRow.boxes.length; j++) {
@@ -54,7 +55,7 @@ export class Container {
         }
 
         // Set the new ymax
-        currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
+        currentRow.setYMax();
 
       } else {
         break;
@@ -74,6 +75,7 @@ export class Container {
   removeRow(row: Row) {
     let rowIndex = this.rows.findIndex(x => x === row);
     this.rows.splice(rowIndex, 1);
+    row.rowElement.remove();
   }
 
   deleteBox(box: EditBoxComponent) {
@@ -93,7 +95,7 @@ export class Container {
   }
 
   addRow(alignment: string, y: number): Row{
-    this.rows.push(new Row(alignment, y));
+    this.rows.push(new Row(alignment, y, this.view));
     let newRow: Row = this.rows[this.rows.length - 1];
     this.sortRows();
 
