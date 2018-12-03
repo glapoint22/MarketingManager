@@ -18,7 +18,7 @@ export class EditBoxService {
   private fileInput = document.createElement('input');
   private spawnPosition: string;
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private tempMenuService: MenuService) {
+  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private menuService: MenuService) {
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -41,7 +41,8 @@ export class EditBoxService {
   }
 
   createMenu() {
-    let menuGroup: MenuGroup = this.tempMenuService.boxMenu.createMenuGroup(),
+    // Insert
+    let menuGroup: MenuGroup = this.menuService.menu.createMenuGroup(),
       rowCaptions = ['Insert Left', 'Insert Right', 'Insert Top', 'Insert Bottom'],
       subRowCaptions = ['Textbox', 'Button', 'Image', 'Container']
 
@@ -56,6 +57,12 @@ export class EditBoxService {
         subMenuGroup.createMenuRow(subRowCaptions[j], () => this.menuBoxCreate(menuRow.caption, subRowCaptions[j]));
       }
     }
+
+    // Alignment
+    menuGroup = this.menuService.menu.createMenuGroup();
+    menuGroup.createMenuRow('Align Boxes Left', () => {EditBoxComponent.currentEditBox.row.alignBoxesLeft(), EditBoxComponent.change.next()});
+    menuGroup.createMenuRow('Align Boxes Center', () => {EditBoxComponent.currentEditBox.row.alignBoxesCenter(), EditBoxComponent.change.next()});
+    menuGroup.createMenuRow('Align Boxes Right', () => {EditBoxComponent.currentEditBox.row.alignBoxesRight(), EditBoxComponent.change.next()});
   }
 
   menuPaste(insertType) {

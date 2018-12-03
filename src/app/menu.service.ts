@@ -6,17 +6,15 @@ import { ContextMenu } from './context-menu';
   providedIn: 'root'
 })
 export class MenuService {
-  public menu: ContextMenu;
+  public menu: ContextMenu = new ContextMenu();;
   public show: boolean;
   public menuPos: Vector2
-  public boxMenu: ContextMenu = new ContextMenu();
 
   constructor() { }
 
-  showMenu(event: MouseEvent, menu: ContextMenu) {
+  showMenu(event: MouseEvent) {
     event.preventDefault();
     this.menuPos = new Vector2(event.clientX, event.clientY)
-    this.menu = menu;
     this.show = true;
   }
 }

@@ -79,23 +79,31 @@ export class Container {
     row.rowElement.remove();
   }
 
+  removeRows() {
+    for (let i = 0; i < this.rows.length; i++) {
+      this.removeRow(this.rows[i]);
+      i--;
+    }
+  }
+
   deleteBox(box: EditBoxComponent) {
     let boxIndex = this.boxes.findIndex(x => x === box),
       row = box.row;
 
     this.boxes.splice(boxIndex, 1);
+    row.removeBox(box);
 
-    if (row.boxes.length === 1) {
+    if (row.boxes.length === 0) {
       // No boxes in this row so remove the row
       this.removeRow(row);
     } else {
       // Reset this row's yMax and re-align
-      row.yMax = Math.max(...row.boxes.map(x => x.rect.yMax));
+      row.setYMax();
       row.alignBoxes();
     }
   }
 
-  addRow(alignment: string, y: number): Row{
+  addRow(alignment: string, y: number): Row {
     this.rows.push(new Row(alignment, y, this.view));
     let newRow: Row = this.rows[this.rows.length - 1];
     this.sortRows();
@@ -103,7 +111,7 @@ export class Container {
     return newRow;
   }
 
-  getRowIndex(row: Row){
+  getRowIndex(row: Row) {
     return this.rows.findIndex(x => x === row);
   }
 }

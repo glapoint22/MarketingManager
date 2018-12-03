@@ -33,20 +33,6 @@ export class Row {
         }
     }
 
-    alignBoxesLeft() {
-        let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(),
-            currentX: number = 0;
-
-        // Align the boxes left
-        sortedBoxes.forEach((sortedBox: EditBoxComponent) => {
-            let box: EditBoxComponent = this.getBox(sortedBox);
-
-            box.rect.x = currentX;
-            box.setElement();
-            currentX = box.rect.xMax;
-        });
-    }
-
     getBoxesWidth() {
         let boxesWidth: number = 0;
 
@@ -59,6 +45,21 @@ export class Row {
 
     getCenterX(width: number) {
         return (this.boxes[0].container.width * 0.5) - (width * 0.5);
+    }
+
+    alignBoxesLeft() {
+        let sortedBoxes: Array<EditBoxComponent> = this.sortBoxes(),
+            currentX: number = 0;
+
+        // Align the boxes left
+        sortedBoxes.forEach((sortedBox: EditBoxComponent) => {
+            let box: EditBoxComponent = this.getBox(sortedBox);
+
+            box.rect.x = currentX;
+            box.setElement();
+            currentX = box.rect.xMax;
+        });
+        this.alignment = 'left';
     }
 
     alignBoxesCenter() {
@@ -74,6 +75,7 @@ export class Row {
             box.setElement();
             currentX = box.rect.xMax;
         });
+        this.alignment = 'center';
     }
 
     alignBoxesRight() {
@@ -88,6 +90,7 @@ export class Row {
             box.setElement();
             currentX = box.rect.x;
         }
+        this.alignment = 'right';
     }
 
     getBox(box: EditBoxComponent): EditBoxComponent {

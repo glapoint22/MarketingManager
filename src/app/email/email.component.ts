@@ -5,6 +5,7 @@ import { EmailPreviewService } from '../email-preview.service';
 import { TableService } from '../table.service';
 import { Container } from '../container';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { MenuService } from '../menu.service';
 
 @Component({
   selector: 'email',
@@ -32,7 +33,7 @@ export class EmailComponent implements OnInit {
   private copy: any;
   private minContainerHeight: number = 40;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService) { }
 
   ngOnInit() {
     this.setHeight();
@@ -184,7 +185,12 @@ export class EmailComponent implements OnInit {
             this.currentEmail.selected = false;
           }
         } else {
-          EditBoxComponent.currentEditBox.unSelect(this.container);
+          if(this.menuService.show){
+            this.menuService.show = false;
+          }else{
+            EditBoxComponent.currentEditBox.unSelect(this.container);
+          }
+          
         }
       }
     } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
@@ -256,6 +262,7 @@ export class EmailComponent implements OnInit {
       this.speed = 0;
       if (this.closedContainer) {
         this.closedContainer.viewContainerRef.clear();
+        this.closedContainer.removeRows();
         if (this.closedContainer.boxes) {
           this.closedContainer.boxes = [];
         }

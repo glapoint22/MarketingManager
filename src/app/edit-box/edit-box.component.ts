@@ -242,7 +242,7 @@ export class EditBoxComponent {
         for (let i = 0; i < this.container.rows.length; i++) {
           let row = this.container.rows[i];
 
-          if (this.rect.y >= row.y && this.rect.y < row.yMax) {
+          if (this.rect.y >= row.y && this.rect.yMax <= row.yMax) {
             // box is in its current row
             if (row === this.row) {
               rowFound = true;
@@ -283,6 +283,7 @@ export class EditBoxComponent {
         if (!rowFound) {
           // Remove this box from its current row
           this.row.removeBox(this);
+          let alignment = this.row.alignment;
 
           if (this.row.boxes.length === 0) {
             // No boxes in this row so remove the row
@@ -293,8 +294,18 @@ export class EditBoxComponent {
             this.row.alignBoxes();
           }
 
+          // Make sure the top of the box is not intersecting the bottom of a row
+          for (let i = 0; i < this.container.rows.length; i++) {
+            let row = this.container.rows[i];
+  
+            if (this.rect.y >= row.y && this.rect.y < row.yMax){
+              this.rect.y = row.yMax;
+              break;
+            }
+          }
+
           // Create a new row and add this box to it
-          this.container.currentRow = this.container.addRow('center', this.rect.y);
+          this.container.currentRow = this.container.addRow(alignment, this.rect.y);
           this.container.currentRow.addBox(this);
           let rowIndex = this.container.getRowIndex(this.container.currentRow);
           this.container.moveRowsDown(rowIndex + 1);
