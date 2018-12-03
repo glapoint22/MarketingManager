@@ -1,5 +1,5 @@
 <div #editBox class="edit-box" (mousedown)="setSelection(); $event.stopPropagation()" (dblclick)="setEditMode()"
-  tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}" (contextmenu)="menuService.showMenu($event, editBoxManagerService.boxMenu)">
+  tabindex="0" [ngClass]="{'edit-mode': inEditMode, 'selected': isSelected}" (contextmenu)="menuService.showMenu($event, menuService.boxMenu)">
 
   <!-- Content -->
   <div class="content">

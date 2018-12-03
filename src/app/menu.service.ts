@@ -9,6 +9,7 @@ export class MenuService {
   public menu: ContextMenu;
   public show: boolean;
   public menuPos: Vector2
+  public boxMenu: ContextMenu = new ContextMenu();
 
   constructor() { }
 

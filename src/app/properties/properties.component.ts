@@ -3,7 +3,7 @@ import { Vector2 } from '../vector2';
 import { LinkService } from '../link.service';
 import { Rect } from '../rect';
 import { EditBoxService } from '../edit-box.service';
-import { EditBoxManagerService } from '../edit-box-manager.service';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'properties',
@@ -13,13 +13,14 @@ import { EditBoxManagerService } from '../edit-box-manager.service';
 export class PropertiesComponent {
   public gridItem;
   public Math = Math;
+  public editBox = EditBoxComponent;
 
-  constructor(private linkService: LinkService, public editBoxService: EditBoxService, public editBoxManagerService: EditBoxManagerService) { }
+  constructor(private linkService: LinkService, public editBoxService: EditBoxService) { }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
-    if (event.code === 'Escape' && this.editBoxManagerService.currentEditBox && this.editBoxManagerService.currentEditBox.isSelected) {
+    if (event.code === 'Escape' && EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
       if (this.linkService.show) {
         this.linkService.show = false;
       }
@@ -27,13 +28,13 @@ export class PropertiesComponent {
   }
 
   showLinkForm(style) {
-    if (this.editBoxManagerService.currentEditBox.inEditMode || style.group === 'editBoxLink') {
+    if (EditBoxComponent.currentEditBox.inEditMode || style.group === 'editBoxLink') {
       this.linkService.showForm(style, this.gridItem);
     }
   }
 
   setX(input) {
-    let editBox = this.editBoxManagerService.currentEditBox;
+    let editBox = EditBoxComponent.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -47,7 +48,7 @@ export class PropertiesComponent {
   }
 
   setY(input) {
-    let editBox = this.editBoxManagerService.currentEditBox;
+    let editBox = EditBoxComponent.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -60,7 +61,7 @@ export class PropertiesComponent {
   }
 
   setWidth(input) {
-    let editBox = this.editBoxManagerService.currentEditBox;
+    let editBox = EditBoxComponent.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -70,7 +71,7 @@ export class PropertiesComponent {
   }
 
   setHeight(input) {
-    let editBox = this.editBoxManagerService.currentEditBox;
+    let editBox = EditBoxComponent.currentEditBox;
 
     if (input.value === '') input.value = 0;
 
@@ -80,6 +81,6 @@ export class PropertiesComponent {
   }
 
   setChange(){
-    this.editBoxManagerService.change.next();
+    EditBoxComponent.change.next();
   }
 }

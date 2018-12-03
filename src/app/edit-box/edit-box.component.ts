@@ -2,11 +2,11 @@ import { Component, ViewChild, ElementRef, ApplicationRef } from '@angular/core'
 import { Vector2 } from "../vector2";
 import { Rect } from '../rect';
 import { Style } from '../style';
-import { EditBoxManagerService } from '../edit-box-manager.service';
 import { Container } from '../container';
 import { Row } from '../row';
 import { BoxContainer } from '../box-container';
 import { MenuService } from '../menu.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'edit-box',
@@ -16,7 +16,7 @@ import { MenuService } from '../menu.service';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(public app: ApplicationRef, public editBoxManagerService: EditBoxManagerService, public menuService: MenuService) { }
+  constructor(public app: ApplicationRef, public menuService: MenuService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -41,6 +41,11 @@ export class EditBoxComponent {
   public backgroundColor: string;
   public isLoaded: boolean = false;
   public row: Row;
+  public spawnPosition: string;
+
+  // Static
+  public static currentEditBox: EditBoxComponent;
+  public static change = new Subject<void>();
 
   ngOnInit() {
     this.editBox.nativeElement.focus();
@@ -50,15 +55,15 @@ export class EditBoxComponent {
     if (rect.x === null) {
       let x: number, y: number;
 
-      // If this editBox is being inserted
-      if (this.editBoxManagerService.insertType) {
+      // If this editBox has a spawn position
+      if (this.spawnPosition) {
 
-        // Insert type is left or right
-        if (this.editBoxManagerService.insertType === 'left' || this.editBoxManagerService.insertType === 'right') {
+        // spawn position is left or right
+        if (this.spawnPosition === 'left' || this.spawnPosition === 'right') {
 
           // Align left
           if (this.container.currentRow.alignment === 'left') {
-            x = this.editBoxManagerService.insertType === 'left' ? this.editBoxManagerService.currentEditBox.rect.x : this.editBoxManagerService.currentEditBox.rect.xMax;
+            x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x : EditBoxComponent.currentEditBox.rect.xMax;
             this.container.currentRow.shiftBoxesRightAtPoint(x, rect.width);
 
             // Align center
@@ -72,9 +77,9 @@ export class EditBoxComponent {
               let box = this.container.currentRow.getBox(sortedBoxes[i]);
 
               // Box is current selected box
-              if (box === this.editBoxManagerService.currentEditBox) {
-                // Insert type is left
-                if (this.editBoxManagerService.insertType === 'left') {
+              if (box === EditBoxComponent.currentEditBox) {
+                // Spawn position is left
+                if (this.spawnPosition === 'left') {
                   x = currentX;
                   currentX += rect.width;
 
@@ -101,7 +106,7 @@ export class EditBoxComponent {
 
             // Align right
           } else if (this.container.currentRow.alignment === 'right') {
-            x = this.editBoxManagerService.insertType === 'left' ? this.editBoxManagerService.currentEditBox.rect.x - rect.width : this.editBoxManagerService.currentEditBox.rect.xMax - rect.width;
+            x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x - rect.width : EditBoxComponent.currentEditBox.rect.xMax - rect.width;
             this.container.currentRow.shiftBoxesLeftAtPoint(x, rect.width);
           }
 
@@ -116,11 +121,11 @@ export class EditBoxComponent {
           // Insert type is top or bottom
         } else {
           // Get the new inserted row index
-          let insertedRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + (this.editBoxManagerService.insertType === 'bottom' ? 1 : 0),
+          let insertedRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + (this.spawnPosition === 'bottom' ? 1 : 0),
             yPos: number, yMax: number;
 
-            // Insert type is bottom
-          if (this.editBoxManagerService.insertType === 'bottom') {
+            // Spawn position is bottom
+          if (this.spawnPosition === 'bottom') {
             yPos = this.container.currentRow.yMax;
             yMax = this.container.currentRow.yMax + rect.height;
 
@@ -155,9 +160,8 @@ export class EditBoxComponent {
         }
         // Set the new y
         y = this.container.currentRow.y;
-        this.editBoxManagerService.insertType = null;
 
-        // New box is not being inserted
+        // New box does not have a spawn position so spawn it at the bottom of the container
       } else {
         x = (this.container.width * 0.5) - (rect.width * 0.5);
         y = this.container.boxes && this.container.boxes.length > 0 ? Math.max(...this.container.boxes.map(x => x.rect ? x.rect.yMax : 0)) : 0;
@@ -301,7 +305,7 @@ export class EditBoxComponent {
         this.container.setHeight();
 
         // Mark that there has been a change
-        this.editBoxManagerService.change.next();
+        EditBoxComponent.change.next();
       }
       this.isMousedown = false;
     }
@@ -486,21 +490,21 @@ export class EditBoxComponent {
 
   setSelection() {
     this.isSelected = true;
-    if (this.editBoxManagerService.currentEditBox && this.editBoxManagerService.currentEditBox !== this) {
-      this.editBoxManagerService.currentEditBox.isSelected = false;
-      if (this.editBoxManagerService.currentEditBox.inEditMode && this.editBoxManagerService.currentEditBox.content) {
-        this.editBoxManagerService.currentEditBox.inEditMode = false;
-        this.editBoxManagerService.currentEditBox.content.setAttribute('contenteditable', 'false');
-        this.editBoxManagerService.currentEditBox.content.style.setProperty('cursor', '');
-        this.editBoxManagerService.currentEditBox.content.ownerDocument.getSelection().empty();
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox !== this) {
+      EditBoxComponent.currentEditBox.isSelected = false;
+      if (EditBoxComponent.currentEditBox.inEditMode && EditBoxComponent.currentEditBox.content) {
+        EditBoxComponent.currentEditBox.inEditMode = false;
+        EditBoxComponent.currentEditBox.content.setAttribute('contenteditable', 'false');
+        EditBoxComponent.currentEditBox.content.style.setProperty('cursor', '');
+        EditBoxComponent.currentEditBox.content.ownerDocument.getSelection().empty();
       }
     }
-    this.editBoxManagerService.currentEditBox = this;
+    EditBoxComponent.currentEditBox = this;
     this.setCurrentContainer();
   }
 
   setCurrentContainer() {
-    this.editBoxManagerService.currentContainer = this.container;
+    Container.currentContainer = this.container;
   }
 
 
@@ -533,35 +537,7 @@ export class EditBoxComponent {
   }
 
 
-  // moveRowsDown(startIndex) {
-  //   // Loop through all the rows and see if we need to move them down
-  //   for (let i = startIndex; i < this.container.rows.length; i++) {
-  //     let currentRow = this.container.rows[i],
-  //       previousRow = this.container.rows[i - 1];
-
-  //     // Test to see if we need to move this current row down
-  //     if (currentRow.y < previousRow.yMax) {
-  //       // Set the new y for the row
-  //       currentRow.y = previousRow.yMax;
-
-  //       // Move all the boxes in this row
-  //       for (let j = 0; j < currentRow.boxes.length; j++) {
-  //         let box = currentRow.boxes[j];
-  //         box.rect.y = currentRow.y;
-  //         box.setElement();
-  //       }
-
-  //       // Set the new ymax
-  //       currentRow.yMax = Math.max(...currentRow.boxes.map(x => x.rect.yMax));
-
-  //     } else {
-  //       break;
-  //     }
-  //   }
-  // }
-
-
-  unSelect() {
+  unSelect(container?: Container) {
     if (this.content && this.inEditMode) {
       this.inEditMode = false;
       this.content.ownerDocument.getSelection().empty();
@@ -572,7 +548,7 @@ export class EditBoxComponent {
       this.editBox.nativeElement.focus();
     } else {
       this.isSelected = false;
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer;
+      Container.currentContainer = container;
     }
   }
 
@@ -585,7 +561,7 @@ export class EditBoxComponent {
   }
 
   onContentChange() {
-    this.editBoxManagerService.change.next();
+    EditBoxComponent.change.next();
   }
   boxToTable(table: HTMLTableElement) { }
 

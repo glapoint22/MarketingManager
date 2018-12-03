@@ -4,6 +4,7 @@ import { Vector2 } from '../vector2';
 import { BackgroundColor } from '../background-color';
 import { Rect } from '../rect';
 import { BoxContainer } from '../box-container';
+import { Container } from '../container';
 
 @Component({
   selector: 'container-box',
@@ -165,7 +166,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setCurrentContainer() {
-    this.editBoxManagerService.currentContainer = this.boxContainer;
+    Container.currentContainer = this.boxContainer;
   }
 
   boxToTable(table: HTMLTableElement) {

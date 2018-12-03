@@ -3,8 +3,8 @@ import { EditBoxService } from '../edit-box.service';
 import { EmailGridComponent } from '../email-grid/email-grid.component';
 import { EmailPreviewService } from '../email-preview.service';
 import { TableService } from '../table.service';
-import { EditBoxManagerService } from '../edit-box-manager.service';
 import { Container } from '../container';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'email',
@@ -26,11 +26,13 @@ export class EmailComponent implements OnInit {
   private colorPalette: HTMLInputElement;
   private currentEmail;
   private currentToggleButton;
+  private container: Container;
   private closedContainer: Container;
   private defaultSpeed: number = 0.5;
   private copy: any;
+  private minContainerHeight: number = 40;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, public editBoxManagerService: EditBoxManagerService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService) { }
 
   ngOnInit() {
     this.setHeight();
@@ -42,10 +44,10 @@ export class EmailComponent implements OnInit {
       } else {
         this.currentEmail.backgroundColor = event.path[0].value;
       }
-      this.editBoxManagerService.change.next();
+      EditBoxComponent.change.next();
     }
 
-    this.editBoxManagerService.change.subscribe(() => {
+    EditBoxComponent.change.subscribe(() => {
       // Create the main table
       let mainTable = this.tableService.createTable(document.createElement('div'), null, null, this.currentEmail.backgroundColor),
         tr = mainTable.appendChild(document.createElement('tr')),
@@ -55,7 +57,7 @@ export class EmailComponent implements OnInit {
       td.align = 'center';
 
       // Create all child tables
-      this.tableService.createTable(td, this.editBoxManagerService.mainContainer, this.pageWidth, this.currentEmail.pageColor);
+      this.tableService.createTable(td, this.container, this.pageWidth, this.currentEmail.pageColor);
 
       // If the main table differs from what has been saved
       if (this.currentEmail.body !== mainTable.outerHTML) {
@@ -77,8 +79,8 @@ export class EmailComponent implements OnInit {
     // Collapse the page
     if (input.checked) {
       input.checked = false;
-      this.closedContainer = this.editBoxManagerService.mainContainer;
-      this.editBoxManagerService.currentContainer = null;
+      this.closedContainer = this.container;
+      Container.currentContainer = null;
 
       // Expand the page
     } else {
@@ -87,18 +89,18 @@ export class EmailComponent implements OnInit {
       input.checked = true;
 
       // Create the container for this page
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer = new Container(this.viewContainerRefs.toArray()[index], this.page.nativeElement, 40);
-      this.editBoxManagerService.currentContainer.width = this.pageWidth;
+      Container.currentContainer = this.container = new Container(this.viewContainerRefs.toArray()[index], this.page.nativeElement, this.minContainerHeight);
+      Container.currentContainer.width = this.pageWidth;
 
       this.currentToggleButton = input;
 
       // Load the email
-      if (this.currentEmail.body !== '' && (!this.editBoxManagerService.currentContainer.boxes || this.editBoxManagerService.currentContainer.boxes.length === 0)) {
+      if (this.currentEmail.body !== '' && (!Container.currentContainer.boxes || Container.currentContainer.boxes.length === 0)) {
         this.loadEmail();
       }
 
       // Set the container height
-      this.editBoxManagerService.mainContainer.setHeight();
+      this.container.setHeight();
     }
   }
 
@@ -113,10 +115,10 @@ export class EmailComponent implements OnInit {
     this.currentEmail.pageColor = pageTable.bgColor;
 
     // Create the boxes
-    this.tableService.tableToBox(pageTable, this.editBoxManagerService.currentContainer);
+    this.tableService.tableToBox(pageTable, Container.currentContainer);
 
     // Set the current container as this page
-    this.editBoxManagerService.currentContainer = this.editBoxManagerService.mainContainer;
+    Container.currentContainer = this.container;
   }
 
   onItemClick(item) {
@@ -135,9 +137,9 @@ export class EmailComponent implements OnInit {
       if (this.currentToggleButton) {
         this.speed = this.defaultSpeed;
         this.currentToggleButton.checked = false;
-        this.closedContainer = this.editBoxManagerService.mainContainer;
+        this.closedContainer = this.container;
       }
-      this.editBoxManagerService.currentContainer = null;
+      Container.currentContainer = null;
     }
     this.currentEmail = email;
     email.selected = true;
@@ -172,17 +174,17 @@ export class EmailComponent implements OnInit {
       if (this.currentEmail && this.currentEmail.selected) {
         if (this.currentEmail.isInEditMode) {
           this.currentEmail.isInEditMode = false;
-        } else if (!this.editBoxManagerService.currentEditBox || !this.editBoxManagerService.currentEditBox.isSelected) {
+        } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
           if (this.currentToggleButton && this.currentToggleButton.checked) {
             this.currentToggleButton.checked = false;
-            this.closedContainer = this.editBoxManagerService.mainContainer;
-            this.editBoxManagerService.currentContainer = null;
+            this.closedContainer = this.container;
+            Container.currentContainer = null;
             this.speed = this.defaultSpeed;
           } else {
             this.currentEmail.selected = false;
           }
         } else {
-          this.editBoxManagerService.currentEditBox.unSelect();
+          EditBoxComponent.currentEditBox.unSelect(this.container);
         }
       }
     } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
@@ -199,16 +201,16 @@ export class EmailComponent implements OnInit {
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
-    if (this.editBoxManagerService.currentEditBox) this.editBoxManagerService.currentEditBox.onMouseMove(event);
+    if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.onMouseMove(event);
   }
 
   @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
-    if (this.editBoxManagerService.currentEditBox) this.editBoxManagerService.currentEditBox.onMouseUp();
+    if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.onMouseUp();
   }
 
   onMouseDown() {
-    if (this.editBoxManagerService.currentEditBox) this.editBoxManagerService.currentEditBox.unSelect();
+    if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.unSelect(this.container);
   }
 
   setColor(colorType: string) {

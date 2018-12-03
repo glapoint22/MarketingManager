@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Style } from './style';
-import { EditBoxManagerService } from './edit-box-manager.service';
+import { EditBoxComponent } from './edit-box/edit-box.component';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,6 @@ export class LinkService {
   public linkOptions;
   private style: Style;
 
-  constructor(private editBoxManagerService: EditBoxManagerService) { }
 
   showForm(style: Style, gridItem) {
     this.style = style;
@@ -55,6 +54,6 @@ export class LinkService {
     this.style.styleValue = this.selectedOption.value;
     this.style.onClick();
     this.show = false;
-    this.editBoxManagerService.change.next();
+    EditBoxComponent.change.next();
   }
 }

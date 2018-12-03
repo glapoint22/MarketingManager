@@ -8,6 +8,7 @@ export class Container {
   public currentRow: Row;
   public width: number;
   public height: number;
+  public static currentContainer: Container;
 
   constructor(public viewContainerRef: ViewContainerRef, public view: HTMLElement, public minHeight?: number) { }
 

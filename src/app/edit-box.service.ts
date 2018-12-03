@@ -6,9 +6,9 @@ import { ContainerBoxComponent } from './container-box/container-box.component';
 import { DataService } from './data.service';
 import { ImageBoxComponent } from './image-box/image-box.component';
 import { Rect } from './rect';
-import { EditBoxManagerService } from './edit-box-manager.service';
 import { Container } from './container';
 import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
+import { MenuService } from './menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +16,9 @@ import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
 export class EditBoxService {
   public copied: any = {};
   private fileInput = document.createElement('input');
+  private spawnPosition: string;
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private editBoxManagerService: EditBoxManagerService) {
+  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private tempMenuService: MenuService) {
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -27,7 +28,7 @@ export class EditBoxService {
 
         this.dataService.post('/api/Image', formData)
           .subscribe((imageName: any) => {
-            let box = this.createBox(ImageBoxComponent, this.editBoxManagerService.currentContainer, 'img');
+            let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
             this.setChange([box.instance]);
             box.instance.contentContainer.src = 'Images/' + imageName;
             box.instance.contentContainer.onload = () => {
@@ -40,7 +41,7 @@ export class EditBoxService {
   }
 
   createMenu() {
-    let menuGroup: MenuGroup = this.editBoxManagerService.boxMenu.createMenuGroup(),
+    let menuGroup: MenuGroup = this.tempMenuService.boxMenu.createMenuGroup(),
       rowCaptions = ['Insert Left', 'Insert Right', 'Insert Top', 'Insert Bottom'],
       subRowCaptions = ['Textbox', 'Button', 'Image', 'Container']
 
@@ -60,19 +61,19 @@ export class EditBoxService {
   menuPaste(insertType) {
     if (!this.copied.boxType) return;
 
-    if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
+    if (EditBoxComponent.currentEditBox instanceof ContainerBoxComponent) {
+      Container.currentContainer = EditBoxComponent.currentEditBox.container;
     }
 
-    this.editBoxManagerService.insertType = insertType.substring(7).toLocaleLowerCase();
+    this.spawnPosition = insertType.substring(7).toLocaleLowerCase();
     this.paste();
   }
   menuBoxCreate(insertType, boxType) {
-    if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
-      this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
+    if (EditBoxComponent.currentEditBox instanceof ContainerBoxComponent) {
+      Container.currentContainer = EditBoxComponent.currentEditBox.container;
     }
 
-    this.editBoxManagerService.insertType = insertType.substring(7).toLocaleLowerCase();
+    this.spawnPosition = insertType.substring(7).toLocaleLowerCase();
 
     switch (boxType) {
       case 'Textbox':
@@ -91,21 +92,21 @@ export class EditBoxService {
   }
 
   createTextBox(boxData?): TextBoxComponent {
-    let box = this.createBox(TextBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
+    let box = this.createBox(TextBoxComponent, Container.currentContainer, 'iframe');
     box.instance.initialize(boxData);
     if (!boxData) this.setChange([box.instance]);
     return box.instance as TextBoxComponent;
   }
 
   createButtonBox(boxData?): ButtonBoxComponent {
-    let box = this.createBox(ButtonBoxComponent, this.editBoxManagerService.currentContainer, 'iframe');
+    let box = this.createBox(ButtonBoxComponent, Container.currentContainer, 'iframe');
     box.instance.initialize(boxData);
     if (!boxData) this.setChange([box.instance]);
     return box.instance as ButtonBoxComponent;
   }
 
   createContainerBox(boxData?): ContainerBoxComponent {
-    let box = this.createBox(ContainerBoxComponent, this.editBoxManagerService.currentContainer);
+    let box = this.createBox(ContainerBoxComponent, Container.currentContainer);
     box.instance.initialize(boxData)
     if (!boxData) this.setChange([box.instance]);
     return box.instance as ContainerBoxComponent;
@@ -113,7 +114,7 @@ export class EditBoxService {
 
   createImageBox(boxData?): ImageBoxComponent {
     if (boxData) {
-      let imageBox = this.createBox(ImageBoxComponent, this.editBoxManagerService.currentContainer, 'img');
+      let imageBox = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
       this.setImageBox(imageBox, boxData);
       return imageBox.instance as ImageBoxComponent;
     } else {
@@ -129,6 +130,8 @@ export class EditBoxService {
     // Set the editbox properties
     newBox.instance.contentContainer = contentContainer;
     newBox.instance.container = container;
+    newBox.instance.spawnPosition = this.spawnPosition;
+    this.spawnPosition = null;
 
     // Add this new box to the container
     container.boxes.push(newBox.instance);
@@ -137,28 +140,28 @@ export class EditBoxService {
   }
 
   delete() {
-    if (this.editBoxManagerService.currentEditBox && this.editBoxManagerService.currentEditBox.isSelected) {
-      if (this.editBoxManagerService.currentEditBox instanceof ContainerBoxComponent) {
-        this.editBoxManagerService.currentContainer = this.editBoxManagerService.currentEditBox.container;
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+      if (EditBoxComponent.currentEditBox instanceof ContainerBoxComponent) {
+        Container.currentContainer = EditBoxComponent.currentEditBox.container;
       }
 
       // Get the index of the current box
-      let index = this.editBoxManagerService.currentContainer.boxes.findIndex(x => x === this.editBoxManagerService.currentEditBox);
+      let index = Container.currentContainer.boxes.findIndex(x => x === EditBoxComponent.currentEditBox);
 
       // Delete the box from the viewContainerRef and its container
-      this.editBoxManagerService.currentContainer.viewContainerRef.remove(index);
-      this.editBoxManagerService.currentContainer.deleteBox(this.editBoxManagerService.currentEditBox);
-      this.editBoxManagerService.currentEditBox = null;
+      Container.currentContainer.viewContainerRef.remove(index);
+      Container.currentContainer.deleteBox(EditBoxComponent.currentEditBox);
+      EditBoxComponent.currentEditBox = null;
 
       // Mark that there is a change and set the container height
-      this.editBoxManagerService.change.next();
-      this.editBoxManagerService.currentContainer.setHeight();
+      EditBoxComponent.change.next();
+      Container.currentContainer.setHeight();
     }
   }
 
   copy() {
-    if (this.editBoxManagerService.currentEditBox && this.editBoxManagerService.currentEditBox.isSelected) {
-      this.copied = this.copyBox(this.editBoxManagerService.currentEditBox);
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+      this.copied = this.copyBox(EditBoxComponent.currentEditBox);
       this.copied.isSelected = true;
     }
   }
@@ -222,7 +225,7 @@ export class EditBoxService {
 
   paste() {
     if (this.copied.boxType) {
-      let box = this.createBox(this.copied.boxType, this.editBoxManagerService.currentContainer, this.copied.contentContainerType);
+      let box = this.createBox(this.copied.boxType, Container.currentContainer, this.copied.contentContainerType);
       let newBoxes: Array<EditBoxComponent> = [];
 
       newBoxes.push(box.instance);
@@ -248,8 +251,8 @@ export class EditBoxService {
     // Mark a change has happened when all boxes have loaded
     let interval = window.setInterval(() => {
       if (changedBoxes.every(x => x.isLoaded)) {
-        this.editBoxManagerService.change.next();
-        this.editBoxManagerService.currentContainer.setHeight();
+        EditBoxComponent.change.next();
+        Container.currentContainer.setHeight();
         window.clearInterval(interval);
       }
     }, 1);

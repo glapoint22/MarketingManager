@@ -131,11 +131,11 @@
                 <div style="background-color: #1e1e1e">
                     <div class="email-content-container" [style.transition]="'max-height ' + speed + 's'"
                         (transitionend)="transitionEnd($event)" [style.backgroundColor]="email.backgroundColor"
-                        [style.maxHeight.px]="inputToggle.checked && editBoxManagerService.mainContainer ? editBoxManagerService.mainContainer.height : 0"
+                        [style.maxHeight.px]="inputToggle.checked && container ? container.height : 0"
                         (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
-                        <div #page class="page" [style.width.px]="pageWidth" [style.height.px]="editBoxManagerService.mainContainer ? editBoxManagerService.mainContainer.height : 0"
+                        <div #page class="page" [style.width.px]="pageWidth" [style.height.px]="container ? container.height : 0"
                             [style.backgroundColor]="email.pageColor">
                             <ng-template #viewContainerRef>
                                 <!-- EditBoxes go here -->
