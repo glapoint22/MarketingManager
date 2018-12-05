@@ -1,4 +1,4 @@
-<div class="menu" [style.left.px]="menuService.menuPos.x" [style.top.px]="menuService.menuPos.y">
+<div #menu class="menu" [style.left.px]="menuService.menuPos.x" [style.top.px]="menuService.menuPos.y" tabindex="0" (blur)="menuService.show = false">
     <div class="group" *ngFor="let group of menuService.menu.menuGroups">
         <div class="menu-row" *ngFor="let row of group.menuRows" (click)="row.action ? row.action() : null; row.action ? menuService.show = false : null" [ngClass]="{'disabled': row.isDisabled ? row.isDisabled(): false}">
             <div class="menu-row-data">{{row.caption}}</div>

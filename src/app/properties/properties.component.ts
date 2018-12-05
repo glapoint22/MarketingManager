@@ -4,6 +4,7 @@ import { LinkService } from '../link.service';
 import { Rect } from '../rect';
 import { EditBoxService } from '../edit-box.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { Container } from '../container';
 
 @Component({
   selector: 'properties',
@@ -58,6 +59,7 @@ export class PropertiesComponent {
       input.value = editBox.rect.y;
       return new Rect(editBox.rect.x, editBox.rect.y, editBox.rect.width, editBox.rect.height);
     });
+    Container.currentContainer.setHeight();
   }
 
   setWidth(input) {
@@ -68,6 +70,7 @@ export class PropertiesComponent {
     editBox.handle = 'right';
     editBox.setRightHandle(new Vector2(input.valueAsNumber - input.oldValue, 0));
     if (editBox.rect.width !== input.valueAsNumber) input.value = editBox.rect.width;
+    Container.currentContainer.setHeight();
   }
 
   setHeight(input) {
@@ -78,9 +81,29 @@ export class PropertiesComponent {
     editBox.handle = 'bottom';
     editBox.setBottomHandle(new Vector2(0, input.valueAsNumber - input.oldValue));
     if (editBox.rect.height !== input.valueAsNumber) input.value = editBox.rect.height;
+    Container.currentContainer.setHeight();
   }
 
-  setChange(){
-    EditBoxComponent.change.next();
+  setChange(event: KeyboardEvent, input: HTMLInputElement) {
+    if (event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+      EditBoxComponent.change.next();
+      EditBoxComponent.currentEditBox.updateRow();
+
+      if (event.code === 'Enter' || event.code === 'NumpadEnter') input.blur();
+    }
+  }
+
+  setAlignment(alignment) {
+    switch (alignment) {
+      case 'left':
+        EditBoxComponent.currentEditBox.row.alignBoxesLeft();
+        break;
+      case 'center':
+        EditBoxComponent.currentEditBox.row.alignBoxesCenter();
+        break;
+      case 'right':
+        EditBoxComponent.currentEditBox.row.alignBoxesRight();
+        break;
+    }
   }
 }

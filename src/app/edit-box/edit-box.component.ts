@@ -16,7 +16,7 @@ import { Subject } from 'rxjs';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(public app: ApplicationRef, public menuService: MenuService) { }
+  constructor(private app: ApplicationRef, public menuService: MenuService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;
@@ -58,106 +58,122 @@ export class EditBoxComponent {
       // If this editBox has a spawn position
       if (this.spawnPosition) {
 
-        // spawn position is left or right
-        if (this.spawnPosition === 'left' || this.spawnPosition === 'right') {
+        // If this box is too wide to fit in the row
+        if (this.container.currentRow.getBoxesWidth() + rect.width > this.container.width) {
+          // Add a new row
+          this.container.currentRow = this.container.addRow('center', this.container.currentRow.yMax);
 
-          // Align left
-          if (this.container.currentRow.alignment === 'left') {
-            x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x : EditBoxComponent.currentEditBox.rect.xMax;
-            this.container.currentRow.shiftBoxesRightAtPoint(x, rect.width);
+          // Create the x for the box and the yMax for the new row
+          x = (this.container.width * 0.5) - (rect.width * 0.5);
+          this.container.currentRow.yMax = this.container.currentRow.y + rect.height;
 
-            // Align center
-          } else if (this.container.currentRow.alignment === 'center') {
-            let boxesWidth = this.container.currentRow.getBoxesWidth() + rect.width,
-              currentX = this.container.currentRow.getCenterX(boxesWidth),
-              sortedBoxes = this.container.currentRow.sortBoxes();
+          // Move the other rows down
+          let rowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
+          this.container.moveRowsDown(rowIndex);
+        } else {
+          // spawn position is left or right
+          if (this.spawnPosition === 'left' || this.spawnPosition === 'right') {
 
-            // Loop through the boxes and set their x's center
-            for (let i = 0; i < sortedBoxes.length; i++) {
-              let box = this.container.currentRow.getBox(sortedBoxes[i]);
+            // Align left
+            if (this.container.currentRow.alignment === 'left') {
+              x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x : EditBoxComponent.currentEditBox.rect.xMax;
+              this.container.currentRow.shiftBoxesRightAtPoint(x, rect.width);
 
-              // Box is current selected box
-              if (box === EditBoxComponent.currentEditBox) {
-                // Spawn position is left
-                if (this.spawnPosition === 'left') {
-                  x = currentX;
-                  currentX += rect.width;
+              // Align center
+            } else if (this.container.currentRow.alignment === 'center') {
+              let boxesWidth = this.container.currentRow.getBoxesWidth() + rect.width,
+                currentX = this.container.currentRow.getCenterX(boxesWidth),
+                sortedBoxes = this.container.currentRow.sortBoxes();
 
-                  box.rect.x = currentX;
-                  currentX += box.rect.width;
+              // Loop through the boxes and set their x's center
+              for (let i = 0; i < sortedBoxes.length; i++) {
+                let box = this.container.currentRow.getBox(sortedBoxes[i]);
 
-                  // Insert type is right
+                // Box is current selected box
+                if (box === EditBoxComponent.currentEditBox) {
+                  // Spawn position is left
+                  if (this.spawnPosition === 'left') {
+                    x = currentX;
+                    currentX += rect.width;
+
+                    box.rect.x = currentX;
+                    currentX += box.rect.width;
+
+                    // Insert type is right
+                  } else {
+                    box.rect.x = currentX;
+                    currentX += box.rect.width;
+
+                    x = currentX;
+                    currentX += rect.width;
+                  }
+
+                  // box is other box in the row
                 } else {
                   box.rect.x = currentX;
                   currentX += box.rect.width;
-
-                  x = currentX;
-                  currentX += rect.width;
                 }
 
-                // box is other box in the row
-              } else {
-                box.rect.x = currentX;
-                currentX += box.rect.width;
+                box.setElement();
               }
 
-              box.setElement();
+              // Align right
+            } else if (this.container.currentRow.alignment === 'right') {
+              x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x - rect.width : EditBoxComponent.currentEditBox.rect.xMax - rect.width;
+              this.container.currentRow.shiftBoxesLeftAtPoint(x, rect.width);
             }
 
-            // Align right
-          } else if (this.container.currentRow.alignment === 'right') {
-            x = this.spawnPosition === 'left' ? EditBoxComponent.currentEditBox.rect.x - rect.width : EditBoxComponent.currentEditBox.rect.xMax - rect.width;
-            this.container.currentRow.shiftBoxesLeftAtPoint(x, rect.width);
-          }
+            // Check to see if the ymax has changed. If so, move rows down
+            let yMax = Math.max(this.container.currentRow.yMax, this.container.currentRow.y + rect.yMax);
+            if (yMax > this.container.currentRow.yMax) {
+              this.container.currentRow.yMax = yMax;
+              let startingRowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
+              this.container.moveRowsDown(startingRowIndex);
+            }
 
-          // Check to see if the ymax has changed. If so, move rows down
-          let yMax = Math.max(this.container.currentRow.yMax, this.container.currentRow.y + rect.yMax);
-          if (yMax > this.container.currentRow.yMax) {
-            this.container.currentRow.yMax = yMax;
-            let startingRowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
-            this.container.moveRowsDown(startingRowIndex);
-          }
-
-          // Insert type is top or bottom
-        } else {
-          // Get the new inserted row index
-          let insertedRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + (this.spawnPosition === 'bottom' ? 1 : 0),
-            yPos: number, yMax: number;
+            // Insert type is top or bottom
+          } else {
+            // Get the new inserted row index
+            let insertedRowIndex = this.container.rows.findIndex(x => x === this.container.currentRow) + (this.spawnPosition === 'bottom' ? 1 : 0),
+              yPos: number, yMax: number;
 
             // Spawn position is bottom
-          if (this.spawnPosition === 'bottom') {
-            yPos = this.container.currentRow.yMax;
-            yMax = this.container.currentRow.yMax + rect.height;
+            if (this.spawnPosition === 'bottom') {
+              yPos = this.container.currentRow.yMax;
+              yMax = this.container.currentRow.yMax + rect.height;
 
-            // Insert type is top
-          } else {
-            yPos = this.container.currentRow.y - rect.height;
-
-            // If top row, make sure yPos is not less than zero
-            if (insertedRowIndex === 0) {
-              yPos = Math.max(yPos, 0);
-
-              // Make sure yPos is not less than its top row's yMax
+              // Insert type is top
             } else {
-              if (yPos < this.container.rows[insertedRowIndex - 1].yMax) {
-                yPos = this.container.rows[insertedRowIndex - 1].yMax;
+              yPos = this.container.currentRow.y - rect.height;
+
+              // If top row, make sure yPos is not less than zero
+              if (insertedRowIndex === 0) {
+                yPos = Math.max(yPos, 0);
+
+                // Make sure yPos is not less than its top row's yMax
+              } else {
+                if (yPos < this.container.rows[insertedRowIndex - 1].yMax) {
+                  yPos = this.container.rows[insertedRowIndex - 1].yMax;
+                }
               }
+
+              // Set the new yMax
+              yMax = yPos + rect.height;
             }
 
-            // Set the new yMax
-            yMax = yPos + rect.height;
+            // Create the new row
+            this.container.currentRow = this.container.addRow('center', yPos);
+            this.container.currentRow.yMax = yMax;
+
+            // Move other rows down
+            this.container.moveRowsDown(insertedRowIndex + 1);
+
+            // Set the new x
+            x = (this.container.width * 0.5) - (rect.width * 0.5);
           }
-
-          // Create the new row
-          this.container.currentRow = this.container.addRow('center', yPos);
-          this.container.currentRow.yMax = yMax;
-
-          // Move other rows down
-          this.container.moveRowsDown(insertedRowIndex + 1);
-
-          // Set the new x
-          x = (this.container.width * 0.5) - (rect.width * 0.5);
         }
+
+
         // Set the new y
         y = this.container.currentRow.y;
 
@@ -170,7 +186,7 @@ export class EditBoxComponent {
       }
       // Set the new rect
       this.rect = new Rect(x, y, rect.width, rect.height);
-      
+
       // Add this new box to the row
       this.container.currentRow.addBox(this);
 
@@ -186,7 +202,7 @@ export class EditBoxComponent {
   }
 
   onMouseDown(event, handle) {
-    event.preventDefault();
+    // event.preventDefault();
     this.container.currentRow = this.row;
     this.tempRect = new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
     if (event.button === 0) {
@@ -236,54 +252,40 @@ export class EditBoxComponent {
 
   onMouseUp() {
     if (this.isMousedown) {
-      let rowFound: boolean = false;
-
       if (this.rect.x !== this.tempRect.x || this.rect.y !== this.tempRect.y || this.rect.width !== this.tempRect.width || this.rect.height !== this.tempRect.height) {
-        for (let i = 0; i < this.container.rows.length; i++) {
-          let row = this.container.rows[i];
+        this.updateRow();
+      }
+      this.isMousedown = false;
+    }
+  }
 
-          if (this.rect.y >= row.y && this.rect.yMax <= row.yMax) {
-            // box is in its current row
-            if (row === this.row) {
-              rowFound = true;
-              this.rect.y = row.y;
-              this.row.setYMax();
-              break;
+  updateRow() {
+    let rowFound: boolean = false;
 
-              // Box is in another row
-            } else {
-              let rowIndex = this.container.getRowIndex(this.row);
+    for (let i = 0; i < this.container.rows.length; i++) {
+      let row = this.container.rows[i];
 
-              rowFound = true;
+      if (this.rect.y >= row.y && this.rect.yMax <= row.yMax) {
+        // box is in its current row
+        if (row === this.row) {
+          rowFound = true;
+          this.rect.y = row.y;
+          this.row.setYMax();
+          break;
 
-              // Remove this box from its current row
-              this.row.removeBox(this);
-
-              if (this.row.boxes.length === 0) {
-                // No boxes in this row so remove the row
-                this.container.removeRow(this.row);
-              } else {
-                // Reset this row's yMax and re-align
-                this.row.setYMax();
-                this.row.alignBoxes();
-              }
-
-              // Add the box to this row
-              this.container.currentRow = row;
-              this.rect.y = this.container.currentRow.y;
-              this.container.currentRow.addBox(this);
-              
-              // Move other rows down
-              if (rowIndex > 0) this.container.moveRowsDown(rowIndex);
-              break;
-            }
+          // Box is in another row
+        } else {
+          // Make sure the width of the boxes does not exceed the width of the container
+          if (row.getBoxesWidth() + this.rect.width > this.container.width) {
+            break;
           }
-        }
-        // Box is not in an existing row
-        if (!rowFound) {
+
+          let rowIndex = this.container.getRowIndex(this.row);
+
+          rowFound = true;
+
           // Remove this box from its current row
           this.row.removeBox(this);
-          let alignment = this.row.alignment;
 
           if (this.row.boxes.length === 0) {
             // No boxes in this row so remove the row
@@ -294,32 +296,74 @@ export class EditBoxComponent {
             this.row.alignBoxes();
           }
 
-          // Make sure the top of the box is not intersecting the bottom of a row
-          for (let i = 0; i < this.container.rows.length; i++) {
-            let row = this.container.rows[i];
-  
-            if (this.rect.y >= row.y && this.rect.y < row.yMax){
-              this.rect.y = row.yMax;
-              break;
-            }
-          }
-
-          // Create a new row and add this box to it
-          this.container.currentRow = this.container.addRow(alignment, this.rect.y);
+          // Add the box to this row
+          this.container.currentRow = row;
+          this.rect.y = this.container.currentRow.y;
           this.container.currentRow.addBox(this);
-          let rowIndex = this.container.getRowIndex(this.container.currentRow);
-          this.container.moveRowsDown(rowIndex + 1);
+
+          // Move other rows down
+          if (rowIndex > 0) this.container.moveRowsDown(rowIndex);
+          break;
+        }
+      }
+    }
+    // Box is NOT in an existing row
+    if (!rowFound) {
+      // Remove this box from its current row
+      this.row.removeBox(this);
+      let alignment = this.row.alignment;
+
+      if (this.row.boxes.length === 0) {
+        // No boxes in this row so remove the row
+        this.container.removeRow(this.row);
+      } else {
+        // Reset this row's yMax and re-align
+        this.row.setYMax();
+        this.row.alignBoxes();
+      }
+
+      // Loop through the rows and make sure there is no intersection
+      for (let i = 0; i < this.container.rows.length; i++) {
+        let row = this.container.rows[i];
+
+        // Top of box is intersecting the bottom of the row
+        if (this.rect.y >= row.y && this.rect.y < row.yMax) {
+          this.rect.y = row.yMax;
+          break;
         }
 
-        // Align the boxes in the current row and set the container height
-        this.container.currentRow.alignBoxes();
-        this.container.setHeight();
+        // Bottom of box is intersecting top of row
+        if (this.rect.y < row.y && this.rect.yMax > row.y) {
+          this.rect.y = row.y - this.rect.height;
 
-        // Mark that there has been a change
-        EditBoxComponent.change.next();
+          // Make sure the box is not above the container top
+          if (i === 0) {
+            this.rect.y = Math.max(0, this.rect.y);
+          } else {
+            row = this.container.rows[i - 1];
+
+            // Make sure the top of the box is not intersecting the bottom of a row
+            if (this.rect.y < row.yMax) {
+              this.rect.y = row.yMax;
+            }
+          }
+          break;
+        }
       }
-      this.isMousedown = false;
+
+      // Create a new row and add this box to it
+      this.container.currentRow = this.container.addRow(alignment, this.rect.y);
+      this.container.currentRow.addBox(this);
+      let rowIndex = this.container.getRowIndex(this.container.currentRow);
+      this.container.moveRowsDown(rowIndex + 1);
     }
+
+    // Align the boxes in the current row and set the container height
+    this.container.currentRow.alignBoxes();
+    this.container.setHeight();
+
+    // Mark that there has been a change
+    EditBoxComponent.change.next();
   }
 
   setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {
@@ -572,6 +616,9 @@ export class EditBoxComponent {
   }
 
   onContentChange() {
+    this.container.setHeight();
+    this.updateRow();
+    this.app.tick();
     EditBoxComponent.change.next();
   }
   boxToTable(table: HTMLTableElement) { }

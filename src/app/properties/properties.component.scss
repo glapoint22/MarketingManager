@@ -5,6 +5,14 @@
     border: 1px solid #3a3a3a;
     background: #2d2d2d;
 }
+select {
+    height: 20px;
+    border: 1px solid #383838;
+    background: #424242;
+    color: white;
+    outline-color: #c7c7c7;
+    cursor: pointer;
+}
 .group {
     height: 22px;
     display: inline-block;
@@ -27,14 +35,7 @@
     .style-button:not(:first-child){
         margin-left: 8px;
     }
-    select {
-        height: 17px;
-        border: 1px solid #383838;
-        background: #424242;
-        color: white;
-        outline-color: #c7c7c7;
-        cursor: pointer;
-    }
+    
     select:not(:first-child) {
         margin-left: 8px;
     }
@@ -61,18 +62,21 @@
 }
 .transform-container {
     width: 100%;
-    text-align: center;
+    height: 100%;
     color: #d2d2d2;
-    margin-top: 50px;
     font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .property-title {
     color: #a6a6a6;
     margin: 5px 0;
+    text-align: center;
 }
 .property {
     margin-right: 10px;
-    font-size: 14px;
+    font-size: 16px;
     color: white;
 }
 input {

@@ -32,7 +32,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       rect = boxData.rect;
       this.backgroundColor = boxData.backgroundColor;
     } else {
-      rect = new Rect(null, null, 350, 150);
+      rect = new Rect(null, null, 300, 200);
       this.backgroundColor = '#494949';
     }
     this.fixedHeight = rect.height;
