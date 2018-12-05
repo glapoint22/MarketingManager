@@ -1,3 +1,8 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 .bar {
     width: 100%;
     font-size: 13px;
@@ -69,7 +74,7 @@ select {
     justify-content: center;
     align-items: center;
 }
-.property-title {
+.transform-title {
     color: #a6a6a6;
     margin: 5px 0;
     text-align: center;
@@ -98,4 +103,18 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
+}
+.transform-mid-container {
+    width: 300px;
+}
+.property-flex-container {
+    width: 100%;
+    display: flex;
+}
+.property-container {
+    flex: 1;
+    line-height: 24px;
+}
+.property-container:first-child {
+    text-align: right;
 }

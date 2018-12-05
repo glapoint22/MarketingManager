@@ -1,6 +1,4 @@
-<div style="display: flex;
-flex-direction: column;
-height: 100%;">
+<div class="main-container">
     <!-- Button bar -->
     <div class="bar">
         <!-- Edit group -->
@@ -47,94 +45,67 @@ height: 100%;">
 
     <!-- Transform properties -->
     <div *ngIf="editBox.currentEditBox && editBox.currentEditBox.isSelected" class="transform-container">
-        <div style="width: 300px">
+        <div class="transform-mid-container">
 
-            <div class="property-title">Position</div>
+            <!-- Position -->
+            <div class="transform-title">Position</div>
 
-            <div style="width: 100%;display: flex;">
-                <div style="flex: 1; text-align: right; line-height: 24px">
+            <!-- Align -->
+            <div class="property-flex-container">
+                <div class="property-container">
                     <div class="property">Align:</div>
                 </div>
 
-
-                <div style="flex: 1; line-height: 24px">
+                <div class="property-container">
                     <select #alignmentDropdown (change)="setAlignment(alignmentDropdown.value)" [value]="editBox.currentEditBox.row.alignment">
                         <option value="left">Left</option>
                         <option value="center">Center</option>
                         <option value="right">Right</option>
                     </select>
                 </div>
-
             </div>
 
 
 
-
-            <div style="width: 100%;display: flex;">
-                <div style="flex: 1; text-align: right; line-height: 24px">
+            <!-- Y -->
+            <div class="property-flex-container">
+                <div class="property-container">
                     <div class="property">Y:</div>
                 </div>
 
-
-                <div style="flex: 1; line-height: 24px">
+                <div class="property-container">
                     <input #y type="number" [value]="Math.round(editBox.currentEditBox.rect.y)" (change)="setY(y)"
                         (focus)="y.select()" (keyup)="setChange($event, y)">
                 </div>
-
             </div>
 
 
-            <div class="property-title">Size</div>
+            <!-- Size -->
+            <div class="transform-title">Size</div>
 
-
-
-            <div style="width: 100%;display: flex;">
-                <div style="flex: 1; text-align: right; line-height: 24px">
+            <!-- Width -->
+            <div class="property-flex-container">
+                <div class="property-container">
                     <div class="property">W:</div>
                 </div>
 
-
-                <div style="flex: 1; line-height: 24px">
+                <div class="property-container">
                     <input #width type="number" [value]="Math.round(editBox.currentEditBox.rect.width)" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
                         (focus)="width.select()" (keyup)="setChange($event, width)">
                 </div>
-
             </div>
 
-
-            <div style="width: 100%;display: flex;">
-                <div style="flex: 1; text-align: right; line-height: 24px">
+            <!-- Height -->
+            <div class="property-flex-container">
+                <div class="property-container">
                     <div class="property">H:</div>
                 </div>
 
-
-                <div style="flex: 1; line-height: 24px">
+                <div class="property-container">
                     <input #height type="number" [value]="Math.round(editBox.currentEditBox.rect.height)" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
                         (focus)="height.select()" (keyup)="setChange($event, height)">
                 </div>
-
             </div>
-
-
-
-
-
-
-            <!-- <span class="property">Y:</span>
-            <input #y type="number" [value]="Math.round(editBox.currentEditBox.rect.y)" (change)="setY(y)" (focus)="y.select()"
-                (keyup)="setChange($event, y)">
-
-
-            <div class="property-title">Size</div>
-            <span class="property">W:</span>
-            <input #width type="number" [value]="Math.round(editBox.currentEditBox.rect.width)" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
-                (focus)="width.select()" (keyup)="setChange($event, width)">
-            <br>
-
-            <span class="property">H:</span>
-            <input #height type="number" [value]="Math.round(editBox.currentEditBox.rect.height)" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
-                (focus)="height.select()" (keyup)="setChange($event, height)"> -->
         </div>
-
     </div>
 </div>
