@@ -27,6 +27,7 @@ export class Style {
             }
         }
         this.editBox.content.focus();
+        this.removeDuplicateNodes();
     }
 
     checkSelection() {
@@ -226,5 +227,43 @@ export class Style {
             startContainerIndex: startContainerIndex,
             endContainerIndex: endContainerIndex
         }
+    }
+
+    removeDuplicateNodes() {
+        Array.from(this.editBox.content.children).forEach((node: any) => {
+            if (node.childElementCount > 1) {
+                for (let i = 0; i < node.childElementCount; i++) {
+                    if (i < node.childElementCount - 1) {
+                        let styleList1 = node.children[i].getAttribute('style').split(';'),
+                            styleList2 = node.children[i + 1].getAttribute('style').split(';'),
+                            isSame: boolean = true;
+
+                        // If both style lists are the same length
+                        if (styleList1.length === styleList2.length) {
+
+                            // Compare style lists to see if they are the same
+                            for (let j = 0; j < styleList1.length; j++) {
+                                let k;
+                                for (k = 0; k < styleList2.length; k++) {
+                                    if (styleList1[j] === styleList2[k]) break;
+                                }
+
+                                if (k === styleList2.length) {
+                                    isSame = false;
+                                    break;
+                                }
+                            }
+
+                            // if same, remove the duplicate
+                            if (isSame) {
+                                node.children[i].firstChild.appendData(node.children[i + 1].firstChild.data);
+                                node.children[i + 1].remove();
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }

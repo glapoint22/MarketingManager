@@ -104,13 +104,16 @@ export class TextBoxComponent extends EditBoxComponent {
 
       }
 
+      this.content.ondrop = (event)=>{
+        event.preventDefault();
+      }
+
       // OnKeyDown
       this.content.onkeydown = (event) => {
         if (event.code === 'Escape') {
           this.unSelect();
-        } else if (event.code === 'Backspace' || event.code === 'Delete') {
-          this.onDeleteContent(event);
         }
+        this.setInvalidNodes();
       }
 
       // OnPaste
@@ -182,77 +185,42 @@ export class TextBoxComponent extends EditBoxComponent {
     });
   }
 
-  onDeleteContent(event) {
-    let selection = this.content.ownerDocument.getSelection();
-    let range: any = selection.getRangeAt(0);
+  setInvalidNodes() {
+    window.setTimeout(() => {
+      if (this.content.firstElementChild.tagName === 'BR') {
+        let div = document.createElement('DIV');
 
-    if (range.collapsed) {
-      if (range.startContainer.length === 1) {
-        range.startContainer.replaceWith(document.createElement('br'));
-        event.preventDefault();
-      } else if (range.startContainer.nodeType === 1) event.preventDefault();
-    } else {
-      
-    }
+        div.style.textAlign = 'left';
+        div.appendChild(document.createElement('BR'));
+        this.content.firstElementChild.replaceWith(div);
+      }
 
+      Array.from(this.content.children).forEach((node: HTMLElement) => {
+        if (node.firstElementChild.tagName === 'BR') {
+          let span = document.createElement('SPAN'),
+            child = document.createElement('BR');
 
+          span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+          span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+          span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+          span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+          if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
 
+          let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
+          span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
+
+          span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+          if (span.style.fontSize === '') span.style.fontSize = '16px';
+
+          span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+          if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+
+          span.appendChild(child);
+          node.firstElementChild.replaceWith(span);
+        }
+      });
+    }, 1);
   }
-
-  // fixInvalidElements() {
-  //   window.setTimeout(() => {
-  //     let selection = this.content.ownerDocument.getSelection();
-  //     let range: any = selection.getRangeAt(0);
-  //     let startContainer: any = range.startContainer;
-  //     let text;
-
-  //     if (range.collapsed) {
-  //       if (range.startContainer.tagName === 'SPAN') {
-  //         range.selectNodeContents(range.startContainer.firstChild);
-  //       }
-  //     }
-
-
-  //     // Content has been deleted
-  //     if (range.startContainer === this.content) {
-  //       let div = document.createElement('DIV');
-
-  //       div.style.textAlign = 'left';
-  //       div.appendChild(document.createElement('BR'));
-  //       this.content.appendChild(div);
-  //       range.selectNodeContents(div);
-  //     }
-
-
-  //     // Fix element if we have a break tag inside a div
-  //     if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {
-  //       let span = document.createElement('SPAN'),
-  //         child = document.createElement('BR');
-
-  //       span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
-  //       span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
-  //       span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
-  //       span.style.color = this.styles.find(x => x.style === 'color').styleValue;
-  //       if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
-
-  //       let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
-  //       span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
-
-  //       span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-  //       if (span.style.fontSize === '') span.style.fontSize = '16px';
-
-  //       span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
-  //       if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
-
-  //       span.appendChild(child);
-  //       range.startContainer.firstElementChild.replaceWith(span);
-  //       range.selectNodeContents(child);
-  //       range.collapse();
-  //       this.checkSelectionForStyles();
-  //     }
-  //   }, 1);
-  // }
-
 
   onContentChange() {
     if (this.fixedHeight <= this.content.clientHeight) {
