@@ -12,7 +12,7 @@ export class Row {
 
         // Set the row element (Used to display the dased outline for the row)
         this.rowElement = document.createElement('DIV');
-        this.rowElement.className = 'container-row';
+        this.rowElement.className = 'dashed-outline';
         this.rowElement.style.position = 'absolute';
         this.rowElement.style.top = y + 'px';
         this.rowElement.style.width = '100%';

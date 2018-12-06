@@ -7,8 +7,6 @@ import { Italic } from '../italic';
 import { Underline } from '../underline';
 import { TextColor } from '../text-color';
 import { HighlightColor } from '../highlight-color';
-import { OrderedList } from '../ordered-list';
-import { UnorderedList } from '../unordered-list';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
 import { AlignLeft } from '../align-left';
@@ -34,8 +32,6 @@ export class TextBoxComponent extends EditBoxComponent {
       underline: Underline = new Underline(this),
       textColor: TextColor = new TextColor(this),
       highlightColor: HighlightColor = new HighlightColor(this),
-      // orderedList: OrderedList = new OrderedList(this),
-      // unorderedList: UnorderedList = new UnorderedList(this),
       fontSize: FontSize = new FontSize(this),
       font: Font = new Font(this),
       alignLeft: AlignLeft = new AlignLeft(this),
@@ -99,20 +95,21 @@ export class TextBoxComponent extends EditBoxComponent {
       this.content.contentEditable = 'false';
       this.content.style.fontSize = '0';
 
-      // OnMouseUp
+
       this.content.ownerDocument.onselectionchange = () => {
-        if(this.inEditMode){
+        if (this.inEditMode) {
           this.onContentChange();
-        this.fixInvalidElements();
-        this.checkSelectionForStyles();
+          this.checkSelectionForStyles();
         }
-        
+
       }
 
       // OnKeyDown
       this.content.onkeydown = (event) => {
         if (event.code === 'Escape') {
           this.unSelect();
+        } else if (event.code === 'Backspace' || event.code === 'Delete') {
+          this.onDeleteContent(event);
         }
       }
 
@@ -140,7 +137,7 @@ export class TextBoxComponent extends EditBoxComponent {
           let endParentContainer = range.endContainer;
 
           // Get the parent container the end conter is in
-          while (endParentContainer.tagName !== 'DIV' && endParentContainer.tagName !== 'OL' && endParentContainer.tagName !== 'UL') {
+          while (endParentContainer.tagName !== 'DIV') {
             endParentContainer = endParentContainer.parentElement;
           }
 
@@ -167,11 +164,7 @@ export class TextBoxComponent extends EditBoxComponent {
       range.startContainer.replaceData(range.startOffset, range.startContainer.length, text);
     } else if (node === range.endContainer) {
       if (range.endOffset === range.endContainer.length) {
-        if (endParentContainer.tagName === 'OL' || endParentContainer.tagName === 'UL') {
-          range.endContainer.parentElement.parentElement.remove();
-        } else {
-          range.endContainer.parentElement.remove();
-        }
+        range.endContainer.parentElement.remove();
         if (endParentContainer.childElementCount === 0) endParentContainer.remove();
       } else {
         if (range.endContainer.nodeType === 3) range.endContainer.deleteData(0, range.endOffset);
@@ -189,69 +182,76 @@ export class TextBoxComponent extends EditBoxComponent {
     });
   }
 
-  fixInvalidElements() {
-    window.setTimeout(() => {
-      let selection = this.content.ownerDocument.getSelection();
-      let range: any = selection.getRangeAt(0);
-      let startContainer: any = range.startContainer;
-      let text;
+  onDeleteContent(event) {
+    let selection = this.content.ownerDocument.getSelection();
+    let range: any = selection.getRangeAt(0);
 
-      if (range.collapsed) {
-        if (range.startContainer.tagName === 'SPAN') {
-          range.selectNodeContents(range.startContainer.firstChild);
-        }
-      }
+    if (range.collapsed) {
+      if (range.startContainer.length === 1) {
+        range.startContainer.replaceWith(document.createElement('br'));
+        event.preventDefault();
+      } else if (range.startContainer.nodeType === 1) event.preventDefault();
+    } else {
+      
+    }
 
 
-      // Content has been deleted
-      if (range.startContainer === this.content) {
-        let div = document.createElement('DIV');
 
-        div.style.textAlign = 'left';
-        div.appendChild(document.createElement('BR'));
-        this.content.appendChild(div);
-        range.selectNodeContents(div);
-      }
-
-      // // Check to see if there is a font tag
-      // while (startContainer.tagName !== 'BODY' && startContainer.tagName !== 'DIV' && startContainer.tagName !== 'OL' && startContainer.tagName !== 'UL') {
-      //   startContainer = startContainer.parentElement;
-      // }
-
-      // if (startContainer.firstElementChild.tagName === 'FONT') {
-      //   if (startContainer.previousElementSibling) startContainer.style.textAlign = startContainer.previousElementSibling.style.textAlign;
-      //   if (startContainer.firstElementChild.firstChild.nodeType === 3) text = startContainer.firstElementChild.firstChild;
-      //   startContainer.firstElementChild.replaceWith(document.createElement('BR'));
-      // }
-
-      // Fix element if we have a break tag inside a div
-      if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {
-        let span = document.createElement('SPAN'),
-          child = text ? text : document.createElement('BR');
-
-        span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
-        span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
-        span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
-        span.style.color = this.styles.find(x => x.style === 'color').styleValue;
-        if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
-
-        let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
-        span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
-
-        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-        if (span.style.fontSize === '') span.style.fontSize = '16px';
-
-        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
-        if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
-
-        span.appendChild(child);
-        range.startContainer.firstElementChild.replaceWith(span);
-        range.selectNodeContents(child);
-        range.collapse();
-        this.checkSelectionForStyles();
-      }
-    }, 1);
   }
+
+  // fixInvalidElements() {
+  //   window.setTimeout(() => {
+  //     let selection = this.content.ownerDocument.getSelection();
+  //     let range: any = selection.getRangeAt(0);
+  //     let startContainer: any = range.startContainer;
+  //     let text;
+
+  //     if (range.collapsed) {
+  //       if (range.startContainer.tagName === 'SPAN') {
+  //         range.selectNodeContents(range.startContainer.firstChild);
+  //       }
+  //     }
+
+
+  //     // Content has been deleted
+  //     if (range.startContainer === this.content) {
+  //       let div = document.createElement('DIV');
+
+  //       div.style.textAlign = 'left';
+  //       div.appendChild(document.createElement('BR'));
+  //       this.content.appendChild(div);
+  //       range.selectNodeContents(div);
+  //     }
+
+
+  //     // Fix element if we have a break tag inside a div
+  //     if (range.startContainer.tagName === 'DIV' && range.startContainer.firstElementChild && range.startContainer.firstElementChild.tagName === 'BR') {
+  //       let span = document.createElement('SPAN'),
+  //         child = document.createElement('BR');
+
+  //       span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+  //       span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+  //       span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+  //       span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+  //       if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
+
+  //       let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
+  //       span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
+
+  //       span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+  //       if (span.style.fontSize === '') span.style.fontSize = '16px';
+
+  //       span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+  //       if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+
+  //       span.appendChild(child);
+  //       range.startContainer.firstElementChild.replaceWith(span);
+  //       range.selectNodeContents(child);
+  //       range.collapse();
+  //       this.checkSelectionForStyles();
+  //     }
+  //   }, 1);
+  // }
 
 
   onContentChange() {
@@ -336,21 +336,15 @@ export class TextBoxComponent extends EditBoxComponent {
     Array.from(this.content.children).forEach((content: HTMLElement) => {
       let tr = table.appendChild(document.createElement('tr'));
       let column = document.createElement('td');
-      
-      if(this.rect.height > this.content.clientHeight){
+
+      if (this.rect.height > this.content.clientHeight) {
         column.height = this.rect.height.toString();
         column.vAlign = 'top';
       }
 
-      // if (content.tagName === 'OL' || content.tagName === 'UL') {
-      //   let list = td.appendChild(document.createElement(content.tagName));
-      //   list.setAttribute('style', content.getAttribute('style'));
-      //   list.innerHTML = content.innerHTML;
-      // } else {
-        column.style.textAlign = content.style.textAlign;
-        column.innerHTML = content.innerHTML;
-        tr.appendChild(column);
-      // }
+      column.style.textAlign = content.style.textAlign;
+      column.innerHTML = content.innerHTML;
+      tr.appendChild(column);
     });
   }
 }

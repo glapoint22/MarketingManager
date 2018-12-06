@@ -17,12 +17,14 @@ export class Style {
     }
 
     setStyle() {
-        if (Style.range.startContainer === Style.range.endContainer) {
-            // The selection is within one node
-            this.setNodeStyle(Style.range.startContainer, Style.range.startOffset, Style.range.endOffset - Style.range.startOffset);
-        } else {
-            // The selection spans across multiple nodes
-            this.setMultipleNodesStyle(this.editBox.content);
+        if (!Style.range.collapsed) {
+            if (Style.range.startContainer === Style.range.endContainer) {
+                // The selection is within one node
+                this.setNodeStyle(Style.range.startContainer, Style.range.startOffset, Style.range.endOffset - Style.range.startOffset);
+            } else {
+                // The selection spans across multiple nodes
+                this.setMultipleNodesStyle(this.editBox.content);
+            }
         }
         this.editBox.content.focus();
     }
@@ -201,7 +203,7 @@ export class Style {
     }
 
     getParentNode(node) {
-        while (node.tagName !== 'DIV' && node.tagName !== 'OL' && node.tagName !== 'UL' && node.tagName !== 'BODY') {
+        while (node.tagName !== 'DIV' && node.tagName !== 'BODY') {
             node = node.parentElement;
         }
         return node;
