@@ -195,7 +195,7 @@ export class TextBoxComponent extends EditBoxComponent {
         this.content.firstElementChild.replaceWith(div);
       }
 
-      Array.from(this.content.children).forEach((node: HTMLElement) => {
+      Array.from(this.content.children).forEach((node: any) => {
         if (node.firstElementChild.tagName === 'BR') {
           let span = document.createElement('SPAN'),
             child = document.createElement('BR');

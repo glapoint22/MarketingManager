@@ -236,7 +236,7 @@ export class Style {
                     if (i < node.childElementCount - 1) {
                         let styleList1 = node.children[i].getAttribute('style').split(';'),
                             styleList2 = node.children[i + 1].getAttribute('style').split(';'),
-                            isSame: boolean = true;
+                            isDuplicate: boolean = true;
 
                         // If both style lists are the same length
                         if (styleList1.length === styleList2.length) {
@@ -249,14 +249,30 @@ export class Style {
                                 }
 
                                 if (k === styleList2.length) {
-                                    isSame = false;
+                                    isDuplicate = false;
                                     break;
                                 }
                             }
 
                             // if same, remove the duplicate
-                            if (isSame) {
+                            if (isDuplicate) {
                                 node.children[i].firstChild.appendData(node.children[i + 1].firstChild.data);
+                                // Set selection
+                                // Single container
+                                if (Style.range.startContainer === Style.range.endContainer) {
+                                    if (Style.range.startContainer === node.children[i + 1].firstChild) {
+                                        Style.range.setStart(node.children[i].firstChild, node.children[i].firstChild.length - Style.range.endOffset);
+                                        Style.range.setEnd(node.children[i].firstChild, node.children[i].firstChild.length);
+                                    }
+
+                                    // Multiple contaiers
+                                } else {
+                                    if (node.children[i + 1].firstChild === Style.range.startContainer) {
+                                        Style.range.setStart(node.children[i].firstChild, node.children[i].firstChild.length - Style.range.startContainer.length);
+                                    } else if (node.children[i + 1].firstChild === Style.range.endContainer) {
+                                        Style.range.setEnd(node.children[i].firstChild, node.children[i].firstChild.length);
+                                    }
+                                }
                                 node.children[i + 1].remove();
                                 i--;
                             }
