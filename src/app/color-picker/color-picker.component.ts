@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./color-picker.component.scss']
 })
 export class ColorPickerComponent implements OnInit {
-  public hue: number = 200;
+  public hue: number = 0;
 
   constructor() { }
 

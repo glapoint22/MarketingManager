@@ -1,0 +1,63 @@
+@import 'theme';
+
+.container {
+    background: #424141;
+    width: 400px;
+    border-radius: 10px;
+    border: 1px solid #656565;
+    position: absolute;
+    top: 0;
+    @include shadow();
+}
+.title {
+    color: #9e9e9e;
+    margin: 5px 5px 5px 10px;
+}
+.close {
+    color: #bbbbbb;;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+}
+.close:hover {
+    color: white;
+}
+.close:active {
+    color: #868686
+}
+.content {
+    background: #333333;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #585858;
+}
+input {
+    display: block;
+    width: 30px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    outline: none;
+    color: #d2d2d2;
+    font-size: 14px;
+    background-color: #3d3d3d;
+    border-color: #5e5e5e;
+    height: 20px;
+    float: right;
+    margin-right: 25px;
+    text-align: center;
+}
+button {
+    margin: auto;
+    display: block;
+    margin-top: 22px;
+    background-color: #6c6c6c;
+    color: white;
+    border-color: #8d8d8d;
+    width: 70px;
+    height: 24px;
+    outline: none;
+}

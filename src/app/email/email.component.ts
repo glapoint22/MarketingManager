@@ -194,7 +194,7 @@ export class EmailComponent implements OnInit {
         }
       }
     } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-      if (this.currentEmail.isInEditMode) {
+      if (this.currentEmail && this.currentEmail.isInEditMode) {
         this.currentEmail.isInEditMode = false;
 
         if (this.currentEmail.subject !== this.editInput.nativeElement.value) {
