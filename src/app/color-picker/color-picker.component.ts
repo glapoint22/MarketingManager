@@ -13,8 +13,8 @@ export class ColorPickerComponent implements OnInit {
   public huePos: number;
   public colorPos: Vector2 = new Vector2(0, 0);
   private mouseType: string;
-  public newColor: string = "#ffffff";
-  public rgb: Array<number> = [255, 255, 255];
+  public rgbColor = {r: 255, g: 255, b: 255};
+  public hexColor: string = '#ffffff';
 
   constructor() { }
 
@@ -31,13 +31,15 @@ export class ColorPickerComponent implements OnInit {
         this.huePos += delta.y;
         this.huePos = Math.min(255, Math.max(0, this.huePos));
         this.calculateHue();
+        
       } else {
         this.colorPos.x += delta.x;
         this.colorPos.y += delta.y;
         this.colorPos.x = Math.min(255, Math.max(0, this.colorPos.x));
         this.colorPos.y = Math.min(255, Math.max(0, this.colorPos.y));
       }
-      this.calculateNewColor();
+      this.rgbColor = this.getRGB();
+      this.hexColor = this.rgbToHex(this.rgbColor);
     }
   }
 
@@ -65,52 +67,68 @@ export class ColorPickerComponent implements OnInit {
         this.colorPos = new Vector2(event.offsetX, event.offsetY);
       }
     }
-    this.calculateNewColor();
+    this.rgbColor = this.getRGB();
+    this.hexColor = this.rgbToHex(this.rgbColor);
+
   }
 
-  calculateNewColor() {
-    let x = (this.colorPos.x / 255) * 100,
-      y = (1 - (this.colorPos.y / 255)) * 100,
-      l = (2 - x / 100) * y / 2,
-      s = x * y / (l < 50 ? l * 2 : 200 - l * 2);
+  getRGB() {
+    let hsbColor = this.getHsb(),
+      hslColor = this.hsbToHsl(hsbColor.h, hsbColor.s, hsbColor.b),
+      rgbColor = this.hslToRgb(hslColor.h, hslColor.s, hslColor.l);
 
-    if (isNaN(s)) s = 0;
-    this.rgb = this.hslToRgb(this.hue / 360, s / 100, l / 100);
-    this.newColor = this.rgbToHex(this.rgb);
+    return rgbColor;
   }
 
   calculateHue() {
-    let percent = this.huePos / 255;
-    this.hue = percent * 360;
+    this.hue = (this.huePos / 255) * 360;
+  }
+
+  getHsb() {
+    return {
+      h: this.hue,
+      s: (this.colorPos.x / 255) * 100,
+      b: (1 - (this.colorPos.y / 255)) * 100
+    }
   }
 
   hslToRgb(h, s, l) {
-    var r, g, b;
+    let r, g, b;
+
+    h /= 360;
+    s /= 100;
+    l /= 100;
 
     if (s == 0) {
       r = g = b = l; // achromatic
     } else {
-      var hue2rgb = function hue2rgb(p, q, t) {
-        if (t < 0) t += 1;
-        if (t > 1) t -= 1;
-        if (t < 1 / 6) return p + (q - p) * 6 * t;
-        if (t < 1 / 2) return q;
-        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-        return p;
-      }
-
-      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      var p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1 / 3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1 / 3);
+      let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      let p = 2 * l - q;
+      r = this.hueTorgb(p, q, h + 1 / 3);
+      g = this.hueTorgb(p, q, h);
+      b = this.hueTorgb(p, q, h - 1 / 3);
     }
 
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    }
   }
 
-  rgbToHex(colorArray) {
-    return "#" + this.componentToHex(parseInt(colorArray[0])) + this.componentToHex(parseInt(colorArray[1])) + this.componentToHex(parseInt(colorArray[2]));
+
+  hueTorgb(p, q, t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  }
+
+
+  rgbToHex(color) {
+    return "#" + this.componentToHex(parseInt(color.r)) + this.componentToHex(parseInt(color.g)) + this.componentToHex(parseInt(color.b));
   }
 
   componentToHex(c) {
@@ -118,4 +136,70 @@ export class ColorPickerComponent implements OnInit {
     return hex.length == 1 ? "0" + hex : hex;
   }
 
+  hsbToHsl(h, s, b) {
+    // determine the lightness in the range [0,100]
+    let l = (2 - s / 100) * b / 2;
+
+    // store the HSL components
+    let hsl =
+    {
+      h: h,
+      s: s * b / (l < 50 ? l * 2 : 200 - l * 2),
+      l: l
+    };
+
+    // correct a division-by-zero error
+    if (isNaN(hsl.s)) hsl.s = 0;
+    return hsl;
+  }
+
+  rgbToHsb(color) {
+    var rr, gg, bb,
+      red = color.r / 255,
+      green = color.g / 255,
+      blue = color.b / 255,
+      h, s,
+      b = Math.max(red, green, blue),
+      diff = b - Math.min(red, green, blue),
+      diffc = function (c) {
+        return (b - c) / 6 / diff + 1 / 2;
+      };
+
+    if (diff == 0) {
+      h = s = 0;
+    } else {
+      s = diff / b;
+      rr = diffc(red);
+      gg = diffc(green);
+      bb = diffc(blue);
+
+      if (red === b) {
+        h = bb - gg;
+      } else if (green === b) {
+        h = (1 / 3) + rr - bb;
+      } else if (blue === b) {
+        h = (2 / 3) + gg - rr;
+      }
+      if (h < 0) {
+        h += 1;
+      } else if (h > 1) {
+        h -= 1;
+      }
+    }
+    return {
+      h: Math.round(h * 360),
+      s: Math.round(s * 100),
+      b: Math.round(b * 100)
+    };
+  }
+
+  setColor(){
+    let color = this.rgbToHsb(this.rgbColor);
+    this.huePos = (color.h / 360) * 255;
+    this.calculateHue();
+    this.colorPos.x = (color.s / 100) * 255;
+    this.colorPos.y = (1-(color.b / 100)) * 255;
+    this.hexColor = this.rgbToHex(this.rgbColor);
+  }
+  
 }
