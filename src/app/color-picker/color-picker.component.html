@@ -7,62 +7,48 @@
     <div style="height: 256px; margin: 10px 0 10px 10px; display: flex;">
 
 
-      <div style="position: relative; width: 256px; height: 256px; border: 1px solid #4c4c4c;" [style.background]="'hsl(' + hue + ', 100%, 50%)'">
-        <div style="background: linear-gradient(to right, #fff 0%, rgba(255,255,255,0) 100%); width: 100%; height: 100%; position:absolute"></div>
-        <div style="background: linear-gradient(to bottom, transparent 0%, #000 100%); width: 100%; height: 100%; position:absolute"></div>
+      <div class="color-container" [style.background]="'hsl(' + hue + ', 100%, 50%)'" (mousedown)="onMouseDown($event)">
+        <div class="saturation"></div>
+        <div class="lightness"></div>
+        <div class="circle" [style.left.px]="colorPos.x - 5" [style.top.px]="colorPos.y - 5"></div>
       </div>
 
-      <div style="border: 1px solid #4c4c4c; width: 20px; height: 256px; background: linear-gradient(to bottom, red 0%, #ff0 17%, lime 33%, cyan 50%, blue 66%, #f0f 83%, red 100%); margin-left: 5px;"></div>
+      <div class="hue" (mousedown)="onMouseDown($event, 'hue')">
+        <div class="arrow-right" [style.top.px]="huePos - 8"></div>
+        <div class="arrow-left" [style.top.px]="huePos - 8"></div>
+      </div>
 
-      <div style="width: 80px;
-      background: blue;
-      margin-left: 5px;">
-        <div style="width: 80px;
-        height: 60px;
-        background: red;
-        margin-bottom: 10px;"></div>
+      <div class="properties-container">
+        <div class="color-value-container">
 
-        <div style="margin-bottom: 10px;
-        line-height: 24px;">
+          <div class="color-value" [style.backgroundColor]='newColor'></div>
+          <div class="color-value" style="background: rgb(123, 255, 0)"></div>
+
+        </div>
+
+        <div class="input-container">
           <span>R:</span>
-          <input>
+          <input maxlength="3" [value]="rgb[0]">
         </div>
 
-        <div style="margin-bottom: 10px;
-        line-height: 24px;">
+        <div class="input-container">
           <span>G:</span>
-          <input>
+          <input maxlength="3" [value]="rgb[1]">
         </div>
 
-        <div style="margin-bottom: 10px;
-        line-height: 24px;">
+        <div class="input-container">
           <span>B:</span>
-          <input>
+          <input maxlength="3" [value]="rgb[2]">
         </div>
 
-        
-
-        
-
-        
-
-        <!-- <div style="width: 63px; margin-bottom: 10px; margin-top: 18px;">
-          <div style="margin-left: 5px">Hex:</div>
-          <input type="text" style="width: 78px;
-          height: 15px;
-          margin-left: 5px;">
+        <div class="input-container" style="margin-bottom: 20px">
+          <span style="font-size: 10px">Hex:</span>
+          <input maxlength="7" class="hex-input" [value]="newColor">
         </div>
 
-        <button>OK</button> -->
-
-
-
+        <button>Ok</button>
+        <button>Cancel</button>
       </div>
-
     </div>
-
-
-
-
   </div>
 </div>
