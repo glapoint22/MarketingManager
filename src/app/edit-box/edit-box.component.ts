@@ -7,6 +7,7 @@ import { Row } from '../row';
 import { BoxContainer } from '../box-container';
 import { MenuService } from '../menu.service';
 import { Subject } from 'rxjs';
+import { ColorService } from '../color.service';
 
 @Component({
   selector: 'edit-box',
@@ -16,7 +17,7 @@ import { Subject } from 'rxjs';
 export class EditBoxComponent {
   @ViewChild('editBox') editBox: ElementRef;
 
-  constructor(private app: ApplicationRef, public menuService: MenuService) { }
+  constructor(private app: ApplicationRef, public menuService: MenuService, public colorService: ColorService) { }
 
   private isMousedown: boolean;
   private currentPosition: Vector2;

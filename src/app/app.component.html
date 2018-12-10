@@ -24,6 +24,9 @@
 <!-- Prompt -->
 <prompt *ngIf="promptService.show"></prompt>
 
+<!-- Color Picker -->
+<color-picker *ngIf="colorService.showColorPicker"></color-picker>
+
 <!-- Menu -->
 <menu *ngIf="menuService.show"></menu>
 
@@ -34,5 +37,3 @@
         <div class="saving-text">Saving...</div>
     </div>
 </div>
-
-<color-picker></color-picker>

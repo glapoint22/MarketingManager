@@ -6,6 +6,7 @@ import { TableService } from '../table.service';
 import { Container } from '../container';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { MenuService } from '../menu.service';
+import { ColorService } from '../color.service';
 
 @Component({
   selector: 'email',
@@ -20,11 +21,9 @@ export class EmailComponent implements OnInit {
   public height: number;
   public emails: Array<any> = [];
   public pageWidth: number = 600;
-  public colorType: string;
   public change: number = 0;
   public currentItem;
   public speed: number;
-  private colorPalette: HTMLInputElement;
   private currentEmail;
   private currentToggleButton;
   private container: Container;
@@ -33,20 +32,10 @@ export class EmailComponent implements OnInit {
   private copy: any;
   private minContainerHeight: number = 40;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, public colorService: ColorService) { }
 
   ngOnInit() {
     this.setHeight();
-    this.colorPalette = document.createElement('input');
-    this.colorPalette.type = 'color';
-    this.colorPalette.onchange = (event: any) => {
-      if (this.colorType === 'page') {
-        this.currentEmail.pageColor = event.path[0].value;
-      } else {
-        this.currentEmail.backgroundColor = event.path[0].value;
-      }
-      EditBoxComponent.change.next();
-    }
 
     EditBoxComponent.change.subscribe(() => {
       // Create the main table
@@ -219,10 +208,6 @@ export class EmailComponent implements OnInit {
     if (EditBoxComponent.currentEditBox) EditBoxComponent.currentEditBox.unSelect(this.container);
   }
 
-  setColor(colorType: string) {
-    this.colorType = colorType;
-    this.colorPalette.click();
-  }
 
   editEmail(email) {
     email.isInEditMode = true;

@@ -4,6 +4,7 @@ import { PromptService } from "./prompt.service";
 import { LinkService } from './link.service';
 import { EmailPreviewService } from './email-preview.service';
 import { MenuService } from './menu.service';
+import { ColorService } from './color.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { MenuService } from './menu.service';
 export class AppComponent {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public emailPreviewService: EmailPreviewService, public menuService: MenuService) { }
+  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public emailPreviewService: EmailPreviewService, public menuService: MenuService, public colorService: ColorService) { }
 
   ngAfterContentChecked() {
     if (this.promptService.show) this.saveService.isSaving = false;

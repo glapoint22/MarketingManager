@@ -12,8 +12,10 @@ export class BackgroundColor extends ColorStyle {
     }
 
     onClick() {
-        this.colorPalette.value = this.rgbToHex(this.styleValue);
-        this.colorPalette.click();
+        // this.colorPalette.value = this.rgbToHex(this.styleValue);
+        // this.colorPalette.click();
+        this.editBox.colorService.colorPicker([this.editBox.editBox.nativeElement], this.style);
+        
     }
 
     setStyle() {
