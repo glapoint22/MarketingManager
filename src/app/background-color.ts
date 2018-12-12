@@ -14,13 +14,15 @@ export class BackgroundColor extends ColorStyle {
     onClick() {
         // this.colorPalette.value = this.rgbToHex(this.styleValue);
         // this.colorPalette.click();
-        this.editBox.colorService.colorPicker([this.editBox.editBox.nativeElement], this.style);
-        
+        this.editBox.colorService.colorPicker([this.editBox.editBox.nativeElement], this.style, this.styleValue, () => { this.setStyle() });
+
     }
 
     setStyle() {
-        this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = this.styleValue;
+        this.styleValue = this.editBox.backgroundColor = this.editBox.colorService.newColor;
+        this.editBox.onContentChange();
+        // this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = this.styleValue;
     }
 
-    checkSelection() {}
+    checkSelection() { }
 }

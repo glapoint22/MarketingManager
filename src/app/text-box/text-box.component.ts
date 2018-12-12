@@ -95,13 +95,16 @@ export class TextBoxComponent extends EditBoxComponent {
       this.content.contentEditable = 'false';
       this.content.style.fontSize = '0';
 
-
+      // OnSelectionChange
       this.content.ownerDocument.onselectionchange = () => {
         if (this.inEditMode) {
-          this.onContentChange();
           this.checkSelectionForStyles();
         }
+      }
 
+      // OnInput
+      this.content.oninput = () => {
+        this.onContentChange();
       }
 
       this.content.ondrop = (event)=>{

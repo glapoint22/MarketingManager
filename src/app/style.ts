@@ -26,6 +26,10 @@ export class Style {
                 this.setMultipleNodesStyle(this.editBox.content);
             }
         }
+        this.setElement();
+    }
+
+    setElement(){
         this.editBox.content.focus();
         this.removeDuplicateNodes();
     }

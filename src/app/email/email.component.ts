@@ -32,7 +32,7 @@ export class EmailComponent implements OnInit {
   private copy: any;
   private minContainerHeight: number = 40;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, public colorService: ColorService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, private colorService: ColorService) { }
 
   ngOnInit() {
     this.setHeight();
@@ -174,12 +174,12 @@ export class EmailComponent implements OnInit {
             this.currentEmail.selected = false;
           }
         } else {
-          if(this.menuService.show){
+          if (this.menuService.show) {
             this.menuService.show = false;
-          }else{
+          } else {
             EditBoxComponent.currentEditBox.unSelect(this.container);
           }
-          
+
         }
       }
     } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
@@ -276,5 +276,26 @@ export class EmailComponent implements OnInit {
   cutEmail() {
     this.copyEmail();
     this.deleteEmail();
+  }
+
+  setColor() {
+    if (this.colorService.colorElements[0] === this.page.nativeElement) {
+      this.currentEmail.pageColor = this.colorService.newColor;
+    } else {
+      this.currentEmail.backgroundColor = this.colorService.newColor;
+    }
+
+    EditBoxComponent.change.next();
+  }
+
+  showColorPicker(element: HTMLElement) {
+    let currentColor;
+    if (element === this.page.nativeElement){
+      currentColor = this.currentEmail.pageColor;
+    }else{
+      currentColor = this.currentEmail.backgroundColor;
+    }
+
+    this.colorService.colorPicker([element], 'backgroundColor', currentColor,  () => { this.setColor() });
   }
 }

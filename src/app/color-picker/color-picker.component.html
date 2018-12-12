@@ -21,8 +21,8 @@
       <div class="properties-container">
         <div class="color-value-container">
 
-          <div class="color-value" [style.backgroundColor]="hexColor"></div>
-          <div class="color-value" style="background: rgb(123, 255, 0)"></div>
+          <div class="color-value" [style.backgroundColor]="colorService.newColor"></div>
+          <div class="color-value" [style.backgroundColor]="colorService.currentColor"></div>
 
         </div>
 
@@ -43,10 +43,10 @@
 
         <div class="input-container" style="margin-bottom: 20px">
           <span style="font-size: 10px">Hex:</span>
-          <input maxlength="7" class="hex-input" [value]="hexColor" [(ngModel)]="hexColor" (keyup)="setHexInput()">
+          <input maxlength="7" class="hex-input" [value]="colorService.newColor" [(ngModel)]="colorService.newColor" (keyup)="setHexInput()">
         </div>
 
-        <button>Ok</button>
+        <button (click)="colorService.setColor()">Ok</button>
         <button>Cancel</button>
       </div>
     </div>

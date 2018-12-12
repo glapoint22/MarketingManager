@@ -620,7 +620,7 @@ export class EditBoxComponent {
     this.container.setHeight();
     this.updateRow();
     this.app.tick();
-    EditBoxComponent.change.next();
+    // EditBoxComponent.change.next();
   }
   boxToTable(table: HTMLTableElement) { }
 

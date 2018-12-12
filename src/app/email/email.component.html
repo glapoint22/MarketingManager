@@ -107,14 +107,14 @@
                         <!-- Group -->
                         <span class="button-group">
                             <!-- Background color -->
-                            <div class="header-button" (click)="colorService.colorPicker([background], 'backgroundColor')" title="Background color">
+                            <div class="header-button" (click)="showColorPicker(background)" title="Background color">
                                 <i class="fas fa-fill"></i>
                                 <div class="palette" [style.background]="email.backgroundColor"></div>
                             </div>
 
 
                             <!-- Page color -->
-                            <div class="header-button" (click)="colorService.colorPicker([page], 'backgroundColor')" title="Page color">
+                            <div class="header-button" (click)="showColorPicker(page)" title="Page color">
                                 <i class="fas fa-palette"></i>
                                 <div class="palette" [style.background]="email.pageColor"></div>
                             </div>

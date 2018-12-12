@@ -14,7 +14,7 @@ export class ColorPickerComponent implements OnInit {
   public huePos: number;
   public colorPos: Vector2 = new Vector2(0, 0);
   private mouseType: string;
-  public hexColor: string = '#ffffff';
+  // public hexColor: string = '#ffffff';
 
 
   private _rgbColor: any = { r: 255, g: 255, b: 255 };;
@@ -36,9 +36,16 @@ export class ColorPickerComponent implements OnInit {
   }
 
 
-  constructor(private colorService: ColorService) { }
+  constructor(public colorService: ColorService) { }
 
   ngOnInit() {
+    let color = this.colorService.rgbToHsb(this.colorService.hexToRgb(this.colorService.currentColor));
+    this.huePos = (color.h / 360) * 255;
+    this.calculateHue();
+    this.colorPos.x = (color.s / 100) * 255;
+    this.colorPos.y = (1 - (color.b / 100)) * 255;
+    this.colorService.newColor = this.colorService.currentColor;
+    this.rgbColor = this.getRGB();
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -117,24 +124,24 @@ export class ColorPickerComponent implements OnInit {
     this.calculateHue();
     this.colorPos.x = (color.s / 100) * 255;
     this.colorPos.y = (1 - (color.b / 100)) * 255;
-    this.hexColor = this.colorService.rgbToHex(this.rgbColor);
-    // this.colorService.colorElement.style.backgroundColor = this.hexColor;
-    this.colorService.colorElements.forEach((colorElement: HTMLElement) => {
-      colorElement.style[this.colorService.colorType] = this.hexColor;
-    });
+    this.colorService.newColor = this.colorService.rgbToHex(this.rgbColor);
+    this.setElements();
   }
 
   setHexInput() {
-    this.rgbColor = this.colorService.hexToRgb(this.hexColor);
+    this.rgbColor = this.colorService.hexToRgb(this.colorService.newColor);
     this.setColorInput();
   }
 
   setColor() {
     this.rgbColor = this.getRGB();
-    this.hexColor = this.colorService.rgbToHex(this.rgbColor);
-    // this.colorService.colorElement.style[this.colorService.colorType] = this.hexColor;
+    this.colorService.newColor = this.colorService.rgbToHex(this.rgbColor);
+    this.setElements();
+  }
+
+  setElements(){
     this.colorService.colorElements.forEach((colorElement: HTMLElement) => {
-      colorElement.style[this.colorService.colorType] = this.hexColor;
+      colorElement.style[this.colorService.colorType] = this.colorService.newColor;
     });
   }
 }

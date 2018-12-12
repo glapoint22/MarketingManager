@@ -7,6 +7,30 @@ export class ColorService {
   public colorElements: Array<HTMLElement>;
   public showColorPicker: boolean;
   public colorType: string;
+  public newColor: string;
+  private callback;
+
+
+  private _currentColor: string;
+  public get currentColor(): string {
+    return this._currentColor;
+  }
+  public set currentColor(v: string) {
+    if (v.substr(0, 1) !== '#') {
+      let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(v);
+
+      let color = {
+        r: parseInt(colorArray[1]),
+        g: parseInt(colorArray[2]),
+        b: parseInt(colorArray[3])
+      }
+      v =this.rgbToHex(color);
+    }
+
+
+    this._currentColor = v;
+  }
+
 
   constructor() { }
 
@@ -126,9 +150,16 @@ export class ColorService {
     } : null;
   }
 
-  colorPicker(colorElements: Array<HTMLElement>, colorType: string) {
+  colorPicker(colorElements: Array<HTMLElement>, colorType: string, currentColor: string, callback) {
     this.showColorPicker = true;
     this.colorElements = colorElements;
     this.colorType = colorType;
+    this.callback = callback;
+    this.currentColor = currentColor;
+  }
+
+  setColor() {
+    this.callback();
+    this.showColorPicker = false;
   }
 }
