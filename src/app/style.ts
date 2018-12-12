@@ -277,6 +277,7 @@ export class Style {
                                         Style.range.setEnd(node.children[i].firstChild, node.children[i].firstChild.length);
                                     }
                                 }
+                                Style.selection.setBaseAndExtent(Style.range.startContainer, Style.range.startOffset, Style.range.endContainer, Style.range.endOffset);
                                 node.children[i + 1].remove();
                                 i--;
                             }

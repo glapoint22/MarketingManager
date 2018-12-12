@@ -79,16 +79,16 @@
     bottom: -6px;
 }
 
-.edit-box:hover:not(.selected), .selected, .edit-mode {
+.edit-box:hover:not(.select), .select, .edit-mode {
     outline: 1px solid;
 }
 
-.selected {
+.select {
     outline-color: #00ff00;
     z-index: 1;
 }
 
-.edit-box:hover:not(.selected){
+.edit-box:hover:not(.select){
     outline-color: #ff00ff;
     z-index: 10;
 }

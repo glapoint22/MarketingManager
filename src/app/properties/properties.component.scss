@@ -48,6 +48,9 @@ select {
         background: #414141;
         color: #bebebe;
     }
+    .style-button:hover .hide-color {
+        display: block;
+    }
     .style-button-activated {
         background: #0066ff;
         color: #ffffff;
@@ -117,4 +120,16 @@ input[type=number]::-webkit-outer-spin-button {
 }
 .property-container:first-child {
     text-align: right;
+}
+.hide-color {
+    width: 20px;
+    height: 17px;
+    background: #414141;
+    position: absolute;
+    top: -34px;
+    left: -5px;
+    border-radius: 4px;
+    color: red;
+    border: 1px solid #838181;
+    display: none;
 }

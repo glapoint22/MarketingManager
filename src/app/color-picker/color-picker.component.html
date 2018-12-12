@@ -1,53 +1,56 @@
-<div class="container">
-  <div class="title">Color Picker</div>
-  <div class="close" (click)="promptService.show = false">
-    <i class="far fa-window-close"></i>
-  </div>
-  <div class="content">
-    <div style="height: 256px; margin: 10px 0 10px 10px; display: flex;">
+<div style="width: 100%; height: 100%; background: #00000000; position:absolute; top: 0; left: 0; z-index: 10;">
+  <div class="container">
+    <div class="title">Color Picker</div>
+    <div class="close" (click)="promptService.show = false">
+      <i class="far fa-window-close"></i>
+    </div>
+    <div class="content">
+      <div style="height: 256px; margin: 10px 0 10px 10px; display: flex;">
 
 
-      <div class="color-container" [style.background]="'hsl(' + hue + ', 100%, 50%)'" (mousedown)="onMouseDown($event)">
-        <div class="saturation"></div>
-        <div class="lightness"></div>
-        <div class="circle" [style.left.px]="colorPos.x - 5" [style.top.px]="colorPos.y - 5"></div>
-      </div>
-
-      <div class="hue" (mousedown)="onMouseDown($event, 'hue')">
-        <div class="arrow-right" [style.top.px]="huePos - 8"></div>
-        <div class="arrow-left" [style.top.px]="huePos - 8"></div>
-      </div>
-
-      <div class="properties-container">
-        <div class="color-value-container">
-
-          <div class="color-value" [style.backgroundColor]="colorService.newColor"></div>
-          <div class="color-value" [style.backgroundColor]="colorService.currentColor"></div>
-
+        <div class="color-container" [style.background]="'hsl(' + hue + ', 100%, 50%)'" (mousedown)="onMouseDown($event)">
+          <div class="saturation"></div>
+          <div class="lightness"></div>
+          <div class="circle" [style.left.px]="colorPos.x - 5" [style.top.px]="colorPos.y - 5"></div>
         </div>
 
-        <div class="input-container">
-          <span>R:</span>
-          <input maxlength="3" [value]="rgbColor.r" [(ngModel)]="rgbColor.r" (keyup)="setColorInput()">
+        <div class="hue" (mousedown)="onMouseDown($event, 'hue')">
+          <div class="arrow-right" [style.top.px]="huePos - 8"></div>
+          <div class="arrow-left" [style.top.px]="huePos - 8"></div>
         </div>
 
-        <div class="input-container">
-          <span>G:</span>
-          <input maxlength="3" [value]="rgbColor.g" [(ngModel)]="rgbColor.g" (keyup)="setColorInput()">
-        </div>
+        <div class="properties-container">
+          <div class="color-value-container">
 
-        <div class="input-container">
-          <span>B:</span>
-          <input maxlength="3" [value]="rgbColor.b" [(ngModel)]="rgbColor.b" (keyup)="setColorInput()">
-        </div>
+            <div class="color-value" [style.backgroundColor]="colorService.newColor"></div>
+            <div class="color-value" [style.backgroundColor]="colorService.currentColor"></div>
 
-        <div class="input-container" style="margin-bottom: 20px">
-          <span style="font-size: 10px">Hex:</span>
-          <input maxlength="7" class="hex-input" [value]="colorService.newColor" [(ngModel)]="colorService.newColor" (keyup)="setHexInput()">
-        </div>
+          </div>
 
-        <button (click)="colorService.setColor()">Ok</button>
-        <button>Cancel</button>
+          <div class="input-container">
+            <span>R:</span>
+            <input maxlength="3" [value]="rgbColor.r" [(ngModel)]="rgbColor.r" (keyup)="setColorInput()">
+          </div>
+
+          <div class="input-container">
+            <span>G:</span>
+            <input maxlength="3" [value]="rgbColor.g" [(ngModel)]="rgbColor.g" (keyup)="setColorInput()">
+          </div>
+
+          <div class="input-container">
+            <span>B:</span>
+            <input maxlength="3" [value]="rgbColor.b" [(ngModel)]="rgbColor.b" (keyup)="setColorInput()">
+          </div>
+
+          <div class="input-container" style="margin-bottom: 20px">
+            <span style="font-size: 10px">Hex:</span>
+            <input maxlength="7" class="hex-input" [value]="colorService.newColor" [(ngModel)]="colorService.newColor"
+              (keyup)="setHexInput()">
+          </div>
+
+          <button (click)="colorService.setColor()">Ok</button>
+          <button>Cancel</button>
+        </div>
       </div>
     </div>
   </div>

@@ -150,7 +150,7 @@ export class ColorService {
     } : null;
   }
 
-  colorPicker(colorElements: Array<HTMLElement>, colorType: string, currentColor: string, callback) {
+  openColorPicker(colorElements: Array<HTMLElement>, colorType: string, currentColor: string, callback) {
     this.showColorPicker = true;
     this.colorElements = colorElements;
     this.colorType = colorType;

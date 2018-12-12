@@ -24,6 +24,8 @@ import { BackgroundColor } from '../background-color';
 export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
   private minWidth: number = 8;
+  private isKeyDown: boolean;
+  private isMouseDown: boolean;
 
   initialize(boxData) {
     let backgroundColor: BackgroundColor = new BackgroundColor(this),
@@ -72,14 +74,14 @@ export class TextBoxComponent extends EditBoxComponent {
       span.appendChild(text);
       div.appendChild(span);
       srcdoc = div.outerHTML;
-      this.backgroundColor = '#00000000';
+      // this.backgroundColor = '#00000000';
 
       // Set the default size
       rect = new Rect(null, null, 180, 54);
     }
 
     // Set the background color
-    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
+    // this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     // Set the content container
     this.contentContainer.srcdoc = srcdoc;
@@ -97,7 +99,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
       // OnSelectionChange
       this.content.ownerDocument.onselectionchange = () => {
-        if (this.inEditMode) {
+        if (this.inEditMode && (this.isKeyDown || this.isMouseDown)) {
           this.checkSelectionForStyles();
         }
       }
@@ -107,16 +109,32 @@ export class TextBoxComponent extends EditBoxComponent {
         this.onContentChange();
       }
 
-      this.content.ondrop = (event)=>{
+      this.content.ondrop = (event) => {
         event.preventDefault();
       }
 
       // OnKeyDown
       this.content.onkeydown = (event) => {
+        this.isKeyDown = true;
         if (event.code === 'Escape') {
           this.unSelect();
         }
         this.setInvalidNodes();
+      }
+
+      // OnKeyUp
+      this.content.onkeyup = () => {
+        this.isKeyDown = false;
+      }
+
+      // OnMouseDown
+      this.content.onmousedown = () => {
+        this.isMouseDown = true;
+      }
+
+      // OnMouseUp
+      this.content.onmouseup = () => {
+        this.isMouseDown = false;
       }
 
       // OnPaste
@@ -301,7 +319,7 @@ export class TextBoxComponent extends EditBoxComponent {
     table.summary = this.getTableRect('textBox');
 
     // Set the background color
-    if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
+    if (this.backgroundColor) table.bgColor = this.backgroundColor;
 
     // Set the content
     Array.from(this.content.children).forEach((content: HTMLElement) => {

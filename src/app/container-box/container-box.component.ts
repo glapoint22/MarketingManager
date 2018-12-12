@@ -33,12 +33,12 @@ export class ContainerBoxComponent extends EditBoxComponent {
       this.backgroundColor = boxData.backgroundColor;
     } else {
       rect = new Rect(null, null, 300, 200);
-      this.backgroundColor = '#494949';
+      // this.backgroundColor = '#494949';
     }
     this.fixedHeight = rect.height;
 
     // Set the content container style
-    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
+    // this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     this.boxContainer = new BoxContainer(this.viewContainerRef, this.editBox.nativeElement, this);
     this.boxContainer.width = rect.width;
