@@ -290,12 +290,16 @@ export class EmailComponent implements OnInit {
 
   showColorPicker(element: HTMLElement) {
     let currentColor;
-    if (element === this.page.nativeElement){
+    if (element === this.page.nativeElement) {
       currentColor = this.currentEmail.pageColor;
-    }else{
+    } else {
       currentColor = this.currentEmail.backgroundColor;
     }
 
-    this.colorService.openColorPicker([element], 'backgroundColor', currentColor,  () => { this.setColor() });
+    this.colorService.openColorPicker([element], 'backgroundColor', currentColor, () => { this.setColor() }, () => { this.cancelColor() });
+  }
+
+  cancelColor() {
+    this.colorService.colorElements[0].style.background = this.colorService.currentColor;
   }
 }

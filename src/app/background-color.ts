@@ -13,9 +13,8 @@ export class BackgroundColor extends ColorStyle {
     }
 
     onClick() {
-        // this.showColor = true;
         this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = this.styleValue;
-        this.editBox.colorService.openColorPicker([this.editBox.editBox.nativeElement], this.style, this.styleValue, () => { this.setStyle() });
+        this.editBox.colorService.openColorPicker([this.editBox.editBox.nativeElement], this.style, this.styleValue, () => { this.setStyle() }, () => { this.cancelColor() });
 
     }
 
@@ -28,7 +27,12 @@ export class BackgroundColor extends ColorStyle {
     hideColor() {
         this.showColor = false;
         this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = null;
+        this.styleValue = '#ffffff';
         this.editBox.onContentChange();
+    }
+
+    cancelColor() {
+        this.editBox.colorService.colorElements[0].style[this.style] = this.editBox.colorService.currentColor;
     }
 
     checkSelection() { }

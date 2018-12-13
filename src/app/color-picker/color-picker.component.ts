@@ -14,7 +14,6 @@ export class ColorPickerComponent implements OnInit {
   public huePos: number;
   public colorPos: Vector2 = new Vector2(0, 0);
   private mouseType: string;
-  // public hexColor: string = '#ffffff';
 
 
   private _rgbColor: any = { r: 255, g: 255, b: 255 };;
@@ -39,6 +38,10 @@ export class ColorPickerComponent implements OnInit {
   constructor(public colorService: ColorService) { }
 
   ngOnInit() {
+    if (!this.colorService.currentColor) {
+      this.colorService.newColor = '#ffffff';
+      return;
+    }
     let color = this.colorService.rgbToHsb(this.colorService.hexToRgb(this.colorService.currentColor));
     this.huePos = (color.h / 360) * 255;
     this.calculateHue();
@@ -139,7 +142,7 @@ export class ColorPickerComponent implements OnInit {
     this.setElements();
   }
 
-  setElements(){
+  setElements() {
     this.colorService.colorElements.forEach((colorElement: HTMLElement) => {
       colorElement.style[this.colorService.colorType] = this.colorService.newColor;
     });
