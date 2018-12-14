@@ -29,23 +29,22 @@
 
           <div class="input-container">
             <span>R:</span>
-            <input maxlength="3" [value]="rgbColor.r" [(ngModel)]="rgbColor.r" (keyup)="setColorInput()">
+            <input #r maxlength="3" (keyup)="setRGBInput(r, r.value)" (focus)="r.select()">
           </div>
 
           <div class="input-container">
             <span>G:</span>
-            <input maxlength="3" [value]="rgbColor.g" [(ngModel)]="rgbColor.g" (keyup)="setColorInput()">
+            <input #g maxlength="3" (keyup)="setRGBInput(g, g.value)" (focus)="g.select()">
           </div>
 
           <div class="input-container">
             <span>B:</span>
-            <input maxlength="3" [value]="rgbColor.b" [(ngModel)]="rgbColor.b" (keyup)="setColorInput()">
+            <input #b maxlength="3" (keyup)="setRGBInput(b, b.value)" (focus)="b.select()">
           </div>
 
           <div class="input-container" style="margin-bottom: 20px">
-            <span style="font-size: 10px">Hex:</span>
-            <input maxlength="7" class="hex-input" [value]="colorService.newColor" [(ngModel)]="colorService.newColor"
-              (keyup)="setHexInput()">
+            <span>hex:</span>
+            <input #hex maxlength="7" class="hex-input" (keyup)="setHexInput(hex.value)" (focus)="hex.select()">
           </div>
 
           <button (click)="colorService.setColor()">Ok</button>

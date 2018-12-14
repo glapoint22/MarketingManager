@@ -17,7 +17,7 @@ export class ColorService {
     return this._currentColor;
   }
   public set currentColor(v: string) {
-    if (v && v.substr(0, 1) !== '#') {
+    if (v && v.substr(0, 1) === 'r') {
       let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(v);
 
       let color = {
@@ -25,9 +25,8 @@ export class ColorService {
         g: parseInt(colorArray[2]),
         b: parseInt(colorArray[3])
       }
-      v = this.rgbToHex(color);
+      v = '#' + this.rgbToHex(color);
     }
-
 
     this._currentColor = v;
   }
@@ -71,7 +70,7 @@ export class ColorService {
 
 
   rgbToHex(color) {
-    return "#" + this.componentToHex(parseInt(color.r)) + this.componentToHex(parseInt(color.g)) + this.componentToHex(parseInt(color.b));
+    return this.componentToHex(parseInt(color.r)) + this.componentToHex(parseInt(color.g)) + this.componentToHex(parseInt(color.b));
   }
 
   componentToHex(c) {
