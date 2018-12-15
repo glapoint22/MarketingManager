@@ -74,14 +74,13 @@ export class TextBoxComponent extends EditBoxComponent {
       span.appendChild(text);
       div.appendChild(span);
       srcdoc = div.outerHTML;
-      // this.backgroundColor = '#00000000';
 
       // Set the default size
       rect = new Rect(null, null, 180, 54);
     }
 
     // Set the background color
-    // this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     // Set the content container
     this.contentContainer.srcdoc = srcdoc;
@@ -90,6 +89,9 @@ export class TextBoxComponent extends EditBoxComponent {
     // Set the content container's style and events
     this.contentContainer.onload = () => {
       this.content = this.contentContainer.contentDocument.body;
+
+      
+      
 
       this.content.style.margin = 0;
       this.content.style.outline = 'none';
@@ -175,9 +177,12 @@ export class TextBoxComponent extends EditBoxComponent {
       // Set the size
       this.contentContainer.width = rect.width;
       this.contentContainer.height = rect.height;
+      
 
       // Initialize
       super.initialize(rect, !boxData || boxData.isSelected);
+
+      if(rect.height > this.content.clientHeight) this.fixedHeight = rect.height;
     }
 
 

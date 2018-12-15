@@ -8,14 +8,8 @@ export class HighlightColor extends ColorStyle {
         this.title = 'Highlight color';
         this.icon = 'fas fa-highlighter';
         this.style = 'backgroundColor';
-        // this.styleValue = '#ffff00';
         this.defaultColor = null;
     }
-
-    // onClick() {
-    //     if (this.styleValue === '#000000') this.styleValue = '#ffff00';
-    //     super.onClick();
-    // }
 
     hideColor() {
         this.styleValue = null;
@@ -23,19 +17,4 @@ export class HighlightColor extends ColorStyle {
         this.editBox.checkSelectionForStyles();
         this.editBox.onContentChange();
     }
-
-    setColor() {
-        super.setColor();
-        this.showColor = true;
-    }
-
-    // cancelColor(){
-    //     if(this.styleValue === '#000000') {
-    //         this.styleValue = null;
-    //         this.setStyle();
-    //     }else{
-    //         super.cancelColor();
-    //     }
-        
-    // }
 }

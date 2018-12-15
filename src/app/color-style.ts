@@ -2,7 +2,6 @@ import { Style } from "./style";
 import { EditBoxComponent } from "./edit-box/edit-box.component";
 
 export class ColorStyle extends Style {
-    public showColor: boolean;
     public defaultColor: string;
     private inPreview: boolean;
     private clonedRange;

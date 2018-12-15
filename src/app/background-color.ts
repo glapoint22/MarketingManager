@@ -21,13 +21,11 @@ export class BackgroundColor extends ColorStyle {
     setStyle() {
         this.styleValue = this.editBox.backgroundColor = this.editBox.colorService.newColor;
         this.editBox.onContentChange();
-        this.showColor = true;
     }
 
     hideColor() {
-        this.showColor = false;
         this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = null;
-        this.styleValue = '#ffffff';
+        this.styleValue = null;
         this.editBox.onContentChange();
     }
 

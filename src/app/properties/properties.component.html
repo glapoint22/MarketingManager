@@ -28,9 +28,9 @@
                         [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !editBox.currentEditBox.inEditMode}">
 
                         <div *ngIf="(style.group === 'color' && editBox.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
-                            class="color-bar" [style.backgroundColor]="style.showColor ? style.styleValue : '#00000000'">
+                            class="color-bar" [style.backgroundColor]="style.styleValue ? style.styleValue : '#00000000'">
 
-                            <div *ngIf="(style.group === 'editBoxColor' && style.showColor) || (style.title === 'Highlight color' && style.styleValue !== style.defaultColor && style.showColor)"
+                            <div *ngIf="(style.group === 'editBoxColor' && style.editBox.backgroundColor) || (style.title === 'Highlight color' && style.styleValue !== style.defaultColor)"
                                 class="hide-color" (click)="$event.stopPropagation(); style.hideColor()">
                                 <i class="fas fa-ban"></i>
                             </div>

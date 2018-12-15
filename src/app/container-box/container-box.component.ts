@@ -38,7 +38,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     this.fixedHeight = rect.height;
 
     // Set the content container style
-    // this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
+    this.editBox.nativeElement.style.backgroundColor = backgroundColor.styleValue = this.backgroundColor;
 
     this.boxContainer = new BoxContainer(this.viewContainerRef, this.editBox.nativeElement, this);
     this.boxContainer.width = rect.width;

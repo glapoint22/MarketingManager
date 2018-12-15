@@ -159,7 +159,7 @@ export class TableService {
 
         let boxData = {
           content: content.innerHTML,
-          backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+          backgroundColor: table.bgColor === '' ? null : table.bgColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
         Container.currentContainer = container;
@@ -171,7 +171,7 @@ export class TableService {
         // Container box
       } else if (table.summary.substr(0, 12) === 'containerBox') {
         let boxData = {
-          backgroundColor: table.bgColor === '' ? '#00000000' : table.bgColor,
+          backgroundColor: table.bgColor === '' ? null : table.bgColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
 

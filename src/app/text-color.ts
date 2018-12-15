@@ -9,6 +9,5 @@ export class TextColor extends ColorStyle {
         this.title = 'Text color';
         this.icon = 'fas fa-font';
         this.style = 'color';
-        this.showColor = true;
     }
 }

@@ -39,17 +39,18 @@ export class ColorPickerComponent implements OnInit {
       this._rgbColor = v;
     }
   }
-  
+
   constructor(public colorService: ColorService) { }
 
   ngOnInit() {
     if (!this.colorService.currentColor) {
       this.colorService.newColor = '#ffffff';
+      this.colorService.currentColor = '#ffffff';
       return;
     }
-    this.setColorPositions(this.colorService.hexToRgb(this.colorService.currentColor));
-    this.calculateHue();
-    this.rgbColor = this.getRGBColor();
+    this.rgbColor = this.colorService.hexToRgb(this.colorService.currentColor);
+    this.setColorPositions();
+    this.hue = this.colorService.rgbToHsb(this.rgbColor).h;
     this.setInputs();
   }
 
@@ -124,8 +125,8 @@ export class ColorPickerComponent implements OnInit {
     }
   }
 
-  setColorPositions(color) {
-    let hsb = this.colorService.rgbToHsb(color);
+  setColorPositions() {
+    let hsb = this.colorService.rgbToHsb(this.rgbColor);
     this.huePos = Math.round((hsb.h / 360) * 256);
     this.colorPos.x = Math.round((hsb.s / 100) * 256);
     this.colorPos.y = Math.round((1 - (hsb.b / 100)) * 256);
@@ -149,14 +150,14 @@ export class ColorPickerComponent implements OnInit {
       b: component === this.bInput.nativeElement ? value : this.rgbColor.b
     }
     this.hexInput.nativeElement.value = this.colorService.rgbToHex(this.rgbColor);
-    this.setColorPositions(this.rgbColor);
+    this.setColorPositions();
     this.calculateHue();
   }
 
   setHexInput(value) {
     this.rgbColor = this.colorService.hexToRgb(value);
     this.setRGBInputs();
-    this.setColorPositions(this.rgbColor);
+    this.setColorPositions();
     this.calculateHue();
   }
 
