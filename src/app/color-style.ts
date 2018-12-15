@@ -31,11 +31,8 @@ export class ColorStyle extends Style {
             endOffset: Style.range.endOffset
         }
 
-
         // Mark we are in preview mode
         this.inPreview = true;
-
-
 
         // Setting the style will isolate the selection for preview with the color picker
         this.setStyle();

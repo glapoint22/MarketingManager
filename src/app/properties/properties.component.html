@@ -31,7 +31,7 @@
                             class="color-bar" [style.backgroundColor]="style.styleValue ? style.styleValue : '#00000000'">
 
                             <div *ngIf="(style.group === 'editBoxColor' && style.editBox.backgroundColor) || (style.title === 'Highlight color' && style.styleValue !== style.defaultColor)"
-                                class="hide-color" (click)="$event.stopPropagation(); style.hideColor()">
+                                class="remove-color" (click)="$event.stopPropagation(); style.removeColor()">
                                 <i class="fas fa-ban"></i>
                             </div>
                         </div>

@@ -12,45 +12,71 @@ export class ColorPickerComponent implements OnInit {
   @ViewChild('g') gInput: ElementRef;
   @ViewChild('b') bInput: ElementRef;
   @ViewChild('hex') hexInput: ElementRef;
+  public huePos: number;
+  public colorPos: Vector2 = new Vector2(0, 0);
   public hue: number = 0;
   private mouseDown: boolean = false;
   private mousePos: Vector2;
-  public huePos: number;
-  public colorPos: Vector2 = new Vector2(0, 0);
-  private mouseType: string;
+  private mouseDownArea: string;
+  private containerPos: Vector2 = new Vector2((window.innerWidth * 0.5) - 203.5, (window.innerHeight * 0.5) - 156.5);
 
-
+  // rgbColor
   private _rgbColor: any = { r: 255, g: 255, b: 255 };;
   public get rgbColor(): any {
     return this._rgbColor;
   }
-  public set rgbColor(v: any) {
-    if (v) {
-      v.r = Math.min(255, v.r);
-      v.g = Math.min(255, v.g);
-      v.b = Math.min(255, v.b);
+  public set rgbColor(color: any) {
+    if (color) {
+      // Set min & max
+      color.r = Math.min(255, Math.max(0, color.r));
+      color.g = Math.min(255, Math.max(0, color.g));
+      color.b = Math.min(255, Math.max(0, color.b));
 
-      if (isNaN(v.r)) v.r = 0;
-      if (isNaN(v.g)) v.g = 0;
-      if (isNaN(v.b)) v.b = 0;
-      this.colorService.newColor = '#' + this.colorService.rgbToHex(v);
-      this.setElements();
+      // If not a number then set it as zero
+      if (isNaN(color.r)) color.r = 0;
+      if (isNaN(color.g)) color.g = 0;
+      if (isNaN(color.b)) color.b = 0;
 
-      this._rgbColor = v;
+      // Set the new color
+      this.colorService.newColor = '#' + this.colorService.rgbToHex(color);
+      this.colorService.setElements();
+
+      this._rgbColor = color;
     }
   }
 
   constructor(public colorService: ColorService) { }
 
   ngOnInit() {
-    if (!this.colorService.currentColor) {
-      this.colorService.newColor = '#ffffff';
-      this.colorService.currentColor = '#ffffff';
-      return;
-    }
     this.rgbColor = this.colorService.hexToRgb(this.colorService.currentColor);
     this.setColorPositions();
     this.hue = this.colorService.rgbToHsb(this.rgbColor).h;
+    this.setInputs();
+  }
+
+  onMouseDown(event, area) {
+    event.preventDefault();
+    this.mouseDown = true;
+    this.mouseDownArea = area;
+    this.mousePos = new Vector2(event.clientX, event.clientY);
+
+
+    if (this.mouseDownArea === 'hue') {
+      if (event.path[0].className !== 'arrow-right' && event.path[0].className !== 'arrow-left') {
+        this.huePos = event.offsetY;
+      }
+      this.calculateHue();
+    } else if (this.mouseDownArea === 'color') {
+      if (event.path[0].className === 'circle') {
+        this.colorPos = new Vector2(this.colorPos.x + event.offsetX - 4, this.colorPos.y + event.offsetY - 4);
+      } else {
+        this.colorPos = new Vector2(event.offsetX, event.offsetY);
+      }
+    } else if (this.mouseDownArea === 'move') {
+      this.containerPos = new Vector2(event.clientX - event.offsetX - 11, event.clientY - event.offsetY - 6);
+    }
+
+    this.rgbColor = this.getRGBColor();
     this.setInputs();
   }
 
@@ -60,16 +86,16 @@ export class ColorPickerComponent implements OnInit {
       let delta: Vector2 = new Vector2(event.clientX - this.mousePos.x, event.clientY - this.mousePos.y);
       this.mousePos = new Vector2(event.clientX, event.clientY);
 
-      if (this.mouseType === 'hue') {
-        this.huePos += delta.y;
-        this.huePos = Math.min(256, Math.max(0, this.huePos));
-        this.calculateHue();
+      if (this.mouseDownArea === 'move') {
+        this.containerPos = new Vector2(Math.min(window.innerWidth - 407, Math.max(0, this.containerPos.x + delta.x)), Math.min(window.innerHeight - 313, Math.max(0, this.containerPos.y + delta.y)));
+        return;
+      }
 
-      } else {
-        this.colorPos.x += delta.x;
-        this.colorPos.y += delta.y;
-        this.colorPos.x = Math.min(256, Math.max(0, this.colorPos.x));
-        this.colorPos.y = Math.min(256, Math.max(0, this.colorPos.y));
+      if (this.mouseDownArea === 'hue') {
+        this.huePos = Math.min(256, Math.max(0, this.huePos + delta.y));
+        this.calculateHue();
+      } else if (this.mouseDownArea === 'color') {
+        this.colorPos = new Vector2(Math.min(256, Math.max(0, this.colorPos.x + delta.x)), Math.min(256, Math.max(0, this.colorPos.y + delta.y)));
       }
       this.rgbColor = this.getRGBColor();
       this.setInputs();
@@ -81,30 +107,17 @@ export class ColorPickerComponent implements OnInit {
     this.mouseDown = false;
   }
 
-  onMouseDown(event, type) {
-    event.preventDefault();
-    this.mouseDown = true;
-    this.mouseType = type;
-    this.mousePos = new Vector2(event.clientX, event.clientY);
-    
-
-    if (this.mouseType === 'hue') {
-      if (event.path[0].className !== 'arrow-right' && event.path[0].className !== 'arrow-left') {
-        this.huePos = event.offsetY;
-      }
-      this.calculateHue();
-    } else {
-      if (event.path[0].className === 'circle') {
-        this.colorPos = new Vector2(this.colorPos.x + event.offsetX - 4, this.colorPos.y + event.offsetY - 4);
-      } else {
-        this.colorPos = new Vector2(event.offsetX, event.offsetY);
-      }
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape') {
+      this.colorService.cancelColor();
+    } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+      this.colorService.setColor();
     }
-    
-    this.rgbColor = this.getRGBColor();
-    this.setInputs();
   }
 
+  
   getRGBColor() {
     let hsbColor = this.getHsb(),
       hslColor = this.colorService.hsbToHsl(hsbColor.h, hsbColor.s, hsbColor.b),
@@ -137,7 +150,7 @@ export class ColorPickerComponent implements OnInit {
     this.hexInput.nativeElement.value = this.colorService.rgbToHex(this.rgbColor);
   }
 
-  setRGBInputs(){
+  setRGBInputs() {
     this.rInput.nativeElement.value = this.rgbColor.r;
     this.gInput.nativeElement.value = this.rgbColor.g;
     this.bInput.nativeElement.value = this.rgbColor.b;
@@ -159,11 +172,5 @@ export class ColorPickerComponent implements OnInit {
     this.setRGBInputs();
     this.setColorPositions();
     this.calculateHue();
-  }
-
-  setElements() {
-    this.colorService.colorElements.forEach((colorElement: HTMLElement) => {
-      colorElement.style[this.colorService.colorType] = this.colorService.newColor;
-    });
   }
 }

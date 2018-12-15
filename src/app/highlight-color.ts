@@ -11,7 +11,7 @@ export class HighlightColor extends ColorStyle {
         this.defaultColor = null;
     }
 
-    hideColor() {
+    removeColor() {
         this.styleValue = null;
         this.setStyle();
         this.editBox.checkSelectionForStyles();

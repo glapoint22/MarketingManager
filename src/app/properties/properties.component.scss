@@ -48,7 +48,7 @@ select {
         background: #414141;
         color: #bebebe;
     }
-    .style-button:hover .hide-color {
+    .style-button:hover .remove-color {
         display: block;
     }
     .style-button-activated {
@@ -121,7 +121,7 @@ input[type=number]::-webkit-outer-spin-button {
 .property-container:first-child {
     text-align: right;
 }
-.hide-color {
+.remove-color {
     width: 20px;
     height: 17px;
     background: #414141;

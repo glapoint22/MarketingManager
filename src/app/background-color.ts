@@ -23,7 +23,7 @@ export class BackgroundColor extends ColorStyle {
         this.editBox.onContentChange();
     }
 
-    hideColor() {
+    removeColor() {
         this.editBox.editBox.nativeElement.style[this.style] = this.editBox.backgroundColor = null;
         this.styleValue = null;
         this.editBox.onContentChange();

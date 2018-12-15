@@ -16,23 +16,23 @@ export class ColorService {
   public get currentColor(): string {
     return this._currentColor;
   }
-  public set currentColor(v: string) {
-    if (v && v.substr(0, 1) === 'r') {
-      let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(v);
+  public set currentColor(value: string) {
+    if (!value) {
+      this.newColor = value = '#ffffff';
+    } else if (value.substr(0, 1) === 'r') {
+      let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(value);
 
       let color = {
         r: parseInt(colorArray[1]),
         g: parseInt(colorArray[2]),
         b: parseInt(colorArray[3])
       }
-      v = '#' + this.rgbToHex(color);
+      value = '#' + this.rgbToHex(color);
     }
 
-    this._currentColor = v;
+    this._currentColor = value;
   }
 
-
-  constructor() { }
 
   hslToRgb(h, s, l) {
     let r, g, b;
@@ -167,5 +167,11 @@ export class ColorService {
   cancelColor() {
     this.showColorPicker = false;
     this.cancelCallback();
+  }
+
+  setElements() {
+    this.colorElements.forEach((colorElement: HTMLElement) => {
+      colorElement.style[this.colorType] = this.newColor;
+    });
   }
 }

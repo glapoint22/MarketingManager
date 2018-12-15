@@ -161,27 +161,29 @@ export class EmailComponent implements OnInit {
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
     if (event.code === 'Escape') {
-      if (this.currentEmail && this.currentEmail.selected) {
-        if (this.currentEmail.isInEditMode) {
-          this.currentEmail.isInEditMode = false;
-        } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
-          if (this.currentToggleButton && this.currentToggleButton.checked) {
-            this.currentToggleButton.checked = false;
-            this.closedContainer = this.container;
-            Container.currentContainer = null;
-            this.speed = this.defaultSpeed;
+      if (!this.colorService.showColorPicker) {
+        if (this.currentEmail && this.currentEmail.selected) {
+          if (this.currentEmail.isInEditMode) {
+            this.currentEmail.isInEditMode = false;
+          } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
+            if (this.currentToggleButton && this.currentToggleButton.checked) {
+              this.currentToggleButton.checked = false;
+              this.closedContainer = this.container;
+              Container.currentContainer = null;
+              this.speed = this.defaultSpeed;
+            } else {
+              this.currentEmail.selected = false;
+            }
           } else {
-            this.currentEmail.selected = false;
+            if (this.menuService.show) {
+              this.menuService.show = false;
+            } else {
+              EditBoxComponent.currentEditBox.unSelect(this.container);
+            }
           }
-        } else {
-          if (this.menuService.show) {
-            this.menuService.show = false;
-          } else {
-            EditBoxComponent.currentEditBox.unSelect(this.container);
-          }
-
         }
       }
+
     } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
       if (this.currentEmail && this.currentEmail.isInEditMode) {
         this.currentEmail.isInEditMode = false;
