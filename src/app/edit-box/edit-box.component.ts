@@ -52,7 +52,10 @@ export class EditBoxComponent {
     this.editBox.nativeElement.focus();
   }
 
-  initialize(rect?: Rect, isSelected?: boolean) {
+  initialize(boxData?) {
+    let rect = boxData ? boxData.rect : null;
+
+
     if (rect.x === null) {
       let x: number, y: number;
 
@@ -193,12 +196,13 @@ export class EditBoxComponent {
 
     } else {
       this.rect = rect;
+      this.container.rows[boxData.rowIndex].addBox(this);
     }
 
     this.setCurrentContainer();
     this.setElement();
 
-    if (isSelected) this.setSelection();
+    if (boxData && boxData.isSelected) this.setSelection();
     this.isLoaded = true;
   }
 
@@ -255,6 +259,7 @@ export class EditBoxComponent {
     if (this.isMousedown) {
       if (this.rect.x !== this.tempRect.x || this.rect.y !== this.tempRect.y || this.rect.width !== this.tempRect.width || this.rect.height !== this.tempRect.height) {
         this.updateRow();
+        EditBoxComponent.change.next();
       }
       this.isMousedown = false;
     }
@@ -362,9 +367,6 @@ export class EditBoxComponent {
     // Align the boxes in the current row and set the container height
     this.container.currentRow.alignBoxes();
     this.container.setHeight();
-
-    // Mark that there has been a change
-    EditBoxComponent.change.next();
   }
 
   setVisibleHandles(showLeftTopHandle, showTopHandle, showRightTopHandle, showLeftHandle, showRightHandle, showBottomLeftHandle, showBottomHandle, showBottomRightHandle) {
@@ -620,11 +622,19 @@ export class EditBoxComponent {
     this.container.setHeight();
     this.updateRow();
     this.app.tick();
-    // EditBoxComponent.change.next();
+    EditBoxComponent.change.next();
   }
   boxToTable(table: HTMLTableElement) { }
 
   getTableRect(boxType) {
     return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;
+  }
+
+  setBoxData(rect: Rect, boxData) {
+    return {
+      rect: rect,
+      rowIndex: boxData ? boxData.rowIndex : null,
+      isSelected: boxData ? boxData.isSelected : null
+    }
   }
 }

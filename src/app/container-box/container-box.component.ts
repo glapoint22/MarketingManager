@@ -43,7 +43,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     this.boxContainer = new BoxContainer(this.viewContainerRef, this.editBox.nativeElement, this);
     this.boxContainer.width = rect.width;
 
-    super.initialize(rect, !boxData || boxData.isSelected);
+    super.initialize(this.setBoxData(rect, boxData));
   }
 
   setRightHandle(deltaPosition: Vector2) {

@@ -1,5 +1,5 @@
 <div class="background">
-  <div class="container" [style.left.px]="containerPos.x" [style.top.px]="containerPos.y">
+  <div class="container" [style.left.px]="position.x" [style.top.px]="position.y">
     <div class="title" (mousedown)="onMouseDown($event, 'move')">Color Picker</div>
     <div class="close" (click)="colorService.cancelColor()">
       <i class="far fa-window-close"></i>

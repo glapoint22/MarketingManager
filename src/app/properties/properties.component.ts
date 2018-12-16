@@ -86,8 +86,8 @@ export class PropertiesComponent {
 
   setChange(event: KeyboardEvent, input: HTMLInputElement) {
     if (event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'ArrowUp' || event.code === 'ArrowDown') {
-      EditBoxComponent.change.next();
       EditBoxComponent.currentEditBox.updateRow();
+      EditBoxComponent.change.next();
 
       if (event.code === 'Enter' || event.code === 'NumpadEnter') input.blur();
     }

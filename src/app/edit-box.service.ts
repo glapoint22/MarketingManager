@@ -9,6 +9,7 @@ import { Rect } from './rect';
 import { Container } from './container';
 import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
 import { MenuService } from './menu.service';
+import { Row } from './row';
 
 @Injectable({
   providedIn: 'root'
@@ -60,9 +61,9 @@ export class EditBoxService {
 
     // Alignment
     menuGroup = this.menuService.menu.createMenuGroup();
-    menuGroup.createMenuRow('Align Boxes Left', () => {EditBoxComponent.currentEditBox.row.alignBoxesLeft(), EditBoxComponent.change.next()});
-    menuGroup.createMenuRow('Align Boxes Center', () => {EditBoxComponent.currentEditBox.row.alignBoxesCenter(), EditBoxComponent.change.next()});
-    menuGroup.createMenuRow('Align Boxes Right', () => {EditBoxComponent.currentEditBox.row.alignBoxesRight(), EditBoxComponent.change.next()});
+    menuGroup.createMenuRow('Align Boxes Left', () => { EditBoxComponent.currentEditBox.row.alignBoxesLeft(), EditBoxComponent.change.next() });
+    menuGroup.createMenuRow('Align Boxes Center', () => { EditBoxComponent.currentEditBox.row.alignBoxesCenter(), EditBoxComponent.change.next() });
+    menuGroup.createMenuRow('Align Boxes Right', () => { EditBoxComponent.currentEditBox.row.alignBoxesRight(), EditBoxComponent.change.next() });
   }
 
   menuPaste(insertType) {
@@ -203,9 +204,11 @@ export class EditBoxService {
     } else if (box instanceof ContainerBoxComponent) {
       copied.boxType = ContainerBoxComponent;
       copied.contentContainerType = null;
-      copied.boxes = box.boxContainer.boxes ? this.copyBoxes(box.boxContainer.boxes) : null;
+      copied.boxes = box.boxContainer.boxes.length > 0 ? this.copyBoxes(box.boxContainer.boxes) : null;
+      copied.rows = box.boxContainer.rows.length > 0 ? this.copyRows(box.boxContainer.rows) : null;
     }
 
+    copied.rowIndex = box.container.getRowIndex(box.row);
     copied.backgroundColor = box.backgroundColor;
     copied.content = box.content ? box.content.innerHTML : null;
     if (preservePosition) {
@@ -215,6 +218,19 @@ export class EditBoxService {
     }
 
     return copied;
+  }
+
+  copyRows(rows: Array<Row>) {
+    let copiedRows = [];
+
+    rows.forEach((row: Row) => {
+      copiedRows.push({
+        alignment: row.alignment,
+        y: row.y
+      });
+    });
+
+    return copiedRows;
   }
 
   copyBoxes(boxes) {
@@ -244,8 +260,11 @@ export class EditBoxService {
       } else if (this.copied.boxType === ContainerBoxComponent) {
         box.instance.initialize(this.copied);
 
+        let container: ContainerBoxComponent = box.instance as ContainerBoxComponent;
+        this.createRowsInContainer(container.boxContainer, this.copied.rows);
+
         // Create the boxes in the container
-        this.createBoxesInContainer(box.instance.container, this.copied.boxes, newBoxes);
+        this.createBoxesInContainer(container.boxContainer, this.copied.boxes, newBoxes);
       } else {
         box.instance.initialize(this.copied);
       }
@@ -265,24 +284,30 @@ export class EditBoxService {
     }, 1);
   }
 
-  createBoxesInContainer(container, boxes, newBoxes: Array<EditBoxComponent>) {
-    if (boxes) {
-      boxes.forEach(boxData => {
+  createRowsInContainer(container: Container, copiedRows) {
+    copiedRows.forEach(copiedRow => {
+      container.addRow(copiedRow.alignment, copiedRow.y);
+    });
+  }
+
+  createBoxesInContainer(container: Container, copiedBoxes, newBoxes: Array<EditBoxComponent>) {
+    if (copiedBoxes) {
+      copiedBoxes.forEach(copiedBox => {
         // create a new box
-        let newBox = this.createBox(boxData.boxType, container, boxData.contentContainerType);
+        let newBox = this.createBox(copiedBox.boxType, container, copiedBox.contentContainerType);
         newBoxes.push(newBox.instance);
 
         // Image
-        if (boxData.boxType === ImageBoxComponent) {
-          this.setImageBox(newBox, boxData);
+        if (copiedBox.boxType === ImageBoxComponent) {
+          this.setImageBox(newBox, copiedBox);
 
           // Container
-        } else if (boxData.boxType === ContainerBoxComponent) {
-          newBox.instance.initialize(boxData);
-          this.createBoxesInContainer(newBox.instance.container, boxData.boxes, newBoxes);
+        } else if (copiedBox.boxType === ContainerBoxComponent) {
+          newBox.instance.initialize(copiedBox);
+          this.createBoxesInContainer(newBox.instance.container, copiedBox.boxes, newBoxes);
           // Other
         } else {
-          newBox.instance.initialize(boxData);
+          newBox.instance.initialize(copiedBox);
         }
       });
     }

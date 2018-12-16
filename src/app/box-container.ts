@@ -17,11 +17,16 @@ export class BoxContainer extends Container {
             });
 
             this.height = this.containerBox.rect.height;
+            // Set the parent's height
             this.containerBox.container.setHeight();
 
             // Container has no boxes
         } else {
+            // Set the parent's height
             this.containerBox.container.setHeight();
         }
+
+        // Set the yMax of the last row from the parent
+        this.containerBox.container.rows[this.containerBox.container.rows.length - 1].setYMax();
     }
 }

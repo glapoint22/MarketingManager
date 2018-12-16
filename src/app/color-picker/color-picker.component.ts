@@ -18,7 +18,9 @@ export class ColorPickerComponent implements OnInit {
   private mouseDown: boolean = false;
   private mousePos: Vector2;
   private mouseDownArea: string;
-  private containerPos: Vector2 = new Vector2((window.innerWidth * 0.5) - 203.5, (window.innerHeight * 0.5) - 156.5);
+  private width: number = 407;
+  private height: number = 313;
+  private position: Vector2;
 
   // rgbColor
   private _rgbColor: any = { r: 255, g: 255, b: 255 };;
@@ -48,6 +50,10 @@ export class ColorPickerComponent implements OnInit {
   constructor(public colorService: ColorService) { }
 
   ngOnInit() {
+    // Center the color picker
+    this.position = new Vector2((window.innerWidth * 0.5) - (this.width * 0.5), (window.innerHeight * 0.5) - (this.height * 0.5));
+
+    // Set the initial color
     this.rgbColor = this.colorService.hexToRgb(this.colorService.currentColor);
     this.setColorPositions();
     this.hue = this.colorService.rgbToHsb(this.rgbColor).h;
@@ -73,7 +79,7 @@ export class ColorPickerComponent implements OnInit {
         this.colorPos = new Vector2(event.offsetX, event.offsetY);
       }
     } else if (this.mouseDownArea === 'move') {
-      this.containerPos = new Vector2(event.clientX - event.offsetX - 11, event.clientY - event.offsetY - 6);
+      this.position = new Vector2(event.clientX - event.offsetX - 11, event.clientY - event.offsetY - 6);
     }
 
     this.rgbColor = this.getRGBColor();
@@ -87,7 +93,7 @@ export class ColorPickerComponent implements OnInit {
       this.mousePos = new Vector2(event.clientX, event.clientY);
 
       if (this.mouseDownArea === 'move') {
-        this.containerPos = new Vector2(Math.min(window.innerWidth - 407, Math.max(0, this.containerPos.x + delta.x)), Math.min(window.innerHeight - 313, Math.max(0, this.containerPos.y + delta.y)));
+        this.position = new Vector2(Math.min(window.innerWidth - this.width, Math.max(0, this.position.x + delta.x)), Math.min(window.innerHeight - this.height, Math.max(0, this.position.y + delta.y)));
         return;
       }
 
@@ -117,7 +123,7 @@ export class ColorPickerComponent implements OnInit {
     }
   }
 
-  
+
   getRGBColor() {
     let hsbColor = this.getHsb(),
       hslColor = this.colorService.hsbToHsl(hsbColor.h, hsbColor.s, hsbColor.b),

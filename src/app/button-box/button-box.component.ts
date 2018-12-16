@@ -114,7 +114,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
           event.preventDefault();
         }
       }
-      super.initialize(rect, !boxData || boxData.isSelected);
+      super.initialize(this.setBoxData(rect, boxData));
     }
 
 

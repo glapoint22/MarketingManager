@@ -36,7 +36,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     }
 
 
-    super.initialize(rect, !boxData || boxData.isSelected);
+    super.initialize(this.setBoxData(rect, boxData));
 
     this.contentContainer.style.width = '100%';
     this.contentContainer.style.height = '100%';

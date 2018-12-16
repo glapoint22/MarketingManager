@@ -38,23 +38,34 @@ export class EmailComponent implements OnInit {
     this.setHeight();
 
     EditBoxComponent.change.subscribe(() => {
-      // Create the main table
-      let mainTable = this.tableService.createTable(document.createElement('div'), null, null, this.currentEmail.backgroundColor),
-        tr = mainTable.appendChild(document.createElement('tr')),
-        td = tr.appendChild(document.createElement('td'));
-
-      td.width = '100%';
-      td.align = 'center';
-
-      // Create all child tables
-      this.tableService.createTable(td, this.container, this.pageWidth, this.currentEmail.pageColor);
-
-      // If the main table differs from what has been saved
-      if (this.currentEmail.body !== mainTable.outerHTML) {
-        this.currentEmail.body = mainTable.outerHTML;
-        this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
-      }
+      this.onEmailChange();
     });
+  }
+
+  onEmailChange() {
+    // Create the main table
+    let mainTable = this.tableService.createTable(document.createElement('div'), null, null, this.currentEmail.backgroundColor),
+      tr = mainTable.appendChild(document.createElement('tr')),
+      td = tr.appendChild(document.createElement('td'));
+
+    td.width = '100%';
+    td.align = 'center';
+
+    // Create all child tables
+    let pageTable = this.tableService.createTable(td, this.container, this.pageWidth, this.currentEmail.pageColor);
+
+    // If we have no boxes
+    if (!this.container || this.container.boxes.length === 0) {
+      tr = pageTable.appendChild(document.createElement('tr')),
+        td = tr.appendChild(document.createElement('td'));
+      td.height = this.minContainerHeight.toString();
+    }
+
+    // If the main table differs from what has been saved
+    if (this.currentEmail.body !== mainTable.outerHTML) {
+      this.currentEmail.body = mainTable.outerHTML;
+      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+    }
   }
 
 
@@ -221,7 +232,7 @@ export class EmailComponent implements OnInit {
 
   newEmail(data?) {
     if ((this.currentItem.tierIndex === 1 && this.currentItem.emails.length === 0) || this.currentItem.tierIndex === 2) {
-      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      // this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
       this.currentItem.emails.push({
         id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
         subject: data ? data.subject : 'subject',
@@ -239,9 +250,8 @@ export class EmailComponent implements OnInit {
       this.onEmailClick(email);
       this.currentEmail = email;
       this.editEmail(email);
+      this.onEmailChange();
     }
-
-
   }
 
   transitionEnd(event) {

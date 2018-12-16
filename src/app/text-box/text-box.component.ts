@@ -180,7 +180,7 @@ export class TextBoxComponent extends EditBoxComponent {
       
 
       // Initialize
-      super.initialize(rect, !boxData || boxData.isSelected);
+      super.initialize(this.setBoxData(rect, boxData));
 
       if(rect.height > this.content.clientHeight) this.fixedHeight = rect.height;
     }
