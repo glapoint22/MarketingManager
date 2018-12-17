@@ -4,14 +4,11 @@ import { Vector2 } from '../vector2';
 import { BackgroundColor } from '../background-color';
 import { Bold } from '../bold';
 import { Italic } from '../italic';
-import { Underline } from '../underline';
 import { TextColor } from '../text-color';
-import { HighlightColor } from '../highlight-color';
 import { FontSize } from '../font-size';
 import { Font } from '../font';
 import { Rect } from '../rect';
 import { EditBoxLink } from '../edit-box-link';
-import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'button-box',
@@ -27,17 +24,14 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       editBoxLink: EditBoxLink = new EditBoxLink(this),
       bold: Bold = new Bold(this),
       italic: Italic = new Italic(this),
-      underline: Underline = new Underline(this),
       textColor: TextColor = new TextColor(this),
-      // highlightColor: HighlightColor = new HighlightColor(this),
       fontSize: FontSize = new FontSize(this),
       font: Font = new Font(this),
-      // bgColor,
       rect,
       srcdoc;
 
     // Assign the styles
-    this.styles = [backgroundColor, editBoxLink, bold, italic, underline,
+    this.styles = [backgroundColor, editBoxLink, bold, italic,
       textColor, fontSize,
       font];
 
@@ -99,8 +93,8 @@ export class ButtonBoxComponent extends UniformBoxComponent {
 
       // OnInput
       this.content.oninput = () => {
+        this.setInvalidNodes();
         this.onContentChange();
-        this.fixInvalidElements();
       }
 
       // OnKeyDown
@@ -288,63 +282,77 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     return { x: x, y: y }
   }
 
-  fixInvalidElements() {
-    window.setTimeout(() => {
-      let selection = this.content.ownerDocument.getSelection();
-      let range: any = selection.getRangeAt(0);
+  setInvalidNodes() {
+    let selection = this.content.ownerDocument.getSelection();
+    let range: any = selection.getRangeAt(0);
 
-      // Content has been deleted
-      if (range.startContainer === this.content) {
-        let span = document.createElement('SPAN'),
-          br = document.createElement('BR');
+    // Content has been deleted
+    if (range.startContainer === this.content) {
+      let span = document.createElement('SPAN'),
+        br = document.createElement('BR');
 
-        span.appendChild(br);
-        span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
-        span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
-        span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
-        span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+      span.appendChild(br);
+      span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+      span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+      span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+      span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+      span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
 
-        let backgroundColor = this.styles.find(x => x.style === 'backgroundColor' && x.group !== 'editBoxColor').styleValue;
-        span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
-        span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-        span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
-
-        if (range.startContainer.firstElementChild) {
-          range.startContainer.firstElementChild.replaceWith(span);
-        } else {
-          range.startContainer.appendChild(span);
-        }
-
-        range.selectNodeContents(br);
-        this.checkSelectionForStyles();
+      if (range.startContainer.firstElementChild) {
+        range.startContainer.firstElementChild.replaceWith(span);
+      } else {
+        range.startContainer.appendChild(span);
       }
 
-    }, 1);
+      range.selectNodeContents(br);
+      this.checkSelectionForStyles();
+    }
   }
 
   boxToTable(table: HTMLTableElement) {
-    table.summary = this.getTableRect('buttonBox');
+    let row = table.appendChild(document.createElement('tr')),
+      column = document.createElement('td'),
+      anchor = document.createElement('a');
 
-    // Set the background color
-    if (this.backgroundColor && this.backgroundColor !== '#00000000') table.bgColor = this.backgroundColor;
-    let row = table.appendChild(document.createElement('tr'));
-    let column = document.createElement('td');
-
-
+    // Set the column and row
     column.align = 'center';
-    column.height = this.rect.height.toString();
-    column.style.verticalAlign = 'middle';
-
     row.appendChild(column);
-    
-    let anchor = document.createElement('a');
-    
+
+    // Set table properties
+    table.summary = this.getTableRect('buttonBox');
+    table.removeAttribute('width');
+
+    // Append the anchor to the body so we can get its dimensions
+    document.body.appendChild(anchor);
+
+    // Set the anchor properties
     anchor.href = this.link;
-    anchor.style.textDecoration = 'none';
     anchor.setAttribute('target', '_blank');
-    anchor.appendChild(document.createTextNode(this.content.innerText));
-    anchor.setAttribute('style',this.content.firstElementChild.getAttribute('style'));
+
+    anchor.innerHTML = this.content.innerHTML;
+    // anchor.appendChild(document.createTextNode(this.content.innerText));
+    // anchor.setAttribute('style', this.content.firstElementChild.getAttribute('style'));
+
+
+    anchor.style.display = 'inline-block';
+    anchor.style.textDecoration = 'none';
+    anchor.style.backgroundColor = this.backgroundColor;
+
+    // Calculate the border dimensions
+    let anchorRect = anchor.getBoundingClientRect(),
+      contentRect = this.content.getBoundingClientRect(),
+      borderWidth = (contentRect.width - anchorRect.width) / 2,
+      borderHeight = (contentRect.height - anchorRect.height - 1) / 2;
+
+    // Set the border (this is the width and height of the button)
+    anchor.style.borderLeft = borderWidth + 'px solid ' + table.bgColor;
+    anchor.style.borderRight = borderWidth + 'px solid ' + table.bgColor;
+    anchor.style.borderTop = borderHeight + 'px solid ' + table.bgColor;
+    anchor.style.borderBottom = borderHeight + 'px solid ' + table.bgColor;
+    anchor.style.borderColor = this.backgroundColor;
+
+    // Remove the anchor from the body and append it to the column
+    document.body.removeChild(anchor);
     column.appendChild(anchor);
-    table.bgColor = this.backgroundColor;
   }
 }

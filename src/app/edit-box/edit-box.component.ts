@@ -196,7 +196,7 @@ export class EditBoxComponent {
 
     } else {
       this.rect = rect;
-      this.container.rows[boxData.rowIndex].addBox(this);
+      if (boxData.rowIndex) this.container.rows[boxData.rowIndex].addBox(this);
     }
 
     this.setCurrentContainer();

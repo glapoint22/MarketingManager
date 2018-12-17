@@ -60,9 +60,10 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     row.appendChild(column);
 
-    let img = document.createElement('img');
+    let img: HTMLImageElement = document.createElement('img');
     img.src = this.contentContainer.src;
     img.style.width = '100%';
+    img.width = this.rect.width;
     img.style.display = 'block';
 
     table.summary = this.getTableRect('imageBox');

@@ -5,6 +5,7 @@ import { Rect } from './rect';
 import { EditBoxService } from './edit-box.service';
 import { Container } from './container';
 import { Row } from './row';
+import { ButtonBoxComponent } from './button-box/button-box.component';
 
 @Injectable({
   providedIn: 'root'
@@ -85,7 +86,7 @@ export class TableService {
 
             // Box is text, button, or image
           } else {
-            box.boxToTable(this.createTable(column, null, box.rect.width));
+            box.boxToTable(this.createTable(column, null, box instanceof ButtonBoxComponent ? null : box.rect.width));
           }
 
           // Row has multiple boxes
@@ -99,11 +100,14 @@ export class TableService {
               div: HTMLElement,
               comment;
 
+            // Don't add width if this is a button
+            let width = box instanceof ButtonBoxComponent ? '' : 'width="' + box.rect.width + '"';
+
             // For Outlook
             if (i === 0) {
-              comment = document.createComment('[if (gte mso 9)|(IE)]><table cellpadding="0" cellspacing="0" border="0"><tr><td valign="top" width="' + box.rect.width + '" style="text-align:center"><![endif]');
+              comment = document.createComment('[if (gte mso 9)|(IE)]><table cellpadding="0" cellspacing="0" border="0"><tr><td valign="top" ' + width + 'style="text-align:center"><![endif]');
             } else {
-              comment = document.createComment('[if (gte mso 9)|(IE)]></td><td valign="top" width="' + box.rect.width + '" style="text-align:center"><![endif]');
+              comment = document.createComment('[if (gte mso 9)|(IE)]></td><td valign="top" ' + width + 'style="text-align:center"><![endif]');
             }
 
             column.appendChild(comment);
@@ -194,7 +198,7 @@ export class TableService {
 
         let boxData = {
           content: span.outerHTML,
-          backgroundColor: table.bgColor,
+          backgroundColor: anchor.style.backgroundColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
           link: anchor.getAttribute('href')
         }
