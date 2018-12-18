@@ -22,12 +22,15 @@ export class ColorStyle extends Style {
         this.contentSnapShot = this.editBox.content.cloneNode(true);
 
 
+        let startParent = this.getParentNode(Style.range.startContainer),
+            endParent = this.getParentNode(Style.range.endContainer);
+
         this.selection = {
-            startParentIndex: Array.from(this.editBox.content.children).findIndex(x => x === Style.range.startContainer.parentElement.parentElement),
-            startChildIndex: Array.from(Style.range.startContainer.parentElement.parentElement.children).findIndex(x => x === Style.range.startContainer.parentElement),
+            startParentIndex: Array.from(this.editBox.content.children).findIndex(x => x === startParent),
+            startChildIndex: Array.from(startParent.children).findIndex(x => x === Style.range.startContainer.parentElement),
             startOffset: Style.range.startOffset,
-            endParentIndex: Array.from(this.editBox.content.children).findIndex(x => x === Style.range.endContainer.parentElement.parentElement),
-            endChildIndex: Array.from(Style.range.endContainer.parentElement.parentElement.children).findIndex(x => x === Style.range.endContainer.parentElement),
+            endParentIndex: Array.from(this.editBox.content.children).findIndex(x => x === endParent),
+            endChildIndex: Array.from(endParent.children).findIndex(x => x === Style.range.endContainer.parentElement),
             endOffset: Style.range.endOffset
         }
 
@@ -103,11 +106,15 @@ export class ColorStyle extends Style {
             i--;
         }
 
-        Style.selection.setBaseAndExtent(this.editBox.content.children[this.selection.startParentIndex].children[this.selection.startChildIndex].firstChild,
-            this.selection.startOffset,
-            this.editBox.content.children[this.selection.endParentIndex].children[this.selection.endChildIndex].firstChild,
-            this.selection.endOffset);
-        
+        let baseNode = this.editBox.content.children[this.selection.startParentIndex].children.length > 0 ?
+            this.editBox.content.children[this.selection.startParentIndex].children[this.selection.startChildIndex].firstChild :
+            this.editBox.content.children[this.selection.startParentIndex].firstChild,
+            extentNode = this.editBox.content.children[this.selection.endParentIndex].children.length > 0 ?
+                this.editBox.content.children[this.selection.endParentIndex].children[this.selection.endChildIndex].firstChild :
+                this.editBox.content.children[this.selection.endParentIndex].firstChild;
+
+        Style.selection.setBaseAndExtent(baseNode, this.selection.startOffset, extentNode, this.selection.endOffset);
+
         Style.range = Style.selection.getRangeAt(0);
         this.editBox.content.focus();
     }

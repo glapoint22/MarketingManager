@@ -114,4 +114,10 @@ export class Container {
   getRowIndex(row: Row) {
     return this.rows.findIndex(x => x === row);
   }
+
+  alignRows() {
+    this.rows.forEach((row: Row) => {
+      row.alignBoxes();
+    });
+  }
 }

@@ -27,16 +27,7 @@ export class ToggleableStyle extends Style {
     setBeginningEndSelection(node, offset, count, isEndSelected?) {
         if (this.isSelected) {
             let newNode = this.removeStyle(node.parentElement, node.substringData(offset, count));
-
-            node.replaceData(offset, count, '');
-            node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
-
-            // Set selection
-            if (node === Style.range.startContainer) {
-                Style.range.selectNodeContents(newNode.firstChild);
-            } else {
-                Style.range.setEnd(newNode.firstChild, newNode.firstChild.length);
-            }
+            this.setNewNode(newNode, node, offset, count, isEndSelected);
         } else {
             super.setBeginningEndSelection(node, offset, count, isEndSelected);
         }

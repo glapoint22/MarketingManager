@@ -9,7 +9,7 @@ import { Container } from '../container';
 @Component({
   selector: 'container-box',
   templateUrl: '../edit-box/edit-box.component.html',
-  styleUrls: ['../edit-box/edit-box.component.scss']
+  styleUrls: ['../edit-box/edit-box.component.scss', './container-box.component.scss']
 })
 export class ContainerBoxComponent extends EditBoxComponent {
   @ViewChild('viewContainerRef', { read: ViewContainerRef }) viewContainerRef: any;
@@ -55,6 +55,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
       });
     }
     this.boxContainer.width = this.rect.width;
+    this.boxContainer.alignRows();
   }
 
   setLeftHandle(deltaPosition: Vector2) {
@@ -67,6 +68,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
 
     this.boxContainer.width = this.rect.width;
+    this.boxContainer.alignRows();
   }
 
   setBottomHandle(deltaPosition: Vector2) {
@@ -108,6 +110,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
     this.boxContainer.width = this.rect.width;
     this.boxContainer.height = this.rect.height;
+    this.boxContainer.alignRows();
   }
 
   setTopRightHandle(deltaPosition: Vector2) {
@@ -126,6 +129,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
     this.boxContainer.width = this.rect.width;
     this.boxContainer.height = this.rect.height;
+    this.boxContainer.alignRows();
   }
 
   setBottomLeftHandle(deltaPosition: Vector2) {
@@ -142,9 +146,10 @@ export class ContainerBoxComponent extends EditBoxComponent {
         return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
       });
     }
-    
+
     this.boxContainer.width = this.rect.width;
     this.fixedHeight = this.boxContainer.height = this.rect.height;
+    this.boxContainer.alignRows();
   }
 
   setBottomRightHandle(deltaPosition: Vector2) {
@@ -163,6 +168,7 @@ export class ContainerBoxComponent extends EditBoxComponent {
     }
     this.boxContainer.width = this.rect.width;
     this.fixedHeight = this.boxContainer.height = this.rect.height;
+    this.boxContainer.alignRows();
   }
 
   setCurrentContainer() {
@@ -176,7 +182,6 @@ export class ContainerBoxComponent extends EditBoxComponent {
       let column = document.createElement('td');
       column.style.height = this.rect.height + 'px';
       row.appendChild(column);
-      
     }
   }
 }

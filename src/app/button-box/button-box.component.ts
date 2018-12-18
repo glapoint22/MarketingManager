@@ -97,6 +97,14 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         this.onContentChange();
       }
 
+      this.content.ondrop = (event) => {
+        event.preventDefault();
+      }
+
+      this.content.onpaste = (event) => {
+        event.preventDefault();
+      }
+
       // OnKeyDown
       this.content.onkeydown = (event) => {
         if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
@@ -328,12 +336,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     // Set the anchor properties
     anchor.href = this.link;
     anchor.setAttribute('target', '_blank');
-
     anchor.innerHTML = this.content.innerHTML;
-    // anchor.appendChild(document.createTextNode(this.content.innerText));
-    // anchor.setAttribute('style', this.content.firstElementChild.getAttribute('style'));
-
-
     anchor.style.display = 'inline-block';
     anchor.style.textDecoration = 'none';
     anchor.style.backgroundColor = this.backgroundColor;

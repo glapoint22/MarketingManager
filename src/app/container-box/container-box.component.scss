@@ -1,0 +1,5 @@
+@import 'theme';
+
+.edit-box:not(.select) {
+    outline: $dashed-outline;
+}

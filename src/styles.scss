@@ -80,5 +80,5 @@ input:checked ~ .toggle-button:hover::after {
     font-weight: bold;
 }
 .dashed-outline {
-    outline: 1px dashed #0000004d
+    outline: $dashed-outline;
 }

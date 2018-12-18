@@ -29,9 +29,18 @@ export class Style {
         this.setElement();
     }
 
-    setElement(){
+    setElement() {
         this.editBox.content.focus();
-        this.removeDuplicateNodes();
+
+        if (this.editBox.content.firstElementChild.tagName === 'DIV') {
+            Array.from(this.editBox.content.children).forEach((parent: any) => {
+                this.removeDuplicateNodes(parent);
+            });
+        } else {
+            this.removeDuplicateNodes(this.editBox.content);
+        }
+
+
     }
 
     checkSelection() {
@@ -97,7 +106,10 @@ export class Style {
 
     setBeginningEndSelection(node, offset, count, isEndSelected?) {
         let newNode = this.applyStyle(node.parentElement, node.substringData(offset, count));
+        this.setNewNode(newNode, node, offset, count, isEndSelected);
+    }
 
+    setNewNode(newNode, node, offset, count, isEndSelected) {
         node.replaceData(offset, count, '');
         node.parentElement.parentElement.insertBefore(newNode, isEndSelected ? node.parentElement.nextSibling : node.parentElement);
 
@@ -208,7 +220,9 @@ export class Style {
     }
 
     getParentNode(node) {
-        while (node.tagName !== 'DIV' && node.tagName !== 'BODY') {
+        let parentTagName = this.editBox.content.firstElementChild.tagName;
+
+        while (node.tagName !== parentTagName) {
             node = node.parentElement;
         }
         return node;
@@ -233,58 +247,56 @@ export class Style {
         }
     }
 
-    removeDuplicateNodes() {
-        Array.from(this.editBox.content.children).forEach((node: any) => {
-            if (node.childElementCount > 1) {
-                for (let i = 0; i < node.childElementCount; i++) {
-                    if (i < node.childElementCount - 1) {
-                        let styleList1 = node.children[i].getAttribute('style').split(';'),
-                            styleList2 = node.children[i + 1].getAttribute('style').split(';'),
-                            isDuplicate: boolean = true;
+    removeDuplicateNodes(parent) {
+        if (parent.childElementCount > 1) {
+            for (let i = 0; i < parent.childElementCount; i++) {
+                if (i < parent.childElementCount - 1) {
+                    let styleList1 = parent.children[i].getAttribute('style').split(';'),
+                        styleList2 = parent.children[i + 1].getAttribute('style').split(';'),
+                        isDuplicate: boolean = true;
 
-                        // If both style lists are the same length
-                        if (styleList1.length === styleList2.length) {
+                    // If both style lists are the same length
+                    if (styleList1.length === styleList2.length) {
 
-                            // Compare style lists to see if they are the same
-                            for (let j = 0; j < styleList1.length; j++) {
-                                let k;
-                                for (k = 0; k < styleList2.length; k++) {
-                                    if (styleList1[j] === styleList2[k]) break;
-                                }
-
-                                if (k === styleList2.length) {
-                                    isDuplicate = false;
-                                    break;
-                                }
+                        // Compare style lists to see if they are the same
+                        for (let j = 0; j < styleList1.length; j++) {
+                            let k;
+                            for (k = 0; k < styleList2.length; k++) {
+                                if (styleList1[j] === styleList2[k]) break;
                             }
 
-                            // if same, remove the duplicate
-                            if (isDuplicate) {
-                                node.children[i].firstChild.appendData(node.children[i + 1].firstChild.data);
-                                // Set selection
-                                // Single container
-                                if (Style.range.startContainer === Style.range.endContainer) {
-                                    if (Style.range.startContainer === node.children[i + 1].firstChild) {
-                                        Style.range.setStart(node.children[i].firstChild, node.children[i].firstChild.length - Style.range.endOffset);
-                                        Style.range.setEnd(node.children[i].firstChild, node.children[i].firstChild.length);
-                                    }
-
-                                    // Multiple contaiers
-                                } else {
-                                    if (node.children[i + 1].firstChild === Style.range.startContainer) {
-                                        Style.range.setStart(node.children[i].firstChild, node.children[i].firstChild.length - Style.range.startContainer.length);
-                                    } else if (node.children[i + 1].firstChild === Style.range.endContainer) {
-                                        Style.range.setEnd(node.children[i].firstChild, node.children[i].firstChild.length);
-                                    }
-                                }
-                                Style.selection.setBaseAndExtent(Style.range.startContainer, Style.range.startOffset, Style.range.endContainer, Style.range.endOffset);
-                                node.children[i + 1].remove();
-                                i--;
+                            if (k === styleList2.length) {
+                                isDuplicate = false;
+                                break;
                             }
+                        }
+
+                        // if same, remove the duplicate
+                        if (isDuplicate) {
+                            parent.children[i].firstChild.appendData(parent.children[i + 1].firstChild.data);
+                            // Set selection
+                            // Single container
+                            if (Style.range.startContainer === Style.range.endContainer) {
+                                if (Style.range.startContainer === parent.children[i + 1].firstChild) {
+                                    Style.range.setStart(parent.children[i].firstChild, parent.children[i].firstChild.length - Style.range.endOffset);
+                                    Style.range.setEnd(parent.children[i].firstChild, parent.children[i].firstChild.length);
+                                }
+
+                                // Multiple contaiers
+                            } else {
+                                if (parent.children[i + 1].firstChild === Style.range.startContainer) {
+                                    Style.range.setStart(parent.children[i].firstChild, parent.children[i].firstChild.length - Style.range.startContainer.length);
+                                } else if (parent.children[i + 1].firstChild === Style.range.endContainer) {
+                                    Style.range.setEnd(parent.children[i].firstChild, parent.children[i].firstChild.length);
+                                }
+                            }
+                            Style.selection.setBaseAndExtent(Style.range.startContainer, Style.range.startOffset, Style.range.endContainer, Style.range.endOffset);
+                            parent.children[i + 1].remove();
+                            i--;
                         }
                     }
                 }
             }
-        });
+        }
     }
 }

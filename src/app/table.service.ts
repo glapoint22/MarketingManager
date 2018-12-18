@@ -186,18 +186,9 @@ export class TableService {
         // Button box
       } else if (table.summary.substr(0, 9) === 'buttonBox') {
         let anchor = table.getElementsByTagName('a')[0];
-        let span = document.createElement('span');
-        span.style.color = anchor.style.color;
-        span.style.fontSize = anchor.style.fontSize;
-        span.style.fontFamily = anchor.style.fontFamily;
-        span.style.fontWeight = anchor.style.fontWeight;
-        span.style.fontStyle = anchor.style.fontStyle;
-        span.style.textDecoration = anchor.style.textDecoration;
-
-        span.appendChild(document.createTextNode(anchor.innerText));
-
+        
         let boxData = {
-          content: span.outerHTML,
+          content: anchor.innerHTML,
           backgroundColor: anchor.style.backgroundColor,
           rect: new Rect(rect[0], rect[1], rect[2], rect[3]),
           link: anchor.getAttribute('href')

@@ -196,13 +196,17 @@ export class EditBoxComponent {
 
     } else {
       this.rect = rect;
-      if (boxData.rowIndex) this.container.rows[boxData.rowIndex].addBox(this);
+      if (boxData.rowIndex !== undefined) this.container.rows[boxData.rowIndex].addBox(this);
     }
 
-    this.setCurrentContainer();
+
     this.setElement();
 
-    if (boxData && boxData.isSelected) this.setSelection();
+    if (boxData && boxData.isSelected) {
+      this.setSelection();
+    } else {
+      this.setCurrentContainer();
+    }
     this.isLoaded = true;
   }
 
@@ -634,7 +638,7 @@ export class EditBoxComponent {
     return {
       rect: rect,
       rowIndex: boxData ? boxData.rowIndex : null,
-      isSelected: boxData ? boxData.isSelected : null
+      isSelected: boxData ? boxData.isSelected : true
     }
   }
 }
