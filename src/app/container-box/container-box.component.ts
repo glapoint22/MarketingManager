@@ -47,11 +47,12 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setRightHandle(deltaPosition: Vector2) {
+    let maxRowWidth = this.boxContainer.getMaxRowWidth();
     super.setRightHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x, this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
     this.boxContainer.width = this.rect.width;
@@ -59,11 +60,12 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setLeftHandle(deltaPosition: Vector2) {
+    let maxRowWidth = this.boxContainer.getMaxRowWidth();
     super.setLeftHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x - (Math.max(this.minSize, maxRowWidth) - this.rect.width), this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
 
@@ -72,78 +74,115 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setBottomHandle(deltaPosition: Vector2) {
+    let yMax = Math.max(...this.boxContainer.boxes.map(box => box.rect.yMax));
+
     super.setBottomHandle(deltaPosition);
 
-    if (this.rect.height < this.minSize) {
+    if (this.rect.height < this.minSize || this.rect.height < yMax) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(yMax, this.minSize));
       });
     }
     this.fixedHeight = this.boxContainer.height = this.rect.height;
   }
 
   setTopHandle(deltaPosition: Vector2) {
+    let minBoxY = Math.min(...this.boxContainer.boxes.map(box => box.rect.y)),
+      maxHeight = this.rect.height - minBoxY,
+      distance = deltaPosition.y,
+      predictedY = this.rect.y + deltaPosition.y;
+
     super.setTopHandle(deltaPosition);
 
-    if (this.rect.height < this.minSize) {
+    if (predictedY < this.rect.y) {
+      distance = (predictedY - deltaPosition.y - this.rect.y) * -1;
+    }
+
+    if (this.rect.height < this.minSize || this.rect.height < maxHeight) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y - (Math.max(this.minSize, maxHeight) - this.rect.height), this.rect.width, Math.max(this.minSize, maxHeight));
       });
     }
 
-    this.boxContainer.height = this.rect.height;
+    this.boxContainer.moveRowsUp(distance);
+    this.fixedHeight = this.boxContainer.height = this.rect.height;
   }
 
   setTopLeftHandle(deltaPosition: Vector2) {
+    let maxRowWidth = this.boxContainer.getMaxRowWidth(),
+      minBoxY = Math.min(...this.boxContainer.boxes.map(box => box.rect.y)),
+      maxHeight = this.rect.height - minBoxY,
+      distance = deltaPosition.y,
+      predictedY = this.rect.y + deltaPosition.y;
+
     super.setTopLeftHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (predictedY < this.rect.y) {
+      distance = (predictedY - deltaPosition.y - this.rect.y) * -1;
+    }
+
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x - (Math.max(this.minSize, maxRowWidth) - this.rect.width), this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
 
-    if (this.rect.height < this.minSize) {
+    if (this.rect.height < this.minSize || this.rect.height < maxHeight) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y - (Math.max(this.minSize, maxHeight) - this.rect.height), this.rect.width, Math.max(this.minSize, maxHeight));
       });
     }
+    this.boxContainer.moveRowsUp(distance);
     this.boxContainer.width = this.rect.width;
-    this.boxContainer.height = this.rect.height;
+    this.fixedHeight = this.boxContainer.height = this.rect.height;
     this.boxContainer.alignRows();
   }
 
   setTopRightHandle(deltaPosition: Vector2) {
+    let maxRowWidth = this.boxContainer.getMaxRowWidth(),
+      minBoxY = Math.min(...this.boxContainer.boxes.map(box => box.rect.y)),
+      maxHeight = this.rect.height - minBoxY,
+      distance = deltaPosition.y,
+      predictedY = this.rect.y + deltaPosition.y;
+
     super.setTopRightHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (predictedY < this.rect.y) {
+      distance = (predictedY - deltaPosition.y - this.rect.y) * -1;
+    }
+
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x, this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
 
-    if (this.rect.height < this.minSize) {
+    if (this.rect.height < this.minSize || this.rect.height < maxHeight) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y - (this.minSize - this.rect.height), this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y - (Math.max(this.minSize, maxHeight) - this.rect.height), this.rect.width, Math.max(this.minSize, maxHeight));
       });
     }
+    this.boxContainer.moveRowsUp(distance);
     this.boxContainer.width = this.rect.width;
-    this.boxContainer.height = this.rect.height;
+    this.fixedHeight = this.boxContainer.height = this.rect.height;
     this.boxContainer.alignRows();
   }
 
   setBottomLeftHandle(deltaPosition: Vector2) {
+    let yMax = Math.max(...this.boxContainer.boxes.map(box => box.rect.yMax)),
+      maxRowWidth = this.boxContainer.getMaxRowWidth();
+
     super.setBottomLeftHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x - (this.minSize - this.rect.width), this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x - (Math.max(this.minSize, maxRowWidth) - this.rect.width), this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
 
-    if (this.rect.height < this.minSize) {
+    if (this.rect.height < this.minSize || this.rect.height < yMax) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(yMax, this.minSize));
       });
     }
 
@@ -153,17 +192,20 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   setBottomRightHandle(deltaPosition: Vector2) {
+    let yMax = Math.max(...this.boxContainer.boxes.map(box => box.rect.yMax)),
+      maxRowWidth = this.boxContainer.getMaxRowWidth();
+
     super.setBottomRightHandle(deltaPosition);
 
-    if (this.rect.width < this.minSize) {
+    if (this.rect.width < this.minSize || this.rect.width < maxRowWidth) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.minSize, this.rect.height);
+        return new Rect(this.rect.x, this.rect.y, Math.max(this.minSize, maxRowWidth), this.rect.height);
       });
     }
 
-    if (this.rect.height < this.minSize) {
+    if (this.rect.height < this.minSize || this.rect.height < yMax) {
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, this.minSize);
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(yMax, this.minSize));
       });
     }
     this.boxContainer.width = this.rect.width;

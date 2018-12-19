@@ -59,6 +59,7 @@ export class PropertiesComponent {
       input.value = editBox.rect.y;
       return new Rect(editBox.rect.x, editBox.rect.y, editBox.rect.width, editBox.rect.height);
     });
+    if (editBox.row.boxes.length === 1) editBox.row.rowElement.style.opacity = '0';
     Container.currentContainer.setHeight();
   }
 
@@ -70,6 +71,8 @@ export class PropertiesComponent {
     editBox.handle = 'right';
     editBox.setRightHandle(new Vector2(input.valueAsNumber - input.oldValue, 0));
     if (editBox.rect.width !== input.valueAsNumber) input.value = editBox.rect.width;
+    if (editBox.row.boxes.length === 1) editBox.row.rowElement.style.opacity = '0';
+    editBox.container.alignRows();
     Container.currentContainer.setHeight();
   }
 
@@ -81,6 +84,7 @@ export class PropertiesComponent {
     editBox.handle = 'bottom';
     editBox.setBottomHandle(new Vector2(0, input.valueAsNumber - input.oldValue));
     if (editBox.rect.height !== input.valueAsNumber) input.value = editBox.rect.height;
+    if (editBox.row.boxes.length === 1) editBox.row.rowElement.style.opacity = '0';
     Container.currentContainer.setHeight();
   }
 

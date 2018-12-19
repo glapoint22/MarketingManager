@@ -1,6 +1,6 @@
 $selected-color: #00c711;
 $hover-color: #00830b;
-$dashed-outline: 1px dashed #0000004d;
+$dashed-outline: 1px dashed rgba(0, 0, 0, 0.302);
 
 @mixin shadow(){
     box-shadow: 8px 8px 10px #151515;

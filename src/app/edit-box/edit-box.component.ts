@@ -73,7 +73,7 @@ export class EditBoxComponent {
 
           // Move the other rows down
           let rowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
-          this.container.moveRowsDown(rowIndex);
+          this.container.shiftRowsDown(rowIndex);
         } else {
           // spawn position is left or right
           if (this.spawnPosition === 'left' || this.spawnPosition === 'right') {
@@ -132,7 +132,7 @@ export class EditBoxComponent {
             if (yMax > this.container.currentRow.yMax) {
               this.container.currentRow.yMax = yMax;
               let startingRowIndex = this.container.getRowIndex(this.container.currentRow) + 1;
-              this.container.moveRowsDown(startingRowIndex);
+              this.container.shiftRowsDown(startingRowIndex);
             }
 
             // Insert type is top or bottom
@@ -170,7 +170,7 @@ export class EditBoxComponent {
             this.container.currentRow.yMax = yMax;
 
             // Move other rows down
-            this.container.moveRowsDown(insertedRowIndex + 1);
+            this.container.shiftRowsDown(insertedRowIndex + 1);
 
             // Set the new x
             x = (this.container.width * 0.5) - (rect.width * 0.5);
@@ -226,15 +226,20 @@ export class EditBoxComponent {
       let deltaPosition = new Vector2(event.clientX - this.currentPosition.x, event.clientY - this.currentPosition.y);
       this.currentPosition = new Vector2(event.clientX, event.clientY);
 
+      if (this.row.boxes.length === 1) this.row.rowElement.style.opacity = '0';
+
+
       switch (this.handle) {
         case 'center':
           this.setCenterHandle(deltaPosition);
           break;
         case 'right':
           this.setRightHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
         case 'left':
           this.setLeftHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
         case 'bottom':
           this.setBottomHandle(deltaPosition);
@@ -244,15 +249,19 @@ export class EditBoxComponent {
           break;
         case 'topLeft':
           this.setTopLeftHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
         case 'topRight':
           this.setTopRightHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
         case 'bottomLeft':
           this.setBottomLeftHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
         case 'bottomRight':
           this.setBottomRightHandle(deltaPosition);
+          this.row.alignBoxes();
           break;
       }
       this.container.setHeight();
@@ -278,9 +287,13 @@ export class EditBoxComponent {
       if (this.rect.y >= row.y && this.rect.yMax <= row.yMax) {
         // box is in its current row
         if (row === this.row) {
-          rowFound = true;
-          this.rect.y = row.y;
-          this.row.setYMax();
+
+          // If there is more than one box in the row
+          if (row.boxes.length > 1) {
+            rowFound = true;
+            this.rect.y = row.y;
+            this.row.setYMax();
+          }
           break;
 
           // Box is in another row
@@ -312,7 +325,7 @@ export class EditBoxComponent {
           this.container.currentRow.addBox(this);
 
           // Move other rows down
-          if (rowIndex > 0) this.container.moveRowsDown(rowIndex);
+          if (rowIndex > 0) this.container.shiftRowsDown(rowIndex);
           break;
         }
       }
@@ -365,7 +378,7 @@ export class EditBoxComponent {
       this.container.currentRow = this.container.addRow(alignment, this.rect.y);
       this.container.currentRow.addBox(this);
       let rowIndex = this.container.getRowIndex(this.container.currentRow);
-      this.container.moveRowsDown(rowIndex + 1);
+      this.container.shiftRowsDown(rowIndex + 1);
     }
 
     // Align the boxes in the current row and set the container height

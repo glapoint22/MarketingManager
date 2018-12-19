@@ -36,7 +36,7 @@ export class Container {
     }
   }
 
-  moveRowsDown(startingRowIndex) {
+  shiftRowsDown(startingRowIndex: number) {
     // Loop through all the rows and see if we need to move them down
     for (let i = startingRowIndex; i < this.rows.length; i++) {
       let currentRow = this.rows[i],
@@ -63,6 +63,7 @@ export class Container {
       }
     }
   }
+
 
   sortRows() {
     let sortedRows = this.rows.sort((a, b) => {
@@ -119,5 +120,9 @@ export class Container {
     this.rows.forEach((row: Row) => {
       row.alignBoxes();
     });
+  }
+
+  getMaxRowWidth() {
+    return Math.max(...this.rows.map((row: Row) => row.getBoxesWidth()));
   }
 }
