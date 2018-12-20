@@ -24,6 +24,7 @@ import { BackgroundColor } from '../background-color';
 export class TextBoxComponent extends EditBoxComponent {
   private fixedHeight: number = -Infinity;
   private minWidth: number = 8;
+  private minHeight: number = 18;
   private isKeyDown: boolean;
   private isMouseDown: boolean;
 
@@ -169,18 +170,20 @@ export class TextBoxComponent extends EditBoxComponent {
           this.loopChildren(this.content, range, text, endParentContainer);
           range.collapse();
         }
+
+        this.onContentChange();
       }
 
 
       // Set the size
       this.contentContainer.width = rect.width;
       this.contentContainer.height = rect.height;
-      
+
 
       // Initialize
       super.initialize(this.setBoxData(rect, boxData));
 
-      if(rect.height > this.content.clientHeight) this.fixedHeight = rect.height;
+      if (rect.height > this.content.clientHeight) this.fixedHeight = rect.height;
     }
 
 
@@ -250,7 +253,7 @@ export class TextBoxComponent extends EditBoxComponent {
     if (this.fixedHeight <= this.content.clientHeight) {
       this.handle = '';
       this.setRect(() => {
-        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight));
+        return new Rect(this.rect.x, this.rect.y, this.rect.width, Math.max(this.fixedHeight, this.content.clientHeight, this.minHeight));
       });
       this.contentContainer.height = this.rect.height;
     }

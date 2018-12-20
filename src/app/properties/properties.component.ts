@@ -129,6 +129,6 @@ export class PropertiesComponent {
 
   getEditButtonCaption(){
     if(!this.editBox.currentEditBox || !this.editBox.currentEditBox.inEditMode) return 'Edit';
-    return 'Stop Edit';
+    return 'Exit Edit';
   }
 }
