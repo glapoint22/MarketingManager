@@ -109,5 +109,6 @@ export class PropertiesComponent {
         EditBoxComponent.currentEditBox.row.alignBoxesRight();
         break;
     }
+    EditBoxComponent.change.next();
   }
 }
