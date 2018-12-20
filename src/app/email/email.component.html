@@ -1,13 +1,13 @@
 <div class="container">
     <!-- Editor panel -->
     <div style="width: 408px;height: 100%;background: #151515;float: right;max-width: 1600px;">
-        <div resizable class="divider"></div>
-        <editor [name]="'Properties'">
+        <div resizable direction="-1" class="divider"></div>
+        <editor [name]="'Properties ' + getEditBoxType()">
             <properties #properties></properties>
         </editor>
     </div>
     <!-- Divider -->
-    <div resizable class="divider"></div>
+    <div resizable direction="-1" class="divider"></div>
 
     <div *ngIf="currentItem && currentItem.isSelected">
         <div class="header">

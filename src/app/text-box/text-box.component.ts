@@ -53,6 +53,8 @@ export class TextBoxComponent extends EditBoxComponent {
     //set the handles 
     this.setVisibleHandles(false, false, false, true, true, false, true, false);
 
+    // Set the type
+    this.type = 'Text';
 
     // Set box properties or default
     if (boxData) {
@@ -89,10 +91,6 @@ export class TextBoxComponent extends EditBoxComponent {
     // Set the content container's style and events
     this.contentContainer.onload = () => {
       this.content = this.contentContainer.contentDocument.body;
-
-      
-      
-
       this.content.style.margin = 0;
       this.content.style.outline = 'none';
       this.content.style.overflow = 'hidden';

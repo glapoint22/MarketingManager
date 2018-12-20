@@ -314,4 +314,9 @@ export class EmailComponent implements OnInit {
   cancelColor() {
     this.colorService.colorElements[0].style.background = this.colorService.currentColor;
   }
+
+  getEditBoxType() {
+    if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) return '';
+    return '(' + EditBoxComponent.currentEditBox.type + ')';
+  }
 }

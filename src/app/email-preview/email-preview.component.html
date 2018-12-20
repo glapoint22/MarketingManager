@@ -1,6 +1,17 @@
 <div class="container">
   <div class="content-container">
-    
+    <div resizable direction="-1" class="size-bar">
+      <div class="indent-container">
+        <div class="indent"></div>
+        <div class="indent"></div>
+      </div>
+    </div>
+    <div resizable direction="1" class="size-bar">
+      <div class="indent-container">
+        <div class="indent"></div>
+        <div class="indent"></div>
+      </div>
+    </div>
     <div class="caption">
       <div class="close" (click)="emailPreviewService.show = false">
         <i class="far fa-window-close"></i>
@@ -13,7 +24,7 @@
 
     </div>
     <div class="footer"></div>
-    
+
   </div>
 
 </div>

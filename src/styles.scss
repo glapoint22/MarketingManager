@@ -39,7 +39,7 @@ html, body
     width: 17px;
     height: 100%;
     background: #333333;
-    cursor: col-resize;
+    cursor: w-resize;
     float: left;
 }
 input:checked ~ .toggle-button::after {
@@ -81,4 +81,25 @@ input:checked ~ .toggle-button:hover::after {
 }
 .dashed-outline {
     outline: $dashed-outline;
+}
+button {
+    padding: 4px;
+    border-radius: 10px;
+    background-color: #3d3d3d;
+    border: 1px solid #5e5e5e;
+    color: #cdcdcd;
+    outline: none;
+    cursor: pointer;
+}
+button:hover, input:hover {
+    border-color: #d4d4d4;
+}
+button:active {
+    background-color: #5d5d5d;
+}
+button:disabled {
+    background: #414141;
+    color: #686868;
+    border: 1px solid #504f4f;
+    cursor: default;
 }

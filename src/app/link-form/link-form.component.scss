@@ -59,28 +59,6 @@ form {
 }
 button {
     margin-right: 20px;
-    cursor: pointer;
-    background: #616161;
-    border: none;
-    border-radius: 5px;
-    color: #d6d6d6;
-    padding: 4px;
-    outline: none;
-    border: 1px solid #868686;
-}
-button:hover {
-    background: #727272;
-    color: white;
-}
-button:active {
-    background: #515151;
-    border: 1px solid #656565;
-    color: #b3b3b3;
-}
-button:disabled {
-    background: #414141;
-    color: #686868;
-    border: 1px solid #504f4f;
 }
 input[type=text] {
     border-radius: 100px;

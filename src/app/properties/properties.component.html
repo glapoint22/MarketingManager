@@ -30,7 +30,7 @@
                         <div *ngIf="(style.group === 'color' && editBox.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
                             class="color-bar" [style.backgroundColor]="style.styleValue ? style.styleValue : '#00000000'">
 
-                            <div *ngIf="(style.group === 'editBoxColor' && style.editBox.backgroundColor) || (style.title === 'Highlight color' && style.styleValue !== style.defaultColor)"
+                            <div *ngIf="(style.group === 'editBoxColor' && style.editBox.backgroundColor && editBox.currentEditBox.type !== 'Button') || (style.title === 'Highlight color' && style.styleValue !== style.defaultColor)"
                                 class="remove-color" (click)="$event.stopPropagation(); style.removeColor()">
                                 <i class="fas fa-ban"></i>
                             </div>
@@ -48,6 +48,8 @@
             </div>
         </span>
     </div>
+
+    <button [disabled]="isDisabled()" (click)="onEditClick()" [innerHtml]="getEditButtonCaption()"></button>
 
     <!-- Transform properties -->
     <div *ngIf="editBox.currentEditBox && editBox.currentEditBox.isSelected" class="transform-container">

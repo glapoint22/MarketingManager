@@ -27,6 +27,9 @@ export class ContainerBoxComponent extends EditBoxComponent {
     //set the handles
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
+    // Set the type
+    this.type = 'Container';
+
     // Set box properties or default
     if (boxData) {
       rect = boxData.rect;

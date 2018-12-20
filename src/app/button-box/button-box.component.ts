@@ -38,6 +38,9 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     //set the handles 
     this.setVisibleHandles(true, true, true, true, true, true, true, true);
 
+    // Set the type
+    this.type = 'Button';
+
     // Set box properties or default
     if (boxData) {
       srcdoc = boxData.content;

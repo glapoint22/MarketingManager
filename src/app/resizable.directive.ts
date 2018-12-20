@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, HostListener, Output, EventEmitter, Input } from '@angular/core';
 
 @Directive({
   selector: '[resizable]'
@@ -7,22 +7,24 @@ export class ResizableDirective {
   private isMousedown: boolean;
   private currentX: number;
   @Output() onMouse = new EventEmitter<boolean>();
+  @Input() direction: number;
 
   constructor(private el: ElementRef) { }
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     if (this.isMousedown) {
-      let deltaX = this.currentX - event.clientX;
+      let deltaX = event.clientX - this.currentX;
       this.currentX = event.clientX;
-      this.el.nativeElement.parentElement.style.width = (this.el.nativeElement.parentElement.offsetWidth + deltaX) + 'px';
-      this.el.nativeElement.ownerDocument.body.style.cursor = 'col-resize';
+      this.el.nativeElement.parentElement.style.width = (this.el.nativeElement.parentElement.offsetWidth + deltaX * this.direction) + 'px';
+      this.el.nativeElement.ownerDocument.body.style.cursor = 'w-resize';
     }
   }
 
   @HostListener('document:mousedown', ['$event'])
   onMouseDown(event: MouseEvent) {
-    if (event.clientX >= this.el.nativeElement.offsetLeft && event.clientX <= this.el.nativeElement.offsetWidth + this.el.nativeElement.offsetLeft) {
+    let rect = this.el.nativeElement.getBoundingClientRect();
+    if (event.clientX >= rect.left && event.clientX <= rect.right) {
       this.isMousedown = true;
       this.currentX = event.clientX;
       event.preventDefault();

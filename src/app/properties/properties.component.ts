@@ -5,6 +5,8 @@ import { Rect } from '../rect';
 import { EditBoxService } from '../edit-box.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Container } from '../container';
+import { ContainerBoxComponent } from '../container-box/container-box.component';
+import { ImageBoxComponent } from '../image-box/image-box.component';
 
 @Component({
   selector: 'properties',
@@ -110,5 +112,23 @@ export class PropertiesComponent {
         break;
     }
     EditBoxComponent.change.next();
+  }
+
+  isDisabled() {
+    return !this.editBox.currentEditBox || !this.editBox.currentEditBox.isSelected ||
+      this.editBox.currentEditBox instanceof ContainerBoxComponent || this.editBox.currentEditBox instanceof ImageBoxComponent;
+  }
+
+  onEditClick() {
+    if (this.editBox.currentEditBox.inEditMode) {
+      this.editBox.currentEditBox.unSelect();
+    } else {
+      this.editBox.currentEditBox.setEditMode();
+    }
+  }
+
+  getEditButtonCaption(){
+    if(!this.editBox.currentEditBox || !this.editBox.currentEditBox.inEditMode) return 'Edit';
+    return 'Stop Edit';
   }
 }

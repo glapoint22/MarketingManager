@@ -3,7 +3,6 @@ import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
 import { Vector2 } from '../vector2';
 import { EditBoxLink } from '../edit-box-link';
 import { Rect } from '../rect';
-import { EditBoxComponent } from '../edit-box/edit-box.component';
 
 @Component({
   selector: 'image-box',
@@ -17,7 +16,11 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     this.styles = [editBoxLink];
 
+    //set the handles 
     this.setVisibleHandles(true, false, true, false, false, true, false, true);
+
+    // Set the type
+    this.type = 'Image';
 
     // Set the style
     this.contentContainer.setAttribute('style', 'display: block; max-width: ' + this.container.width + 'px;');

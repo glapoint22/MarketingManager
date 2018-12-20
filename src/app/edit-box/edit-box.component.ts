@@ -43,6 +43,7 @@ export class EditBoxComponent {
   public isLoaded: boolean = false;
   public row: Row;
   public spawnPosition: string;
+  public type: string;
 
   // Static
   public static currentEditBox: EditBoxComponent;
