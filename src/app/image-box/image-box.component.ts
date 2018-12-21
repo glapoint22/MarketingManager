@@ -35,7 +35,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     if (boxData) {
       this.link = boxData.link;
       editBoxLink.isSelected = this.link ? true : false;
-      if (this.link) this.editBox.nativeElement.title = this.link;
+      if (this.link) this.styles[0].styleValue = this.editBox.nativeElement.title = this.link;
     }
 
 
@@ -74,6 +74,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     if (this.link) {
       let anchor = document.createElement('a');
       anchor.href = this.link;
+      anchor.setAttribute('target', '_blank');
       anchor.appendChild(img);
       column.appendChild(anchor);
     } else {

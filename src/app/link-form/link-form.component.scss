@@ -72,6 +72,12 @@ input[type=text] {
     padding-left: 10px;
     margin: 5px 0 5px 5px;
 }
+input[type=text]:disabled {
+    background: #333333;
+    color: #525252;
+    border-color: #454545;
+    user-select: none;
+}
 label {
     display: block;
 }

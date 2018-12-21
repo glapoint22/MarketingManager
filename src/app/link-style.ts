@@ -59,6 +59,12 @@ export class LinkStyle extends Style {
     }
 
     childNodeHasStyle(childNode) {
-        return childNode.parentElement.tagName === 'A';
+        this.styleValue = '';
+        if (childNode.parentElement.tagName === 'A') {
+            this.styleValue = childNode.parentElement.title;
+            return true;
+        }
+
+        return false;
     }
 }

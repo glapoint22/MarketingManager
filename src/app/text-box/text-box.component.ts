@@ -107,7 +107,7 @@ export class TextBoxComponent extends EditBoxComponent {
 
       // OnInput
       this.content.oninput = () => {
-        this.onContentChange();
+        this.setInvalidNodes();
       }
 
       this.content.ondrop = (event) => {
@@ -120,7 +120,6 @@ export class TextBoxComponent extends EditBoxComponent {
         if (event.code === 'Escape') {
           this.unSelect();
         }
-        this.setInvalidNodes();
       }
 
       // OnKeyUp
@@ -223,29 +222,45 @@ export class TextBoxComponent extends EditBoxComponent {
       }
 
       Array.from(this.content.children).forEach((node: any) => {
-        if (node.firstElementChild.tagName === 'BR') {
-          let span = document.createElement('SPAN'),
-            child = document.createElement('BR');
+        Array.from(node.childNodes).forEach((childNode: any) => {
+          if (childNode.tagName === 'BR' || childNode.nodeType === 3) {
+            let child;
 
-          span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
-          span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
-          span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
-          span.style.color = this.styles.find(x => x.style === 'color').styleValue;
-          if (span.style.color === 'rgba(0, 0, 0, 0)') span.style.color = '#000000';
+            if (childNode.nextSibling) {
+              child = childNode.nextSibling.firstChild;
+              child.insertData(0, childNode.data);
+              childNode.remove();
+            } else {
+              let span = document.createElement('SPAN');
 
-          let backgroundColor = this.styles.find(x => x.style === 'backgroundColor').styleValue;
-          span.style.backgroundColor = backgroundColor === '#00000000' ? null : backgroundColor;
+              child = childNode.tagName === 'BR' ? document.createElement('BR') : document.createTextNode(childNode.data);
 
-          span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-          if (span.style.fontSize === '') span.style.fontSize = '16px';
+              span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+              span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+              span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+              span.style.color = this.styles.find(x => x.style === 'color').styleValue;
 
-          span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
-          if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+              span.style.backgroundColor = this.styles.find(x => x.title === 'Highlight color').styleValue;
 
-          span.appendChild(child);
-          node.firstElementChild.replaceWith(span);
-        }
+              span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+              if (span.style.fontSize === '') span.style.fontSize = '16px';
+
+              span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+              if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+
+              span.appendChild(child);
+              childNode.replaceWith(span);
+            }
+
+            if (child.nodeType === 3) {
+              let selection = this.content.ownerDocument.getSelection();
+              selection.setPosition(child, 1);
+            }
+
+          }
+        });
       });
+      this.onContentChange();
     }, 1);
   }
 

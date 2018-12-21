@@ -46,7 +46,20 @@ export class LinkService {
       });
     }
 
-    this.selectedOption = this.linkOptions[0]
+    if (!this.style.styleValue) {
+      this.selectedOption = this.linkOptions[0];
+    } else {
+      let option = this.linkOptions.find(x => x.value === this.style.styleValue);
+
+      if (option) {
+        this.selectedOption = option;
+      } else {
+        this.linkOptions[0].value = this.style.styleValue;
+        this.selectedOption = this.linkOptions[0];
+      }
+
+    }
+
     this.show = true;
   }
 

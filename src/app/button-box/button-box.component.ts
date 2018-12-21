@@ -48,7 +48,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
       rect = boxData.rect;
       this.link = boxData.link;
       editBoxLink.isSelected = this.link ? true : false;
-      if (this.link) this.editBox.nativeElement.title = this.link;
+      if (this.link) this.styles[1].styleValue = this.editBox.nativeElement.title = this.link;
     } else {
       // Set the default text
       let span = document.createElement('SPAN'),
