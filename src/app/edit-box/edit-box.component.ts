@@ -212,13 +212,14 @@ export class EditBoxComponent {
   }
 
   onMouseDown(event, handle) {
-    // event.preventDefault();
+    event.preventDefault();
     this.container.currentRow = this.row;
     this.tempRect = new Rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
     if (event.button === 0) {
       this.isMousedown = true;
       this.handle = handle;
       this.currentPosition = new Vector2(event.clientX, event.clientY);
+      this.menuService.show = false;
     }
   }
 

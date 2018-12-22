@@ -2,6 +2,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
+import { LinkService } from '../link.service';
+import { PromptService } from '../prompt.service';
 
 @Component({
   selector: 'email-grid',
@@ -11,7 +13,7 @@ import { SaveService } from '../save.service';
 export class EmailGridComponent extends GridComponent implements OnInit {
   @Output() onItemClick = new EventEmitter<any>();
 
-  constructor(dataService: DataService, saveService: SaveService) { super(dataService, saveService) }
+  constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService) { super(dataService, saveService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Mail';
@@ -81,7 +83,14 @@ export class EmailGridComponent extends GridComponent implements OnInit {
         }
       },
       check: (item) => {
-        return true;
+        let pattern = new RegExp(/href=\"(\{3\}([\/a-zA-Z\?=\{\d\}&\.]+)?|([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6})\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))\"/g);
+        let match = /href/g.exec(item.emails[0].body);
+        
+        while (match !== null) {
+          match = /href/g.exec(item.emails[0].body);
+        }
+
+        return false;
       },
       url: 'api/Niches'
     });
@@ -128,7 +137,22 @@ export class EmailGridComponent extends GridComponent implements OnInit {
         }
       },
       check: (item) => {
+        
+        // Check url
+        for(let i = 0; i < item.emails.length; i++){
+          if(!this.linkService.validateUrl(item.emails[i].body)){
+            this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '", from product "' + item.data[0].value + '", has an invalid URL.', [
+              {
+                text: 'Ok',
+                callback: () => { }
+              }
+            ]);
+            return false
+          }
+        }
+
         return true;
+        
       },
       url: 'api/Products'
     });

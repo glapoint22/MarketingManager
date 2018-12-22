@@ -69,4 +69,19 @@ export class LinkService {
     this.show = false;
     EditBoxComponent.change.next();
   }
+
+  validateUrl(string: string): boolean {
+    let urlPattern = /href="(\{3\}([\/a-zA-Z\?=\{\d\}&\.]+)?|([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6})\b([-a-zA-Z0-9@:%_\+.~#?&//=\{\}]*))"/,
+      hrefPattern = /href="[a-zA-Z0-9:\/.\?\{\}\=]+"/g,
+      match = hrefPattern.exec(string);
+
+    while (match !== null) {
+      if (!urlPattern.test(match[0])) {
+        return false;
+      }
+      match = hrefPattern.exec(string);
+    }
+
+    return true;
+  }
 }
