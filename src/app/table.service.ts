@@ -11,6 +11,7 @@ import { ButtonBoxComponent } from './button-box/button-box.component';
   providedIn: 'root'
 })
 export class TableService {
+  public loadedBoxes: Array<EditBoxComponent> = [];
 
   constructor(private editBoxService: EditBoxService) { }
 
@@ -171,6 +172,7 @@ export class TableService {
         table.style.height = boxData.rect.height + 'px';
 
         box = this.editBoxService.createTextBox(boxData);
+        this.loadedBoxes.push(box);
 
         // Container box
       } else if (table.summary.substr(0, 12) === 'containerBox') {
@@ -181,6 +183,7 @@ export class TableService {
 
         Container.currentContainer = container;
         box = this.editBoxService.createContainerBox(boxData);
+        this.loadedBoxes.push(box);
         container = Container.currentContainer;
 
         // Button box
@@ -195,6 +198,7 @@ export class TableService {
         }
         Container.currentContainer = container;
         box = this.editBoxService.createButtonBox(boxData);
+        this.loadedBoxes.push(box);
 
         // Image box
       } else if (table.summary.substr(0, 8) === 'imageBox') {
@@ -210,6 +214,7 @@ export class TableService {
         table.style.width = boxData.rect.width + 'px';
         table.style.height = boxData.rect.height + 'px';
         box = this.editBoxService.createImageBox(boxData);
+        this.loadedBoxes.push(box);
       }
 
       // Add the box to a row when it has been loaded

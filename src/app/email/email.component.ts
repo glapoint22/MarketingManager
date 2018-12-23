@@ -109,17 +109,29 @@ export class EmailComponent implements OnInit {
     let parser = new DOMParser(),
       doc = parser.parseFromString(this.currentEmail.body, "text/html"),
       mainTable: HTMLTableElement = doc.body.firstElementChild as HTMLTableElement,
-      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement;
+      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement,
+      interval: number;
 
     // Set the colors
     this.currentEmail.backgroundColor = mainTable.bgColor;
     this.currentEmail.pageColor = pageTable.bgColor;
 
+
     // Create the boxes
     this.tableService.tableToBox(pageTable, Container.currentContainer);
 
-    // Set the current container as this page
-    Container.currentContainer = this.container;
+
+    // Set the current container as this page when all boxes have loaded
+    interval = window.setInterval(() => {
+      if (this.tableService.loadedBoxes.every(x => x.isLoaded)) {
+        this.tableService.loadedBoxes = [];
+
+        // Set the container
+        Container.currentContainer = this.container;
+
+        window.clearInterval(interval);
+      }
+    }, 1);
   }
 
   onItemClick(item) {
@@ -199,8 +211,8 @@ export class EmailComponent implements OnInit {
       if (this.currentEmail && this.currentEmail.isInEditMode) {
         this.currentEmail.isInEditMode = false;
 
-        if (this.currentEmail.subject !== this.editInput.nativeElement.value) {
-          this.currentEmail.subject = this.editInput.nativeElement.value;
+        if (this.currentEmail.subject !== this.editInput.nativeElement.value && /\w/.test(this.editInput.nativeElement.value)) {
+          this.currentEmail.subject = this.editInput.nativeElement.value.trim();
           this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
         }
       }

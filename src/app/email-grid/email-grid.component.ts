@@ -83,14 +83,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
         }
       },
       check: (item) => {
-        let pattern = new RegExp(/href=\"(\{3\}([\/a-zA-Z\?=\{\d\}&\.]+)?|([(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6})\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))\"/g);
-        let match = /href/g.exec(item.emails[0].body);
-        
-        while (match !== null) {
-          match = /href/g.exec(item.emails[0].body);
-        }
-
-        return false;
+        return this.validateEmails(item);
       },
       url: 'api/Niches'
     });
@@ -137,22 +130,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
         }
       },
       check: (item) => {
-        
-        // Check url
-        for(let i = 0; i < item.emails.length; i++){
-          if(!this.linkService.validateUrl(item.emails[i].body)){
-            this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '", from product "' + item.data[0].value + '", has an invalid URL.', [
-              {
-                text: 'Ok',
-                callback: () => { }
-              }
-            ]);
-            return false
-          }
-        }
-
-        return true;
-        
+        return this.validateEmails(item);
       },
       url: 'api/Products'
     });
@@ -165,4 +143,46 @@ export class EmailGridComponent extends GridComponent implements OnInit {
     super.onItemSelect(item);
   }
 
+  validateEmails(item): boolean {
+    let itemType = this.tiers[item.tierIndex].fields[0].name;
+
+    for (let i = 0; i < item.emails.length; i++) {
+      // Check for invalid urls
+      if (!this.linkService.validateUrl(item.emails[i].body)) {
+        this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
+      // Check that subject is not called subject
+      if (item.emails[i].subject.toLowerCase() === 'subject') {
+        this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have an email with the subject named "subject".', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
+      // Check for duplicate subject names
+      for (let j = 0; j < item.emails.length; j++) {
+        if (j !== i && item.emails[i].subject === item.emails[j].subject) {
+          this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have duplicate subject names.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+      }
+    }
+
+    return true;
+  }
 }
