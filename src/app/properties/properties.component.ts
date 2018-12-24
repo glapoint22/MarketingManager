@@ -17,17 +17,51 @@ export class PropertiesComponent {
   public gridItem;
   public Math = Math;
   public editBox = EditBoxComponent;
+  public ctrlDown: boolean;
 
   constructor(private linkService: LinkService, public editBoxService: EditBoxService) { }
 
   @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    //Escape
-    if (event.code === 'Escape' && EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
-      if (this.linkService.show) {
-        this.linkService.show = false;
+  onKeyDown(event: KeyboardEvent) {
+    // Control
+    if (event.code === 'ControlLeft' || event.code === 'ControlRight') this.ctrlDown = true;
+
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+      //Escape
+      if (event.code === 'Escape') {
+        if (this.linkService.show) {
+          this.linkService.show = false;
+        }
+      }
+
+      // Delete
+      if (event.code === 'Delete') {
+        this.editBoxService.delete();
+      }
+
+      // Copy
+      if (this.ctrlDown && event.code === 'KeyC') {
+        this.editBoxService.copy();
+      }
+
+      // Cut
+      if (this.ctrlDown && event.code === 'KeyX') {
+        this.editBoxService.cut();
       }
     }
+
+    // Paste
+    if (this.ctrlDown && event.code === 'KeyV') {
+      this.editBoxService.paste();
+    }
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  onKeyUp(event: KeyboardEvent) {
+    if (this.ctrlDown && (event.code === 'ControlLeft' || event.code === 'ControlRight')) {
+      this.ctrlDown = false;
+    }
+
   }
 
   showLinkForm(style) {
@@ -127,8 +161,8 @@ export class PropertiesComponent {
     }
   }
 
-  getEditButtonCaption(){
-    if(!this.editBox.currentEditBox || !this.editBox.currentEditBox.inEditMode) return 'Edit';
+  getEditButtonCaption() {
+    if (!this.editBox.currentEditBox || !this.editBox.currentEditBox.inEditMode) return 'Edit';
     return 'Exit Edit';
   }
 }

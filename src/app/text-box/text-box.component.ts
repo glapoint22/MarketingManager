@@ -108,6 +108,7 @@ export class TextBoxComponent extends EditBoxComponent {
       // OnInput
       this.content.oninput = () => {
         this.setInvalidNodes();
+        this.onContentChange();
       }
 
       this.content.ondrop = (event) => {
@@ -260,7 +261,6 @@ export class TextBoxComponent extends EditBoxComponent {
           }
         });
       });
-      this.onContentChange();
     }, 1);
   }
 

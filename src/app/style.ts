@@ -223,6 +223,9 @@ export class Style {
         let parentTagName = this.editBox.content.firstElementChild.tagName;
 
         while (node.tagName !== parentTagName) {
+            if(node.parentElement === null){
+                return node;
+            }
             node = node.parentElement;
         }
         return node;

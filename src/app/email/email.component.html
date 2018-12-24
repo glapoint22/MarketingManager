@@ -30,7 +30,7 @@
 
 
             <!-- Delete email -->
-            <div style="float:right" class="header-button" title="Delete email" (click)="deleteEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+            <div style="float:right" class="header-button" title="Delete email" (click)="delete()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 

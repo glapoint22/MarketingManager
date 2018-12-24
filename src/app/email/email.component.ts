@@ -7,6 +7,7 @@ import { Container } from '../container';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { MenuService } from '../menu.service';
 import { ColorService } from '../color.service';
+import { PromptService } from '../prompt.service';
 
 @Component({
   selector: 'email',
@@ -31,14 +32,32 @@ export class EmailComponent implements OnInit {
   private defaultSpeed: number = 0.5;
   private copy: any;
   private minContainerHeight: number = 40;
+  private changeTimeStamp: number;
+  private isTimeOut: boolean;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, private colorService: ColorService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, private colorService: ColorService, private promptService: PromptService) { }
 
   ngOnInit() {
     this.setHeight();
 
+    this.changeTimeStamp = Date.now();
     EditBoxComponent.change.subscribe(() => {
-      this.onEmailChange();
+      let currentTime = Date.now(),
+        deltaTime = currentTime - this.changeTimeStamp,
+        waitTime = 500;
+
+      this.changeTimeStamp = currentTime;
+
+      // Only call email change if delta time is greater than wait time
+      if (deltaTime < waitTime && !this.isTimeOut) {
+        this.isTimeOut = true;
+        window.setTimeout(() => {
+          this.onEmailChange();
+          this.isTimeOut = false;
+        }, waitTime);
+      } else {
+        if (!this.isTimeOut) this.onEmailChange();
+      }
     });
   }
 
@@ -159,19 +178,33 @@ export class EmailComponent implements OnInit {
   }
 
   deleteEmail() {
+    this.currentEmail.selected = false;
+    this.change += 1;
+    this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+    this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
+
+    if (this.currentItem.tierIndex === 2) {
+      // Reorder the days of this item's emails
+      this.currentItem.emails.forEach((email, i) => {
+        email.day = i + 1;
+      });
+    }
+  }
+
+  delete() {
     if (this.currentEmail && this.currentEmail.selected) {
-      this.currentEmail.selected = false;
-      this.change += 1;
-      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
-      this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
-
-      if (this.currentItem.tierIndex === 2) {
-        // Reorder the days of this item's emails
-        this.currentItem.emails.forEach((email, i) => {
-          email.day = i + 1;
-        });
-      }
-
+      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this email?', [
+        {
+          text: 'Yes',
+          callback: () => {
+            this.deleteEmail();
+          }
+        },
+        {
+          text: 'No',
+          callback: () => { }
+        }
+      ]);
     }
   }
 
@@ -295,11 +328,25 @@ export class EmailComponent implements OnInit {
 
   pasteEmail() {
     if (this.copy) this.newEmail(this.copy);
+    this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
   }
 
   cutEmail() {
-    this.copyEmail();
-    this.deleteEmail();
+    if (this.currentEmail && this.currentEmail.selected) {
+      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this email?', [
+        {
+          text: 'Yes',
+          callback: () => {
+            this.copyEmail();
+            this.deleteEmail();
+          }
+        },
+        {
+          text: 'No',
+          callback: () => { }
+        }
+      ]);
+    }
   }
 
   setColor() {

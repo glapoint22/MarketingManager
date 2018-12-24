@@ -10,6 +10,7 @@ import { Container } from './container';
 import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
 import { MenuService } from './menu.service';
 import { Row } from './row';
+import { PromptService } from './prompt.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class EditBoxService {
   private fileInput = document.createElement('input');
   private spawnPosition: string;
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private menuService: MenuService) {
+  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private menuService: MenuService, private promptService: PromptService) {
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -149,21 +150,18 @@ export class EditBoxService {
 
   delete() {
     if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
-      if (EditBoxComponent.currentEditBox instanceof ContainerBoxComponent) {
-        Container.currentContainer = EditBoxComponent.currentEditBox.container;
-      }
-
-      // Get the index of the current box
-      let index = Container.currentContainer.boxes.findIndex(x => x === EditBoxComponent.currentEditBox);
-
-      // Delete the box from the viewContainerRef and its container
-      Container.currentContainer.viewContainerRef.remove(index);
-      Container.currentContainer.deleteBox(EditBoxComponent.currentEditBox);
-      EditBoxComponent.currentEditBox = null;
-
-      // Mark that there is a change and set the container height
-      EditBoxComponent.change.next();
-      Container.currentContainer.setHeight();
+      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
+        {
+          text: 'Yes',
+          callback: () => {
+            this.deleteBox();
+          }
+        },
+        {
+          text: 'No',
+          callback: () => { }
+        }
+      ]);
     }
   }
 
@@ -174,9 +172,40 @@ export class EditBoxService {
     }
   }
 
+  deleteBox() {
+    if (EditBoxComponent.currentEditBox instanceof ContainerBoxComponent) {
+      Container.currentContainer = EditBoxComponent.currentEditBox.container;
+    }
+
+    // Get the index of the current box
+    let index = Container.currentContainer.boxes.findIndex(x => x === EditBoxComponent.currentEditBox);
+
+    // Delete the box from the viewContainerRef and its container
+    Container.currentContainer.viewContainerRef.remove(index);
+    Container.currentContainer.deleteBox(EditBoxComponent.currentEditBox);
+    EditBoxComponent.currentEditBox = null;
+
+    // Mark that there is a change and set the container height
+    EditBoxComponent.change.next();
+    Container.currentContainer.setHeight();
+  }
+
   cut() {
-    this.copy();
-    this.delete();
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
+        {
+          text: 'Yes',
+          callback: () => {
+            this.copy();
+            this.deleteBox();
+          }
+        },
+        {
+          text: 'No',
+          callback: () => { }
+        }
+      ]);
+    }
   }
 
   copyBox(box: EditBoxComponent, preservePosition?: boolean) {
