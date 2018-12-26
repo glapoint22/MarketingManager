@@ -6,7 +6,7 @@ export class LinkStyle extends Style {
     constructor(editBox: EditBoxComponent) {
         super(editBox);
 
-        this.title = 'Link (Ctrl+L)';
+        this.title = 'Link';
         this.icon = 'fas fa-link';
         this.group = 'link';
     }

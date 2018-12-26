@@ -3,19 +3,19 @@
     <div class="bar">
         <!-- Edit group -->
         <div class="group">
-            <div class="style-button" (click)="editBoxService.delete()" title="Delete (Del)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+            <div class="style-button" (click)="editBoxService.delete()" title="Delete (Del)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected || editBox.currentEditBox.inEditMode}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 
-            <div class="style-button" (click)="editBoxService.copy()" title="Copy (Ctrl+C)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+            <div class="style-button" (click)="editBoxService.copy()" title="Copy (Ctrl+C)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected || editBox.currentEditBox.inEditMode}">
                 <i class="fas fa-copy"></i>
             </div>
 
-            <div class="style-button" (click)="editBoxService.cut()" title="Cut (Ctrl+X)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected}">
+            <div class="style-button" (click)="editBoxService.cut()" title="Cut (Ctrl+X)" [ngClass]="{'style-button-disabled': !editBox.currentEditBox || !editBox.currentEditBox.isSelected || editBox.currentEditBox.inEditMode}">
                 <i class="fas fa-cut"></i>
             </div>
 
-            <div class="style-button" (click)="editBoxService.paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !editBoxService.copied.boxType}">
+            <div class="style-button" (click)="editBoxService.paste()" title="Paste (Ctrl+V)" [ngClass]="{'style-button-disabled': !editBoxService.copied.boxType || (editBox.currentEditBox && editBox.currentEditBox.inEditMode)}">
                 <i class="fas fa-paste"></i>
             </div>
         </div>

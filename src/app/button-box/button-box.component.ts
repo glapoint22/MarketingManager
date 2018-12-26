@@ -100,10 +100,12 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         this.onContentChange();
       }
 
+      // OnDrop
       this.content.ondrop = (event) => {
         event.preventDefault();
       }
 
+      // OnPaste
       this.content.onpaste = (event) => {
         event.preventDefault();
       }
@@ -113,12 +115,23 @@ export class ButtonBoxComponent extends UniformBoxComponent {
         if (event.code === 'ArrowLeft' || event.code === 'ArrowUp' ||
           event.code === 'ArrowRight' || event.code === 'ArrowDown') {
           this.checkSelectionForStyles();
-        } else if (event.code === 'Escape') {
-          this.unSelect();
-        } else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+        } else if (event.code === 'Escape' || event.code === 'Enter' || event.code === 'NumpadEnter') {
           event.preventDefault();
+          this.unSelect();
+        } else if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
+          this.ctrlDown = true;
+        } else {
+          this.invokeStyle(event);
         }
       }
+
+      // OnKeyUp
+      this.content.onkeyup = (event) => {
+        if (this.ctrlDown && (event.code === 'ControlLeft' || event.code === 'ControlRight')) {
+          this.ctrlDown = false;
+        }
+      }
+
       super.initialize(this.setBoxData(rect, boxData));
     }
 

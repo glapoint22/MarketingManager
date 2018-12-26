@@ -34,10 +34,10 @@ export class Style {
 
         if (this.editBox.content.firstElementChild.tagName === 'DIV') {
             Array.from(this.editBox.content.children).forEach((parent: any) => {
-                this.removeDuplicateNodes(parent);
+                this.editBox.removeDuplicateNodes(parent);
             });
         } else {
-            this.removeDuplicateNodes(this.editBox.content);
+            this.editBox.removeDuplicateNodes(this.editBox.content);
         }
 
 
@@ -223,7 +223,7 @@ export class Style {
         let parentTagName = this.editBox.content.firstElementChild.tagName;
 
         while (node.tagName !== parentTagName) {
-            if(node.parentElement === null){
+            if (node.parentElement === null) {
                 return node;
             }
             node = node.parentElement;
@@ -247,61 +247,6 @@ export class Style {
         return {
             startContainerIndex: startContainerIndex,
             endContainerIndex: endContainerIndex
-        }
-    }
-
-    removeDuplicateNodes(parent) {
-        if (parent.childElementCount > 1) {
-            for (let i = 0; i < parent.childElementCount; i++) {
-                if (i < parent.childElementCount - 1) {
-                    if (parent.children[i].tagName === parent.children[i + 1].tagName) {
-                        let styleList1 = parent.children[i].getAttribute('style').split(';'),
-                            styleList2 = parent.children[i + 1].getAttribute('style').split(';'),
-                            isDuplicate: boolean = true;
-
-                        // If both style lists are the same length
-                        if (styleList1.length === styleList2.length) {
-
-                            // Compare style lists to see if they are the same
-                            for (let j = 0; j < styleList1.length; j++) {
-                                let k;
-                                for (k = 0; k < styleList2.length; k++) {
-                                    if (styleList1[j] === styleList2[k]) break;
-                                }
-
-                                if (k === styleList2.length) {
-                                    isDuplicate = false;
-                                    break;
-                                }
-                            }
-
-                            // if same, remove the duplicate
-                            if (isDuplicate) {
-                                parent.children[i].firstChild.appendData(parent.children[i + 1].firstChild.data);
-                                // Set selection
-                                // Single container
-                                if (Style.range.startContainer === Style.range.endContainer) {
-                                    if (Style.range.startContainer === parent.children[i + 1].firstChild) {
-                                        Style.range.setStart(parent.children[i].firstChild, parent.children[i].firstChild.length - Style.range.endOffset);
-                                        Style.range.setEnd(parent.children[i].firstChild, parent.children[i].firstChild.length);
-                                    }
-
-                                    // Multiple contaiers
-                                } else {
-                                    if (parent.children[i + 1].firstChild === Style.range.startContainer) {
-                                        Style.range.setStart(parent.children[i].firstChild, parent.children[i].firstChild.length - Style.range.startContainer.length);
-                                    } else if (parent.children[i + 1].firstChild === Style.range.endContainer) {
-                                        Style.range.setEnd(parent.children[i].firstChild, parent.children[i].firstChild.length);
-                                    }
-                                }
-                                Style.selection.setBaseAndExtent(Style.range.startContainer, Style.range.startOffset, Style.range.endContainer, Style.range.endOffset);
-                                parent.children[i + 1].remove();
-                                i--;
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

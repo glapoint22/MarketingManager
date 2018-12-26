@@ -118,14 +118,22 @@ export class TextBoxComponent extends EditBoxComponent {
       // OnKeyDown
       this.content.onkeydown = (event) => {
         this.isKeyDown = true;
-        if (event.code === 'Escape') {
+        if (event.code === 'Escape' || event.code === 'NumpadEnter') {
+          event.preventDefault();
           this.unSelect();
+        } else if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
+          this.ctrlDown = true;
+        } else {
+          this.invokeStyle(event);
         }
       }
 
       // OnKeyUp
-      this.content.onkeyup = () => {
+      this.content.onkeyup = (event) => {
         this.isKeyDown = false;
+        if (this.ctrlDown && (event.code === 'ControlLeft' || event.code === 'ControlRight')) {
+          this.ctrlDown = false;
+        }
       }
 
       // OnMouseDown
@@ -213,55 +221,80 @@ export class TextBoxComponent extends EditBoxComponent {
   }
 
   setInvalidNodes() {
-    window.setTimeout(() => {
-      if (this.content.firstElementChild.tagName === 'BR') {
-        let div = document.createElement('DIV');
+    // Div tags are deleted
+    if (this.content.firstElementChild.tagName === 'BR') {
+      let div = document.createElement('DIV');
 
-        div.style.textAlign = 'left';
-        div.appendChild(document.createElement('BR'));
-        this.content.firstElementChild.replaceWith(div);
-      }
+      div.style.textAlign = 'left';
+      div.appendChild(document.createElement('BR'));
+      this.content.firstElementChild.replaceWith(div);
+    }
 
-      Array.from(this.content.children).forEach((node: any) => {
-        Array.from(node.childNodes).forEach((childNode: any) => {
-          if (childNode.tagName === 'BR' || childNode.nodeType === 3) {
-            let child;
+    // Loop through each div tag
+    Array.from(this.content.children).forEach((node: any) => {
+      Array.from(node.childNodes).forEach((childNode: any) => {
 
-            if (childNode.nextSibling) {
-              child = childNode.nextSibling.firstChild;
-              child.insertData(0, childNode.data);
-              childNode.remove();
-            } else {
-              let span = document.createElement('SPAN');
-
-              child = childNode.tagName === 'BR' ? document.createElement('BR') : document.createTextNode(childNode.data);
-
-              span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
-              span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
-              span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
-              span.style.color = this.styles.find(x => x.style === 'color').styleValue;
-
-              span.style.backgroundColor = this.styles.find(x => x.title === 'Highlight color').styleValue;
-
-              span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
-              if (span.style.fontSize === '') span.style.fontSize = '16px';
-
-              span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
-              if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
-
-              span.appendChild(child);
-              childNode.replaceWith(span);
-            }
-
-            if (child.nodeType === 3) {
-              let selection = this.content.ownerDocument.getSelection();
-              selection.setPosition(child, 1);
-            }
-
+        
+        if (childNode.tagName === 'SPAN') {
+          // Child node as <b>, <i>, or <i> tags
+          if(childNode.firstElementChild && childNode.firstElementChild.tagName !=='BR'){
+            let text = this.getChild(childNode.firstElementChild);
+            childNode.firstChild.appendData(text.data);
+            childNode.firstElementChild.remove();
           }
-        });
+
+          // Node has no color style
+          if (childNode.style.color === '') {
+            childNode.style.color = '#000000';
+            this.removeDuplicateNodes(node, true);
+          }
+
+        }
+
+        // Child node is <BR> or <FONT> or text
+        if (childNode.tagName === 'BR' || childNode.tagName === 'FONT' || childNode.nodeType === 3) {
+          let child;
+
+          // Child node is text
+          if (childNode.nextSibling) {
+            child = childNode.nextSibling.firstChild;
+            child.insertData(0, childNode.data);
+            childNode.remove();
+
+            // Child node is <BR> or <FONT>
+          } else {
+            let span = document.createElement('SPAN');
+
+            if (childNode.tagName === 'BR') {
+              child = document.createElement('BR');
+            } else {
+              child = document.createTextNode(this.getChild(childNode).data);
+            }
+
+            span.style.fontWeight = this.styles.find(x => x.style === 'fontWeight').isSelected ? 'bold' : null;
+            span.style.fontStyle = this.styles.find(x => x.style === 'fontStyle').isSelected ? 'italic' : null;
+            span.style.textDecoration = this.styles.find(x => x.style === 'textDecoration').isSelected ? 'underline' : null;
+            span.style.color = this.styles.find(x => x.style === 'color').styleValue;
+
+            span.style.backgroundColor = this.styles.find(x => x.title === 'Highlight color').styleValue;
+
+            span.style.fontSize = this.styles.find(x => x.style === 'fontSize').styleValue;
+            if (span.style.fontSize === '') span.style.fontSize = '16px';
+
+            span.style.fontFamily = this.styles.find(x => x.style === 'fontFamily').styleValue;
+            if (span.style.fontFamily === '') span.style.fontFamily = '"Times New Roman", Times, serif';
+
+            span.appendChild(child);
+            childNode.replaceWith(span);
+          }
+
+          if (child.nodeType === 3) {
+            let selection = this.content.ownerDocument.getSelection();
+            selection.setPosition(child, 1);
+          }
+        }
       });
-    }, 1);
+    });
   }
 
   onContentChange() {

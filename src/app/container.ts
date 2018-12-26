@@ -17,7 +17,7 @@ export class Container {
     if (this.boxes.length > 0) {
       // If every box has a rect
       if (this.boxes.every((box: EditBoxComponent) => box.rect !== undefined)) {
-        this.height = Math.max(...this.boxes.map(x => x.rect.yMax));
+        this.height = Math.max(...this.boxes.map(x => x.rect.yMax), this.minHeight);
 
         // Wait until all boxes have their rects
       } else {

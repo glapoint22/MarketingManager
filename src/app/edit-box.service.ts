@@ -149,7 +149,7 @@ export class EditBoxService {
   }
 
   delete() {
-    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !EditBoxComponent.currentEditBox.inEditMode) {
       this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
         {
           text: 'Yes',
@@ -166,7 +166,7 @@ export class EditBoxService {
   }
 
   copy() {
-    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !EditBoxComponent.currentEditBox.inEditMode) {
       this.copied = this.copyBox(EditBoxComponent.currentEditBox);
       this.copied.isSelected = true;
     }
@@ -191,7 +191,7 @@ export class EditBoxService {
   }
 
   cut() {
-    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !EditBoxComponent.currentEditBox.inEditMode) {
       this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
         {
           text: 'Yes',
@@ -277,6 +277,9 @@ export class EditBoxService {
 
   paste() {
     if (this.copied.boxType) {
+      if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.inEditMode) return;
+
+
       let box = this.createBox(this.copied.boxType, Container.currentContainer, this.copied.contentContainerType);
       let newBoxes: Array<EditBoxComponent> = [];
 

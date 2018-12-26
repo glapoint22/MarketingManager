@@ -248,6 +248,8 @@ export class EmailComponent implements OnInit {
           this.currentEmail.subject = this.editInput.nativeElement.value.trim();
           this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
         }
+      }else if(EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected){
+        EditBoxComponent.currentEditBox.setEditMode();
       }
     }
   }

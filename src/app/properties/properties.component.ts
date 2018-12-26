@@ -17,7 +17,7 @@ export class PropertiesComponent {
   public gridItem;
   public Math = Math;
   public editBox = EditBoxComponent;
-  public ctrlDown: boolean;
+  private ctrlDown: boolean;
 
   constructor(private linkService: LinkService, public editBoxService: EditBoxService) { }
 

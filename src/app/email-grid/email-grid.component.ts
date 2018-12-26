@@ -147,6 +147,17 @@ export class EmailGridComponent extends GridComponent implements OnInit {
     let itemType = this.tiers[item.tierIndex].fields[0].name;
 
     for (let i = 0; i < item.emails.length; i++) {
+      // Check for invlaid tags
+      if (/<font/.test(item.emails[i].body) || /<b>/.test(item.emails[i].body) || /<i>/.test(item.emails[i].body) || /<u>/.test(item.emails[i].body)) {
+        this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
       // Check for invalid urls
       if (!this.linkService.validateUrl(item.emails[i].body)) {
         this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
