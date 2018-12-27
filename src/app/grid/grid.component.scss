@@ -60,22 +60,6 @@ select{
     justify-content: center;
 }
 .loading-cirlce{
-    background: #c2c2c2;
-    border-radius: 50%;
-    margin-right: 5px;
     height: 20px;
     width: 20px;
-    animation: 2s scale;
-    animation-iteration-count: infinite;
-}
-@keyframes scale {
-    0% {
-      transform: scale(0);
-    }
-    50% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(0);
-    }
 }

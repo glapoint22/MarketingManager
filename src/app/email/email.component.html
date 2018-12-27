@@ -59,6 +59,12 @@
                 <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected && !inputToggle.checked, 'expanded': inputToggle.checked}"
                     (click)="onEmailClick(email)">
 
+                    <!-- Loading -->
+                    <div *ngIf="pageLoading" class="loading-container">
+                        <div class="loading-cirlce"></div>
+                        <div class="loading-cirlce" style="animation-delay: .3333s; transform: scale(0);"></div>
+                        <div class="loading-cirlce" style="animation-delay: .6666s; transform: scale(0);"></div>
+                    </div>
 
                     <span *ngIf="email.isInEditMode else subjectValue">
                         <input #edit class="edit" type="text" [value]="email.subject" (focus)="edit.select()" (blur)="email.isInEditMode = false">
@@ -131,8 +137,7 @@
                 <div style="background-color: #1e1e1e">
                     <div #background class="email-content-container" [style.transition]="'max-height ' + speed + 's'"
                         (transitionend)="transitionEnd($event)" [style.backgroundColor]="email.backgroundColor"
-                        [style.maxHeight.px]="inputToggle.checked && container ? container.height : 0"
-                        (mousedown)="onMouseDown()">
+                        [style.maxHeight.px]="inputToggle.checked && container ? container.height : 0" (mousedown)="onMouseDown()">
 
                         <!-- Email page -->
                         <div #page class="page dashed-outline" [style.width.px]="pageWidth" [style.height.px]="container ? container.height : 0"

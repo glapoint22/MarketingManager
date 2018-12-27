@@ -8,6 +8,8 @@ import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { MenuService } from '../menu.service';
 import { ColorService } from '../color.service';
 import { PromptService } from '../prompt.service';
+import { LinkService } from '../link.service';
+import { SaveService } from '../save.service';
 
 @Component({
   selector: 'email',
@@ -25,6 +27,7 @@ export class EmailComponent implements OnInit {
   public change: number = 0;
   public currentItem;
   public speed: number;
+  public pageLoading: boolean;
   private currentEmail;
   private currentToggleButton;
   private container: Container;
@@ -35,7 +38,9 @@ export class EmailComponent implements OnInit {
   private changeTimeStamp: number;
   private isTimeOut: boolean;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService, private tableService: TableService, private menuService: MenuService, private colorService: ColorService, private promptService: PromptService) { }
+  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService,
+    private tableService: TableService, private menuService: MenuService, private colorService: ColorService,
+    private promptService: PromptService, private linkService: LinkService, private saveService: SaveService) { }
 
   ngOnInit() {
     this.setHeight();
@@ -82,9 +87,11 @@ export class EmailComponent implements OnInit {
 
     // If the main table differs from what has been saved
     if (this.currentEmail.body !== mainTable.outerHTML) {
-      this.currentEmail.body = mainTable.outerHTML;
       this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      this.currentEmail.body = mainTable.outerHTML;
+      this.saveService.checkForNoChanges();
     }
+    
   }
 
 
@@ -93,6 +100,8 @@ export class EmailComponent implements OnInit {
   }
 
   onToggleButtonClick(input, index, email) {
+    if (this.pageLoading) return;
+    
     // Set the speed the page expands and collapses
     this.speed = this.defaultSpeed;
 
@@ -106,7 +115,6 @@ export class EmailComponent implements OnInit {
     } else {
       this.closedContainer = null;
       this.onEmailClick(email);
-      input.checked = true;
 
       // Create the container for this page
       Container.currentContainer = this.container = new Container(this.viewContainerRefs.toArray()[index], this.page.nativeElement, this.minContainerHeight);
@@ -116,7 +124,9 @@ export class EmailComponent implements OnInit {
 
       // Load the email
       if (this.currentEmail.body !== '' && (!Container.currentContainer.boxes || Container.currentContainer.boxes.length === 0)) {
-        this.loadEmail();
+        this.loadEmail(input);
+      }else{
+        input.checked = true;
       }
 
       // Set the container height
@@ -124,7 +134,7 @@ export class EmailComponent implements OnInit {
     }
   }
 
-  loadEmail() {
+  loadEmail(input) {
     let parser = new DOMParser(),
       doc = parser.parseFromString(this.currentEmail.body, "text/html"),
       mainTable: HTMLTableElement = doc.body.firstElementChild as HTMLTableElement,
@@ -140,6 +150,8 @@ export class EmailComponent implements OnInit {
     this.tableService.tableToBox(pageTable, Container.currentContainer);
 
 
+    this.pageLoading = true;
+
     // Set the current container as this page when all boxes have loaded
     interval = window.setInterval(() => {
       if (this.tableService.loadedBoxes.every(x => x.isLoaded)) {
@@ -148,6 +160,8 @@ export class EmailComponent implements OnInit {
         // Set the container
         Container.currentContainer = this.container;
 
+        input.checked = true;
+        this.pageLoading = false;
         window.clearInterval(interval);
       }
     }, 1);
@@ -189,6 +203,7 @@ export class EmailComponent implements OnInit {
         email.day = i + 1;
       });
     }
+    this.saveService.checkForNoChanges();
   }
 
   delete() {
@@ -217,7 +232,7 @@ export class EmailComponent implements OnInit {
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape
     if (event.code === 'Escape') {
-      if (!this.colorService.showColorPicker) {
+      if (!this.colorService.showColorPicker && !this.linkService.show && !this.promptService.show) {
         if (this.currentEmail && this.currentEmail.selected) {
           if (this.currentEmail.isInEditMode) {
             this.currentEmail.isInEditMode = false;
@@ -248,7 +263,8 @@ export class EmailComponent implements OnInit {
           this.currentEmail.subject = this.editInput.nativeElement.value.trim();
           this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
         }
-      }else if(EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected){
+      } else if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !this.colorService.showColorPicker
+        && !this.linkService.show && !this.promptService.show) {
         EditBoxComponent.currentEditBox.setEditMode();
       }
     }
@@ -279,7 +295,7 @@ export class EmailComponent implements OnInit {
 
   newEmail(data?) {
     if ((this.currentItem.tierIndex === 1 && this.currentItem.emails.length === 0) || this.currentItem.tierIndex === 2) {
-      // this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+      this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
       this.currentItem.emails.push({
         id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
         subject: data ? data.subject : 'subject',
@@ -297,7 +313,7 @@ export class EmailComponent implements OnInit {
       this.onEmailClick(email);
       this.currentEmail = email;
       this.editEmail(email);
-      this.onEmailChange();
+      
     }
   }
 
@@ -330,7 +346,6 @@ export class EmailComponent implements OnInit {
 
   pasteEmail() {
     if (this.copy) this.newEmail(this.copy);
-    this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
   }
 
   cutEmail() {

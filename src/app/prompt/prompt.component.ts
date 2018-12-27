@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { PromptService } from "../prompt.service";
 
 @Component({
@@ -9,4 +9,12 @@ import { PromptService } from "../prompt.service";
 export class PromptComponent {
 
   constructor(public promptService: PromptService) { }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //Escape
+    if (event.code === 'Escape'){
+      this.promptService.show = false;
+    }
+  }
 }
