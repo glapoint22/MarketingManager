@@ -133,8 +133,7 @@ export class SaveService {
   }
 
   checkForNoChanges() {
-    let regEx = /(,*"isSelected":(true|false))|(,*"isInEditMode":(true|false))/g;
-    // let regEx = /(,*"isSelected":(true|false))|(,*"isInEditMode":(true|false)|"id":"[0-9A-Z]{10})/g;
+    let regEx = /(,*"isSelected":(true|false))|(,*"isInEditMode":(true|false)|,*"id":"[0-9A-Z]{10}"|,*"backgroundColor":"#[0-9a-z]{6}"|,*"pageColor":"#[0-9a-z]{6}")/g;
 
     if (this.updatedItems.every(x => JSON.stringify(x.originalItem).replace(regEx, '') === JSON.stringify(x.item).replace(regEx, ''))) {
       this.updatedItems = [];

@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { SaveService } from '../save.service';
+import { PromptService } from '../prompt.service';
 
 @Component({
   selector: 'menu-button',
@@ -11,7 +13,7 @@ export class MenuButtonComponent implements OnInit {
   @Input() icon: string;
   @Output() onButtonClick = new EventEmitter<string>();
 
-  constructor() { }
+  constructor(public saveService: SaveService, private promptService: PromptService) { }
 
   ngOnInit() {
     if (this.default) {
@@ -21,5 +23,16 @@ export class MenuButtonComponent implements OnInit {
 
   onChange() {
     this.onButtonClick.emit(this.buttonId);
+  }
+
+  onClick() {
+    if (this.saveService.isChange()) {
+      this.promptService.prompt('Unsaved Data', 'You have unsaved data. You must save before you can proceed.', [
+        {
+          text: 'Ok',
+          callback: () => { }
+        }
+      ]);
+    }
   }
 }

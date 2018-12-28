@@ -1,7 +1,7 @@
 <!-- Menu -->
 <div class="menu">
-    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart"></menu-button>
-    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event" icon="fa-envelope" default="true"></menu-button>
+    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
+    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
     <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
     <menu-button buttonId="social" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
     <div class="save-button" (click)="saveService.save()" [class]="saveService.isChange() ? 'save-button blink' : 'save-button button-disabled'">Save</div>

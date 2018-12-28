@@ -1,4 +1,4 @@
-<input [id]="buttonId" type="radio" name="menu-button" (change)="onChange()" [checked]="default">
-<label [for]="buttonId">
+<input [id]="buttonId" type="radio" name="menu-button" (change)="onChange()" [checked]="default" [disabled]="saveService.isChange()">
+<label [for]="buttonId" (click)="onClick()">
     <i [class]="'fas fa-lg ' + icon"></i>
 </label>

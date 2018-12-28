@@ -332,9 +332,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.showFiltersContainer = false;
   }
 
-  // setParentTierHeight() {
-  //   this.tierComponent.parentTierHeight = window.innerHeight - 91;
-  // }
 
   setDelete() {
     super.setDelete();
@@ -344,10 +341,10 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   createItemId(items: Array<any>, tierIndex: number): any {
     //Create an id for the new product
     if (tierIndex === 2) {
-      let id, index = 0
+      let id = '', index = 0
 
-      //This makes sure we don't have a duplicate
-      while (index > -1) {
+      // Create a unique id that is 10 characters long
+      while (index > -1 || id.length < 10 || id.length > 10) {
         id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
         index = items.findIndex(x => x.id == id);
       }

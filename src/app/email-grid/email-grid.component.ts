@@ -148,7 +148,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
 
     for (let i = 0; i < item.emails.length; i++) {
       // Check for invlaid tags
-      if (/<font/.test(item.emails[i].body) || /<b>/.test(item.emails[i].body) || /<i>/.test(item.emails[i].body) || /<u>/.test(item.emails[i].body)) {
+        if (/<font|<b>|<i>|<u>/.test(item.emails[i].body)) {
         this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
           {
             text: 'Ok',

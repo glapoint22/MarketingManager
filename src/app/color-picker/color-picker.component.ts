@@ -12,6 +12,7 @@ export class ColorPickerComponent implements OnInit {
   @ViewChild('g') gInput: ElementRef;
   @ViewChild('b') bInput: ElementRef;
   @ViewChild('hex') hexInput: ElementRef;
+  public position: Vector2;
   public huePos: number;
   public colorPos: Vector2 = new Vector2(0, 0);
   public hue: number = 0;
@@ -20,8 +21,7 @@ export class ColorPickerComponent implements OnInit {
   private mouseDownArea: string;
   private width: number = 407;
   private height: number = 313;
-  private position: Vector2;
-
+  
   // rgbColor
   private _rgbColor: any = { r: 255, g: 255, b: 255 };;
   public get rgbColor(): any {

@@ -292,9 +292,20 @@ export class EmailComponent implements OnInit {
 
   newEmail(data?) {
     if ((this.currentItem.tierIndex === 1 && this.currentItem.emails.length === 0) || this.currentItem.tierIndex === 2) {
+      let id: string = '', index = 0,
+        arrays = this.emailGridComponent.tiers[this.currentItem.tierIndex].items.map(x => x.emails.map(z => z.id)),
+        ids = [].concat.apply([], arrays);
+
+      // Create a unique id that is 10 characters long
+      while (index > -1 || id.length < 10 || id.length > 10) {
+        id = Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase();
+        index = ids.findIndex(x => x == id);
+      }
+
       this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+
       this.currentItem.emails.push({
-        id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
+        id: id,
         subject: data ? data.subject : 'subject',
         body: data ? data.body : '<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td width="100%" ' +
           'align="center"><!--[if (gte mso 9)|(IE)]><table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td>' +
