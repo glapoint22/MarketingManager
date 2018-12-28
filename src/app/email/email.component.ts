@@ -91,7 +91,7 @@ export class EmailComponent implements OnInit {
       this.currentEmail.body = mainTable.outerHTML;
       this.saveService.checkForNoChanges();
     }
-    
+
   }
 
 
@@ -101,7 +101,7 @@ export class EmailComponent implements OnInit {
 
   onToggleButtonClick(input, index, email) {
     if (this.pageLoading) return;
-    
+
     // Set the speed the page expands and collapses
     this.speed = this.defaultSpeed;
 
@@ -123,11 +123,7 @@ export class EmailComponent implements OnInit {
       this.currentToggleButton = input;
 
       // Load the email
-      if (this.currentEmail.body !== '' && (!Container.currentContainer.boxes || Container.currentContainer.boxes.length === 0)) {
-        this.loadEmail(input);
-      }else{
-        input.checked = true;
-      }
+      this.loadEmail(input);
 
       // Set the container height
       this.container.setHeight();
@@ -179,7 +175,7 @@ export class EmailComponent implements OnInit {
 
   onEmailClick(email) {
     if (this.currentEmail && this.currentEmail !== email) {
-      this.currentEmail.selected = false;
+      this.currentEmail.isSelected = false;
       if (this.currentToggleButton) {
         this.speed = this.defaultSpeed;
         this.currentToggleButton.checked = false;
@@ -188,11 +184,11 @@ export class EmailComponent implements OnInit {
       Container.currentContainer = null;
     }
     this.currentEmail = email;
-    email.selected = true;
+    email.isSelected = true;
   }
 
   deleteEmail() {
-    this.currentEmail.selected = false;
+    this.currentEmail.isSelected = false;
     this.change += 1;
     this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
     this.currentItem.emails.splice(this.currentItem.emails.findIndex(x => x === this.currentEmail), 1);
@@ -207,7 +203,7 @@ export class EmailComponent implements OnInit {
   }
 
   delete() {
-    if (this.currentEmail && this.currentEmail.selected) {
+    if (this.currentEmail && this.currentEmail.isSelected) {
       this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this email?', [
         {
           text: 'Yes',
@@ -233,7 +229,7 @@ export class EmailComponent implements OnInit {
     //Escape
     if (event.code === 'Escape') {
       if (!this.colorService.showColorPicker && !this.linkService.show && !this.promptService.show) {
-        if (this.currentEmail && this.currentEmail.selected) {
+        if (this.currentEmail && this.currentEmail.isSelected) {
           if (this.currentEmail.isInEditMode) {
             this.currentEmail.isInEditMode = false;
           } else if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) {
@@ -243,7 +239,7 @@ export class EmailComponent implements OnInit {
               Container.currentContainer = null;
               this.speed = this.defaultSpeed;
             } else {
-              this.currentEmail.selected = false;
+              this.currentEmail.isSelected = false;
             }
           } else {
             if (this.menuService.show) {
@@ -260,8 +256,9 @@ export class EmailComponent implements OnInit {
         this.currentEmail.isInEditMode = false;
 
         if (this.currentEmail.subject !== this.editInput.nativeElement.value && /\w/.test(this.editInput.nativeElement.value)) {
-          this.currentEmail.subject = this.editInput.nativeElement.value.trim();
           this.emailGridComponent.saveUpdate(this.currentItem, this.emailGridComponent.tiers[this.currentItem.tierIndex]);
+          this.currentEmail.subject = this.editInput.nativeElement.value.trim();
+          this.saveService.checkForNoChanges();
         }
       } else if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !this.colorService.showColorPicker
         && !this.linkService.show && !this.promptService.show) {
@@ -299,7 +296,10 @@ export class EmailComponent implements OnInit {
       this.currentItem.emails.push({
         id: Math.floor((Math.random()) * 0x10000000000).toString(16).toUpperCase(),
         subject: data ? data.subject : 'subject',
-        body: data ? data.body : '',
+        body: data ? data.body : '<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td width="100%" ' +
+          'align="center"><!--[if (gte mso 9)|(IE)]><table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td>' +
+          '<![endif]--><table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="max-width: 600px;"><tr><td height="' +
+          '40"></td></tr></table><!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]--></td></tr></table>',
         backgroundColor: data ? data.backgroundColor : '#ffffff',
         pageColor: data ? data.pageColor : '#ffffff'
       });
@@ -313,7 +313,7 @@ export class EmailComponent implements OnInit {
       this.onEmailClick(email);
       this.currentEmail = email;
       this.editEmail(email);
-      
+      this.saveService.checkForNoChanges();
     }
   }
 
@@ -332,7 +332,7 @@ export class EmailComponent implements OnInit {
   }
 
   copyEmail() {
-    if (this.currentEmail && this.currentEmail.selected) {
+    if (this.currentEmail && this.currentEmail.isSelected) {
       let regex = RegExp(/bgcolor="(#[a-z0-9]+)"/, 'g');
 
       this.copy = {
@@ -349,7 +349,7 @@ export class EmailComponent implements OnInit {
   }
 
   cutEmail() {
-    if (this.currentEmail && this.currentEmail.selected) {
+    if (this.currentEmail && this.currentEmail.isSelected) {
       this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this email?', [
         {
           text: 'Yes',

@@ -18,19 +18,19 @@
             </div>
 
             <!-- Cut email -->
-            <div style="float:right" class="header-button" title="Cut email" (click)="cutEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+            <div style="float:right" class="header-button" title="Cut email" (click)="cutEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.isSelected}">
                 <i class="fas fa-cut"></i>
             </div>
 
 
             <!-- Copy email -->
-            <div style="float:right" class="header-button" title="Copy email" (click)="copyEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+            <div style="float:right" class="header-button" title="Copy email" (click)="copyEmail()" [ngClass]="{'disabled': !currentEmail || !currentEmail.isSelected}">
                 <i class="fas fa-copy"></i>
             </div>
 
 
             <!-- Delete email -->
-            <div style="float:right" class="header-button" title="Delete email" (click)="delete()" [ngClass]="{'disabled': !currentEmail || !currentEmail.selected}">
+            <div style="float:right" class="header-button" title="Delete email" (click)="delete()" [ngClass]="{'disabled': !currentEmail || !currentEmail.isSelected}">
                 <i class="fas fa-trash-alt"></i>
             </div>
 
@@ -56,7 +56,7 @@
                 </span>
 
                 <!-- Email subject bar -->
-                <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.selected && !inputToggle.checked, 'expanded': inputToggle.checked}"
+                <div class="bar subject highlight" style="margin-left: 23px;" [ngClass]="{'selected': email.isSelected && !inputToggle.checked, 'expanded': inputToggle.checked}"
                     (click)="onEmailClick(email)">
 
                     <!-- Loading -->
