@@ -1,18 +1,18 @@
 <!-- Menu -->
 <div class="menu">
-    <menu-button buttonId="shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
-    <menu-button buttonId="email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
-    <menu-button buttonId="leads" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
-    <menu-button buttonId="social" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
+    <menu-button buttonId="Shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
+    <menu-button buttonId="Email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
+    <menu-button buttonId="Lead Magnet" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
+    <menu-button buttonId="Social Media" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
     <div class="save-button" (click)="saveService.save()" [class]="saveService.isChange() ? 'save-button blink' : 'save-button button-disabled'">Save</div>
 </div>
 
 <!-- Content -->
 <div class="content-container">
-    <shop *ngIf="activeScreen == 'shop'"></shop>
-    <email *ngIf="activeScreen == 'email'"></email>
-    <leads *ngIf="activeScreen == 'leads'"></leads>
-    <social *ngIf="activeScreen == 'social'"></social>
+    <shop *ngIf="activeScreen == 'Shop'"></shop>
+    <email *ngIf="activeScreen == 'Email'"></email>
+    <leads *ngIf="activeScreen == 'Lead Magnet'"></leads>
+    <social *ngIf="activeScreen == 'Social Media'"></social>
 </div>
 
 <!-- Link form -->

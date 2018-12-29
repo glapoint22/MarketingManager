@@ -25,6 +25,7 @@ export class TierComponent implements Itier {
   public margin: number = 0;
   public parentTierHeight: number;
   public noResults: boolean;
+  public isCollapsed: boolean;
 
   constructor() { }
 
@@ -96,10 +97,11 @@ export class TierComponent implements Itier {
     }
   }
 
-  isCollapsed() {
+  ngDoCheck(){
     //Test to see if all rows in this tier are collapsed.
-    if (this.tierComponents.length > 0) {
-      return this.tierComponents.toArray().some(x => x.isExpanded);
+    this.isCollapsed = false;
+    if (this.tierComponents && this.tierComponents.length > 0) {
+      this.isCollapsed = this.tierComponents.toArray().some(x => x.isExpanded);
     }
   }
 

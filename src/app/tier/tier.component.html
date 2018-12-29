@@ -19,7 +19,7 @@
           </div>
 
           <!-- Collapse Button -->
-          <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers()" [ngClass]="{'disabled': !isCollapsed()}"
+          <div *ngIf="index < grid.tiers.length - 1" class="button" (click)="collapseTiers()" [ngClass]="{'disabled': !isCollapsed}"
             [title]="'Collapse ' + name">
             <i class="fas fa-minus-square"></i>
           </div>
@@ -51,7 +51,7 @@
         <!-- Data -->
         <div *ngFor="let data of item.data | dataFilter: fields; let j = index" class="field" [style.flexBasis.px]="fields[j].width">
           <div *ngIf="grid.currentItem == item && item.isInEditMode else dataValue">
-            <input #edit class="edit" type="text" [value]="data.value" onfocus="this.select()" (blur)="checkFocus(item)" [style.borderLeftColor]="j > 0 ? 'transparent': ''">
+            <input #edit class="edit" type="text" [value]="data.value" onfocus="this.select()" (drop)="$event.preventDefault()" (blur)="checkFocus(item)" [style.borderLeftColor]="j > 0 ? 'transparent': ''">
           </div>
           <ng-template #dataValue>
             {{data.type == 'currency' ? (data.value | currency) : data.value}}

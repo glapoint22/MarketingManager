@@ -27,9 +27,15 @@ export class MenuButtonComponent implements OnInit {
 
   onClick() {
     if (this.saveService.isChange()) {
-      this.promptService.prompt('Unsaved Data', 'You have unsaved data. You must save before you can proceed.', [
+      this.promptService.prompt('Unsaved Data', 'You have unsaved data. Would you like to save?', [
         {
-          text: 'Ok',
+          text: 'Yes',
+          callback: () => {
+            this.saveService.save();
+          }
+        },
+        {
+          text: 'No',
           callback: () => { }
         }
       ]);

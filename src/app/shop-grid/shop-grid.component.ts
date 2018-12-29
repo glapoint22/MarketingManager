@@ -302,10 +302,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.hasFocus = true;
   }
 
-  // @HostListener('window:resize', ['$event'])
-  // onResize(event) {
-  //   this.setParentTierHeight();
-  // }
 
   handleKeyboardEvent(event: KeyboardEvent) {
     //Escape

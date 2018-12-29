@@ -10,6 +10,7 @@ import { ColorService } from '../color.service';
 import { PromptService } from '../prompt.service';
 import { LinkService } from '../link.service';
 import { SaveService } from '../save.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'email',
@@ -37,6 +38,7 @@ export class EmailComponent implements OnInit {
   private minContainerHeight: number = 40;
   private changeTimeStamp: number;
   private isTimeOut: boolean;
+  private changeSubscription: Subscription;
 
   constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService,
     private tableService: TableService, private menuService: MenuService, private colorService: ColorService,
@@ -46,7 +48,7 @@ export class EmailComponent implements OnInit {
     this.setHeight();
 
     this.changeTimeStamp = Date.now();
-    EditBoxComponent.change.subscribe(() => {
+    this.changeSubscription = EditBoxComponent.change.subscribe(() => {
       let currentTime = Date.now(),
         deltaTime = currentTime - this.changeTimeStamp,
         waitTime = 500;
@@ -64,6 +66,10 @@ export class EmailComponent implements OnInit {
         if (!this.isTimeOut) this.onEmailChange();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.changeSubscription.unsubscribe()
   }
 
   onEmailChange() {
@@ -204,7 +210,7 @@ export class EmailComponent implements OnInit {
 
   delete() {
     if (this.currentEmail && this.currentEmail.isSelected) {
-      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this email?', [
+      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete email "' + this.currentEmail.subject + '"?', [
         {
           text: 'Yes',
           callback: () => {
@@ -361,7 +367,7 @@ export class EmailComponent implements OnInit {
 
   cutEmail() {
     if (this.currentEmail && this.currentEmail.isSelected) {
-      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this email?', [
+      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut email "' + this.currentEmail.subject + '"?', [
         {
           text: 'Yes',
           callback: () => {

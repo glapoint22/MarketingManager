@@ -10,7 +10,7 @@ export class ContextMenu {
 export class MenuGroup {
     menuRows: Array<MenuRow> = [];
 
-    createMenuRow(caption: string, action?, isDisabled?): MenuRow {
+    createMenuRow(caption: string, action?: Function, isDisabled?: Function): MenuRow {
         this.menuRows.push(new MenuRow(caption, action, isDisabled));
         return this.menuRows[this.menuRows.length - 1];
     }
@@ -18,5 +18,5 @@ export class MenuGroup {
 
 export class MenuRow {
     public subMenu: ContextMenu;
-    constructor(public caption: string, public action, public isDisabled) { }
+    constructor(public caption: string, public action: Function, public isDisabled: Function) { }
 }

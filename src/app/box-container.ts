@@ -19,6 +19,7 @@ export class BoxContainer extends Container {
             });
 
             this.height = this.containerBox.rect.height;
+            this.containerBox.row.setYMax();
             // Set the parent's height
             this.containerBox.container.setHeight();
 

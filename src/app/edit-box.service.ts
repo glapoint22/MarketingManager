@@ -62,9 +62,16 @@ export class EditBoxService {
 
     // Alignment
     menuGroup = this.menuService.menu.createMenuGroup();
-    menuGroup.createMenuRow('Align Boxes Left', () => { EditBoxComponent.currentEditBox.row.alignBoxesLeft(), EditBoxComponent.change.next() });
-    menuGroup.createMenuRow('Align Boxes Center', () => { EditBoxComponent.currentEditBox.row.alignBoxesCenter(), EditBoxComponent.change.next() });
-    menuGroup.createMenuRow('Align Boxes Right', () => { EditBoxComponent.currentEditBox.row.alignBoxesRight(), EditBoxComponent.change.next() });
+    menuGroup.createMenuRow('Align Boxes Left', () => { EditBoxComponent.currentEditBox.row.alignBoxesLeft(); EditBoxComponent.change.next() });
+    menuGroup.createMenuRow('Align Boxes Center', () => { EditBoxComponent.currentEditBox.row.alignBoxesCenter(); EditBoxComponent.change.next() });
+    menuGroup.createMenuRow('Align Boxes Right', () => { EditBoxComponent.currentEditBox.row.alignBoxesRight(); EditBoxComponent.change.next() });
+
+    // Delete, copy, cut, paste
+    menuGroup = this.menuService.menu.createMenuGroup();
+    menuGroup.createMenuRow('Delete', () => { this.delete() });
+    menuGroup.createMenuRow('Copy', () => { this.copy() });
+    menuGroup.createMenuRow('Cut', () => { this.cut() });
+    menuGroup.createMenuRow('Paste', () => { this.paste() }, () => { return !this.copied.boxType });
   }
 
   menuPaste(insertType) {
@@ -150,7 +157,7 @@ export class EditBoxService {
 
   delete() {
     if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !EditBoxComponent.currentEditBox.inEditMode) {
-      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
+      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this "' + EditBoxComponent.currentEditBox.type.toLowerCase() + '"?', [
         {
           text: 'Yes',
           callback: () => {
@@ -192,7 +199,7 @@ export class EditBoxService {
 
   cut() {
     if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !EditBoxComponent.currentEditBox.inEditMode) {
-      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this ' + EditBoxComponent.currentEditBox.type.toLowerCase() + '?', [
+      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut this "' + EditBoxComponent.currentEditBox.type.toLowerCase() + '"?', [
         {
           text: 'Yes',
           callback: () => {

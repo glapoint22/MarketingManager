@@ -31,7 +31,7 @@ export class EditableGridComponent extends GridComponent {
         icon: 'fas fa-trash-alt',
         onClick: () => {
           if (this.currentItem && this.currentItem.isSelected) {
-            this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' + this.currentItem.data[0].value + '?', [
+            this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete "' + this.currentItem.data[0].value + '"?', [
               {
                 text: 'Yes',
                 callback: () => this.setDelete()
@@ -98,12 +98,6 @@ export class EditableGridComponent extends GridComponent {
     }
   }
 
-  // saveUpdate(item, tier) {
-  //   // Put this edited item in the updated items array so it can be saved to the database
-  //   if (!this.saveService.newItems.some(x => x.item == item) && !this.saveService.updatedItems.some(x => x.item == item)) {
-  //     this.saveService.addSaveItem(this.saveService.updatedItems, item, tier);
-  //   }
-  // }
 
   editItem(item) {
     item.isInEditMode = true;
@@ -119,7 +113,7 @@ export class EditableGridComponent extends GridComponent {
       this.deleteItem(this.currentItem);
       this.change += 1;
       this.tierComponent.checkItemResults();
-      this.collapseDeletedTier(this.tierComponent.tierComponents);
+      // this.collapseDeletedTier(this.tierComponent.tierComponents);
       this.saveDelete(this.currentItem);
     }
   }
@@ -134,15 +128,15 @@ export class EditableGridComponent extends GridComponent {
     }
   }
 
-  collapseDeletedTier(tierComponents) {
-    tierComponents.toArray().filter(x => x.isExpanded).forEach(x => {
-      if (x.parentId === this.currentItem.id) {
-        x.isExpanded = false;
-      } else {
-        this.collapseDeletedTier(x.tierComponents);
-      }
-    });
-  }
+  // collapseDeletedTier(tierComponents) {
+  //   tierComponents.toArray().filter(x => x.isExpanded).forEach(x => {
+  //     if (x.parentId === this.currentItem.id) {
+  //       x.isExpanded = false;
+  //     } else {
+  //       this.collapseDeletedTier(x.tierComponents);
+  //     }
+  //   });
+  // }
 
   deleteItem(item: any) {
     //Delete this current item

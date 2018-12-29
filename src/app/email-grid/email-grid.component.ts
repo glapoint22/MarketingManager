@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ElementRef } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
@@ -13,7 +13,7 @@ import { PromptService } from '../prompt.service';
 export class EmailGridComponent extends GridComponent implements OnInit {
   @Output() onItemClick = new EventEmitter<any>();
 
-  constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService) { super(dataService, saveService) }
+  constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService, private element: ElementRef) { super(dataService, saveService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Mail';
@@ -136,6 +136,8 @@ export class EmailGridComponent extends GridComponent implements OnInit {
     });
 
     super.createTiers();
+    this.element.nativeElement.firstElementChild.focus();
+    this.hasFocus = true;
   }
 
   onItemSelect(item: any): void {
