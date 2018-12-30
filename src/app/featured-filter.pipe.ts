@@ -8,6 +8,6 @@ export class FeaturedFilterPipe implements PipeTransform {
   transform(items: Array<any>, isFeatured: boolean, isNonFeatured: boolean): any {
     if (!items) return;
     if (!isFeatured) return items;
-    return items.filter(x => x.featured === !isNonFeatured);
+    return items.filter(x => x.featured === !isNonFeatured && !x.isDeleted);
   }
 }

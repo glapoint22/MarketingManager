@@ -12,19 +12,28 @@ export class Container {
 
   constructor(public viewContainerRef: ViewContainerRef, public view: HTMLElement, public minHeight?: number) { }
 
-  setHeight() {
+  setHeight(box?: EditBoxComponent) {
     // If container has any boxes
     if (this.boxes.length > 0) {
       // If every box has a rect
       if (this.boxes.every((box: EditBoxComponent) => box.rect !== undefined)) {
         this.height = Math.max(...this.boxes.map(x => x.rect.yMax), this.minHeight);
 
+        if (box) {
+          if (box.rect.yMax > this.view.parentElement.clientHeight + this.view.parentElement.scrollTop) {
+            this.view.parentElement.scrollTo(0, box.rect.yMax - 800);
+            // } else if (box.rect.y < this.view.parentElement.scrollTop) {
+            //   this.view.parentElement.scrollTo(0, box.rect.y);
+          }
+        }
+
+
         // Wait until all boxes have their rects
       } else {
         this.height = this.minHeight;
         let interval = window.setInterval(() => {
           if (this.boxes.every((box: EditBoxComponent) => box.rect !== undefined)) {
-            this.setHeight();
+            this.setHeight(box);
             window.clearInterval(interval);
           }
         }, 1);

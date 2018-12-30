@@ -14,6 +14,7 @@ import { GridButton } from '../grid-button';
 export class FeaturedGridComponent extends EditableGridComponent implements OnInit, OnChanges {
   @Input() categories;
   @Input() products;
+  @Input() niches;
   private categoriesTier: Itier;
   private productsTier: Itier;
   public isFeatured: boolean = true;
@@ -110,9 +111,9 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   deleteItem(item: any) {
-    let shopItem = this.getItem(item, item.parentId ? this.products : this.categories);
+    let shopItem = this.getItem(item, item.parentId !== undefined ? this.products : this.categories);
 
-    this.saveUpdate(shopItem, shopItem.parentId ? this.products : this.categories);
+    this.saveUpdate(shopItem, shopItem.parentId !== undefined ? this.products : this.categories);
     item.featured = false;
     shopItem.featured = false;
     this.saveService.checkForNoChanges();
@@ -124,9 +125,9 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   onNonFeaturedItemClick(item) {
-    let shopItem = this.getItem(item, item.parentId ? this.products : this.categories);
+    let shopItem = this.getItem(item, item.parentId !== undefined ? this.products : this.categories);
 
-    this.saveUpdate(shopItem, shopItem.parentId ? this.products : this.categories);
+    this.saveUpdate(shopItem, shopItem.parentId !== undefined ? this.products : this.categories);
     item.featured = true;
     shopItem.featured = true;
     this.change += 1;
@@ -154,11 +155,28 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   }
 
   onShopItemDelete(item) {
-    this.getItem(item, item.parentId ? this.productsTier : this.categoriesTier).isDeleted = true;
+    switch (item.tierIndex) {
+      case 0:
+        this.getItem(item, this.categoriesTier).isDeleted = true;
+        let niches = this.niches.items.filter(x => x.parentId === item.id);
+        niches.forEach(niche => {
+          let products = this.productsTier.items.filter(x => x.parentId === niche.id);
+          products.forEach(x => x.isDeleted = true);
+        });
+        break;
+      case 1:
+        let products = this.productsTier.items.filter(x => x.parentId === item.id);
+        products.forEach(x => x.isDeleted = true);
+        break;
+      case 2:
+        this.getItem(item, this.productsTier).isDeleted = true;
+        break;
+    }
+
     this.change += 1;
   }
   onNewItem(item) {
-    (item.parentId ? this.productsTier : this.categoriesTier).items.push(Object.assign({}, item));
+    (item.parentId !== undefined ? this.productsTier : this.categoriesTier).items.push(Object.assign({}, item));
   }
 
   saveDelete(item) { }

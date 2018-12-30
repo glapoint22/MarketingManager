@@ -17,7 +17,7 @@
 
     <!-- Featured Editor -->
     <editor [name]="'Featured Editor'">
-      <featured-grid #featuredGrid [categories]="shopGrid.tiers[0]" [products]="shopGrid.tiers[2]">
+      <featured-grid #featuredGrid [categories]="shopGrid.tiers[0]" [niches]="shopGrid.tiers[1]" [products]="shopGrid.tiers[2]">
 
         <!-- Non Featured List -->
         <div *ngIf="featuredGrid.showNonFeaturedList" header-content class="non-featured-container">

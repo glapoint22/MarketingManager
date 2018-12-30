@@ -267,7 +267,7 @@ export class EditBoxComponent {
           this.row.alignBoxes();
           break;
       }
-      this.container.setHeight();
+      this.container.setHeight(this);
     }
   }
 

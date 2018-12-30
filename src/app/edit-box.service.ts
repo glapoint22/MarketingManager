@@ -324,9 +324,11 @@ export class EditBoxService {
   }
 
   createRowsInContainer(container: Container, copiedRows) {
-    copiedRows.forEach(copiedRow => {
-      container.addRow(copiedRow.alignment, copiedRow.y);
-    });
+    if (copiedRows) {
+      copiedRows.forEach(copiedRow => {
+        container.addRow(copiedRow.alignment, copiedRow.y);
+      });
+    }
   }
 
   createBoxesInContainer(container: Container, copiedBoxes, newBoxes: Array<EditBoxComponent>) {

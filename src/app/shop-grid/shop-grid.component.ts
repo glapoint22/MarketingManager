@@ -251,7 +251,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         {
           name: 'Price',
           defaultValue: '0',
-          width: 400
+          width: 500
         }
       ],
       headerButtons: this.setHeaderButtons('New Product', 'Delete Product'),
