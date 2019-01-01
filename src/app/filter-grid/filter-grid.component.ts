@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { EditableGridComponent } from "../editable-grid/editable-grid.component";
 import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
@@ -10,6 +10,7 @@ import { PromptService } from "../prompt.service";
   styleUrls: ['../grid/grid.component.scss']
 })
 export class FilterGridComponent extends EditableGridComponent implements OnInit {
+  @Input() products;
 
   constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
@@ -92,5 +93,20 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
 
     super.createTiers();
   }
-  setParentTierHeight() {}
+
+  deleteItem(item: any) {
+    super.deleteItem(item);
+    if (item.tierIndex === 1) {
+      this.products.items.forEach(x => {
+        for (let i = 0; i < x.filters.length; i++) {
+          if (x.filters[i].filterOption === item.id) {
+            x.filters.splice(x.filters.findIndex(y => y.filterOption === item.id), 1);
+            return;
+          }
+        }
+      });
+    }
+  }
+
+  setParentTierHeight() { }
 }

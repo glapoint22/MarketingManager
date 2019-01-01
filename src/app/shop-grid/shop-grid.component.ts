@@ -250,7 +250,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         },
         {
           name: 'Price',
-          defaultValue: '0',
+          defaultValue: 0,
           width: 500
         }
       ],
@@ -292,6 +292,17 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           ]);
           return false
         }
+
+        if (item.data[3].value === 0 || item.data[3].value === '0') {
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a price of zero.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
         return true;
       },
       url: 'api/Products'

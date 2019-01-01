@@ -84,7 +84,12 @@ export class EditableGridComponent extends GridComponent {
             this.saveUpdate(this.currentItem, this.tiers[this.currentItem.tierIndex]);
             this.currentItem.data.forEach((x, i) => {
               if (this.editedFields[i].value.search(/\S/) !== -1) {
-                x.value = this.editedFields[i].value;
+                if (x.type && x.type === 'currency' && isNaN(this.editedFields[i].value)) {
+                  x.value = 0;
+                } else {
+                  x.value = this.editedFields[i].value;
+                }
+
               }
             });
             this.saveService.checkForNoChanges();
@@ -171,6 +176,6 @@ export class EditableGridComponent extends GridComponent {
   }
 
   createItemId(items, tierIndex) {
-    return Math.max(-1, Math.max.apply(null, items.map(x => x.id))) + 1;
+    return Math.max(-1, Math.max(...items.filter(x => !x.isDeleted).map(x => x.id))) + 1;
   }
 }
