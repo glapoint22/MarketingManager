@@ -176,7 +176,10 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     this.change += 1;
   }
   onNewItem(item) {
-    (item.parentId !== undefined ? this.productsTier : this.categoriesTier).items.push(Object.assign({}, item));
+    let tier = (item.parentId !== undefined ? this.productsTier : this.categoriesTier);
+
+    tier.items.push(Object.assign({}, item));
+    tier.items[tier.items.length - 1].isInEditMode = false;
   }
 
   saveDelete(item) { }
@@ -185,4 +188,6 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
     let index = tier.items.findIndex(x => x.data[0].value === item.data[0].value);
     return tier.items[index];
   }
+
+  setParentTierHeight() {}
 }

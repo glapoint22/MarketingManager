@@ -92,4 +92,5 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
 
     super.createTiers();
   }
+  setParentTierHeight() {}
 }

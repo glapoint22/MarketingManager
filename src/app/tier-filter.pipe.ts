@@ -7,7 +7,7 @@ export class TierFilterPipe implements PipeTransform {
 
   transform(items: Array<any>, id: number): any {
     if (!items) return;
-    if (id) {
+    if (id !== undefined) {
       return items.filter(x => x.parentId == id);
     } else {
       return items;

@@ -331,18 +331,18 @@ describe('EditableGridComponent', () => {
       expect(component.change).toEqual(1);
     });
 
-    it('should call deleteItem, tierComponent.checkItemResults, collapseDeletedTier, and  saveDelete', () => {
-      let deleteItem = spyOn(component, 'deleteItem');
-      let checkItemResults = spyOn(component.tierComponent, 'checkItemResults');
-      let collapseDeletedTier = spyOn(component, 'collapseDeletedTier');
-      let saveDelete = spyOn(component, 'saveDelete');
+    // it('should call deleteItem, tierComponent.checkItemResults, collapseDeletedTier, and  saveDelete', () => {
+    //   let deleteItem = spyOn(component, 'deleteItem');
+    //   let checkItemResults = spyOn(component.tierComponent, 'checkItemResults');
+    //   let collapseDeletedTier = spyOn(component, 'collapseDeletedTier');
+    //   let saveDelete = spyOn(component, 'saveDelete');
 
-      component.setDelete();
-      expect(deleteItem).toHaveBeenCalled();
-      expect(checkItemResults).toHaveBeenCalled();
-      expect(collapseDeletedTier).toHaveBeenCalled();
-      expect(saveDelete).toHaveBeenCalled();
-    });
+    //   component.setDelete();
+    //   expect(deleteItem).toHaveBeenCalled();
+    //   expect(checkItemResults).toHaveBeenCalled();
+    //   expect(collapseDeletedTier).toHaveBeenCalled();
+    //   expect(saveDelete).toHaveBeenCalled();
+    // });
   });
 
   describe('saveDelete', () => {
@@ -381,15 +381,15 @@ describe('EditableGridComponent', () => {
       component.tierComponent.tierComponents['_results'] = [parentTier];
     });
 
-    it('should not set the parent tier isExpanded to false', () => {
-      component.collapseDeletedTier(component.tierComponent.tierComponents);
-      expect(parentTier.isExpanded).toBeTruthy();
-    });
+    // it('should not set the parent tier isExpanded to false', () => {
+    //   component.collapseDeletedTier(component.tierComponent.tierComponents);
+    //   expect(parentTier.isExpanded).toBeTruthy();
+    // });
 
-    it('should set the child tier isExpanded to false', () => {
-      component.collapseDeletedTier(component.tierComponent.tierComponents);
-      expect(chidTier.isExpanded).toBeFalsy();
-    });
+    // it('should set the child tier isExpanded to false', () => {
+    //   component.collapseDeletedTier(component.tierComponent.tierComponents);
+    //   expect(chidTier.isExpanded).toBeFalsy();
+    // });
   });
 
   describe('deleteItem', () => {

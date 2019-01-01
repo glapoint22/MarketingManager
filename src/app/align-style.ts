@@ -31,7 +31,7 @@ export class AlignStyle extends Style {
 
         this.isSelected = true;
         for (let i = indices.startContainerIndex; i < indices.endContainerIndex + 1; i++) {
-            if(this.editBox.content.children[i] && this.editBox.content.children[i].style[this.style] !== this.styleValue){
+            if (this.editBox.content.children[i] && this.editBox.content.children[i].style[this.style] !== this.styleValue) {
                 this.isSelected = false;
                 break;
             }

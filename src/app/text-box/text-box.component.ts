@@ -234,10 +234,10 @@ export class TextBoxComponent extends EditBoxComponent {
     Array.from(this.content.children).forEach((node: any) => {
       Array.from(node.childNodes).forEach((childNode: any) => {
 
-        
+
         if (childNode.tagName === 'SPAN') {
           // Child node as <b>, <i>, or <i> tags
-          if(childNode.firstElementChild && childNode.firstElementChild.tagName !=='BR'){
+          if (childNode.firstElementChild && childNode.firstElementChild.tagName !== 'BR') {
             let text = this.getChild(childNode.firstElementChild);
             childNode.firstChild.appendData(text.data);
             childNode.firstElementChild.remove();

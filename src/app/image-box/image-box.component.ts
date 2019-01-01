@@ -27,7 +27,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
 
     rect = boxData ? boxData.rect : new Rect(null, null, this.contentContainer.clientWidth, this.contentContainer.clientHeight);
 
-    if(rect.height === 0){
+    if (rect.height === 0) {
       let ratio = this.contentContainer.clientHeight / this.contentContainer.clientWidth;
       rect.height = rect.width * ratio;
     }

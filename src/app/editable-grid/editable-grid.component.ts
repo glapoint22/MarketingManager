@@ -162,6 +162,7 @@ export class EditableGridComponent extends GridComponent {
     this.tiers[tierIndex].fields.forEach(x => newItem.data.push({ value: x.defaultValue }));
     this.tiers[tierIndex].items.unshift(newItem);
     this.change += 1;
+    if (this.currentItem) this.currentItem.isSelected = false;
     this.currentItem = newItem;
     this.editItem(newItem);
 
