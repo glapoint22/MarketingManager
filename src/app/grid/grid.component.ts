@@ -24,6 +24,8 @@ export class GridComponent implements OnInit, Igrid {
   public currentItem: any;
   public hasFocus: boolean = false;
   public isHighlightRow: boolean = true;
+  public defaultMaxItemCount: number = 50;
+  public maxItems: number = this.defaultMaxItemCount;
 
   constructor(public dataService: DataService, public saveService: SaveService) { }
 
@@ -72,6 +74,8 @@ export class GridComponent implements OnInit, Igrid {
       this.tierToSearch = 0;
       this.tierComponent.setTier(this.tiers[0]);
     }
+
+    this.maxItems = this.defaultMaxItemCount;
   }
 
   clearSearchText() {
@@ -123,6 +127,11 @@ export class GridComponent implements OnInit, Igrid {
 
   setParentTierHeight() {
     this.tierComponent.parentTierHeight = window.innerHeight - 91;
+  }
+
+  setMaxItems(event) {
+    let scrollPos = event.srcElement.scrollTop / (event.srcElement.scrollHeight - event.srcElement.offsetHeight);
+    if (scrollPos > 0.9) this.maxItems += this.defaultMaxItemCount;
   }
 
   onFocus() {

@@ -32,13 +32,13 @@
   </div>
 
   <!-- Parent Tier -->
-  <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier">
+  <div [style.height.px]="index == grid.tierToSearch ? parentTierHeight : 'auto'" class="parent-tier" (scroll)="grid.setMaxItems($event)">
 
     <!-- Row Content -->
     <ng-content select="[row-content]"></ng-content>
 
     <!-- Items -->
-    <div #row *ngFor="let item of items | deletedFilter: grid.change | tierFilter: parentId | searchFilter: grid.searchValue | featuredFilter: grid.isFeatured | maxCount: 50 | sort; let i = index"
+    <div #row *ngFor="let item of items | deletedFilter: grid.change | tierFilter: parentId | searchFilter: grid.searchValue | featuredFilter: grid.isFeatured | maxCount: grid.maxItems | sort; let i = index; trackBy:trackById"
       class="row" [ngClass]="{'collapsed': index != grid.tierToSearch, 'expand': isExpanded}" (transitionend)="onTransitionEnd(i, $event)">
 
       <!-- Toggle Expand/Collapse button -->

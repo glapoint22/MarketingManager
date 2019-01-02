@@ -70,6 +70,15 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       },
       check: (item) => {
+        if (item.data[0].value === 'Category Name') {
+          this.promptService.prompt('Quality Control', 'Category cannot have a name of "Category Name".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
         if (item.icon === null) {
           this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '", needs an icon.', [
             {
@@ -132,6 +141,16 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       },
       check: (item) => {
+        if (item.data[0].value === 'Niche Name') {
+          this.promptService.prompt('Quality Control', 'Niche cannot have a name of "Niche Name".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
         if (item.icon === null) {
           this.promptService.prompt('Quality Control', 'Niche "' + item.data[0].value + '", needs an icon.', [
             {
@@ -141,6 +160,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           ]);
           return false
         }
+
         return true;
       },
       url: 'api/Niches'
@@ -283,8 +303,28 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
       },
       check: (item) => {
-        if (item.image === null) {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", needs an image.', [
+        if (item.data[0].value === 'Product Name') {
+          this.promptService.prompt('Quality Control', 'Product cannot have a name of "Product Name".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+        if (item.data[1].value === 'HopLink URL') {
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a HopLink of "HopLink URL".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+        if (item.data[2].value === 'Product Description') {
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a description of "Product Description".', [
             {
               text: 'Ok',
               callback: () => { }
@@ -295,6 +335,16 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
 
         if (item.data[3].value === 0 || item.data[3].value === '0') {
           this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a price of zero.', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+        if (item.image === null) {
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", needs an image.', [
             {
               text: 'Ok',
               callback: () => { }

@@ -17,6 +17,8 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
   ngOnInit() {
     this.apiUrl = 'api/Filters';
     this.tierComponent.parentTierHeight = 230;
+    this.defaultMaxItemCount = 15;
+    this.maxItems = this.defaultMaxItemCount;
     super.ngOnInit();
   }
 
@@ -49,6 +51,20 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           ID: item.id,
           Name: item.data[0].value
         }
+      },
+      check: (item) => {
+        if (item.data[0].value === 'Filter Name') {
+          this.promptService.prompt('Quality Control', 'Filter cannot have a name of "Filter Name".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+
+        return true;
       },
       url: 'api/Filters'
     });
@@ -87,6 +103,20 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
           Name: item.data[0].value,
           FilterID: item.parentId
         }
+      },
+      check: (item) => {
+        if (item.data[0].value === 'Filter Option Name') {
+          this.promptService.prompt('Quality Control', 'Filter option cannot have a name of "Filter Option Name".', [
+            {
+              text: 'Ok',
+              callback: () => { }
+            }
+          ]);
+          return false
+        }
+
+
+        return true;
       },
       url: 'api/FilterLabels'
     });

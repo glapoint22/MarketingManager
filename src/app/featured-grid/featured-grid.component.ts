@@ -25,6 +25,8 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
 
   ngOnInit() {
     this.tierComponent.parentTierHeight = 230;
+    this.defaultMaxItemCount = 15;
+    this.maxItems = this.defaultMaxItemCount;
   }
 
   createTiers() {
@@ -139,6 +141,7 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   clearSearch(search) {
     search.value = '';
     this.nonFeaturedSearchValue = '';
+    this.maxItems = this.defaultMaxItemCount;
   }
 
   handleKeyboardEvent(event: KeyboardEvent) {

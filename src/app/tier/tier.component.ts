@@ -1,7 +1,6 @@
 import { Component, ViewChildren, QueryList, Input, ElementRef } from '@angular/core';
 import { Itier } from '../itier';
 import { Igrid } from '../igrid';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'tier',
@@ -97,7 +96,7 @@ export class TierComponent implements Itier {
     }
   }
 
-  ngDoCheck(){
+  ngDoCheck() {
     //Test to see if all rows in this tier are collapsed.
     this.isCollapsed = false;
     if (this.tierComponents && this.tierComponents.length > 0) {
@@ -119,5 +118,9 @@ export class TierComponent implements Itier {
         item.isInEditMode = false;
       }
     }, 1);
+  }
+
+  trackById(index: number, item: any) {
+    return item.id;
   }
 }

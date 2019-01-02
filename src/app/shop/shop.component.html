@@ -22,12 +22,12 @@
         <!-- Non Featured List -->
         <div *ngIf="featuredGrid.showNonFeaturedList" header-content class="non-featured-container">
           <i class="fas fa-search fa-sm"></i>
-          <input #search type="text" class="search" (input)="featuredGrid.nonFeaturedSearchValue = $event.target.value">
+          <input #search type="text" class="search" (input)="featuredGrid.nonFeaturedSearchValue = $event.target.value; featuredGrid.maxItems = featuredGrid.defaultMaxItemCount">
           <div (click)="featuredGrid.clearSearch(search)">
             <i class="fas fa-times-circle fa-sm"></i>
           </div>
-          <div *ngIf="featuredGrid.tiers.length > 0" class="content-container">
-            <div *ngFor="let item of featuredGrid.tiers[0].items | featuredFilter : true : true | searchFilter: featuredGrid.nonFeaturedSearchValue | maxCount: 20"
+          <div *ngIf="featuredGrid.tiers.length > 0" class="content-container" (scroll)="featuredGrid.setMaxItems($event)">
+            <div *ngFor="let item of featuredGrid.tiers[0].items | featuredFilter : true : true | searchFilter: featuredGrid.nonFeaturedSearchValue | maxCount: featuredGrid.maxItems"
               class="row" (click)="featuredGrid.onNonFeaturedItemClick(item)">
               <div class="item">{{item.data[0].value}}</div>
             </div>
