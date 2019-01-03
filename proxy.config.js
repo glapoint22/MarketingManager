@@ -4,8 +4,8 @@ const PROXY_CONFIG = [
             "/api",
             "/Images"
         ],
-        // target: "http://localhost:49699/",
-        target: "http://localhost/",
+        target: "http://localhost:49699/",
+        // target: "http://localhost/",
         secure: false
     }
 ]

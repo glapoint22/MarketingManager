@@ -23,7 +23,7 @@
     background: #1e1e1e;
 }
 .content-horizontal {
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
     white-space: nowrap;
 }
@@ -49,11 +49,11 @@
     object-fit: contain;
 }
 .img-overlay {
-    background: rgba(7, 114, 156, 0.5);
+    background: rgba(0, 199, 17, 0.07);
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 1px solid #5bd1ff;
+    border: 1px solid $selected-color;
     box-sizing:border-box;
     cursor: pointer;
 }

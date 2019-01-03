@@ -80,7 +80,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           return false
         }
         if (item.icon === null) {
-          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '", needs an icon.', [
+          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '" needs an icon.', [
             {
               text: 'Ok',
               callback: () => { }
@@ -90,7 +90,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.categoryImages.length === 0) {
-          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '", needs at least one category image.', [
+          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '" needs at least one category image.', [
             {
               text: 'Ok',
               callback: () => { }
@@ -152,7 +152,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.icon === null) {
-          this.promptService.prompt('Quality Control', 'Niche "' + item.data[0].value + '", needs an icon.', [
+          this.promptService.prompt('Quality Control', 'Niche "' + item.data[0].value + '" needs an icon.', [
             {
               text: 'Ok',
               callback: () => { }
@@ -314,7 +314,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.data[1].value === 'HopLink URL') {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a HopLink of "HopLink URL".', [
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" cannot have a HopLink of "HopLink URL".', [
             {
               text: 'Ok',
               callback: () => { }
@@ -324,7 +324,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.data[2].value === 'Product Description') {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a description of "Product Description".', [
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" cannot have a description of "Product Description".', [
             {
               text: 'Ok',
               callback: () => { }
@@ -334,7 +334,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.data[3].value === 0 || item.data[3].value === '0') {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", cannot have a price of zero.', [
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" cannot have a price of zero.', [
             {
               text: 'Ok',
               callback: () => { }
@@ -344,13 +344,31 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
 
         if (item.image === null) {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '", needs an image.', [
+          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" needs an image.', [
             {
               text: 'Ok',
               callback: () => { }
             }
           ]);
           return false
+        }
+
+        for (let i = 0; i < item.videos.length; i++) {
+          let currentVideo = item.videos[i];
+          for (let j = 0; j < item.videos.length; j++) {
+            if (j !== i) {
+              let comparedVideo = item.videos[j];
+              if (currentVideo === comparedVideo) {
+                this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" has duplicate videos.', [
+                  {
+                    text: 'Ok',
+                    callback: () => { }
+                  }
+                ]);
+                return false
+              }
+            }
+          }
         }
 
         return true;

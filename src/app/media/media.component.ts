@@ -98,13 +98,6 @@ export class MediaComponent implements OnInit {
                     this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
 
                     let imageIndex = this.contents.findIndex(x => x.isSelected);
-                    let image = this.contents[imageIndex].name;
-                    let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
-
-                    if (!saveItem.originalItem.categoryImages.some(x => x.name === image)) {
-                      // Delete image on the server
-                      this.dataService.delete('/api/Image', image).subscribe(() => { });
-                    }
 
                     this.contents.splice(imageIndex, 1);
                     if (this.contents.length > 0) {
@@ -371,14 +364,6 @@ export class MediaComponent implements OnInit {
                       for (let i = this.contents.length - 1; i > -1; i--) {
                         if (this.contents[i].isSelected) {
                           this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
-
-                          let saveItem = this.saveService.updatedItems.filter(x => x.item === this.currentItem)[0];
-
-                          if (!saveItem.originalItem.banners.some(x => x.name === this.contents[i].name)) {
-                            // Delete image on the server
-                            this.dataService.delete('/api/Image', this.contents[i].name).subscribe(() => { });
-                          }
-
                           this.contents.splice(i, 1);
                         }
                       }
