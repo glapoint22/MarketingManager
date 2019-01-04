@@ -45,6 +45,8 @@ import { LinkFormComponent } from './link-form/link-form.component';
 import { EmailPreviewComponent } from './email-preview/email-preview.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { MenuComponent } from './menu/menu.component';
+import { LeadMagnetGridComponent } from './lead-magnet-grid/lead-magnet-grid.component';
+import { DocumentComponent } from './document/document.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +85,9 @@ import { MenuComponent } from './menu/menu.component';
     LinkFormComponent,
     EmailPreviewComponent,
     ColorPickerComponent,
-    MenuComponent
+    MenuComponent,
+    LeadMagnetGridComponent,
+    DocumentComponent
   ],
   imports: [
     BrowserModule,

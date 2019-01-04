@@ -1,0 +1,154 @@
+<div class="container">
+  <!-- Editor panel -->
+  <div style="width: 408px;height: 100%;background: #151515;float: right;max-width: 1600px;">
+    <div resizable direction="-1" class="divider"></div>
+    <editor [name]="'Properties ' + getEditBoxType()">
+      <properties #properties></properties>
+    </editor>
+  </div>
+  <!-- Divider -->
+  <div resizable direction="-1" class="divider"></div>
+
+  <div *ngIf="currentItem && currentItem.isSelected">
+    <div class="header">
+
+      <!-- Paste docuent -->
+      <div style="float:right" class="header-button" [title]="'Paste ' + documentType" (click)="pasteDocument()" [ngClass]="{'disabled': !copy || (currentItem.tierIndex === 1 && currentItem.documents.length === 1) }">
+        <i class="fas fa-paste"></i>
+      </div>
+
+      <!-- Cut document -->
+      <div style="float:right" class="header-button" [title]="'Cut ' + documentType" (click)="cutDocument()" [ngClass]="{'disabled': !currentDocument || !currentDocument.isSelected}">
+        <i class="fas fa-cut"></i>
+      </div>
+
+
+      <!-- Copy document -->
+      <div style="float:right" class="header-button" [title]="'Copy ' + documentType" (click)="copyDocument()" [ngClass]="{'disabled': !currentDocument || !currentDocument.isSelected}">
+        <i class="fas fa-copy"></i>
+      </div>
+
+
+      <!-- Delete document -->
+      <div style="float:right" class="header-button" [title]="'Delete ' + documentType" (click)="delete()" [ngClass]="{'disabled': !currentDocument || !currentDocument.isSelected}">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+
+      <!-- New document -->
+      <div style="float:right" class="header-button" [title]="'New ' + documentType" (click)="newDocument()" [ngClass]="{'disabled': currentItem.tierIndex === 1 && currentItem.documents.length === 1 }">
+        <i class="fas fa-envelope"></i>
+      </div>
+    </div>
+
+    <!-- Document container -->
+    <div class="documents-container" [style.height.px]="height">
+      <div *ngFor="let document of documents | deletedFilter : change; let i = index" class="row">
+
+        <!-- Toggle button -->
+        <span>
+          <input #inputToggle name="document" [id]="document.id" type="radio">
+          <label class="toggle-button" [for]="document.id" (click)="onToggleButtonClick(inputToggle, i, document); $event.preventDefault()"></label>
+        </span>
+
+        <!-- document title bar -->
+        <div class="bar title highlight" style="margin-left: 23px;" [ngClass]="{'selected': document.isSelected && !inputToggle.checked, 'expanded': inputToggle.checked}"
+          (click)="onDocumentClick(document)">
+
+          <!-- Loading -->
+          <div *ngIf="pageLoading" class="loading-container">
+            <div class="loading-cirlce"></div>
+            <div class="loading-cirlce" style="animation-delay: .3333s; transform: scale(0);"></div>
+            <div class="loading-cirlce" style="animation-delay: .6666s; transform: scale(0);"></div>
+          </div>
+
+          <span *ngIf="document.isInEditMode else title">
+            <input #edit class="edit" type="text" [value]="document.subject" (focus)="edit.select()" (blur)="document.isInEditMode = false">
+          </span>
+          <ng-template #title>
+            {{document.subject}}
+          </ng-template>
+
+
+          <!-- Button container -->
+          <span *ngIf="inputToggle.checked" class="button-container">
+
+            <!-- Group -->
+            <span class="button-group">
+              <!-- Preview -->
+              <div class="header-button" title="Preview" (click)="emailPreviewService.open(currentDocument.body, currentDocument.id)">
+                <i class="far fa-eye"></i>
+              </div>
+            </span>
+
+
+            <!-- Group -->
+            <span class="button-group">
+              <!-- Text -->
+              <div class="header-button" (click)="editBoxService.createTextBox()" title="Text">
+                <i class="fas fa-file-alt"></i>
+              </div>
+
+              <!-- Button -->
+              <div class="header-button" (click)="editBoxService.createButtonBox()" title="Button">
+                <i class="fas fa-dot-circle"></i>
+              </div>
+
+
+              <!-- Image -->
+              <div class="header-button" (click)="editBoxService.createImageBox()" title="Image">
+                <i class="fas fa-image"></i>
+              </div>
+
+              <!-- Container -->
+              <div class="header-button" (click)="editBoxService.createContainerBox()" title="Container">
+                <i class="fas fa-square"></i>
+              </div>
+            </span>
+
+            <!-- Group -->
+            <span class="button-group">
+              <!-- Background color -->
+              <div class="header-button" (click)="showColorPicker(background)" title="Background color">
+                <i class="fas fa-fill"></i>
+                <div class="palette" [style.background]="document.backgroundColor"></div>
+              </div>
+
+
+              <!-- Page color -->
+              <div class="header-button" (click)="showColorPicker(page)" title="Page color">
+                <i class="fas fa-palette"></i>
+                <div class="palette" [style.background]="document.pageColor"></div>
+              </div>
+            </span>
+          </span>
+
+          <!-- Edit -->
+          <div class="header-button edit-button" title="Edit title" (click)="editDocument(document)">
+            <i class="fas fa-edit"></i>
+          </div>
+        </div>
+
+        <!-- Document content -->
+        <div style="background-color: #1e1e1e">
+          <div #background class="document-content-container" [style.transition]="'max-height ' + speed + 's'"
+            (transitionend)="transitionEnd($event)" [style.backgroundColor]="document.backgroundColor"
+            [style.maxHeight.px]="inputToggle.checked && container ? container.height : 0" (mousedown)="onMouseDown()">
+
+            <!-- Document page -->
+            <div #page class="page dashed-outline" [style.width.px]="pageWidth" [style.height.px]="container ? container.height : 0"
+              [style.backgroundColor]="document.pageColor">
+              <ng-template #viewContainerRef>
+                <!-- EditBoxes go here -->
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- grid -->
+<div style="width: auto; height: 100%; background: #1e1e1e; overflow-x: hidden;">
+  <email-grid (onItemClick)="onItemClick($event); properties.gridItem = $event"></email-grid>
+</div>

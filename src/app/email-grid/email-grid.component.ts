@@ -51,7 +51,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           parentId: x.id,
           id: y.id,
           tierIndex: 1,
-          emails: y.emails,
+          documents: y.emails,
           leadMagnet: y.leadMagnet,
           data: [
             {
@@ -74,7 +74,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       setItem: (item) => {
         return {
           ID: item.id,
-          LeadMagnetEmails: item.emails.map(x => ({
+          LeadMagnetEmails: item.documents.map(x => ({
             ID: x.id,
             NicheID: item.id,
             Subject: x.subject,
@@ -96,7 +96,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
             parentId: y.id,
             id: z.id,
             tierIndex: 2,
-            emails: z.emails,
+            documents: z.emails,
             hoplink: z.hoplink,
             data: [
               {
@@ -120,7 +120,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       setItem: (item) => {
         return {
           ID: item.id,
-          EmailCampaigns: item.emails.map(x => ({
+          EmailCampaigns: item.documents.map(x => ({
             ID: x.id,
             ProductID: item.id,
             Subject: x.subject,
@@ -148,10 +148,10 @@ export class EmailGridComponent extends GridComponent implements OnInit {
   validateEmails(item): boolean {
     let itemType = this.tiers[item.tierIndex].fields[0].name;
 
-    for (let i = 0; i < item.emails.length; i++) {
+    for (let i = 0; i < item.documents.length; i++) {
       // Check for invlaid tags
-        if (/<font|<b>|<i>|<u>/.test(item.emails[i].body)) {
-        this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
+        if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
+        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
           {
             text: 'Ok',
             callback: () => { }
@@ -161,8 +161,8 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       }
 
       // Check for invalid urls
-      if (!this.linkService.validateUrl(item.emails[i].body)) {
-        this.promptService.prompt('Quality Control', 'Email "' + item.emails[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
+      if (!this.linkService.validateUrl(item.documents[i].body)) {
+        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
           {
             text: 'Ok',
             callback: () => { }
@@ -172,7 +172,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       }
 
       // Check that subject is not called subject
-      if (item.emails[i].subject.toLowerCase() === 'subject') {
+      if (item.documents[i].subject.toLowerCase() === 'subject') {
         this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have an email with the subject named "subject".', [
           {
             text: 'Ok',
@@ -183,8 +183,8 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       }
 
       // Check for duplicate subject names
-      for (let j = 0; j < item.emails.length; j++) {
-        if (j !== i && item.emails[i].subject === item.emails[j].subject) {
+      for (let j = 0; j < item.documents.length; j++) {
+        if (j !== i && item.documents[i].subject === item.documents[j].subject) {
           this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have duplicate subject names.', [
             {
               text: 'Ok',
