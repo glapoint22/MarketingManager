@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChildren, ViewChild, ViewContainerRef, QueryList, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewChild, ViewContainerRef, QueryList, ElementRef, HostListener, Input } from '@angular/core';
 import { Container } from '../container';
 import { Subscription } from 'rxjs';
 import { EditBoxService } from '../edit-box.service';
-import { EmailPreviewService } from '../email-preview.service';
+import { DocumentPreviewService } from '../document-preview.service';
 import { TableService } from '../table.service';
 import { MenuService } from '../menu.service';
 import { ColorService } from '../color.service';
@@ -11,7 +11,6 @@ import { LinkService } from '../link.service';
 import { SaveService } from '../save.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { GridComponent } from '../grid/grid.component';
-import { EmailGridComponent } from '../email-grid/email-grid.component';
 
 @Component({
   selector: 'document',
@@ -20,12 +19,12 @@ import { EmailGridComponent } from '../email-grid/email-grid.component';
 })
 export class DocumentComponent implements OnInit {
   @ViewChildren('viewContainerRef', { read: ViewContainerRef }) viewContainerRefs: QueryList<ViewContainerRef>;
-  @ViewChild(EmailGridComponent) gridComponent: GridComponent;
   @ViewChild('edit') editInput: ElementRef;
   @ViewChild('page') page: ElementRef;
+  @Input() grid: GridComponent;
   public height: number;
   public documents: Array<any> = [];
-  public pageWidth: number = 600;
+  public pageWidth: number;
   public change: number = 0;
   public currentItem;
   public speed: number;
@@ -42,7 +41,7 @@ export class DocumentComponent implements OnInit {
   private isTimeOut: boolean;
   private subscription: Subscription;
 
-  constructor(public editBoxService: EditBoxService, public emailPreviewService: EmailPreviewService,
+  constructor(public editBoxService: EditBoxService, public documentPreviewService: DocumentPreviewService,
     private tableService: TableService, private menuService: MenuService, private colorService: ColorService,
     private promptService: PromptService, private linkService: LinkService, private saveService: SaveService) { }
 
@@ -95,11 +94,10 @@ export class DocumentComponent implements OnInit {
 
     // If the main table differs from what has been saved
     if (this.currentDocument.body !== mainTable.outerHTML) {
-      this.gridComponent.saveUpdate(this.currentItem, this.gridComponent.tiers[this.currentItem.tierIndex]);
+      this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
       this.currentDocument.body = mainTable.outerHTML;
       this.saveService.checkForNoChanges();
     }
-
   }
 
   setHeight() {
@@ -171,6 +169,7 @@ export class DocumentComponent implements OnInit {
   }
 
   onItemClick(item) {
+    EditBoxComponent.currentEditBox = null;
     if (item.tierIndex === 0) {
       this.documents = [];
       this.currentItem = null;
@@ -197,13 +196,13 @@ export class DocumentComponent implements OnInit {
   deleteDocument() {
     this.currentDocument.isSelected = false;
     this.change += 1;
-    this.gridComponent.saveUpdate(this.currentItem, this.gridComponent.tiers[this.currentItem.tierIndex]);
+    this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
     this.currentItem.documents.splice(this.currentItem.documents.findIndex(x => x === this.currentDocument), 1);
   }
 
   delete() {
     if (this.currentDocument && this.currentDocument.isSelected) {
-      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' + this.documentType + ' "' + this.currentDocument.subject + '"?', [
+      this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete ' + this.documentType + ' "' + this.currentDocument.title + '"?', [
         {
           text: 'Yes',
           callback: () => {
@@ -255,9 +254,9 @@ export class DocumentComponent implements OnInit {
       if (this.currentDocument && this.currentDocument.isInEditMode) {
         this.currentDocument.isInEditMode = false;
 
-        if (this.currentDocument.subject !== this.editInput.nativeElement.value && /\w/.test(this.editInput.nativeElement.value)) {
-          this.gridComponent.saveUpdate(this.currentItem, this.gridComponent.tiers[this.currentItem.tierIndex]);
-          this.currentDocument.subject = this.editInput.nativeElement.value.trim();
+        if (this.currentDocument.title !== this.editInput.nativeElement.value && /\w/.test(this.editInput.nativeElement.value)) {
+          this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
+          this.currentDocument.title = this.editInput.nativeElement.value.trim();
           this.saveService.checkForNoChanges();
         }
       } else if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected && !this.colorService.showColorPicker
@@ -293,7 +292,7 @@ export class DocumentComponent implements OnInit {
   newDocument(data?) {
     if ((this.currentItem.tierIndex === 1 && this.currentItem.documents.length === 0) || this.currentItem.tierIndex === 2) {
       let id: string = '', index = 0,
-        arrays = this.gridComponent.tiers[this.currentItem.tierIndex].items.map(x => x.documents.map(z => z.id)),
+        arrays = this.grid.tiers[this.currentItem.tierIndex].items.map(x => x.documents.map(z => z.id)),
         ids = [].concat.apply([], arrays);
 
       // Create a unique id that is 10 characters long
@@ -302,7 +301,7 @@ export class DocumentComponent implements OnInit {
         index = ids.findIndex(x => x == id);
       }
 
-      this.gridComponent.saveUpdate(this.currentItem, this.gridComponent.tiers[this.currentItem.tierIndex]);
+      this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
       let document = this.getNewDocument(data, id);
 
       this.change += 1;
@@ -333,7 +332,7 @@ export class DocumentComponent implements OnInit {
 
       this.copy = {
         body: this.currentDocument.body,
-        subject: this.currentDocument.subject,
+        title: this.currentDocument.title,
         backgroundColor: regex.exec(this.currentDocument.body)[1],
         pageColor: regex.exec(this.currentDocument.body)[1]
       }
@@ -346,7 +345,7 @@ export class DocumentComponent implements OnInit {
 
   cutDocument() {
     if (this.currentDocument && this.currentDocument.isSelected) {
-      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut ' + this.documentType + ' "' + this.currentDocument.subject + '"?', [
+      this.promptService.prompt('Confirm Cut', 'Are you sure you want to cut ' + this.documentType + ' "' + this.currentDocument.title + '"?', [
         {
           text: 'Yes',
           callback: () => {

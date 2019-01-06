@@ -48,6 +48,7 @@ export class LeadMagnetGridComponent extends GridComponent implements OnInit {
           parentId: x.id,
           id: y.id,
           tierIndex: 1,
+          documents: y.leadPages,
           leadMagnet: y.leadMagnet,
           data: [
             {
@@ -70,7 +71,13 @@ export class LeadMagnetGridComponent extends GridComponent implements OnInit {
       setItem: (item) => {
         return {
           ID: item.id,
-          
+          LeadPages: item.documents.map(x => ({
+            ID: x.id,
+            NicheID: item.id,
+            Title: x.title,
+            Body: x.body,
+            PageTitle: x.pageTitle
+          }))
         }
       },
       check: (item) => {

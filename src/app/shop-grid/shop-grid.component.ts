@@ -13,7 +13,6 @@ import { GridButton } from '../grid-button';
 export class ShopGridComponent extends EditableGridComponent implements OnInit {
   @Input() filterGrid;
   @Output() onDelete = new EventEmitter<any>();
-  @Output() onItemClick = new EventEmitter<any>();
   @Output() onNewItem = new EventEmitter<any>();
   public filtersContainerTop: number = 0;
   public showFiltersContainer: boolean = false;
@@ -400,7 +399,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       if (item !== this.currentItem) this.showFiltersContainer = false;
     }
     super.onItemSelect(item);
-    this.onItemClick.emit(item);
   }
 
   onTierCollapse() {
@@ -433,7 +431,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
     this.saveUpdate(this.currentItem, this.tiers[2]);
     if (!option.isChecked) {
       option.isChecked = true;
-      // this.currentItem.filters.push(option.id);
       this.currentItem.filters.push({
         filterOption: option.id,
       });

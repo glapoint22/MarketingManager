@@ -11,7 +11,6 @@ import { PromptService } from '../prompt.service';
   styleUrls: ['../grid/grid.component.scss']
 })
 export class EmailGridComponent extends GridComponent implements OnInit {
-  @Output() onItemClick = new EventEmitter<any>();
 
   constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService, private element: ElementRef) { super(dataService, saveService) }
 
@@ -77,7 +76,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           LeadMagnetEmails: item.documents.map(x => ({
             ID: x.id,
             NicheID: item.id,
-            Subject: x.subject,
+            Subject: x.title,
             Body: x.body
           }))
         }
@@ -123,7 +122,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           EmailCampaigns: item.documents.map(x => ({
             ID: x.id,
             ProductID: item.id,
-            Subject: x.subject,
+            Subject: x.title,
             Body: x.body,
             Day: x.day
           }))
@@ -140,18 +139,13 @@ export class EmailGridComponent extends GridComponent implements OnInit {
     this.hasFocus = true;
   }
 
-  onItemSelect(item: any): void {
-    this.onItemClick.emit(item);
-    super.onItemSelect(item);
-  }
-
   validateEmails(item): boolean {
     let itemType = this.tiers[item.tierIndex].fields[0].name;
 
     for (let i = 0; i < item.documents.length; i++) {
       // Check for invlaid tags
         if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
-        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
+        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].title + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
           {
             text: 'Ok',
             callback: () => { }
@@ -162,7 +156,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
 
       // Check for invalid urls
       if (!this.linkService.validateUrl(item.documents[i].body)) {
-        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].subject + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
+        this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].title + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
           {
             text: 'Ok',
             callback: () => { }
@@ -171,8 +165,8 @@ export class EmailGridComponent extends GridComponent implements OnInit {
         return false
       }
 
-      // Check that subject is not called subject
-      if (item.documents[i].subject.toLowerCase() === 'subject') {
+      // Check that the title is not called subject
+      if (item.documents[i].title.toLowerCase() === 'subject') {
         this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have an email with the subject named "subject".', [
           {
             text: 'Ok',
@@ -184,7 +178,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
 
       // Check for duplicate subject names
       for (let j = 0; j < item.documents.length; j++) {
-        if (j !== i && item.documents[i].subject === item.documents[j].subject) {
+        if (j !== i && item.documents[i].title === item.documents[j].title) {
           this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have duplicate subject names.', [
             {
               text: 'Ok',

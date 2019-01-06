@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { Vector2 } from '../vector2';
 import { LinkService } from '../link.service';
 import { Rect } from '../rect';
@@ -14,7 +14,7 @@ import { ImageBoxComponent } from '../image-box/image-box.component';
   styleUrls: ['./properties.component.scss']
 })
 export class PropertiesComponent {
-  public gridItem;
+  @Input() gridItem;
   public Math = Math;
   public editBox = EditBoxComponent;
   private ctrlDown: boolean;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import { DataService } from "../data.service";
 import { TierComponent } from '../tier/tier.component';
 import { Itier } from '../itier';
@@ -11,6 +11,7 @@ import { SaveService } from '../save.service';
   styleUrls: ['./grid.component.scss']
 })
 export class GridComponent implements OnInit, Igrid {
+  @Output() onItemClick = new EventEmitter<any>();
   @ViewChild(TierComponent) tierComponent: TierComponent;
   @ViewChild('searchInput') searchInput: ElementRef;
   @ViewChild('grid') grid: ElementRef;
@@ -99,6 +100,8 @@ export class GridComponent implements OnInit, Igrid {
     }
     //Set this item as the current item
     this.currentItem = item;
+
+    this.onItemClick.emit(item);
   }
 
   @HostListener('document:keydown', ['$event'])

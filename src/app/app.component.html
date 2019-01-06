@@ -9,17 +9,28 @@
 
 <!-- Content -->
 <div class="content-container">
+    <!-- Shop -->
     <shop *ngIf="activeScreen == 'Shop'"></shop>
-    <email *ngIf="activeScreen == 'Email'"></email>
-    <leads *ngIf="activeScreen == 'Lead Magnet'"></leads>
+
+    <!-- Email -->
+    <email #email *ngIf="activeScreen == 'Email'" [grid]="emailGrid">
+        <email-grid #emailGrid (onItemClick)="email.onItemClick($event)"></email-grid>
+    </email>
+
+    <!-- Leads -->
+    <leads #leads *ngIf="activeScreen == 'Lead Magnet'" [grid]="leadMagnetGrid">
+        <lead-magnet-grid #leadMagnetGrid (onItemClick)="leads.onItemClick($event)"></lead-magnet-grid>
+    </leads>
+
+    <!-- Social -->
     <social *ngIf="activeScreen == 'Social Media'"></social>
 </div>
 
 <!-- Link form -->
 <link-form *ngIf="linkService.show"></link-form>
 
-<!-- Email preview -->
-<email-preview *ngIf="emailPreviewService.show"></email-preview>
+<!-- Document preview -->
+<document-preview *ngIf="documentPreviewService.show"></document-preview>
 
 <!-- Prompt -->
 <prompt *ngIf="promptService.show"></prompt>

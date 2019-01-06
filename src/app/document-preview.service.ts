@@ -4,7 +4,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Injectable({
   providedIn: 'root'
 })
-export class EmailPreviewService {
+export class DocumentPreviewService {
   public content: SafeHtml;
   public show: boolean;
 

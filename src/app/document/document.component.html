@@ -1,9 +1,9 @@
 <div class="container">
   <!-- Editor panel -->
-  <div style="width: 408px;height: 100%;background: #151515;float: right;max-width: 1600px;">
+  <div class="editor-panel">
     <div resizable direction="-1" class="divider"></div>
     <editor [name]="'Properties ' + getEditBoxType()">
-      <properties #properties></properties>
+      <properties gridItem="currentItem"></properties>
     </editor>
   </div>
   <!-- Divider -->
@@ -13,7 +13,8 @@
     <div class="header">
 
       <!-- Paste docuent -->
-      <div style="float:right" class="header-button" [title]="'Paste ' + documentType" (click)="pasteDocument()" [ngClass]="{'disabled': !copy || (currentItem.tierIndex === 1 && currentItem.documents.length === 1) }">
+      <div style="float:right" class="header-button" [title]="'Paste ' + documentType" (click)="pasteDocument()"
+        [ngClass]="{'disabled': !copy || (currentItem.tierIndex === 1 && currentItem.documents.length === 1) }">
         <i class="fas fa-paste"></i>
       </div>
 
@@ -24,7 +25,8 @@
 
 
       <!-- Copy document -->
-      <div style="float:right" class="header-button" [title]="'Copy ' + documentType" (click)="copyDocument()" [ngClass]="{'disabled': !currentDocument || !currentDocument.isSelected}">
+      <div style="float:right" class="header-button" [title]="'Copy ' + documentType" (click)="copyDocument()"
+        [ngClass]="{'disabled': !currentDocument || !currentDocument.isSelected}">
         <i class="fas fa-copy"></i>
       </div>
 
@@ -62,10 +64,10 @@
           </div>
 
           <span *ngIf="document.isInEditMode else title">
-            <input #edit class="edit" type="text" [value]="document.subject" (focus)="edit.select()" (blur)="document.isInEditMode = false">
+            <input #edit class="edit" type="text" [value]="document.title" (focus)="edit.select()" (blur)="document.isInEditMode = false">
           </span>
           <ng-template #title>
-            {{document.subject}}
+            {{document.title}}
           </ng-template>
 
 
@@ -75,7 +77,7 @@
             <!-- Group -->
             <span class="button-group">
               <!-- Preview -->
-              <div class="header-button" title="Preview" (click)="emailPreviewService.open(currentDocument.body, currentDocument.id)">
+              <div class="header-button" title="Preview" (click)="documentPreviewService.open(currentDocument.body, currentDocument.id)">
                 <i class="far fa-eye"></i>
               </div>
             </span>
@@ -149,6 +151,6 @@
 </div>
 
 <!-- grid -->
-<div style="width: auto; height: 100%; background: #1e1e1e; overflow-x: hidden;">
-  <email-grid (onItemClick)="onItemClick($event); properties.gridItem = $event"></email-grid>
+<div class="grid-container">
+  <ng-content></ng-content>
 </div>

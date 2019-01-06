@@ -9,6 +9,7 @@ import { DocumentComponent } from '../document/document.component';
 export class EmailComponent extends DocumentComponent implements OnInit {
   ngOnInit(){
     this.documentType = 'email';
+    this.pageWidth = 600;
     super.ngOnInit();
   }
 
@@ -26,7 +27,7 @@ export class EmailComponent extends DocumentComponent implements OnInit {
   getNewDocument(data, id){
     this.currentItem.documents.push({
       id: id,
-      subject: data ? data.subject : 'subject',
+      title: data ? data.title : 'subject',
       body: data ? data.body : '<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td width="100%" ' +
         'align="center"><!--[if (gte mso 9)|(IE)]><table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"><tr><td>' +
         '<![endif]--><table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="max-width: 600px;"><tr><td height="' +
