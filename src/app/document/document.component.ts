@@ -3,7 +3,6 @@ import { Container } from '../container';
 import { Subscription } from 'rxjs';
 import { EditBoxService } from '../edit-box.service';
 import { DocumentPreviewService } from '../document-preview.service';
-import { TableService } from '../table.service';
 import { MenuService } from '../menu.service';
 import { ColorService } from '../color.service';
 import { PromptService } from '../prompt.service';
@@ -30,19 +29,20 @@ export class DocumentComponent implements OnInit {
   public speed: number;
   public pageLoading: boolean;
   public documentType: string;
-  private currentDocument;
+  public defaultDocumnetColor: string = '#ffffff';
+  public container: Container;
+  public minContainerHeight: number = 40;
+  public currentDocument;
   private currentToggleButton;
-  private container: Container;
   private closedContainer: Container;
   private defaultSpeed: number = 0.5;
   private copy: any;
-  private minContainerHeight: number = 40;
   private changeTimeStamp: number;
   private isTimeOut: boolean;
   private subscription: Subscription;
 
   constructor(public editBoxService: EditBoxService, public documentPreviewService: DocumentPreviewService,
-    private tableService: TableService, private menuService: MenuService, private colorService: ColorService,
+    private menuService: MenuService, private colorService: ColorService,
     private promptService: PromptService, private linkService: LinkService, private saveService: SaveService) { }
 
   ngOnInit() {
@@ -74,28 +74,12 @@ export class DocumentComponent implements OnInit {
   }
 
   onDocumentChange() {
-    // Create the main table
-    let mainTable = this.tableService.createTable(document.createElement('div'), null, null, this.currentDocument.backgroundColor),
-      tr = mainTable.appendChild(document.createElement('tr')),
-      td = tr.appendChild(document.createElement('td'));
+    let documentBody = this.createDocumentBody(this.currentDocument.backgroundColor, this.currentDocument.pageColor);
 
-    td.width = '100%';
-    td.align = 'center';
-
-    // Create all child tables
-    let pageTable = this.tableService.createTable(td, this.container, this.pageWidth, this.currentDocument.pageColor);
-
-    // If we have no boxes
-    if (!this.container || this.container.boxes.length === 0) {
-      tr = pageTable.appendChild(document.createElement('tr')),
-        td = tr.appendChild(document.createElement('td'));
-      td.height = this.minContainerHeight.toString();
-    }
-
-    // If the main table differs from what has been saved
-    if (this.currentDocument.body !== mainTable.outerHTML) {
+    // If the new document body differs from what has been saved
+    if (this.currentDocument.body !== documentBody) {
       this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
-      this.currentDocument.body = mainTable.outerHTML;
+      this.currentDocument.body = documentBody;
       this.saveService.checkForNoChanges();
     }
   }
@@ -136,27 +120,14 @@ export class DocumentComponent implements OnInit {
   }
 
   loadDocument(input) {
-    let parser = new DOMParser(),
-      doc = parser.parseFromString(this.currentDocument.body, "text/html"),
-      mainTable: HTMLTableElement = doc.body.firstElementChild as HTMLTableElement,
-      pageTable: HTMLTableElement = mainTable.firstElementChild.firstElementChild.firstElementChild.firstElementChild as HTMLTableElement,
-      interval: number;
-
-    // Set the colors
-    this.currentDocument.backgroundColor = mainTable.bgColor;
-    this.currentDocument.pageColor = pageTable.bgColor;
-
-
-    // Create the boxes
-    this.tableService.tableToBox(pageTable, Container.currentContainer);
-
+    let interval: number;
 
     this.pageLoading = true;
 
     // Set the current container as this page when all boxes have loaded
     interval = window.setInterval(() => {
-      if (this.tableService.loadedBoxes.every(x => x.isLoaded)) {
-        this.tableService.loadedBoxes = [];
+      if (this.editBoxService.loadedBoxes.every(x => x.isLoaded)) {
+        this.editBoxService.loadedBoxes = [];
 
         // Set the container
         Container.currentContainer = this.container;
@@ -302,6 +273,7 @@ export class DocumentComponent implements OnInit {
       }
 
       this.grid.saveUpdate(this.currentItem, this.grid.tiers[this.currentItem.tierIndex]);
+      this.container = null;
       let document = this.getNewDocument(data, id);
 
       this.change += 1;
@@ -393,4 +365,6 @@ export class DocumentComponent implements OnInit {
   }
 
   getNewDocument(data, id) { }
+
+  createDocumentBody(backgroundColor: string, pageColor: string) { }
 }

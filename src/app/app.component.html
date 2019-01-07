@@ -2,7 +2,7 @@
 <div class="menu">
     <menu-button buttonId="Shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
     <menu-button buttonId="Email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
-    <menu-button buttonId="Lead Magnet" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
+    <menu-button buttonId="Lead Page" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
     <menu-button buttonId="Social Media" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
     <div class="save-button" (click)="saveService.save()" [class]="saveService.isChange() ? 'save-button blink' : 'save-button button-disabled'">Save</div>
 </div>
@@ -17,10 +17,10 @@
         <email-grid #emailGrid (onItemClick)="email.onItemClick($event)"></email-grid>
     </email>
 
-    <!-- Leads -->
-    <leads #leads *ngIf="activeScreen == 'Lead Magnet'" [grid]="leadMagnetGrid">
-        <lead-magnet-grid #leadMagnetGrid (onItemClick)="leads.onItemClick($event)"></lead-magnet-grid>
-    </leads>
+    <!-- Lead Page -->
+    <lead-page #leadPage *ngIf="activeScreen == 'Lead Page'" [grid]="leadPageGrid">
+        <lead-page-grid #leadPageGrid (onItemClick)="leadPage.onItemClick($event)"></lead-page-grid>
+    </lead-page>
 
     <!-- Social -->
     <social *ngIf="activeScreen == 'Social Media'"></social>

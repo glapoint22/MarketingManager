@@ -16,6 +16,7 @@ import { PromptService } from './prompt.service';
   providedIn: 'root'
 })
 export class EditBoxService {
+  public loadedBoxes: Array<EditBoxComponent> = [];
   public copied: any = {};
   private fileInput = document.createElement('input');
   private spawnPosition: string;

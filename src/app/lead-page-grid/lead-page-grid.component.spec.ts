@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LeadMagnetGridComponent } from './lead-magnet-grid.component';
+import { LeadPageGridComponent } from './lead-page-grid.component';
 
-describe('LeadMagnetGridComponent', () => {
-  let component: LeadMagnetGridComponent;
-  let fixture: ComponentFixture<LeadMagnetGridComponent>;
+describe('LeadPageGridComponent', () => {
+  let component: LeadPageGridComponent;
+  let fixture: ComponentFixture<LeadPageGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LeadMagnetGridComponent ]
+      declarations: [ LeadPageGridComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LeadMagnetGridComponent);
+    fixture = TestBed.createComponent(LeadPageGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

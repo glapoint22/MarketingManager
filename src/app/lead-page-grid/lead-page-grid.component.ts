@@ -4,11 +4,11 @@ import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
 
 @Component({
-  selector: 'lead-magnet-grid',
+  selector: 'lead-page-grid',
   templateUrl: '../grid/grid.component.html',
   styleUrls: ['../grid/grid.component.scss']
 })
-export class LeadMagnetGridComponent extends GridComponent implements OnInit {
+export class LeadPageGridComponent extends GridComponent implements OnInit {
 
   constructor(dataService: DataService, saveService: SaveService, private element: ElementRef) { super(dataService, saveService) }
 

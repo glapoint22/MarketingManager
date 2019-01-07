@@ -21,7 +21,6 @@ import { ShopGridComponent } from './shop-grid/shop-grid.component';
 import { ShopComponent } from './shop/shop.component';
 import { MenuButtonComponent } from './menu-button/menu-button.component';
 import { EmailComponent } from './email/email.component';
-import { LeadsComponent } from './leads/leads.component';
 import { SocialComponent } from './social/social.component';
 import { FilterGridComponent } from './filter-grid/filter-grid.component';
 import { EditorComponent } from './editor/editor.component';
@@ -45,8 +44,9 @@ import { LinkFormComponent } from './link-form/link-form.component';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { MenuComponent } from './menu/menu.component';
-import { LeadMagnetGridComponent } from './lead-magnet-grid/lead-magnet-grid.component';
 import { DocumentComponent } from './document/document.component';
+import { LeadPageComponent } from './lead-page/lead-page.component';
+import { LeadPageGridComponent } from './lead-page-grid/lead-page-grid.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +56,6 @@ import { DocumentComponent } from './document/document.component';
     ShopComponent,
     MenuButtonComponent,
     EmailComponent,
-    LeadsComponent,
     SocialComponent,
     FilterGridComponent,
     EditorComponent,
@@ -86,8 +85,9 @@ import { DocumentComponent } from './document/document.component';
     DocumentPreviewComponent,
     ColorPickerComponent,
     MenuComponent,
-    LeadMagnetGridComponent,
-    DocumentComponent
+    DocumentComponent,
+    LeadPageComponent,
+    LeadPageGridComponent
   ],
   imports: [
     BrowserModule,
