@@ -166,8 +166,8 @@ export class TableService {
           rect: new Rect(rect[0], rect[1], rect[2], rect[3])
         }
         Container.currentContainer = container;
-        table.style.width = boxData.rect.width + 'px';
-        table.style.height = boxData.rect.height + 'px';
+        // table.style.width = boxData.rect.width + 'px';
+        // table.style.height = boxData.rect.height + 'px';
 
         box = this.editBoxService.createTextBox(boxData);
         this.editBoxService.loadedBoxes.push(box);
@@ -209,8 +209,8 @@ export class TableService {
         }
         Container.currentContainer = container;
 
-        table.style.width = boxData.rect.width + 'px';
-        table.style.height = boxData.rect.height + 'px';
+        // table.style.width = boxData.rect.width + 'px';
+        // table.style.height = boxData.rect.height + 'px';
         box = this.editBoxService.createImageBox(boxData);
         this.editBoxService.loadedBoxes.push(box);
       }

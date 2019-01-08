@@ -221,12 +221,19 @@ export class ContainerBoxComponent extends EditBoxComponent {
   }
 
   boxToTable(table: HTMLTableElement) {
-    table.summary = this.getTableRect('containerBox');
+    table.summary = this.getRect('containerBox');
     if (!this.boxContainer.boxes || this.boxContainer.boxes.length === 0) {
       let row = table.appendChild(document.createElement('tr'));
       let column = document.createElement('td');
       column.style.height = this.rect.height + 'px';
       row.appendChild(column);
+    }
+  }
+
+  boxToHtml(div: HTMLElement) {
+    div.title = this.getRect('containerBox');
+    if (!this.boxContainer.boxes || this.boxContainer.boxes.length === 0) {
+      div.style.height = this.rect.height + 'px';
     }
   }
 }

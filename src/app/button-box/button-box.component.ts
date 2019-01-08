@@ -343,7 +343,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     row.appendChild(column);
 
     // Set table properties
-    table.summary = this.getTableRect('buttonBox');
+    table.summary = this.getRect('buttonBox');
     table.removeAttribute('width');
 
     // Append the anchor to the body so we can get its dimensions
@@ -373,5 +373,19 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     // Remove the anchor from the body and append it to the column
     document.body.removeChild(anchor);
     column.appendChild(anchor);
+  }
+
+  boxToHtml(div: HTMLElement) {
+    div.title = this.getRect('buttonBox');
+
+    // Set the button properties
+    div.style.backgroundColor = this.backgroundColor;
+    div.style.height = this.rect.height + 'px';
+    div.style.lineHeight = this.rect.height + 'px';
+    div.style.textAlign = 'center';
+    div.style.cursor = 'pointer';
+
+    // Button content
+    div.innerHTML = this.content.innerHTML;
   }
 }

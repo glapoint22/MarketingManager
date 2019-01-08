@@ -69,7 +69,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     img.width = this.rect.width;
     img.style.display = 'block';
 
-    table.summary = this.getTableRect('imageBox');
+    table.summary = this.getRect('imageBox');
 
     if (this.link) {
       let anchor = document.createElement('a');
@@ -80,5 +80,16 @@ export class ImageBoxComponent extends UniformBoxComponent {
     } else {
       column.appendChild(img);
     }
+  }
+
+  boxToHtml(div: HTMLElement) {
+    let img: HTMLImageElement = document.createElement('img');
+
+    img.src = this.contentContainer.src;
+    img.style.width = '100%';
+    img.width = this.rect.width;
+    img.style.display = 'block';
+    div.appendChild(img);
+    div.title = this.getRect('imageBox');
   }
 }

@@ -370,24 +370,44 @@ export class TextBoxComponent extends EditBoxComponent {
   }
 
   boxToTable(table: HTMLTableElement) {
-    table.summary = this.getTableRect('textBox');
+    table.summary = this.getRect('textBox');
 
     // Set the background color
     if (this.backgroundColor) table.bgColor = this.backgroundColor;
 
     // Set the content
     Array.from(this.content.children).forEach((content: HTMLElement) => {
-      let tr = table.appendChild(document.createElement('tr'));
-      let column = document.createElement('td');
-
-      if (this.rect.height > this.content.clientHeight) {
-        column.height = this.rect.height.toString();
-        column.vAlign = 'top';
-      }
+      let tr = table.appendChild(document.createElement('tr')),
+        column = document.createElement('td');
 
       column.style.textAlign = content.style.textAlign;
       column.innerHTML = content.innerHTML;
       tr.appendChild(column);
+    });
+
+    // If height of the box is greater than the content
+    if (this.rect.height > this.content.clientHeight) {
+      let tr = table.appendChild(document.createElement('tr')),
+        column = document.createElement('td');
+
+      column.height = (this.rect.height - this.content.clientHeight).toString();
+      tr.appendChild(column);
+    }
+  }
+
+  boxToHtml(div: HTMLElement) {
+    div.title = this.getRect('textBox');
+
+    // Set the background color
+    if (this.backgroundColor) div.style.backgroundColor = this.backgroundColor;
+    if (this.rect.height > this.content.clientHeight) div.style.height = this.rect.height + 'px';
+
+    // Set the content
+    Array.from(this.content.children).forEach((content: HTMLElement) => {
+      let contentDiv = div.appendChild(document.createElement('DIV'));
+
+      contentDiv.style.textAlign = content.style.textAlign;
+      contentDiv.innerHTML = content.innerHTML;
     });
   }
 }
