@@ -239,14 +239,4 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
      
     });
   }
-
-  getRect(data: string, index: number, rect: Array<number> = []) {
-    let nextIndex = data.indexOf('-', index);
-    if (nextIndex === -1) nextIndex = data.length;
-
-    rect.push(parseFloat(data.substr(index, nextIndex - index)));
-    if (nextIndex === data.length) return rect;
-    return this.getRect(data, nextIndex + 1, rect);
-  }
-
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import { GridComponent } from '../grid/grid.component';
 import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
+import { PromptService } from '../prompt.service';
 
 @Component({
   selector: 'lead-page-grid',
@@ -10,7 +11,7 @@ import { SaveService } from '../save.service';
 })
 export class LeadPageGridComponent extends GridComponent implements OnInit {
 
-  constructor(dataService: DataService, saveService: SaveService, private element: ElementRef) { super(dataService, saveService) }
+  constructor(dataService: DataService, saveService: SaveService, private element: ElementRef, private promptService: PromptService) { super(dataService, saveService) }
 
   ngOnInit() {
     this.apiUrl = 'api/Leads';
@@ -50,6 +51,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
           tierIndex: 1,
           documents: y.leadPages,
           leadMagnet: y.leadMagnet,
+          itemType: 'leadPage',
           data: [
             {
               value: y.name
@@ -81,7 +83,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
         }
       },
       check: (item) => {
-        return true;
+        return this.validateLeadPages(item);
       },
       url: 'api/Niches'
     });
@@ -92,4 +94,30 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
     this.hasFocus = true;
   }
 
+  validateLeadPages(item): boolean {
+    for (let i = 0; i < item.documents.length; i++) {
+      // Check that the title is not called title
+      if (item.documents[i].title.toLowerCase() === 'title') {
+        this.promptService.prompt('Quality Control', '"' + item.data[0].value + '" cannot have a lead page with the title named "title".', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
+      // Check for invlaid tags
+        if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
+        this.promptService.prompt('Quality Control', 'Lead page "' + item.documents[i].title + '" from "' + item.data[0].value + '" has an invalid tag.', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+    }
+    return true;
+  }
 }

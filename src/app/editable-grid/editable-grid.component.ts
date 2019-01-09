@@ -118,7 +118,6 @@ export class EditableGridComponent extends GridComponent {
       this.deleteItem(this.currentItem);
       this.change += 1;
       this.tierComponent.checkItemResults();
-      // this.collapseDeletedTier(this.tierComponent.tierComponents);
       this.saveDelete(this.currentItem);
     }
   }
@@ -132,16 +131,6 @@ export class EditableGridComponent extends GridComponent {
       this.saveService.newItems.splice(this.saveService.newItems.findIndex(x => x.item == item), 1);
     }
   }
-
-  // collapseDeletedTier(tierComponents) {
-  //   tierComponents.toArray().filter(x => x.isExpanded).forEach(x => {
-  //     if (x.parentId === this.currentItem.id) {
-  //       x.isExpanded = false;
-  //     } else {
-  //       this.collapseDeletedTier(x.tierComponents);
-  //     }
-  //   });
-  // }
 
   deleteItem(item: any) {
     //Delete this current item

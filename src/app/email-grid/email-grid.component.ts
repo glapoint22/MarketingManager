@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { GridComponent } from "../grid/grid.component";
 import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
@@ -143,6 +143,17 @@ export class EmailGridComponent extends GridComponent implements OnInit {
     let itemType = this.tiers[item.tierIndex].fields[0].name;
 
     for (let i = 0; i < item.documents.length; i++) {
+      // Check that the title is not called subject
+      if (item.documents[i].title.toLowerCase() === 'subject') {
+        this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have an email with the subject named "subject".', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
       // Check for invlaid tags
         if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
         this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].title + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
@@ -157,17 +168,6 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       // Check for invalid urls
       if (!this.linkService.validateUrl(item.documents[i].body)) {
         this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].title + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid URL.', [
-          {
-            text: 'Ok',
-            callback: () => { }
-          }
-        ]);
-        return false
-      }
-
-      // Check that the title is not called subject
-      if (item.documents[i].title.toLowerCase() === 'subject') {
-        this.promptService.prompt('Quality Control', itemType + ' "' + item.data[0].value + '" cannot have an email with the subject named "subject".', [
           {
             text: 'Ok',
             callback: () => { }

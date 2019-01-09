@@ -13,6 +13,7 @@ export class LinkService {
 
 
   showForm(style: Style, gridItem) {
+    if (gridItem.itemType) return;
     this.style = style;
 
     this.linkOptions = [

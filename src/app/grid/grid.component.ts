@@ -12,6 +12,7 @@ import { SaveService } from '../save.service';
 })
 export class GridComponent implements OnInit, Igrid {
   @Output() onItemClick = new EventEmitter<any>();
+  @Output() onCollapsedTier = new EventEmitter<any>();
   @ViewChild(TierComponent) tierComponent: TierComponent;
   @ViewChild('searchInput') searchInput: ElementRef;
   @ViewChild('grid') grid: ElementRef;
@@ -145,5 +146,7 @@ export class GridComponent implements OnInit, Igrid {
     this.hasFocus = false;
   }
 
-  onTierCollapse() { }
+  onTierCollapse() {
+    this.onCollapsedTier.emit();
+  }
 }

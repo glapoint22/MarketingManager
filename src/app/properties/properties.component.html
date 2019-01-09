@@ -25,7 +25,7 @@
             <div *ngFor="let group of editBox.currentEditBox.styles | groupBy" class="group">
                 <div *ngIf="group.group != 'dropdown'; else dropdownGroup" style="position:relative">
                     <div *ngFor="let style of group.styles" class="style-button" (click)="style.group === 'link' || style.group === 'editBoxLink' ? showLinkForm(style) : style.onClick()"
-                        [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !editBox.currentEditBox.inEditMode}">
+                        [title]="style.title" [ngClass]="{'style-button-activated': style.isSelected, 'style-button-disabled': (style.group !== 'editBoxColor' && style.group !== 'editBoxLink' && !editBox.currentEditBox.inEditMode) || (gridItem.itemType && (group.group === 'editBoxLink' || group.group === 'link')) }">
 
                         <div *ngIf="(style.group === 'color' && editBox.currentEditBox.inEditMode) || style.group === 'editBoxColor'"
                             class="color-bar" [style.backgroundColor]="style.styleValue ? style.styleValue : '#00000000'">

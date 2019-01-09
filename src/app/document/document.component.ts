@@ -99,7 +99,7 @@ export class DocumentComponent implements OnInit {
       input.checked = false;
       this.closedContainer = this.container;
       Container.currentContainer = null;
-
+      EditBoxComponent.currentEditBox = null;
       // Expand the page
     } else {
       this.closedContainer = null;
@@ -148,6 +148,7 @@ export class DocumentComponent implements OnInit {
     }
     this.documents = item.documents;
     this.currentItem = item;
+    if (this.currentDocument) this.currentDocument.isSelected = false;
   }
 
   onDocumentClick(document) {
@@ -362,6 +363,20 @@ export class DocumentComponent implements OnInit {
   getEditBoxType() {
     if (!EditBoxComponent.currentEditBox || !EditBoxComponent.currentEditBox.isSelected) return '';
     return '(' + EditBoxComponent.currentEditBox.type + ')';
+  }
+
+  getRect(data: string, index: number, rect: Array<number> = []) {
+    let nextIndex = data.indexOf('-', index);
+    if (nextIndex === -1) nextIndex = data.length;
+
+    rect.push(parseFloat(data.substr(index, nextIndex - index)));
+    if (nextIndex === data.length) return rect;
+    return this.getRect(data, nextIndex + 1, rect);
+  }
+
+  onCollapsedTier() {
+    if (EditBoxComponent) EditBoxComponent.currentEditBox = null;
+    if (this.currentDocument) this.currentDocument.isSelected = false;
   }
 
   getNewDocument(data, id) { }
