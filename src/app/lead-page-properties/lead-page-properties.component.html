@@ -1,0 +1,20 @@
+<div *ngIf="gridItem && gridItem.isSelected">
+  <div style="width: 100%;
+height: 22px;
+background-color: #333333;">
+
+  <div (click)="onLeadMagnetClick()" style="width: 22px;
+height: 22px;
+display: inline-block;
+margin-right: 10px;
+cursor: pointer;
+text-align: center;
+vertical-align: middle;
+font-size: 16px;
+color: #9e9e9e;">
+    <i class="fas fa-file"></i>
+  </div>
+  <div>{{gridItem.leadMagnet}}</div>
+</div>
+</div>
+

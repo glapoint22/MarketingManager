@@ -5,6 +5,7 @@
     <editor [name]="'Properties ' + getEditBoxType()">
       <properties [gridItem]="currentItem"></properties>
     </editor>
+    <ng-content select="[editor]"></ng-content>
   </div>
   <!-- Divider -->
   <div resizable direction="-1" class="divider"></div>
@@ -152,5 +153,5 @@
 
 <!-- grid -->
 <div class="grid-container">
-  <ng-content></ng-content>
+  <ng-content select="[grid]"></ng-content>
 </div>

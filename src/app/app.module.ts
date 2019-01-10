@@ -47,6 +47,7 @@ import { MenuComponent } from './menu/menu.component';
 import { DocumentComponent } from './document/document.component';
 import { LeadPageComponent } from './lead-page/lead-page.component';
 import { LeadPageGridComponent } from './lead-page-grid/lead-page-grid.component';
+import { LeadPagePropertiesComponent } from './lead-page-properties/lead-page-properties.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { LeadPageGridComponent } from './lead-page-grid/lead-page-grid.component
     MenuComponent,
     DocumentComponent,
     LeadPageComponent,
-    LeadPageGridComponent
+    LeadPageGridComponent,
+    LeadPagePropertiesComponent
   ],
   imports: [
     BrowserModule,

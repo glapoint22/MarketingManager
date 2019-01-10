@@ -14,7 +14,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
   constructor(dataService: DataService, saveService: SaveService, private element: ElementRef, private promptService: PromptService) { super(dataService, saveService) }
 
   ngOnInit() {
-    this.apiUrl = 'api/Leads';
+    this.apiUrl = 'api/LeadPages';
     this.setParentTierHeight();
     super.ngOnInit();
   }
