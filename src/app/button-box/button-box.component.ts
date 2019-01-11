@@ -384,6 +384,7 @@ export class ButtonBoxComponent extends UniformBoxComponent {
     div.style.lineHeight = this.rect.height + 'px';
     div.style.textAlign = 'center';
     div.style.cursor = 'pointer';
+    div.id = 'button';
 
     // Button content
     div.innerHTML = this.content.innerHTML;

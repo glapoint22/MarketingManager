@@ -51,6 +51,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
           tierIndex: 1,
           documents: y.leadPages,
           leadMagnet: y.leadMagnet,
+          leadMagnetEmails: y.leadMagnetEmails,
           itemType: 'leadPage',
           data: [
             {
@@ -73,12 +74,14 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
       setItem: (item) => {
         return {
           ID: item.id,
+          LeadMagnetEmails: item.leadMagnetEmails,
           LeadPages: item.documents.map(x => ({
             ID: x.id,
             NicheID: item.id,
             Title: x.title,
             Body: x.body,
-            PageTitle: x.pageTitle
+            PageTitle: x.pageTitle,
+            LeadMagnet: x.leadMagnet
           }))
         }
       },
@@ -108,7 +111,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
       }
 
       // Check for invlaid tags
-        if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
+      if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
         this.promptService.prompt('Quality Control', 'Lead page "' + item.documents[i].title + '" from "' + item.data[0].value + '" has an invalid tag.', [
           {
             text: 'Ok',

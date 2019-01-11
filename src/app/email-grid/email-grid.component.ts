@@ -51,7 +51,8 @@ export class EmailGridComponent extends GridComponent implements OnInit {
           id: y.id,
           tierIndex: 1,
           documents: y.emails,
-          leadMagnet: y.leadMagnet,
+          leadMagnet: y.leadPages.length > 0 ? y.leadPages[0].leadMagnet : null,
+          leadPages: y.leadPages,
           data: [
             {
               value: y.name
@@ -73,6 +74,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       setItem: (item) => {
         return {
           ID: item.id,
+          LeadPages: item.leadPages,
           LeadMagnetEmails: item.documents.map(x => ({
             ID: x.id,
             NicheID: item.id,
@@ -155,7 +157,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
       }
 
       // Check for invlaid tags
-        if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
+      if (/<font|<b>|<i>|<u>/.test(item.documents[i].body)) {
         this.promptService.prompt('Quality Control', 'Email "' + item.documents[i].title + '" from ' + itemType.substr(0, 1).toLowerCase() + itemType.substr(1) + ' "' + item.data[0].value + '" has an invalid tag.', [
           {
             text: 'Ok',

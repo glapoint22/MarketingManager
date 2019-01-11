@@ -23,7 +23,7 @@ export class LeadPagePropertiesComponent implements OnInit {
 
         this.dataService.post('/api/LeadPages', formData)
           .subscribe((leadMagnet: any) => {
-            this.gridItem.leadMagnet = leadMagnet;
+            this.gridItem.documents[0].leadMagnet = leadMagnet;
           });
       }
     }
@@ -31,6 +31,10 @@ export class LeadPagePropertiesComponent implements OnInit {
 
   onLeadMagnetClick() {
     this.fileInput.click();
+  }
+
+  onPageTitleChange(title){
+    this.gridItem.documents[0].pageTitle = title;
   }
 
 }
