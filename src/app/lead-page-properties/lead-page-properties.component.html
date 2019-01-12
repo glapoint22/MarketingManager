@@ -1,21 +1,15 @@
-<div *ngIf="gridItem && gridItem.isSelected">
-  <div style="width: 100%;
-height: 22px;
-background-color: #333333;">
+<div *ngIf="grid && grid.currentItem && grid.currentItem.isSelected && grid.currentItem.documents && grid.currentItem.documents.length > 0 && grid.currentItem.documents[0].isSelected">
+  <div class="bar">
+    <span class="label">Lead Magnet:</span>
+    <div (click)="onLeadMagnetClick()" class="lead-magnet-button">
+      <i class="fas fa-file" title="Lead Magnet"></i>
+    </div>
+    <span style="color: #969696;">{{grid.currentItem.documents[0].leadMagnet}}</span>
 
-  <div (click)="onLeadMagnetClick()" style="width: 22px;
-height: 22px;
-display: inline-block;
-margin-right: 10px;
-cursor: pointer;
-text-align: center;
-vertical-align: middle;
-font-size: 16px;
-color: #9e9e9e;">
-    <i class="fas fa-file"></i>
   </div>
-  <!-- <div>{{gridItem.leadMagnet}}</div> -->
-  <input #pageTitle (keyup)="onPageTitleChange(pageTitle.value)">
+  <div class="bar">
+    <span class="label">Page Title:</span>
+    <input #pageTitle [value]="grid.currentItem.documents[0].pageTitle" placeholder="Page Title" #pageTitle (keydown)="onPageTitleChange($event)"
+      (focus)="onPageTitleFocus(); pageTitle.select()" (blur)=onPageTitleBlur($event)>
+  </div>
 </div>
-</div>
-

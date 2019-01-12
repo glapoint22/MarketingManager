@@ -50,7 +50,7 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
           id: y.id,
           tierIndex: 1,
           documents: y.leadPages,
-          leadMagnet: y.leadMagnet,
+          // leadMagnet: y.leadMagnet,
           leadMagnetEmails: y.leadMagnetEmails,
           itemType: 'leadPage',
           data: [
@@ -102,6 +102,28 @@ export class LeadPageGridComponent extends GridComponent implements OnInit {
       // Check that the title is not called title
       if (item.documents[i].title.toLowerCase() === 'title') {
         this.promptService.prompt('Quality Control', '"' + item.data[0].value + '" cannot have a lead page with the title named "title".', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
+      // Check for no lead magnet
+      if (item.documents[i].leadMagnet === '') {
+        this.promptService.prompt('Quality Control', 'Lead page "' + item.documents[i].title + '" from "' + item.data[0].value + '" needs a lead magnet.', [
+          {
+            text: 'Ok',
+            callback: () => { }
+          }
+        ]);
+        return false
+      }
+
+      // Check for no page title
+      if (item.documents[i].pageTitle === '') {
+        this.promptService.prompt('Quality Control', 'Lead page "' + item.documents[i].title + '" from "' + item.data[0].value + '" needs a page title.', [
           {
             text: 'Ok',
             callback: () => { }

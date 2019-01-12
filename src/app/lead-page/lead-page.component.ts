@@ -16,7 +16,23 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
   ngOnInit() {
     this.documentType = 'lead page';
     this.pageWidth = 800;
+    this.newDocumentIcon = 'fa-magnet';
     super.ngOnInit();
+  }
+
+  copyDocument() {
+    if (this.currentDocument && this.currentDocument.isSelected) {
+      let regex = RegExp(/background-color: rgb\(\d+,\s\d+,\s\d+\)/, 'g');
+
+      this.copy = {
+        body: this.currentDocument.body,
+        title: this.currentDocument.title,
+        backgroundColor: '#' + this.colorService.rgbToHex(this.colorService.rgbStringToRgbObject(regex.exec(this.currentDocument.body)[0])),
+        pageColor: '#' + this.colorService.rgbToHex(this.colorService.rgbStringToRgbObject(regex.exec(this.currentDocument.body)[0])),
+        pageTitle: this.currentDocument.pageTitle,
+        leadMagnet: this.currentDocument.leadMagnet
+      }
+    }
   }
 
   getNewDocument(data, id) {
@@ -26,7 +42,8 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
       body: data ? data.body : this.createDocumentBody(this.defaultDocumnetColor, this.defaultDocumnetColor),
       backgroundColor: data ? data.backgroundColor : this.defaultDocumnetColor,
       pageColor: data ? data.pageColor : this.defaultDocumnetColor,
-      pageTitle: 'Page Title'
+      pageTitle: data ? data.pageTitle : '',
+      leadMagnet: data ? data.leadMagnet : ''
     });
     let newDocument = this.currentItem.documents[this.currentItem.documents.length - 1];
 
@@ -193,8 +210,6 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
         }
         Container.currentContainer = container;
 
-        // div.style.width = boxData.rect.width + 'px';
-        // div.style.height = boxData.rect.height + 'px';
         box = this.editBoxService.createImageBox(boxData);
         this.editBoxService.loadedBoxes.push(box);
       }
@@ -217,7 +232,7 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
           if (!row) {
             let parentElement: HTMLElement = div.parentElement;
 
-            
+
             while (parentElement.style.textAlign.length === 0) {
               parentElement = parentElement.parentElement;
             }
@@ -234,9 +249,7 @@ export class LeadPageComponent extends DocumentComponent implements OnInit {
     }
 
     Array.from(div.children).forEach((child: HTMLElement) => {
-      
       this.htmlToBox(child, container);
-     
     });
   }
 }

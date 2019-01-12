@@ -14,9 +14,9 @@
 
     <!-- Lead Page -->
     <lead-page #leadPage *ngIf="activeScreen == 'Lead Page'" [grid]="leadPageGrid">
-        <lead-page-grid grid #leadPageGrid (onItemClick)="leadPage.onItemClick($event); leadPageProperties.gridItem = $event" (onCollapsedTier)="leadPage.onCollapsedTier()"></lead-page-grid>
+        <lead-page-grid grid #leadPageGrid (onItemClick)="leadPage.onItemClick($event)" (onCollapsedTier)="leadPage.onCollapsedTier()"></lead-page-grid>
         <editor editor [name]="'Lead Page'">
-            <lead-page-properties #leadPageProperties></lead-page-properties>
+            <lead-page-properties #leadPageProperties [grid]="leadPageGrid"></lead-page-properties>
         </editor>
     </lead-page>
 

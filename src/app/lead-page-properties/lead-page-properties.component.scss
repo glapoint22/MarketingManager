@@ -1,0 +1,41 @@
+@import 'theme';
+
+.bar {
+    width: 100%;
+    height: 22px;
+    
+}
+.bar:first-child {
+    background-color: #333333;
+}
+.bar:last-child {
+    background-color: #2b2a2a;
+}
+.label {
+    color: #ffffff;
+    margin-left: 5px;
+    line-height: 22px;
+}
+.lead-magnet-button {
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 22px;
+    margin-left: 5px;
+}
+input {
+    background-color: #4c4b4b;
+    margin-left: 5px;
+    border-radius: 5px;
+    color: #d1d1d1;
+    padding-left: 2px;
+    width: 250px;
+    outline: none;
+    border: 1px solid #6a6a6a;
+}
+input:focus {
+    border: 1px solid $selected-color;
+}

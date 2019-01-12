@@ -124,12 +124,12 @@ export class PropertiesComponent {
     Container.currentContainer.setHeight();
   }
 
-  setChange(event: KeyboardEvent, input: HTMLInputElement) {
+  setChange(event) {
     if (event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'ArrowUp' || event.code === 'ArrowDown') {
       EditBoxComponent.currentEditBox.updateRow();
       EditBoxComponent.change.next();
 
-      if (event.code === 'Enter' || event.code === 'NumpadEnter') input.blur();
+      if (event.code === 'Enter' || event.code === 'NumpadEnter') event.target.blur();
     }
   }
 

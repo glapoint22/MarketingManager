@@ -83,7 +83,7 @@
 
                 <div class="property-container">
                     <input #y type="number" [value]="Math.round(editBox.currentEditBox.rect.y)" (change)="setY(y)"
-                        (focus)="y.select()" (keyup)="setChange($event, y)">
+                        (focus)="y.select()" (keyup)="setChange($event)">
                 </div>
             </div>
 
@@ -99,7 +99,7 @@
 
                 <div class="property-container">
                     <input #width type="number" [value]="Math.round(editBox.currentEditBox.rect.width)" (change)="width.oldValue = editBox.currentEditBox.rect.width; setWidth(width)"
-                        (focus)="width.select()" (keyup)="setChange($event, width)">
+                        (focus)="width.select()" (keyup)="setChange($event)">
                 </div>
             </div>
 
@@ -111,7 +111,7 @@
 
                 <div class="property-container">
                     <input #height type="number" [value]="Math.round(editBox.currentEditBox.rect.height)" (change)="height.oldValue = editBox.currentEditBox.rect.height; setHeight(height)"
-                        (focus)="height.select()" (keyup)="setChange($event, height)">
+                        (focus)="height.select()" (keyup)="setChange($event)">
                 </div>
             </div>
         </div>

@@ -20,17 +20,20 @@ export class ColorService {
     if (!value) {
       this.newColor = value = '#ffffff';
     } else if (value.substr(0, 1) === 'r') {
-      let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(value);
-
-      let color = {
-        r: parseInt(colorArray[1]),
-        g: parseInt(colorArray[2]),
-        b: parseInt(colorArray[3])
-      }
-      value = '#' + this.rgbToHex(color);
+      value = '#' + this.rgbToHex(this.rgbStringToRgbObject(value));
     }
 
     this._currentColor = value;
+  }
+
+  rgbStringToRgbObject(value) {
+    let colorArray = /(?:rgb\()(\d+)(?:,\s)(\d+)(?:,\s)(\d+)/.exec(value);
+
+    return {
+      r: parseInt(colorArray[1]),
+      g: parseInt(colorArray[2]),
+      b: parseInt(colorArray[3])
+    }
   }
 
 

@@ -33,16 +33,17 @@ export class DocumentComponent implements OnInit {
   public container: Container;
   public minContainerHeight: number = 40;
   public currentDocument;
+  public copy: any;
+  public newDocumentIcon: string;
   private currentToggleButton;
   private closedContainer: Container;
   private defaultSpeed: number = 0.5;
-  private copy: any;
   private changeTimeStamp: number;
   private isTimeOut: boolean;
   private subscription: Subscription;
 
   constructor(public editBoxService: EditBoxService, public documentPreviewService: DocumentPreviewService,
-    private menuService: MenuService, private colorService: ColorService,
+    private menuService: MenuService, public colorService: ColorService,
     private promptService: PromptService, private linkService: LinkService, private saveService: SaveService) { }
 
   ngOnInit() {
@@ -299,18 +300,6 @@ export class DocumentComponent implements OnInit {
     }
   }
 
-  copyDocument() {
-    if (this.currentDocument && this.currentDocument.isSelected) {
-      let regex = RegExp(/bgcolor="(#[a-z0-9]+)"/, 'g');
-
-      this.copy = {
-        body: this.currentDocument.body,
-        title: this.currentDocument.title,
-        backgroundColor: regex.exec(this.currentDocument.body)[1],
-        pageColor: regex.exec(this.currentDocument.body)[1]
-      }
-    }
-  }
 
   pasteDocument() {
     if (this.copy) this.newDocument(this.copy);
@@ -376,10 +365,11 @@ export class DocumentComponent implements OnInit {
 
   onCollapsedTier() {
     if (EditBoxComponent) EditBoxComponent.currentEditBox = null;
-    if (this.currentDocument) this.currentDocument.isSelected = false;
   }
 
   getNewDocument(data, id) { }
 
   createDocumentBody(backgroundColor: string, pageColor: string) { }
+
+  copyDocument() { }
 }

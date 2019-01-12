@@ -16,6 +16,7 @@ export class EmailComponent extends DocumentComponent implements OnInit {
   ngOnInit() {
     this.documentType = 'email';
     this.pageWidth = 600;
+    this.newDocumentIcon = 'fa-envelope';
     super.ngOnInit();
   }
 
@@ -43,6 +44,19 @@ export class EmailComponent extends DocumentComponent implements OnInit {
       this.currentItem.documents.forEach((email, i) => {
         email.day = i + 1;
       });
+    }
+  }
+
+  copyDocument() {
+    if (this.currentDocument && this.currentDocument.isSelected) {
+      let regex = RegExp(/bgcolor="(#[a-z0-9]+)"/, 'g');
+
+      this.copy = {
+        body: this.currentDocument.body,
+        title: this.currentDocument.title,
+        backgroundColor: regex.exec(this.currentDocument.body)[1],
+        pageColor: regex.exec(this.currentDocument.body)[1]
+      }
     }
   }
 

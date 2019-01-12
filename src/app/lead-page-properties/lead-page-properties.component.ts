@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { DataService } from '../data.service';
+import { EditBoxComponent } from '../edit-box/edit-box.component';
+import { SaveService } from '../save.service';
 
 @Component({
   selector: 'lead-page-properties',
@@ -7,10 +9,11 @@ import { DataService } from '../data.service';
   styleUrls: ['./lead-page-properties.component.scss']
 })
 export class LeadPagePropertiesComponent implements OnInit {
-  public gridItem: any;
+  @Input() grid;
+  // public gridItem: any;
   private fileInput = document.createElement('input');
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private saveService: SaveService) { }
 
   ngOnInit() {
     this.fileInput.type = 'file';
@@ -23,7 +26,9 @@ export class LeadPagePropertiesComponent implements OnInit {
 
         this.dataService.post('/api/LeadPages', formData)
           .subscribe((leadMagnet: any) => {
-            this.gridItem.documents[0].leadMagnet = leadMagnet;
+            this.grid.saveUpdate(this.grid.currentItem, this.grid.tiers[this.grid.currentItem.tierIndex]);
+            this.grid.currentItem.documents[0].leadMagnet = leadMagnet;
+            this.saveService.checkForNoChanges();
           });
       }
     }
@@ -33,8 +38,25 @@ export class LeadPagePropertiesComponent implements OnInit {
     this.fileInput.click();
   }
 
-  onPageTitleChange(title){
-    this.gridItem.documents[0].pageTitle = title;
+  onPageTitleChange(event) {
+    if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+      this.grid.saveUpdate(this.grid.currentItem, this.grid.tiers[this.grid.currentItem.tierIndex]);
+      this.grid.currentItem.documents[0].pageTitle = event.target.value;
+      event.target.blur();
+      this.saveService.checkForNoChanges();
+    }
+  }
+
+  onPageTitleBlur(event) {
+    this.grid.saveUpdate(this.grid.currentItem, this.grid.tiers[this.grid.currentItem.tierIndex]);
+    this.grid.currentItem.documents[0].pageTitle = event.target.value;
+    this.saveService.checkForNoChanges();
+  }
+
+  onPageTitleFocus() {
+    if (EditBoxComponent.currentEditBox && EditBoxComponent.currentEditBox.isSelected) {
+      EditBoxComponent.currentEditBox.unSelect();
+    }
   }
 
 }
