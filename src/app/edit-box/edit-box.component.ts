@@ -65,7 +65,7 @@ export class EditBoxComponent {
       if (this.spawnPosition) {
 
         // If this box is too wide to fit in the row
-        if (this.container.currentRow.getBoxesWidth() + rect.width > this.container.width) {
+        if (this.container.currentRow.getBoxesWidth() + rect.width > Math.round(this.container.width)) {
           // Add a new row
           this.container.currentRow = this.container.addRow('center', this.container.currentRow.yMax);
 
@@ -644,7 +644,7 @@ export class EditBoxComponent {
     this.app.tick();
     EditBoxComponent.change.next();
   }
-  
+
 
   getRect(boxType) {
     return boxType + '-' + this.rect.x + '-' + this.rect.y + '-' + this.rect.width + '-' + this.rect.height;

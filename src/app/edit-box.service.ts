@@ -346,7 +346,11 @@ export class EditBoxService {
           // Container
         } else if (copiedBox.boxType === ContainerBoxComponent) {
           newBox.instance.initialize(copiedBox);
-          this.createBoxesInContainer(newBox.instance.container, copiedBox.boxes, newBoxes);
+
+          let containerBox: ContainerBoxComponent = newBox.instance as ContainerBoxComponent;
+
+          this.createRowsInContainer(containerBox.boxContainer, copiedBox.rows);
+          this.createBoxesInContainer(containerBox.boxContainer, copiedBox.boxes, newBoxes);
           // Other
         } else {
           newBox.instance.initialize(copiedBox);

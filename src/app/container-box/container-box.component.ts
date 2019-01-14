@@ -13,7 +13,7 @@ import { Container } from '../container';
 })
 export class ContainerBoxComponent extends EditBoxComponent {
   @ViewChild('viewContainerRef', { read: ViewContainerRef }) viewContainerRef: any;
-  private minSize: number = 8;
+  private minSize: number = 2;
   public fixedHeight: number;
   public boxContainer: BoxContainer;
 
