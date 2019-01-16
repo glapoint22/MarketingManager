@@ -7,6 +7,7 @@ import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { Container } from '../container';
 import { ContainerBoxComponent } from '../container-box/container-box.component';
 import { ImageBoxComponent } from '../image-box/image-box.component';
+import { ColorService } from '../color.service';
 
 @Component({
   selector: 'properties',
@@ -19,10 +20,12 @@ export class PropertiesComponent {
   public editBox = EditBoxComponent;
   private ctrlDown: boolean;
 
-  constructor(private linkService: LinkService, public editBoxService: EditBoxService) { }
+  constructor(private linkService: LinkService, public editBoxService: EditBoxService, private colorService: ColorService) { }
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
+    if (this.colorService.showColorPicker) return;
+
     // Control
     if (event.code === 'ControlLeft' || event.code === 'ControlRight') this.ctrlDown = true;
 

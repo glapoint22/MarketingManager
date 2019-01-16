@@ -21,9 +21,12 @@ export class Rect {
     }
 
     constructor(public x: number, public y: number, public width: number, public height: number) {
-        this.x = Math.round(x * 100) / 100;
-        this.y = Math.round(y * 100) / 100;
-        this.width = Math.round(width * 100) / 100;
-        this.height = Math.round(height * 100) / 100;
+        if (x !== null) {
+            this.x = Math.round(x * 100) / 100;
+            this.y = Math.round(y * 100) / 100;
+            this.width = Math.round(width * 100) / 100;
+            this.height = Math.round(height * 100) / 100;
+        }
+
     }
 }
