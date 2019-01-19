@@ -44,8 +44,8 @@ describe('FilterGridComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should set apiUrl', () => {
-      expect(component.apiUrl).toEqual('api/Filters');
+    it('should set apiUri', () => {
+      expect(component.apiUri).toEqual('api/Filters');
     });
 
     it('should set parent height', () => {

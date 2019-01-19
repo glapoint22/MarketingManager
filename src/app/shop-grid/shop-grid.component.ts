@@ -22,8 +22,7 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   constructor(dataService: DataService, private element: ElementRef, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
   ngOnInit() {
-    this.apiUrl = 'api/Categories';
-    this.apiParameters = [{ key: 'isManager', value: true }];
+    this.apiUri = 'api/Categories/Manager';
     this.setParentTierHeight();
     super.ngOnInit();
   }

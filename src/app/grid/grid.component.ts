@@ -19,8 +19,7 @@ export class GridComponent implements OnInit, Igrid {
   public tiers: Array<Itier> = [];
   public searchOptions: Array<string> = [];
   public selectedSearchOption: string;
-  public apiUrl: string;
-  public apiParameters: Array<any> = [];
+  public apiUri: string;
   public searchValue: string = '';
   public tierToSearch: number = 0;
   public currentItem: any;
@@ -32,7 +31,7 @@ export class GridComponent implements OnInit, Igrid {
   constructor(public dataService: DataService, public saveService: SaveService) { }
 
   ngOnInit() {
-    this.dataService.get(this.apiUrl, this.apiParameters)
+    this.dataService.get(this.apiUri)
       .subscribe((data: any) => {
         this.createTiers(data);
         this.setSearchOptions();

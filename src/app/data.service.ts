@@ -13,17 +13,11 @@ export class DataService {
 
   constructor(private http: HttpClient, private promptService: PromptService) { }
 
-  get(url: string, parameters?: Array<any>): Observable<any> {
-    let params = new HttpParams();
-
-    //Set the params
-    parameters.forEach(x => params = params.set(x.key, x.value));
-
+  get(url: string): Observable<any> {
     //Get the data
-    return this.http.get(url, { params: params })
+    return this.http.get(url)
       .pipe(catchError(this.handleError()));
   }
-
 
   post(url: string, body: any) {
     return this.http.post(url, body)

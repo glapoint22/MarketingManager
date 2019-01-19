@@ -15,7 +15,7 @@ export class FilterGridComponent extends EditableGridComponent implements OnInit
   constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
 
   ngOnInit() {
-    this.apiUrl = 'api/Filters';
+    this.apiUri = 'api/Filters';
     this.tierComponent.parentTierHeight = 230;
     this.defaultMaxItemCount = 15;
     this.maxItems = this.defaultMaxItemCount;

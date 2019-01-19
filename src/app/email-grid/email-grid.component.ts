@@ -15,7 +15,7 @@ export class EmailGridComponent extends GridComponent implements OnInit {
   constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService, private element: ElementRef) { super(dataService, saveService) }
 
   ngOnInit() {
-    this.apiUrl = 'api/Mail';
+    this.apiUri = 'api/Mail';
     this.setParentTierHeight();
     super.ngOnInit();
   }
