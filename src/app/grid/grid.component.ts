@@ -31,11 +31,14 @@ export class GridComponent implements OnInit, Igrid {
   constructor(public dataService: DataService, public saveService: SaveService) { }
 
   ngOnInit() {
-    this.dataService.get(this.apiUri)
+    this.dataService.validateToken().subscribe(()=>{
+      this.dataService.get(this.apiUri)
       .subscribe((data: any) => {
         this.createTiers(data);
         this.setSearchOptions();
       });
+    });
+    
   }
 
   createTiers(data?: Array<any>) {

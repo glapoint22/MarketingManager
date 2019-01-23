@@ -29,15 +29,19 @@ export class EditBoxService {
         let formData: FormData = new FormData();
         formData.append('image', file, file.name);
 
-        this.dataService.post('/api/Image', formData)
-          .subscribe((imageName: any) => {
-            let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
-            this.setChange([box.instance]);
-            box.instance.contentContainer.src = 'Images/' + imageName;
-            box.instance.contentContainer.onload = () => {
-              box.instance.initialize();
-            }
-          });
+        this.dataService.validateToken().subscribe(()=>{
+          this.dataService.post('/api/Image', formData)
+            .subscribe((imageName: any) => {
+              let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
+              this.setChange([box.instance]);
+              box.instance.contentContainer.src = 'Images/' + imageName;
+              box.instance.contentContainer.onload = () => {
+                box.instance.initialize();
+              }
+            });
+        });
+
+        
       }
     }
     this.createMenu();

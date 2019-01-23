@@ -14,24 +14,12 @@ import { DataService } from './data.service';
 })
 export class AppComponent implements OnInit {
   public activeScreen: string;
-  public isAuthorized: boolean;
 
   constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public documentPreviewService: DocumentPreviewService, public menuService: MenuService, public colorService: ColorService, private dataService: DataService) { }
 
   ngOnInit() {
-    let token = sessionStorage.getItem('token');
-
-    if (!token) {
-      this.dataService.post('api/Token', 'username=Gabe&password=Cyb668622&grant_type=password')
-        .subscribe((response: any) => {
-          sessionStorage.setItem('token', response.access_token);
-          this.isAuthorized = true;
-        });
-
-      return;
-    }
-
-    this.isAuthorized = true;
+    this.dataService.setAccessToken(localStorage.getItem('token'));
+    if (this.dataService.accessToken) this.dataService.setHeaders(this.dataService.accessToken.token);
   }
 
   ngAfterContentChecked() {
