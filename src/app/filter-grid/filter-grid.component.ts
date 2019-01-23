@@ -12,8 +12,6 @@ import { PromptService } from "../prompt.service";
 export class FilterGridComponent extends EditableGridComponent implements OnInit {
   @Input() products;
 
-  constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
-
   ngOnInit() {
     this.apiUri = 'api/Filters';
     this.tierComponent.parentTierHeight = 230;

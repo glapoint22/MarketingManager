@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'media',
@@ -413,12 +414,17 @@ export class MediaComponent implements OnInit {
       let formData: FormData = new FormData();
       formData.append('image', file, file.name);
 
-      this.dataService.post('/api/Image', formData)
-        .subscribe((image: any) => {
-          this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
-          this.mode.setNewImage(image);
-          this.mode.initialize(image);
-        });
+      let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+        validateTokenSubscription.unsubscribe();
+        this.dataService.post('/api/Image', formData)
+          .subscribe((image: any) => {
+            this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
+            this.mode.setNewImage(image);
+            this.mode.initialize(image);
+          });
+      });
+
+
     }
   }
 

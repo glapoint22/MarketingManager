@@ -4,6 +4,7 @@ import { TierComponent } from '../tier/tier.component';
 import { Itier } from '../itier';
 import { Igrid } from '../igrid';
 import { SaveService } from '../save.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'grid',
@@ -31,14 +32,15 @@ export class GridComponent implements OnInit, Igrid {
   constructor(public dataService: DataService, public saveService: SaveService) { }
 
   ngOnInit() {
-    this.dataService.validateToken().subscribe(()=>{
+    let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+      validateTokenSubscription.unsubscribe();
       this.dataService.get(this.apiUri)
-      .subscribe((data: any) => {
-        this.createTiers(data);
-        this.setSearchOptions();
-      });
+        .subscribe((data: any) => {
+          this.createTiers(data);
+          this.setSearchOptions();
+        });
     });
-    
+
   }
 
   createTiers(data?: Array<any>) {

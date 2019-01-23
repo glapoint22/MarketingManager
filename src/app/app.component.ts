@@ -18,7 +18,10 @@ export class AppComponent implements OnInit {
   constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public documentPreviewService: DocumentPreviewService, public menuService: MenuService, public colorService: ColorService, private dataService: DataService) { }
 
   ngOnInit() {
+    // Get the access token from local storage
     this.dataService.setAccessToken(localStorage.getItem('token'));
+
+    // If there is an access token, set the http headers
     if (this.dataService.accessToken) this.dataService.setHeaders(this.dataService.accessToken.token);
   }
 

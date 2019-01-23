@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DataService } from '../data.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { SaveService } from '../save.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'lead-page-properties',
@@ -24,12 +25,15 @@ export class LeadPagePropertiesComponent implements OnInit {
 
         formData.append('file', file, file.name);
 
-        this.dataService.post('/api/LeadPages', formData)
-          .subscribe((leadMagnet: any) => {
-            this.grid.saveUpdate(this.grid.currentItem, this.grid.tiers[this.grid.currentItem.tierIndex]);
-            this.grid.currentItem.documents[0].leadMagnet = leadMagnet;
-            this.saveService.checkForNoChanges();
-          });
+        let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+          validateTokenSubscription.unsubscribe();
+          this.dataService.post('/api/LeadPages', formData)
+            .subscribe((leadMagnet: any) => {
+              this.grid.saveUpdate(this.grid.currentItem, this.grid.tiers[this.grid.currentItem.tierIndex]);
+              this.grid.currentItem.documents[0].leadMagnet = leadMagnet;
+              this.saveService.checkForNoChanges();
+            });
+        });
       }
     }
   }

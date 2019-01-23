@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService } from "./data.service";
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 @Injectable(
   {
@@ -89,30 +89,33 @@ export class SaveService {
   }
 
   saveItem(item: any, verb: string, items: Array<any>) {
-    this.dataService[verb](item.url, item.items)
-      .subscribe((data: any) => {
-        items = items.filter(x => x !== item);
+    let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+      validateTokenSubscription.unsubscribe();
+      this.dataService[verb](item.url, item.items)
+        .subscribe((data: any) => {
+          items = items.filter(x => x !== item);
 
-        // Save the next item
-        if (items.length > 0) {
-          this.saveItem(items[0], verb, items);
-        } else {
-          switch (verb) {
-            case 'post':
-              this.newItems = [];
-              this.saveDeletes.next();
-              break;
-            case 'delete':
-              this.deletedItems = [];
-              this.saveUpdates.next();
-              break;
-            case 'put':
-              this.updatedItems = [];
-              this.saveComplete.next();
-              break;
+          // Save the next item
+          if (items.length > 0) {
+            this.saveItem(items[0], verb, items);
+          } else {
+            switch (verb) {
+              case 'post':
+                this.newItems = [];
+                this.saveDeletes.next();
+                break;
+              case 'delete':
+                this.deletedItems = [];
+                this.saveUpdates.next();
+                break;
+              case 'put':
+                this.updatedItems = [];
+                this.saveComplete.next();
+                break;
+            }
           }
-        }
-      });
+        });
+    });
   }
 
   addSaveItem(array: Array<any>, saveItem: any, tier: any) {

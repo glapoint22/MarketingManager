@@ -21,8 +21,6 @@ export class FeaturedGridComponent extends EditableGridComponent implements OnIn
   public showNonFeaturedList: boolean;
   public nonFeaturedSearchValue: string = '';
 
-  constructor(dataService: DataService, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
-
   ngOnInit() {
     this.tierComponent.parentTierHeight = 230;
     this.defaultMaxItemCount = 15;

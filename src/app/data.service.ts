@@ -29,7 +29,7 @@ export class DataService {
   }
 
   put(url: string, body: any) {
-    return this.http.put(url, body)
+    return this.http.put(url, body, { headers: this.headers })
       .pipe(catchError(this.handleError()));
   }
 
@@ -37,11 +37,12 @@ export class DataService {
     let params = new HttpParams();
 
     params = params.set('itemIds', body);
-    return this.http.delete(url, { params: params })
+    return this.http.delete(url, { params: params, headers: this.headers })
       .pipe(catchError(this.handleError()));
   }
 
   handleError() {
+    // Show a prompt of the error
     return (error) => {
       this.promptService.prompt('Error', error.message, [
         {
@@ -54,16 +55,19 @@ export class DataService {
   }
 
   hasTokenExpired(): boolean {
+    // Check to see if the current token has expired
     return (this.accessToken.expires - new Date().getTime()) < 0;
   }
 
   setHeaders(token: string) {
+    // Set the http headers to include the current token
     this.headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
   }
 
   setAccessToken(tokenString: string) {
+    // Create a access token object from the passed in string
     if (tokenString !== null) {
       let index = tokenString.indexOf(':');
 
@@ -76,6 +80,7 @@ export class DataService {
   }
 
   validateToken(): Observable<any> {
+    // If there is not an access token or the token has expired, get a token from the server
     if (!this.accessToken || this.hasTokenExpired()) {
       if (!this.isGettingToken) {
         this.isGettingToken = true;

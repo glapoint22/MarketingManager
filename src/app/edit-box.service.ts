@@ -11,6 +11,7 @@ import { ContextMenu, MenuGroup, MenuRow } from './context-menu';
 import { MenuService } from './menu.service';
 import { Row } from './row';
 import { PromptService } from './prompt.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,8 @@ export class EditBoxService {
         let formData: FormData = new FormData();
         formData.append('image', file, file.name);
 
-        this.dataService.validateToken().subscribe(()=>{
+        let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+          validateTokenSubscription.unsubscribe();
           this.dataService.post('/api/Image', formData)
             .subscribe((imageName: any) => {
               let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
@@ -41,7 +43,7 @@ export class EditBoxService {
             });
         });
 
-        
+
       }
     }
     this.createMenu();
