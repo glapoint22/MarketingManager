@@ -56,7 +56,7 @@ export class DataService {
 
   hasTokenExpired(): boolean {
     // Check to see if the current token has expired
-    return (this.accessToken.expires - new Date().getTime()) < 0;
+    return (this.accessToken.expires - new Date().getTime()) < 60000;
   }
 
   setHeaders(token: string) {
@@ -69,25 +69,27 @@ export class DataService {
   setAccessToken(tokenString: string) {
     // Create a access token object from the passed in string
     if (tokenString !== null) {
-      let index = tokenString.indexOf(':');
+      let tokenIndex = tokenString.indexOf(':'),
+        refreshTokenIndex = tokenString.indexOf(':', tokenIndex + 1);
 
       this.accessToken = {
-        expires: parseInt(tokenString.substring(0, index)),
-        token: tokenString.substr(index + 1)
+        expires: parseInt(tokenString.substring(0, tokenIndex)),
+        token: tokenString.substr(tokenIndex + 1, (refreshTokenIndex - tokenIndex) - 1),
+        refreshToken: tokenString.substr(refreshTokenIndex + 1)
       }
     }
 
   }
 
   validateToken(): Observable<any> {
-    // If there is not an access token or the token has expired, get a token from the server
-    if (!this.accessToken || this.hasTokenExpired()) {
+    // If the token has expired, get a token from the server
+    if (this.hasTokenExpired()) {
       if (!this.isGettingToken) {
         this.isGettingToken = true;
-
-        this.post('api/Token', 'username=Gabe&password=Cyb668622&grant_type=password')
+        this.headers = null;
+        this.post('api/Token', 'grant_type=refresh_token&refresh_token=' + this.accessToken.refreshToken)
           .subscribe((response: any) => {
-            let tokenString = new Date(response[".expires"]).getTime() + ':' + response.access_token;
+            let tokenString = new Date(response[".expires"]).getTime() + ':' + response.access_token + ':' + response.refresh_token;
             localStorage.setItem('token', tokenString);
 
             this.setAccessToken(tokenString);
