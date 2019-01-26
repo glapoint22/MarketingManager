@@ -69,16 +69,17 @@ export class DataService {
   setAccessToken(tokenString: string) {
     // Create a access token object from the passed in string
     if (tokenString !== null) {
-      let tokenIndex = tokenString.indexOf(':'),
-        refreshTokenIndex = tokenString.indexOf(':', tokenIndex + 1);
+      let tokenExpiresIndex = tokenString.indexOf('~'),
+        refreshTokenIndex = tokenString.indexOf('~', tokenExpiresIndex + 1),
+        refreshTokenExpiresIndex = tokenString.indexOf('~', refreshTokenIndex + 1);
 
       this.accessToken = {
-        expires: parseInt(tokenString.substring(0, tokenIndex)),
-        token: tokenString.substr(tokenIndex + 1, (refreshTokenIndex - tokenIndex) - 1),
-        refreshToken: tokenString.substr(refreshTokenIndex + 1)
+        expires: new Date(tokenString.substring(0, tokenExpiresIndex)).getTime(),
+        token: tokenString.substr(tokenExpiresIndex + 1, (refreshTokenIndex - tokenExpiresIndex) - 1),
+        refreshToken: tokenString.substr(refreshTokenIndex + 1, (refreshTokenExpiresIndex - refreshTokenIndex) - 1),
+        refreshTokenExpires: new Date(tokenString.substr(refreshTokenExpiresIndex + 1)).getTime()
       }
     }
-
   }
 
   validateToken(): Observable<any> {
@@ -89,7 +90,7 @@ export class DataService {
         this.headers = null;
         this.post('api/Token', 'grant_type=refresh_token&refresh_token=' + this.accessToken.refreshToken)
           .subscribe((response: any) => {
-            let tokenString = new Date(response[".expires"]).getTime() + ':' + response.access_token + ':' + response.refresh_token;
+            let tokenString = response[".expires"] + '~' + response.access_token + '~' + response.refresh_token + '~' + response.refreshTokenExpires;
             localStorage.setItem('token', tokenString);
 
             this.setAccessToken(tokenString);

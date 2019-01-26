@@ -21,6 +21,10 @@ export class AppComponent implements OnInit {
     // Get the access token from local storage
     this.dataService.setAccessToken(localStorage.getItem('token'));
 
+    if(!this.dataService.accessToken || this.dataService.accessToken.refreshTokenExpires - new Date().getTime() < 0){
+      // Log in
+    }
+
     // If there is an access token, set the http headers
     if (this.dataService.accessToken) this.dataService.setHeaders(this.dataService.accessToken.token);
   }
