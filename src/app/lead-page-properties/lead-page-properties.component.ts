@@ -3,6 +3,7 @@ import { DataService } from '../data.service';
 import { EditBoxComponent } from '../edit-box/edit-box.component';
 import { SaveService } from '../save.service';
 import { Subscription } from 'rxjs';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'lead-page-properties',
@@ -14,7 +15,7 @@ export class LeadPagePropertiesComponent implements OnInit {
   // public gridItem: any;
   private fileInput = document.createElement('input');
 
-  constructor(private dataService: DataService, private saveService: SaveService) { }
+  constructor(private dataService: DataService, private saveService: SaveService, private tokenService: TokenService) { }
 
   ngOnInit() {
     this.fileInput.type = 'file';
@@ -25,7 +26,7 @@ export class LeadPagePropertiesComponent implements OnInit {
 
         formData.append('file', file, file.name);
 
-        let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+        let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
           validateTokenSubscription.unsubscribe();
           this.dataService.post('/api/LeadPages', formData)
             .subscribe((leadMagnet: any) => {

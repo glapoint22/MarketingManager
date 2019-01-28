@@ -5,6 +5,7 @@ import { ShopGridComponent } from '../shop-grid/shop-grid.component';
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
 import { Subscription } from 'rxjs';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'media',
@@ -26,7 +27,11 @@ export class MediaComponent implements OnInit {
   private productVideos: any;
   private productBanners: any;
 
-  constructor(public dataService: DataService, private sanitizer: DomSanitizer, private saveService: SaveService, private promptService: PromptService) { }
+  constructor(public dataService: DataService,
+    private sanitizer: DomSanitizer,
+    private saveService: SaveService,
+    private promptService: PromptService,
+    private tokenService: TokenService) { }
 
   ngOnInit() {
     // Category Icon
@@ -414,7 +419,7 @@ export class MediaComponent implements OnInit {
       let formData: FormData = new FormData();
       formData.append('image', file, file.name);
 
-      let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+      let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
         validateTokenSubscription.unsubscribe();
         this.dataService.post('/api/Image', formData)
           .subscribe((image: any) => {

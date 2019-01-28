@@ -4,6 +4,7 @@ import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
 import { GridButton } from "../grid-button";
+import { TokenService } from '../token.service';
 
 @Component({
   template: ''
@@ -12,7 +13,10 @@ export class EditableGridComponent extends GridComponent {
   public change: number = 0;
   private editedFields: Array<any>;
 
-  constructor(dataService: DataService, saveService: SaveService, public promptService: PromptService) { super(dataService, saveService) }
+  constructor(dataService: DataService,
+    saveService: SaveService,
+    tokenService: TokenService,
+    public promptService: PromptService) { super(dataService, saveService, tokenService) }
 
   setHeaderButtons(newButtonName: string, deleteButtonName: string): Array<GridButton> {
     return [

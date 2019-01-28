@@ -4,6 +4,7 @@ import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
 import { LinkService } from '../link.service';
 import { PromptService } from '../prompt.service';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'email-grid',
@@ -12,7 +13,12 @@ import { PromptService } from '../prompt.service';
 })
 export class EmailGridComponent extends GridComponent implements OnInit {
 
-  constructor(dataService: DataService, saveService: SaveService, private linkService: LinkService, private promptService: PromptService, private element: ElementRef) { super(dataService, saveService) }
+  constructor(dataService: DataService,
+    saveService: SaveService,
+    tokenService: TokenService,
+    private linkService: LinkService,
+    private promptService: PromptService,
+    private element: ElementRef) { super(dataService, saveService, tokenService) }
 
   ngOnInit() {
     this.apiUri = 'api/Mail';

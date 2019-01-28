@@ -5,6 +5,7 @@ import { Itier } from '../itier';
 import { Igrid } from '../igrid';
 import { SaveService } from '../save.service';
 import { Subscription } from 'rxjs';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'grid',
@@ -29,10 +30,10 @@ export class GridComponent implements OnInit, Igrid {
   public defaultMaxItemCount: number = 50;
   public maxItems: number = this.defaultMaxItemCount;
 
-  constructor(public dataService: DataService, public saveService: SaveService) { }
+  constructor(public dataService: DataService, public saveService: SaveService, private tokenService: TokenService) { }
 
   ngOnInit() {
-    let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+    let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
       validateTokenSubscription.unsubscribe();
       this.dataService.get(this.apiUri)
         .subscribe((data: any) => {

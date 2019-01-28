@@ -12,6 +12,7 @@ import { MenuService } from './menu.service';
 import { Row } from './row';
 import { PromptService } from './prompt.service';
 import { Subscription } from 'rxjs';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,12 @@ export class EditBoxService {
   private fileInput = document.createElement('input');
   private spawnPosition: string;
 
-  constructor(private resolver: ComponentFactoryResolver, private dataService: DataService, private menuService: MenuService, private promptService: PromptService) {
+  constructor(private resolver: ComponentFactoryResolver,
+    private dataService: DataService,
+    private menuService: MenuService,
+    private promptService: PromptService,
+    private tokenService: TokenService) {
+
     this.fileInput.type = 'file';
     this.fileInput.onchange = (event: any) => {
       if (event.target.files.length > 0) {
@@ -30,7 +36,7 @@ export class EditBoxService {
         let formData: FormData = new FormData();
         formData.append('image', file, file.name);
 
-        let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+        let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
           validateTokenSubscription.unsubscribe();
           this.dataService.post('/api/Image', formData)
             .subscribe((imageName: any) => {

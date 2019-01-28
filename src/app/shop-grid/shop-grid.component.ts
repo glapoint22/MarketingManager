@@ -4,6 +4,7 @@ import { DataService } from "../data.service";
 import { SaveService } from "../save.service";
 import { PromptService } from "../prompt.service";
 import { GridButton } from '../grid-button';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'shop-grid',
@@ -19,7 +20,11 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
   public filters: Array<any> = [];
   private filterButtonClicked: boolean;
 
-  constructor(dataService: DataService, private element: ElementRef, saveService: SaveService, promptService: PromptService) { super(dataService, saveService, promptService) }
+  constructor(dataService: DataService,
+    saveService: SaveService,
+    tokenService: TokenService,
+    promptService: PromptService,
+    private element: ElementRef) { super(dataService, saveService, tokenService, promptService) }
 
   ngOnInit() {
     this.apiUri = 'api/Categories/Manager';

@@ -5,7 +5,7 @@ import { LinkService } from './link.service';
 import { DocumentPreviewService } from './document-preview.service';
 import { MenuService } from './menu.service';
 import { ColorService } from './color.service';
-import { DataService } from './data.service';
+import { TokenService } from './token.service';
 
 @Component({
   selector: 'app-root',
@@ -15,18 +15,21 @@ import { DataService } from './data.service';
 export class AppComponent implements OnInit {
   public activeScreen: string;
 
-  constructor(public saveService: SaveService, public promptService: PromptService, public linkService: LinkService, public documentPreviewService: DocumentPreviewService, public menuService: MenuService, public colorService: ColorService, private dataService: DataService) { }
+  constructor(public saveService: SaveService,
+    public promptService: PromptService,
+    public linkService: LinkService,
+    public documentPreviewService: DocumentPreviewService,
+    public menuService: MenuService,
+    public colorService: ColorService,
+    private tokenService: TokenService) { }
 
   ngOnInit() {
     // Get the access token from local storage
-    this.dataService.setAccessToken(localStorage.getItem('token'));
+    this.tokenService.refreshToken = this.tokenService.getToken(localStorage.getItem('refreshToken'));
 
-    if(!this.dataService.accessToken || this.dataService.accessToken.refreshTokenExpires - new Date().getTime() < 0){
+    if (!this.tokenService.refreshToken || this.tokenService.hasTokenExpired(this.tokenService.refreshToken.expires, 0)) {
       // Log in
     }
-
-    // If there is an access token, set the http headers
-    if (this.dataService.accessToken) this.dataService.setHeaders(this.dataService.accessToken.token);
   }
 
   ngAfterContentChecked() {

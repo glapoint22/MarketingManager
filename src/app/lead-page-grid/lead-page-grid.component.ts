@@ -3,6 +3,7 @@ import { GridComponent } from '../grid/grid.component';
 import { DataService } from '../data.service';
 import { SaveService } from '../save.service';
 import { PromptService } from '../prompt.service';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'lead-page-grid',
@@ -11,7 +12,11 @@ import { PromptService } from '../prompt.service';
 })
 export class LeadPageGridComponent extends GridComponent implements OnInit {
 
-  constructor(dataService: DataService, saveService: SaveService, private element: ElementRef, private promptService: PromptService) { super(dataService, saveService) }
+  constructor(dataService: DataService,
+    saveService: SaveService,
+    tokenService: TokenService,
+    private element: ElementRef,
+    private promptService: PromptService) { super(dataService, saveService, tokenService) }
 
   ngOnInit() {
     this.apiUri = 'api/LeadPages';

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataService } from "./data.service";
 import { Subject, Subscription } from 'rxjs';
+import { TokenService } from './token.service';
 
 @Injectable(
   {
@@ -17,7 +18,7 @@ export class SaveService {
   private saveUpdates = new Subject<void>();
   private saveComplete = new Subject<void>();
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private tokenService: TokenService) {
     // Posts
     this.savePosts.subscribe(() => {
       if (this.newItems.length > 0) {
@@ -89,7 +90,7 @@ export class SaveService {
   }
 
   saveItem(item: any, verb: string, items: Array<any>) {
-    let validateTokenSubscription: Subscription = this.dataService.validateToken().subscribe(() => {
+    let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
       validateTokenSubscription.unsubscribe();
       this.dataService[verb](item.url, item.items)
         .subscribe((data: any) => {
