@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PromptService } from "./prompt.service";
 
@@ -20,9 +20,9 @@ export class DataService {
       .pipe(catchError(this.handleError()));
   }
 
-  post(url: string, body: any) {
+  post(url: string, body: any, callback?: Function) {
     return this.http.post(url, body, { headers: this.headers })
-      .pipe(catchError(this.handleError()));
+      .pipe(catchError(this.handleError(callback)));
   }
 
   put(url: string, body: any) {
@@ -38,16 +38,16 @@ export class DataService {
       .pipe(catchError(this.handleError()));
   }
 
-  handleError() {
+  handleError(callback?: Function) {
     // Show a prompt of the error
-    return (error) => {
+    return (error: any) => {
       this.promptService.prompt('Error', error.message, [
         {
           text: 'Ok',
-          callback: () => { }
+          callback: () => { if (callback) callback() }
         }
       ])
-      return of();
+      return throwError(error);
     }
   }
 

@@ -48,6 +48,7 @@ import { DocumentComponent } from './document/document.component';
 import { LeadPageComponent } from './lead-page/lead-page.component';
 import { LeadPageGridComponent } from './lead-page-grid/lead-page-grid.component';
 import { LeadPagePropertiesComponent } from './lead-page-properties/lead-page-properties.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { LeadPagePropertiesComponent } from './lead-page-properties/lead-page-pr
     DocumentComponent,
     LeadPageComponent,
     LeadPageGridComponent,
-    LeadPagePropertiesComponent
+    LeadPagePropertiesComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

@@ -8,7 +8,7 @@
 </div>
 
 <!-- Content -->
-<div class="content-container">
+<div *ngIf="!loginService.showLogin && !loginService.isLoggingIn && !loginService.invalidLogin" class="content-container">
     <!-- Shop -->
     <shop *ngIf="activeScreen == 'Shop'"></shop>
 
@@ -42,13 +42,15 @@
 <!-- Color Picker -->
 <color-picker *ngIf="colorService.showColorPicker"></color-picker>
 
+<login *ngIf="loginService.showLogin"></login>
+
 <!-- Menu -->
 <menu *ngIf="menuService.show"></menu>
 
 <!-- Saving -->
-<div *ngIf="saveService.isSaving" class="saving">
+<div *ngIf="saveService.isSaving || loginService.isLoggingIn" class="saving">
     <div>
         <i class="fas fa-circle-notch fa-spin fa-3x"></i>
-        <div class="saving-text">Saving...</div>
+        <div class="saving-text" [innerText]="saveService.isSaving ? 'Saving...' : 'Logging In...'"></div>
     </div>
 </div>

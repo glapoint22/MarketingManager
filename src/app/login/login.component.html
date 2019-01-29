@@ -1,0 +1,15 @@
+<div class="background">
+  <div class="container">
+    <div class="title" (mousedown)="onMouseDown($event, 'move')">Login</div>
+    <div class="close" (click)="colorService.cancelColor()">
+      <i class="far fa-window-close"></i>
+    </div>
+    <div class="content">
+      <form (ngSubmit)="onLogin(userName.value, password.value)" #form="ngForm">
+        <input #userName placeholder="Username">
+        <input #password type="password" placeholder="Password">
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</div>

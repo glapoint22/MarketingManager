@@ -6,6 +6,7 @@ import { DocumentPreviewService } from './document-preview.service';
 import { MenuService } from './menu.service';
 import { ColorService } from './color.service';
 import { TokenService } from './token.service';
+import { LoginService } from './login.service';
 
 @Component({
   selector: 'app-root',
@@ -21,14 +22,16 @@ export class AppComponent implements OnInit {
     public documentPreviewService: DocumentPreviewService,
     public menuService: MenuService,
     public colorService: ColorService,
+    public loginService: LoginService,
     private tokenService: TokenService) { }
 
   ngOnInit() {
     // Get the access token from local storage
     this.tokenService.refreshToken = this.tokenService.getToken(localStorage.getItem('refreshToken'));
 
-    if (!this.tokenService.refreshToken || this.tokenService.hasTokenExpired(this.tokenService.refreshToken.expires, 0)) {
+    if (!this.tokenService.refreshToken || this.tokenService.hasRefreshTokenExpired()) {
       // Log in
+      this.loginService.showLogin = true;
     }
   }
 
