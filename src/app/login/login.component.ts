@@ -15,6 +15,8 @@ export class LoginComponent {
   onLogin(userName: string, password: string) {
     this.loginService.showLogin = false;
     this.loginService.isLoggingIn = true;
+
+    // Login
     this.dataService.post('api/Token', 'username=' +
       userName + '&password=' +
       password + '&grant_type=password&client_id=' +
@@ -24,7 +26,9 @@ export class LoginComponent {
         this.tokenService.setToken(response);
         this.loginService.isLoggingIn = false;
         this.loginService.invalidLogin = false;
-      }, (error: any) => {
+        
+        // Error
+      }, () => {
         this.loginService.isLoggingIn = false;
         this.loginService.invalidLogin = true;
       });

@@ -52,15 +52,18 @@ export class TokenService {
       if (!this.isGettingToken) {
         this.isGettingToken = true;
         this.dataService.headers = null;
-        // this.dataService.post('api/Token', 'username=Gabe&password=Cyb668622&grant_type=password&client_id=Manager&client_secret=3eware0blivion1s@Hand!')
-        this.dataService.post('api/Token', 'grant_type=refresh_token&refresh_token=' + this.refreshToken.id + '&client_id=' + this.clientId + '&client_secret=' + this.clientSecret)
+
+        // Get a new token
+        this.dataService.post('api/Token', 'grant_type=refresh_token&refresh_token=' +
+          this.refreshToken.id + '&client_id=' +
+          this.clientId + '&client_secret=' +
+          this.clientSecret)
           .subscribe((response: any) => {
             this.isGettingToken = false;
             this.setToken(response);
             this.waitForToken.next();
           });
       }
-
     } else {
       window.setTimeout(() => {
         this.waitForToken.next();
