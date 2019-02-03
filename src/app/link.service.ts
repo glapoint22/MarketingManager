@@ -27,11 +27,11 @@ export class LinkService {
       },
       {
         name: 'Email Preferences',
-        value: '{3}/preferences?cid={2}'
+        value: '{3}/preferences'
       },
       {
         name: 'This Email',
-        value: '{3}/mail?eid={1}&cid={2}'
+        value: '{3}/mail?eid={1}'
       },
     ];
 
