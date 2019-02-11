@@ -15,14 +15,14 @@ export class TokenService {
 
   constructor(private dataService: DataService) { }
 
-  hasAccessTokenExpired(): boolean {
+  hasAccessTokenExpired(serverTime): boolean {
     // Check to see if the current token has expired
-    return (this.accessToken.expires - new Date().getTime()) < 60000;
+    return (this.accessToken.expires - new Date(serverTime).getTime()) < 60000;
   }
 
-  hasRefreshTokenExpired(): boolean {
+  hasRefreshTokenExpired(serverTime): boolean {
     // Check to see if the current token has expired
-    return (this.refreshToken.expires - new Date().setHours(new Date().getHours() + 5)) < 0;
+    return (this.refreshToken.expires - new Date(serverTime.substr(0, serverTime.length - 1)).getTime()) < 0;
   }
 
 
@@ -47,29 +47,35 @@ export class TokenService {
   }
 
   validateToken(): Observable<any> {
-    // If the token has expired, get a token from the server
-    if (!this.accessToken || this.hasAccessTokenExpired()) {
-      if (!this.isGettingToken) {
-        this.isGettingToken = true;
-        this.dataService.headers = null;
+    this.dataService.get('api/Time')
+      .subscribe((serverTime: any) => {
+        // If the token has expired, get a token from the server
+        if (!this.accessToken || this.hasAccessTokenExpired(serverTime.local)) {
+          if (!this.isGettingToken) {
+            this.isGettingToken = true;
+            this.dataService.headers = null;
 
-        // Get a new token
-        this.dataService.post('api/Token', 'grant_type=refresh_token&refresh_token=' +
-          this.refreshToken.id + '&client_id=' +
-          this.clientId + '&client_secret=' +
-          this.clientSecret)
-          .subscribe((response: any) => {
-            this.isGettingToken = false;
-            this.setToken(response);
+            // Get a new token
+            this.dataService.post('api/Token', 'grant_type=refresh_token&refresh_token=' +
+              this.refreshToken.id + '&client_id=' +
+              this.clientId + '&client_secret=' +
+              this.clientSecret)
+              .subscribe((response: any) => {
+                this.isGettingToken = false;
+                this.setToken(response);
+                this.waitForToken.next();
+              });
+          }
+        } else {
+          window.setTimeout(() => {
             this.waitForToken.next();
-          });
-      }
-    } else {
-      window.setTimeout(() => {
-        this.waitForToken.next();
-      }, 1);
+          }, 1);
 
-    }
+        }
+      });
+
+
+
     return this.waitForToken;
   }
 }

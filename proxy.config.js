@@ -6,7 +6,9 @@ const PROXY_CONFIG = [
         ],
         target: "http://localhost:49699/",
         // target: "http://localhost/",
-        secure: false
+        // target: "http://www.nicheshack.com/",
+        secure: false,
+        "changeOrigin": true
     }
 ]
 module.exports = PROXY_CONFIG;

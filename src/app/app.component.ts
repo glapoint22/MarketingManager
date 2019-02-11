@@ -7,6 +7,7 @@ import { MenuService } from './menu.service';
 import { ColorService } from './color.service';
 import { TokenService } from './token.service';
 import { LoginService } from './login.service';
+import { DataService } from './data.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { LoginService } from './login.service';
 })
 export class AppComponent implements OnInit {
   public activeScreen: string;
+  public hasServerTime: boolean;
 
   constructor(public saveService: SaveService,
     public promptService: PromptService,
@@ -23,16 +25,25 @@ export class AppComponent implements OnInit {
     public menuService: MenuService,
     public colorService: ColorService,
     public loginService: LoginService,
-    private tokenService: TokenService) { }
+    private tokenService: TokenService,
+    private dataService: DataService) { }
 
   ngOnInit() {
-    // Get the access token from local storage
-    this.tokenService.refreshToken = this.tokenService.getToken(localStorage.getItem('refreshToken'));
+    this.dataService.get('api/Time')
+      .subscribe((serverTime: any) => {
+        this.hasServerTime = true;
 
-    if (!this.tokenService.refreshToken || this.tokenService.hasRefreshTokenExpired()) {
-      // Log in
-      this.loginService.showLogin = true;
-    }
+        // Get the access token from local storage
+        this.tokenService.refreshToken = this.tokenService.getToken(localStorage.getItem('refreshToken'));
+
+        if (!this.tokenService.refreshToken || this.tokenService.hasRefreshTokenExpired(serverTime.utc)) {
+          // Log in
+          this.loginService.showLogin = true;
+        }
+      });
+
+
+
   }
 
   ngAfterContentChecked() {
