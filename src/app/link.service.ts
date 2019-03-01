@@ -27,11 +27,11 @@ export class LinkService {
       },
       {
         name: 'Email Preferences',
-        value: '{3}/preferences'
+        value: '{3}/preferences?p={4}'
       },
       {
         name: 'This Email',
-        value: '{3}/mail?eid={1}'
+        value: 'https://mail/nicheshack.com/?id={1}'
       },
     ];
 
