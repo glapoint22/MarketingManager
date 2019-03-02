@@ -13,6 +13,7 @@ import { Row } from './row';
 import { PromptService } from './prompt.service';
 import { Subscription } from 'rxjs';
 import { TokenService } from './token.service';
+import { AppComponent } from './app.component';
 
 @Injectable({
   providedIn: 'root'
@@ -38,11 +39,11 @@ export class EditBoxService {
 
         let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
           validateTokenSubscription.unsubscribe();
-          this.dataService.post('/api/Image', formData)
+          this.dataService.post(AppComponent.activeScreen + '/api/Image', formData)
             .subscribe((imageName: any) => {
               let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
               this.setChange([box.instance]);
-              box.instance.contentContainer.src = 'Images/' + imageName;
+              box.instance.contentContainer.src = AppComponent.activeScreen +  '/Images/' + imageName;
               box.instance.contentContainer.onload = () => {
                 box.instance.initialize();
               }
