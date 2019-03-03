@@ -1,19 +1,19 @@
 <!-- Menu -->
 <div class="menu">
-    <menu-button buttonId="Shop" (onButtonClick)="app.activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
-    <menu-button buttonId="LeadPage" (onButtonClick)="app.activeScreen = $event" icon="fa-magnet"></menu-button>
-    <menu-button buttonId="Email" (onButtonClick)="app.activeScreen = $event" icon="fa-envelope"></menu-button>
-    <menu-button buttonId="Social Media" (onButtonClick)="app.activeScreen = $event" icon="fa-users"></menu-button>
+    <menu-button buttonId="Shop" (onButtonClick)="activeScreen = $event" icon="fa-shopping-cart" default="true"></menu-button>
+    <menu-button buttonId="LeadPage" (onButtonClick)="activeScreen = $event" icon="fa-magnet"></menu-button>
+    <menu-button buttonId="Email" (onButtonClick)="activeScreen = $event" icon="fa-envelope"></menu-button>
+    <menu-button buttonId="Social Media" (onButtonClick)="activeScreen = $event" icon="fa-users"></menu-button>
     <div class="save-button" (click)="saveService.save()" [class]="saveService.isChange() ? 'save-button blink' : 'save-button button-disabled'">Save</div>
 </div>
 
 <!-- Content -->
 <div *ngIf="hasServerTime && !loginService.showLogin && !loginService.isLoggingIn && !loginService.invalidLogin" class="content-container">
     <!-- Shop -->
-    <shop *ngIf="app.activeScreen == 'Shop'"></shop>
+    <shop *ngIf="activeScreen == 'Shop'"></shop>
 
     <!-- Lead Page -->
-    <lead-page #leadPage *ngIf="app.activeScreen == 'LeadPage'" [grid]="leadPageGrid">
+    <lead-page #leadPage *ngIf="activeScreen == 'LeadPage'" [grid]="leadPageGrid">
         <lead-page-grid grid #leadPageGrid (onItemClick)="leadPage.onItemClick($event)" (onCollapsedTier)="leadPage.onCollapsedTier()"></lead-page-grid>
         <editor editor [name]="'LeadPage'">
             <lead-page-properties #leadPageProperties [grid]="leadPageGrid"></lead-page-properties>
@@ -22,12 +22,12 @@
 
 
     <!-- Email -->
-    <email #email *ngIf="app.activeScreen == 'Email'" [grid]="emailGrid">
+    <email #email *ngIf="activeScreen == 'Email'" [grid]="emailGrid">
         <email-grid grid #emailGrid (onItemClick)="email.onItemClick($event)" (onCollapsedTier)="email.onCollapsedTier()"></email-grid>
     </email>
 
     <!-- Social -->
-    <social *ngIf="app.activeScreen == 'Social Media'"></social>
+    <social *ngIf="activeScreen == 'Social Media'"></social>
 </div>
 
 <!-- Link form -->
