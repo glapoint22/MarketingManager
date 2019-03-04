@@ -1,4 +1,4 @@
-import { Injectable, ComponentFactoryResolver, Type } from '@angular/core';
+import { Injectable, ComponentFactoryResolver, Type, isDevMode } from '@angular/core';
 import { EditBoxComponent } from './edit-box/edit-box.component';
 import { TextBoxComponent } from './text-box/text-box.component';
 import { ButtonBoxComponent } from './button-box/button-box.component';
@@ -13,6 +13,7 @@ import { Row } from './row';
 import { PromptService } from './prompt.service';
 import { Subscription } from 'rxjs';
 import { TokenService } from './token.service';
+import { AppComponent } from './app.component';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,14 @@ export class EditBoxService {
 
         let validateTokenSubscription: Subscription = this.tokenService.validateToken().subscribe(() => {
           validateTokenSubscription.unsubscribe();
-          this.dataService.post('/api/Image', formData)
+
+          let url: string = '/api/Image';
+
+          if (!isDevMode()) {
+            url = AppComponent.activeScreen + url;
+          } 
+
+          this.dataService.post(url, formData)
             .subscribe((imageName: any) => {
               let box = this.createBox(ImageBoxComponent, Container.currentContainer, 'img');
               this.setChange([box.instance]);

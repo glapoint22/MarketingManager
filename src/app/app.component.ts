@@ -15,7 +15,8 @@ import { DataService } from './data.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  public activeScreen: string;
+  public static activeScreen: string;
+  public app = AppComponent;
   public hasServerTime: boolean;
 
   constructor(public saveService: SaveService,

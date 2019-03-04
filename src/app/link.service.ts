@@ -23,15 +23,15 @@ export class LinkService {
       },
       {
         name: 'www.nicheshack.com',
-        value: '{3}'
+        value: 'https://www.nicheshack.com'
       },
       {
         name: 'Email Preferences',
-        value: '{3}/preferences?p={4}'
+        value: 'https://www.nicheshack.com/preferences?p={4}'
       },
       {
         name: 'This Email',
-        value: 'https://mail/nicheshack.com/?id={1}'
+        value: 'https://email.nicheshack.com/?id={1}'
       },
     ];
 
@@ -43,7 +43,7 @@ export class LinkService {
     } else if (gridItem.leadMagnet) {
       this.linkOptions.push({
         name: 'Lead Magnet',
-        value: '{3}/Downloads/' + gridItem.leadMagnet
+        value: 'https://leadpages.nicheshack.com/Downloads/' + gridItem.leadMagnet
       });
     }
 

@@ -1,4 +1,4 @@
-import { Component, isDevMode } from '@angular/core';
+import { Component } from '@angular/core';
 import { UniformBoxComponent } from '../uniform-box/uniform-box.component';
 import { Vector2 } from '../vector2';
 import { EditBoxLink } from '../edit-box-link';
@@ -64,7 +64,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
     row.appendChild(column);
 
     let img: HTMLImageElement = document.createElement('img');
-    img.src = this.contentContainer.src;
+    img.src = new URL(this.contentContainer.src).pathname;
     img.style.width = '100%';
     img.width = this.rect.width;
     img.style.display = 'block';
@@ -85,7 +85,7 @@ export class ImageBoxComponent extends UniformBoxComponent {
   boxToHtml(div: HTMLElement) {
     let img: HTMLImageElement = document.createElement('img');
 
-    img.src = (isDevMode() ? '' : 'http://www.nicheshack.com') + new URL(this.contentContainer.src).pathname;
+    img.src = new URL(this.contentContainer.src).pathname;
     img.style.width = '100%';
     img.width = this.rect.width;
     img.style.display = 'block';
