@@ -44,6 +44,7 @@ export class EditBoxService {
 
           if (!isDevMode()) {
             url = AppComponent.activeScreen + url;
+            formData.append('type', AppComponent.activeScreen);
           } 
 
           this.dataService.post(url, formData)
