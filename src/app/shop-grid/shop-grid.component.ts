@@ -43,7 +43,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           tierIndex: 0,
           featured: x.featured,
           icon: x.icon,
-          categoryImages: x.categoryImages,
           data: [
             {
               value: x.name
@@ -65,11 +64,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           Name: item.data[0].value,
           Icon: item.icon,
           Featured: item.featured,
-          CategoryImages: item.categoryImages.map(y => ({
-            CategoryID: item.id,
-            Name: y.name,
-            Selected: y.isSelected
-          }))
         }
       },
       check: (item) => {
@@ -84,16 +78,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
         }
         if (item.icon === null) {
           this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '" needs an icon.', [
-            {
-              text: 'Ok',
-              callback: () => { }
-            }
-          ]);
-          return false
-        }
-
-        if (item.categoryImages.length === 0) {
-          this.promptService.prompt('Quality Control', 'Category "' + item.data[0].value + '" needs at least one category image.', [
             {
               text: 'Ok',
               callback: () => { }
@@ -453,7 +437,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
       case 0:
         this.tiers[tierIndex].items[0].featured = false;
         this.tiers[tierIndex].items[0].icon = null;
-        this.tiers[tierIndex].items[0].categoryImages = [];
         break;
       case 1:
         this.tiers[tierIndex].items[0].icon = null;

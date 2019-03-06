@@ -21,7 +21,6 @@ export class MediaComponent implements OnInit {
   public mode: any;
   public currentItem: any;
   private categoryIcon: any;
-  private categoryImages: any;
   private nicheIcon: any;
   private productImage: any;
   private productVideos: any;
@@ -40,17 +39,6 @@ export class MediaComponent implements OnInit {
       display: 'single',
       type: 'image',
       buttons: [
-        {
-          title: 'Switch to Category Images',
-          icon: 'far fa-images',
-          onClick: () => {
-            this.mode = this.categoryImages;
-            this.mode.initialize();
-          },
-          getDisabled: () => {
-            return false;
-          }
-        },
         {
           title: 'New Category Icon',
           icon: 'fas fa-file-alt',
@@ -74,83 +62,6 @@ export class MediaComponent implements OnInit {
       },
       onClick: () => { }
     }
-
-    // Category Images
-    this.categoryImages = {
-      name: 'Category Images',
-      display: 'horizontal',
-      type: 'image',
-      buttons: [
-        {
-          title: 'Switch to Category Icon',
-          icon: 'far fa-image',
-          onClick: () => {
-            this.mode = this.categoryIcon;
-            this.mode.initialize();
-          },
-          getDisabled: () => {
-            return false;
-          }
-        },
-        {
-          title: 'Delete Category Image',
-          icon: 'fas fa-trash-alt',
-          onClick: () => {
-            if (this.contents.length > 0) {
-              this.promptService.prompt('Confirm Delete', 'Are you sure you want to delete this category image?', [
-                {
-                  text: 'Yes',
-                  callback: () => {
-                    this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
-
-                    let imageIndex = this.contents.findIndex(x => x.isSelected);
-
-                    this.contents.splice(imageIndex, 1);
-                    if (this.contents.length > 0) {
-                      this.contents[0].isSelected = true;
-                    }
-                    this.saveService.checkForNoChanges();
-                  }
-                },
-                {
-                  text: 'No',
-                  callback: () => { }
-                }
-              ]);
-            }
-
-          },
-          getDisabled: () => {
-            return this.contents.length === 0;
-          }
-        },
-        {
-          title: 'New Category Image',
-          icon: 'fas fa-file-alt',
-          onClick: () => {
-            this.fileInput.nativeElement.click()
-          },
-          getDisabled: () => {
-            return false;
-          }
-        }
-      ],
-      setNewImage: (image) => {
-        this.currentItem.categoryImages.push({
-          name: image,
-          isSelected: this.currentItem.categoryImages.length === 0
-        });
-      },
-      initialize: () => {
-        this.contents = [];
-        if (this.currentItem.categoryImages.length > 0) this.contents = this.currentItem.categoryImages;
-      },
-      onClick: (image) => {
-        this.shopGrid.saveUpdate(this.currentItem, this.shopGrid.tiers[this.currentItem.tierIndex]);
-        this.contents.forEach(x => x.isSelected = image === x);
-      }
-    }
-
 
     // Niche Icon
     this.nicheIcon = {
@@ -428,8 +339,6 @@ export class MediaComponent implements OnInit {
             this.mode.initialize(image);
           });
       });
-
-
     }
   }
 
