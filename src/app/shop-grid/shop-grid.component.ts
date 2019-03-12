@@ -320,16 +320,6 @@ export class ShopGridComponent extends EditableGridComponent implements OnInit {
           return false
         }
 
-        if (item.data[3].value === 0 || item.data[3].value === '0') {
-          this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" cannot have a price of zero.', [
-            {
-              text: 'Ok',
-              callback: () => { }
-            }
-          ]);
-          return false
-        }
-
         if (item.image === null) {
           this.promptService.prompt('Quality Control', 'Product "' + item.data[0].value + '" needs an image.', [
             {
